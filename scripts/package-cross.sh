@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Empacota o Orkestrai para Linux e Windows LOCALMENTE via Docker, usando as
+# Empacota o Deep Space para Linux e Windows LOCALMENTE via Docker, usando as
 # imagens oficiais do electron-builder. Pensado para macOS (Intel ou Apple
 # Silicon); em CI depois e so reusar os mesmos comandos.
 #

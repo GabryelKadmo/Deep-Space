@@ -98,7 +98,7 @@ else
   npx electron-builder "${builder_args[@]}"
 fi
 
-for app_path in release/mac/Orkestrai.app release/mac-arm64/Orkestrai.app; do
+for app_path in "release/mac/Deep Space.app" "release/mac-arm64/Deep Space.app"; do
   if [[ -d "$app_path" ]]; then
     node scripts/validate-macos-permissions.mjs "$app_path"
   fi

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { sanitizeAgentEnvironment } from '$lib/modules/agent-room/infrastructure/agent-path.ts';
 
 describe('agent environment isolation', () => {
-  it('removes Orkestrai server configuration without hiding the user environment or bridge', () => {
+  it('removes Deep Space server configuration without hiding the user environment or bridge', () => {
     const env = sanitizeAgentEnvironment({
       APP_KEY: 'base64:orkestrai-key',
       INTERNAL_SECRET: 'server-secret',
@@ -17,7 +17,7 @@ describe('agent environment isolation', () => {
       ORKESTRAI_PRIVATE_ENV_KEYS: 'APP_URL,DB_DRIVER,RESEND_API_KEY,ORKESTRAI_API_URL',
       ORKESTRAI_API_URL: 'http://127.0.0.1:4173',
       ORKESTRAI_CLI: '/tmp/bin/orkestrai',
-      ORKESTRAI_CLI_CONSOLE_RUNTIME: 'C:\\Program Files\\Orkestrai\\resources\\orkestrai-cli-runtime\\node.exe',
+      ORKESTRAI_CLI_CONSOLE_RUNTIME: 'C:\\Program Files\\Deep Space\\resources\\orkestrai-cli-runtime\\node.exe',
       PATH: '/usr/local/bin:/usr/bin',
       HOME: '/Users/developer',
       SSH_AUTH_SOCK: '/tmp/ssh-agent.sock',
@@ -38,7 +38,7 @@ describe('agent environment isolation', () => {
     expect(env).toMatchObject({
       ORKESTRAI_API_URL: 'http://127.0.0.1:4173',
       ORKESTRAI_CLI: '/tmp/bin/orkestrai',
-      ORKESTRAI_CLI_CONSOLE_RUNTIME: 'C:\\Program Files\\Orkestrai\\resources\\orkestrai-cli-runtime\\node.exe',
+      ORKESTRAI_CLI_CONSOLE_RUNTIME: 'C:\\Program Files\\Deep Space\\resources\\orkestrai-cli-runtime\\node.exe',
       PATH: '/usr/local/bin:/usr/bin',
       HOME: '/Users/developer',
       SSH_AUTH_SOCK: '/tmp/ssh-agent.sock',

@@ -52,7 +52,7 @@ h4 {
 }
 
 /*
- * Paleta padrao = Orkestrai Dark (DEFAULT_APP_THEME_ID).
+ * Paleta padrao = Deep Space Dark (DEFAULT_APP_THEME_ID).
  *
  * `applyAppTheme` sobrescreve tudo isto com variaveis inline no <html> assim que
  * as settings chegam, e o script de bootstrap do app.html reaplica o tema em

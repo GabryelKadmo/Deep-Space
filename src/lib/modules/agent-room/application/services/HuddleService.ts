@@ -270,7 +270,7 @@ export class HuddleService {
     const huddle = await huddleRepository.find(workspaceId, huddleId);
     if (!huddle) return;
     const prompt = [
-      'You are participating in a live Orkestrai huddle.',
+      'You are participating in a live Deep Space huddle.',
       `Topic: ${huddle.title}`,
       huddle.agenda ? `Agenda: ${huddle.agenda}` : '',
       'Reply conversationally in the same language as the latest speaker. Be concrete and concise (2-5 sentences).',

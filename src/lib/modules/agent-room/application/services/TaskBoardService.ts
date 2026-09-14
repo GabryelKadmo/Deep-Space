@@ -889,7 +889,7 @@ export class TaskBoardService {
       const prompt = [
         `[automatic task recovery #${input.taskId.slice(0, 8)}]`,
         `The previous state was ${input.previousState}: ${input.previousAction ?? '(no details)'}.`,
-        'The session and environment are available again. Recheck the former blocker now. If it no longer exists, report working with the same taskId and resume execution through validation and completion. You own this delivery: do not return executable install, test, review, or cleanup steps to the user. Reconcile any provider-native goal or plan that remained blocked with the Orkestrai Control Center and Kanban state.',
+        'The session and environment are available again. Recheck the former blocker now. If it no longer exists, report working with the same taskId and resume execution through validation and completion. You own this delivery: do not return executable install, test, review, or cleanup steps to the user. Reconcile any provider-native goal or plan that remained blocked with the Deep Space Control Center and Kanban state.',
         await taskBrief(task),
         `Only after the delivery is genuinely validated, finish it with: orkestrai task done ${input.taskId}`,
       ].join('\n');

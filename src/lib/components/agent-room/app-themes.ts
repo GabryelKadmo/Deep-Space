@@ -43,7 +43,7 @@ const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 export const BUILTIN_APP_THEMES: AppTheme[] = [
   {
     id: DEFAULT_APP_THEME_ID,
-    name: 'Orkestrai Dark',
+    name: 'Deep Space Dark',
     dark: true,
     builtin: true,
     tokens: {
@@ -79,7 +79,7 @@ export const BUILTIN_APP_THEMES: AppTheme[] = [
   },
   {
     id: 'orkestrai-light',
-    name: 'Orkestrai Light',
+    name: 'Deep Space Light',
     dark: false,
     builtin: true,
     tokens: {

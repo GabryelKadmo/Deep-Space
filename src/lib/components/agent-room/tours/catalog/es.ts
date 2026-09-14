@@ -59,7 +59,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'core',
         title: 'Mantén el Core disponible',
-        body: 'Activaré la ejecución en segundo plano. Cerrar la ventana mantendrá el Core y el trabajo activo en la bandeja; Salir de Orkestrai seguirá siendo la parada explícita. Iniciar con el sistema permanece opcional en Configuración.',
+        body: 'Activaré la ejecución en segundo plano. Cerrar la ventana mantendrá el Core y el trabajo activo en la bandeja; Salir de Deep Space seguirá siendo la parada explícita. Iniciar con el sistema permanece opcional en Configuración.',
         action: { kind: 'configureCore', runInBackground: true },
       },
       {
@@ -143,7 +143,7 @@ export const TOURS_ES: Tour[] = [
     tagline: 'Opera apps permitidas con evidencia y sin exponer credenciales.',
     steps: [
       {"id":"computer","title":"Pide al agente","body":"Usa un agente existente y dile: Abre Calculadora y calcula 73 por 19; verifica y registra el resultado. El agente crea nota, tarea asignada y nodo Computadora. No necesitas despachar la tarea manualmente."},
-      {"id":"permissions","title":"Concede acceso del sistema","body":"Concede Accesibilidad, Grabación de Pantalla y Automatización a Orkestrai en macOS cuando se solicite. Windows requiere escritorio interactivo; Linux requiere X11 y helpers nativos. El agente no puede aprobar permisos del sistema por ti."},
+      {"id":"permissions","title":"Concede acceso del sistema","body":"Concede Accesibilidad, Grabación de Pantalla y Automatización a Deep Space en macOS cuando se solicite. Windows requiere escritorio interactivo; Linux requiere X11 y helpers nativos. El agente no puede aprobar permisos del sistema por ti."},
       {"id":"scope","title":"Autoriza el límite","body":"Una concesión Limitada activa para computer y aplicaciones puede inicializar un nodo nuevo. Sin ella, autoriza el ID y activa el nodo. Los nodos pausados siguen pausados. Calculadora: com.apple.calculator en macOS, CalculatorApp en Windows."},
       {"id":"agent","title":"Observa al agente","body":"El agente abre o enfoca la app permitida, observa, actúa y captura de nuevo. Remote usa este mismo escritorio host y la sesión existente del navegador. Enviar correo requiere el riesgo declarado external_publication y su gate de Seguridad."},
       {"id":"audit","title":"Comprueba la entrega","body":"Confirma 1387 en la captura real de Calculadora, la nota y la tarea completada. El nodo actualiza la evidencia del agente. Auditoría registra operaciones de la puente; omite el texto escrito y las capturas nativas pueden mostrar contenido privado visible."},
@@ -218,7 +218,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'portal',
         title: 'El portal (navegador de los agentes)',
-        body: 'El portal es un navegador integrado que los agentes controlan. El nombre persistente aparece en el encabezado y puede cambiarse con el lápiz; la URL queda en la barra de navegación separada, así tú y los agentes eligen el Portal correcto por nombre. Creo uno apuntando a tu dev server — ajusta la URL después si no es localhost:5173. Los enlaces que solicitan una pestaña nueva se convierten en un segundo Portal dentro del mismo Canvas; los pop-ups reales de inicio de sesión permanecen en una ventana aislada de Orkestrai para conservar window.opener y el flujo de autenticación. Ambos restauran la sesión persistente después de reiniciar.',
+        body: 'El portal es un navegador integrado que los agentes controlan. El nombre persistente aparece en el encabezado y puede cambiarse con el lápiz; la URL queda en la barra de navegación separada, así tú y los agentes eligen el Portal correcto por nombre. Creo uno apuntando a tu dev server — ajusta la URL después si no es localhost:5173. Los enlaces que solicitan una pestaña nueva se convierten en un segundo Portal dentro del mismo Canvas; los pop-ups reales de inicio de sesión permanecen en una ventana aislada de Deep Space para conservar window.opener y el flujo de autenticación. Ambos restauran la sesión persistente después de reiniciar.',
         action: { kind: 'createPortal', url: 'http://localhost:5173', title: 'Portal App' },
         check: { kind: 'nodeExists', nodeType: 'portal' },
       },
@@ -546,7 +546,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'inspect-package',
         title: 'Comienza pequeño y sigue el progreso',
-        body: 'Orkestrai crea una spec vinculada, ocho tareas progresivas y tres documentos Diseño nativos. Cada diseñador entrega primero solo una pantalla desktop y una mobile. El estado del nodo identifica quién está esperando, trabajando, estancado durante cinco minutos o listo para revisión.',
+        body: 'Deep Space crea una spec vinculada, ocho tareas progresivas y tres documentos Diseño nativos. Cada diseñador entrega primero solo una pantalla desktop y una mobile. El estado del nodo identifica quién está esperando, trabajando, estancado durante cinco minutos o listo para revisión.',
         check: { kind: 'nodeExists', nodeType: 'design' },
       },
       {
@@ -613,12 +613,12 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'figma-bridge',
         title: 'Vincula el mismo trabajo con Figma',
-        body: 'Abre Inspeccionar → Figma. El MCP oficial ya está administrado para agentes compatibles. Guarda un token REST de solo lectura en la bóveda del sistema operativo, pega el enlace de una página o frame, inspecciona, elige qué entra al documento nativo y revisa cambios remotos, locales o en conflicto antes de sincronizar. Mantener la versión local agrega solo esa capa revisada a la cola de Figma. Instala el plugin propio desde su carpeta, pega la conexión loopback restringida al workspace copiada por Orkestrai y después transfiere una selección en vivo o envía únicamente las capas en cola.',
+        body: 'Abre Inspeccionar → Figma. El MCP oficial ya está administrado para agentes compatibles. Guarda un token REST de solo lectura en la bóveda del sistema operativo, pega el enlace de una página o frame, inspecciona, elige qué entra al documento nativo y revisa cambios remotos, locales o en conflicto antes de sincronizar. Mantener la versión local agrega solo esa capa revisada a la cola de Figma. Instala el plugin propio desde su carpeta, pega la conexión loopback restringida al workspace copiada por Deep Space y después transfiere una selección en vivo o envía únicamente las capas en cola.',
       },
       {
         id: 'designer',
         title: 'Agrega un diseñador al mismo documento',
-        body: 'Creo un agente Diseñador. Puede inspeccionar y editar el documento estructurado exacto con tools tipadas de Orkestrai, sin adivinar desde una captura.',
+        body: 'Creo un agente Diseñador. Puede inspeccionar y editar el documento estructurado exacto con tools tipadas de Deep Space, sin adivinar desde una captura.',
         action: { kind: 'createAgent', title: 'Diseñador', provider: 'claude' },
         check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Diseñador' },
       },
@@ -658,7 +658,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'generate',
         title: 'Revisa antes de escribir el código de implementación',
-        body: 'Selecciona un frame o grupo, elige Svelar/Svelte 5, React, Next.js, Vue 3 o HTML/Tailwind e indica la ruta del workspace. Primero revisa el archivo completo. Los mappings compatibles de Code Connect reutilizan componentes reales; la escritura se bloquea si el archivo cambia después de la vista previa y el resultado se abre directamente en Monaco. Los agentes usan el mismo flujo protegido por revisión mediante las tools MCP tipadas de Orkestrai o la CLI incluida.',
+        body: 'Selecciona un frame o grupo, elige Svelar/Svelte 5, React, Next.js, Vue 3 o HTML/Tailwind e indica la ruta del workspace. Primero revisa el archivo completo. Los mappings compatibles de Code Connect reutilizan componentes reales; la escritura se bloquea si el archivo cambia después de la vista previa y el resultado se abre directamente en Monaco. Los agentes usan el mismo flujo protegido por revisión mediante las tools MCP tipadas de Deep Space o la CLI incluida.',
       },
       {
         id: 'validate',
@@ -722,7 +722,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'portal',
         title: 'Registra la app en un Portal',
-        body: 'Creo un Portal local en el puerto 4173. Este vínculo persistido permite que Orkestrai gestione el puerto de forma segura.',
+        body: 'Creo un Portal local en el puerto 4173. Este vínculo persistido permite que Deep Space gestione el puerto de forma segura.',
         action: { kind: 'createPortal', url: 'http://localhost:4173', title: 'Portal Dev' },
         check: { kind: 'nodeExists', nodeType: 'portal', titleIncludes: 'Portal Dev' },
       },
@@ -772,7 +772,7 @@ export const TOURS_ES: Tour[] = [
     id: 'audio-devices',
     icon: 'Mic',
     title: 'Elegir y probar dispositivos de audio',
-    tagline: 'Usa el micrófono y el altavoz correctos en todo Orkestrai.',
+    tagline: 'Usa el micrófono y el altavoz correctos en todo Deep Space.',
     steps: [
       {
         id: 'open-settings',
@@ -787,12 +787,12 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'test-output',
         title: 'Prueba el altavoz',
-        body: 'Elige una salida y reproduce el tono corto. Toda vista previa y respuesta hablada pasa por ella. Si la plataforma no permite elegir una salida específica, Orkestrai explica que usará la predeterminada del sistema.',
+        body: 'Elige una salida y reproduce el tono corto. Toda vista previa y respuesta hablada pasa por ella. Si la plataforma no permite elegir una salida específica, Deep Space explica que usará la predeterminada del sistema.',
       },
       {
         id: 'recover',
         title: 'Recupérate sin adivinar',
-        body: 'El dictado captura PCM directo por la misma ruta Web Audio del medidor y normaliza localmente la voz baja. Si se desconecta el dispositivo elegido, Orkestrai vuelve al predeterminado del sistema. Los errores distinguen permiso, hardware ausente, interrupción, probable contención y un micrófono que se abre sin producir señal.',
+        body: 'El dictado captura PCM directo por la misma ruta Web Audio del medidor y normaliza localmente la voz baja. Si se desconecta el dispositivo elegido, Deep Space vuelve al predeterminado del sistema. Los errores distinguen permiso, hardware ausente, interrupción, probable contención y un micrófono que se abre sin producir señal.',
       },
     ],
   },
@@ -851,7 +851,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'preset-library',
         title: 'Abre la biblioteca de presets',
-        body: 'Usa el icono de plantilla en la barra lateral o Presets en la barra inferior. Filtra por Producto, Desarrollo, Diseño y creación, Marketing y contenido u Orkestrai.',
+        body: 'Usa el icono de plantilla en la barra lateral o Presets en la barra inferior. Filtra por Producto, Desarrollo, Diseño y creación, Marketing y contenido u Deep Space.',
       },
       {
         id: 'create-or-merge',
@@ -916,13 +916,13 @@ export const TOURS_ES: Tour[] = [
   {
     id: 'orkestrai-consensus-team',
     icon: 'LayoutTemplate',
-    title: 'Contribuir a Orkestrai con consenso',
+    title: 'Contribuir a Deep Space con consenso',
     tagline: 'Claude, Codex y Kimi acuerdan el plan antes de la ejecución.',
     steps: [
       {
         id: 'apply',
-        title: 'Aplica Orkestrai Contributing',
-        body: 'En la categoría Orkestrai de la Biblioteca, crea el equipo completo con líder, dos oráculos y especialistas Svelar, desktop y QA/release.',
+        title: 'Aplica Deep Space Contributing',
+        body: 'En la categoría Deep Space de la Biblioteca, crea el equipo completo con líder, dos oráculos y especialistas Svelar, desktop y QA/release.',
       },
       {
         id: 'consensus',
@@ -950,7 +950,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'follow-setup',
         title: 'Sigue la configuración de tu dispositivo',
-        body: 'Expande un agente para ver la guía oficial y, cuando esté disponible, un comando de instalación para macOS, Windows o Linux. Completa el inicio de sesión en la propia CLI del provider; Orkestrai nunca recibe la credencial.',
+        body: 'Expande un agente para ver la guía oficial y, cuando esté disponible, un comando de instalación para macOS, Windows o Linux. Completa el inicio de sesión en la propia CLI del provider; Deep Space nunca recibe la credencial.',
       },
       {
         id: 'verify',
@@ -978,12 +978,12 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'outcome',
         title: 'Nombra el trabajo, no la tecnología',
-        body: 'Crea “Investigación de audiencia”, “Dirección de arte”, “Copy de campaña” o “Revisión de producto”. Roles, notas y tareas indican al agente qué entregar aunque nunca uses una terminal fuera de Orkestrai.',
+        body: 'Crea “Investigación de audiencia”, “Dirección de arte”, “Copy de campaña” o “Revisión de producto”. Roles, notas y tareas indican al agente qué entregar aunque nunca uses una terminal fuera de Deep Space.',
       },
       {
         id: 'perspective',
         title: 'Combina solo cuando ayude',
-        body: 'Un provider basta para empezar. Agrega otro para revisar una decisión importante o aportar una perspectiva independiente; Orkestrai mantiene cada conversación separada y vinculada al workspace.',
+        body: 'Un provider basta para empezar. Agrega otro para revisar una decisión importante o aportar una perspectiva independiente; Deep Space mantiene cada conversación separada y vinculada al workspace.',
       },
     ],
   },
@@ -1029,7 +1029,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'continue',
         title: 'Trabaja mediante el puente',
-        body: 'Conecta Devin con el líder, tablero o notas. Orkestrai provisiona sus tools MCP y skill, mantiene respuestas limpias y reanuda la conversación exacta después de reiniciar.',
+        body: 'Conecta Devin con el líder, tablero o notas. Deep Space provisiona sus tools MCP y skill, mantiene respuestas limpias y reanuda la conversación exacta después de reiniciar.',
       },
     ],
   },
@@ -1049,7 +1049,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'understand-provider-capabilities',
         title: 'Lee solo capacidad verificada',
-        body: 'Claude, Codex y Kimi reportan porcentajes automáticos. Antigravity apunta a /usage o /quota; Cursor y Devin explican el requisito de API administrativa; OpenCode y Cline apuntan al provider de modelo elegido. Orkestrai nunca inventa una cuota.',
+        body: 'Claude, Codex y Kimi reportan porcentajes automáticos. Antigravity apunta a /usage o /quota; Cursor y Devin explican el requisito de API administrativa; OpenCode y Cline apuntan al provider de modelo elegido. Deep Space nunca inventa una cuota.',
       },
       {
         id: 'set-policy',
@@ -1072,7 +1072,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'choose-scope',
         title: 'Elige qué se moverá',
-        body: 'Selecciona los nodos que necesitan atención. Con una selección, Orkestrai mueve solo esos nodos; sin selección, organiza todo el canvas.',
+        body: 'Selecciona los nodos que necesitan atención. Con una selección, Deep Space mueve solo esos nodos; sin selección, organiza todo el canvas.',
       },
       {
         id: 'run-layout',
@@ -1336,7 +1336,7 @@ export const TOURS_ES: Tour[] = [
       { id: 'open-team-packs', title: 'Abre Team Packs', body: 'Abre la biblioteca de presets desde Canvas. Los presets integrados y existentes siguen funcionando y los snapshots personalizados tienen historial.', action: { kind: 'openPage', path: '/canvas?workspace={workspace}' } },
       { id: 'capture-team-pack', title: 'Captura el equipo funcional', body: 'Guarda el workspace como pack personalizado. Agentes, roles, skills, etapas, tareas plantilla, rutinas, MCPs, conexiones y layout entran; el runtime vivo se elimina.' },
       { id: 'publish-team-pack', title: 'Publica una revisión inmutable', body: 'Abre el historial, introduce una versión semántica mayor y notas, y publica. La revisión anterior con checksum no cambia.' },
-      { id: 'share-team-pack', title: 'Exporta o importa con seguridad', body: 'Exporta el JSON protegido o importa uno de otra instalación. Orkestrai valida formato, tamaño, límites y SHA-256 antes de crear un pack local.' },
+      { id: 'share-team-pack', title: 'Exporta o importa con seguridad', body: 'Exporta el JSON protegido o importa uno de otra instalación. Deep Space valida formato, tamaño, límites y SHA-256 antes de crear un pack local.' },
     ],
   },
   {
@@ -1476,7 +1476,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'delegate-mobile-check',
         title: 'Delega con evidencias',
-        body: 'Pide a un agente que use orkestrai device o las tools MCP equivalentes. Sus toques, swipes, capturas, logs e inspección de accesibilidad usan la sesión de este workspace. Detén la sesión al terminar; Orkestrai también limpia los helpers inactivos iniciados por él.',
+        body: 'Pide a un agente que use orkestrai device o las tools MCP equivalentes. Sus toques, swipes, capturas, logs e inspección de accesibilidad usan la sesión de este workspace. Detén la sesión al terminar; Deep Space también limpia los helpers inactivos iniciados por él.',
       },
     ],
   },
@@ -1529,7 +1529,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'create-invite',
         title: 'Elige el destino y el acceso',
-        body: 'Selecciona Lector, Colaborador, Operador o Administrador y después Navegador/móvil para la PWA Remote o App Orkestrai para otro escritorio instalado. El invitado puede pulsar la invitación de la app para abrir Orkestrai automáticamente o usar Workspace → Entrar a workspace remoto para pegarla manualmente. Envía solo el enlace o código QR correspondiente por un canal confiable.',
+        body: 'Selecciona Lector, Colaborador, Operador o Administrador y después Navegador/móvil para la PWA Remote o App Deep Space para otro escritorio instalado. El invitado puede pulsar la invitación de la app para abrir Deep Space automáticamente o usar Workspace → Entrar a workspace remoto para pegarla manualmente. Envía solo el enlace o código QR correspondiente por un canal confiable.',
       },
       {
         id: 'approve-device',
@@ -1554,7 +1554,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'stop-sharing',
         title: 'Detén la sesión',
-        body: 'Detén el uso compartido cuando termine la colaboración. Orkestrai cierra la sesión del relay, revoca el acceso activo y exige una nueva invitación para volver a conectar otro dispositivo.',
+        body: 'Detén el uso compartido cuando termine la colaboración. Deep Space cierra la sesión del relay, revoca el acceso activo y exige una nueva invitación para volver a conectar otro dispositivo.',
       },
     ],
   },
@@ -1567,7 +1567,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'choose-theme',
         title: 'Elige claro u oscuro',
-        body: 'En Configuración → Apariencia, compara Orkestrai Dark, Graphite, Midnight y Orkestrai Light. La opción clara mantiene contraste accesible en nodos, paneles, iconos, marcas de providers y hovers.',
+        body: 'En Configuración → Apariencia, compara Deep Space Dark, Graphite, Midnight y Deep Space Light. La opción clara mantiene contraste accesible en nodos, paneles, iconos, marcas de providers y hovers.',
       },
       {
         id: 'edit-tokens',
@@ -1665,11 +1665,11 @@ export const TOURS_ES: Tour[] = [
         action: { kind: 'createApiClient', title: 'API del proyecto' },
         check: { kind: 'nodeExists', nodeType: 'apiClient', titleIncludes: 'API del proyecto' },
       },
-      { id: 'import-collection', title: 'Vincula la colección del proyecto', body: 'Importa Bruno, OpenCollection YAML, Postman v2.1, Swagger 2.0, OpenAPI 3.x o una copia completa de Orkestrai. Las colecciones existentes del repositorio siguen vinculadas en modo de seguimiento, de modo que Canvas/Workbench y los archivos del proyecto sean una sola fuente de verdad.' },
+      { id: 'import-collection', title: 'Vincula la colección del proyecto', body: 'Importa Bruno, OpenCollection YAML, Postman v2.1, Swagger 2.0, OpenAPI 3.x o una copia completa de Deep Space. Las colecciones existentes del repositorio siguen vinculadas en modo de seguimiento, de modo que Canvas/Workbench y los archivos del proyecto sean una sola fuente de verdad.' },
       { id: 'multi-repository', title: 'Autoriza repositorios hermanos', body: 'Cuando este workspace coordina repositorios junto a su directorio de trabajo, abre Editar workspace > Repositorios adicionales. Elige cada repositorio una vez y asigna un alias como api-tests; los agentes usan @api-tests/bruno sin obtener acceso a carpetas principales arbitrarias.' },
       { id: 'prepare-request', title: 'Prepara protocolo y credenciales', body: 'Elige HTTP, GraphQL, WebSocket o gRPC. Configura entornos, encabezados, clave API/Bearer/Basic u obtén un token OAuth 2.0 mediante el flujo asistido en el navegador con PKCE. La pestaña Red guarda cookies, proxy, CA, certificado del cliente y verificación TLS.' },
       { id: 'automate-and-test', title: 'Automatiza y prueba con autocompletado', body: 'Elige Postman, Bruno o Nativo. Los editores sugieren pm.*, bru.*, req/res y test/expect. Usa Scripts para Pre/Post-response y alterna Assertions/JavaScript en Pruebas; el runtime de origen ejecuta ámbitos, callbacks, Chai, cookies, flujo, visualizaciones y datos de iteración.' },
-      { id: 'agent-authoring', title: 'Delega pruebas versionadas en el proyecto', body: 'Conecta el Cliente de API a un agente o líder. Puede importar una colección Bruno/Postman por ruta relativa, editar carpetas, solicitudes, scripts, pruebas y variables nativas del formato, ejecutar la suite y persistir cambios vinculados en los archivos originales sin exponer secretos locales. La configuración de runners exclusiva de Orkestrai permanece en el nodo y en la copia nativa.' },
+      { id: 'agent-authoring', title: 'Delega pruebas versionadas en el proyecto', body: 'Conecta el Cliente de API a un agente o líder. Puede importar una colección Bruno/Postman por ruta relativa, editar carpetas, solicitudes, scripts, pruebas y variables nativas del formato, ejecutar la suite y persistir cambios vinculados en los archivos originales sin exponer secretos locales. La configuración de runners exclusiva de Deep Space permanece en el nodo y en la copia nativa.' },
       { id: 'send-request', title: 'Revisa y comparte el resultado', body: 'Expande o contrae respuestas JSON/XML estructuradas y revisa transcripciones WebSocket/gRPC, encabezados, pruebas, consola, tiempo, tamaño e historial. Exporta Bruno, OpenCollection, Postman, OpenAPI 3.1, un entorno o la colección nativa.' },
     ],
   },
@@ -1875,7 +1875,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'overlay-runtime-evidence',
         title: 'Superpone lo que realmente se ejecutó',
-        body: 'Abre Análisis → Ejecución, selecciona un repositorio e importa una ruta LCOV, JUnit XML, traceback o JSON de ejecución de Orkestrai que esté dentro del repositorio. Las aristas verdes muestran cobertura, las rojas fallos, las cian llamadas observadas y las ámbar llamadas vistas solo en ejecución. No se almacenan logs ni salida cruda de tests. Los agentes usan code_graph_evidence y code_graph_evidence_import.',
+        body: 'Abre Análisis → Ejecución, selecciona un repositorio e importa una ruta LCOV, JUnit XML, traceback o JSON de ejecución de Deep Space que esté dentro del repositorio. Las aristas verdes muestran cobertura, las rojas fallos, las cian llamadas observadas y las ámbar llamadas vistas solo en ejecución. No se almacenan logs ni salida cruda de tests. Los agentes usan code_graph_evidence y code_graph_evidence_import.',
       },
       {
         id: 'inspect-change-impact',

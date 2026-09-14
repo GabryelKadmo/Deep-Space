@@ -259,9 +259,9 @@ function runtimeProxy(network: NonNullable<ApiClientNodePayload['network']>) {
 
 function runtimeCertificates(network: NonNullable<ApiClientNodePayload['network']>) {
   const certificate = network.clientPfxPath
-    ? { name: 'Orkestrai client certificate', matches: ['https://*:*/*'], pfx: { src: network.clientPfxPath }, passphrase: network.clientKeyPassphrase }
+    ? { name: 'Deep Space client certificate', matches: ['https://*:*/*'], pfx: { src: network.clientPfxPath }, passphrase: network.clientKeyPassphrase }
     : network.clientCertificatePath && network.clientKeyPath
-      ? { name: 'Orkestrai client certificate', matches: ['https://*:*/*'], cert: { src: network.clientCertificatePath }, key: { src: network.clientKeyPath }, passphrase: network.clientKeyPassphrase }
+      ? { name: 'Deep Space client certificate', matches: ['https://*:*/*'], cert: { src: network.clientCertificatePath }, key: { src: network.clientKeyPath }, passphrase: network.clientKeyPassphrase }
       : null;
   return certificate ? new postman.CertificateList(null, [certificate]) : undefined;
 }

@@ -952,7 +952,7 @@ export class BridgeController extends Controller {
         workspace.id,
         String(event.request.headers.get('x-orkestrai-agent-token') ?? ''),
       );
-      if (!authenticatedActor) throw new Error('Computer inspection requires an active Orkestrai terminal identity.');
+      if (!authenticatedActor) throw new Error('Computer inspection requires an active Deep Space terminal identity.');
       const [computer, secretRefs] = await Promise.all([computerService.snapshotForAgent(workspace.id), secretRefService.list(workspace.id)]);
       return this.json({ data: {
         ...computer,

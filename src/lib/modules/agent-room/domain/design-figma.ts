@@ -114,7 +114,7 @@ export function parseFigmaUrl(value: string): ParsedFigmaUrl {
   const node = url.searchParams.get('node-id');
   const nodeId = node ? normalizeFigmaNodeId(node) : null;
   if (nodeId && !/^\d+(?::\d+)+$/.test(nodeId)) throw new Error('Figma node id is invalid.');
-  const canonicalUrl = `https://www.figma.com/design/${parts[1]}/${encodeURIComponent(parts[2] || 'Orkestrai')}${nodeId ? `?node-id=${encodeURIComponent(nodeId.replace(/:/g, '-'))}` : ''}`;
+  const canonicalUrl = `https://www.figma.com/design/${parts[1]}/${encodeURIComponent(parts[2] || 'Deep Space')}${nodeId ? `?node-id=${encodeURIComponent(nodeId.replace(/:/g, '-'))}` : ''}`;
   return { fileKey: parts[1], nodeId, canonicalUrl };
 }
 

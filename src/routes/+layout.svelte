@@ -100,9 +100,9 @@
 
 <!-- Site-wide SEO defaults — override per page with another <Seo> -->
 <Seo
-  title="Orkestrai Agent Room"
+  title="Deep Space Agent Room"
   description={m['app.seo_description']()}
-  ogSiteName="Orkestrai Agent Room"
+  ogSiteName="Deep Space Agent Room"
   ogType="website"
 />
 

@@ -21,7 +21,7 @@ const directories: string[] = [];
 function initializeGit(directory: string): void {
   execFileSync('git', ['init', '-b', 'main'], { cwd: directory });
   execFileSync('git', ['config', 'user.email', 'tests@orkestrai.local'], { cwd: directory });
-  execFileSync('git', ['config', 'user.name', 'Orkestrai Tests'], { cwd: directory });
+  execFileSync('git', ['config', 'user.name', 'Deep Space Tests'], { cwd: directory });
   execFileSync('git', ['add', '.'], { cwd: directory });
   execFileSync('git', ['commit', '-m', 'initial'], { cwd: directory });
 }

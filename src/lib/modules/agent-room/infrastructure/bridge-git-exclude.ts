@@ -17,7 +17,7 @@ const LEGACY_USER_OWNED_ENTRIES = [
 ] as const;
 
 /**
- * Removes only the exact contiguous block written by old Orkestrai releases.
+ * Removes only the exact contiguous block written by old Deep Space releases.
  * Independently maintained user excludes with the same names stay untouched.
  */
 export function updateOrkestraiGitExclude(current: string): string {

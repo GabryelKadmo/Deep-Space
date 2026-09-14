@@ -167,7 +167,7 @@ test.describe('canvas de workspaces', () => {
       await page.keyboard.press('Escape');
       await client.getByRole('button', { name: 'Importar coleção' }).click();
       await page.getByRole('menuitem', { name: 'Importar coleção' }).hover();
-      await expect(page.getByRole('menuitem', { name: 'Importar coleção do Orkestrai' })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: 'Importar coleção do Deep Space' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: 'Importar OpenAPI / Swagger' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: 'Importar OpenCollection YAML' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: 'Importar ambiente do Postman' })).toBeVisible();
@@ -176,7 +176,7 @@ test.describe('canvas de workspaces', () => {
       await expect(page.getByRole('menuitem', { name: 'Exportar coleção Bruno' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: 'Exportar OpenAPI 3.1 YAML' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: 'Exportar OpenCollection YAML' })).toBeVisible();
-      await expect(page.getByRole('menuitem', { name: 'Exportar coleção Orkestrai' })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: 'Exportar coleção Deep Space' })).toBeVisible();
       expect(pageErrors).toEqual([]);
     } finally {
       await request.delete(`/api/agent-room/workspaces/${workspace.id}`);

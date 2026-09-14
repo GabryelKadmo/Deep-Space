@@ -255,7 +255,7 @@ export class CouncilService {
       : null;
     const mode = String(council.getAttribute('mode'));
     return [
-      'You are contributing one independent perspective to an Orkestrai Council.',
+      'You are contributing one independent perspective to an Deep Space Council.',
       `Council: ${council.getAttribute('title')}`,
       `Objective: ${council.getAttribute('objective')}`,
       task ? `Task context:\nTitle: ${task.title}\nDescription: ${task.description || '(none)'}\nAttachments: ${task.attachments.map((item) => item.path ?? item.url ?? item.name).join(', ') || '(none)'}` : '',
@@ -308,7 +308,7 @@ export class CouncilService {
       model: payload.model ? String(payload.model) : null,
       effort: (payload.effort as ModelEffort | undefined) ?? null,
       prompt: [
-        'You are the leader synthesizing an Orkestrai Council. Do not modify files.',
+        'You are the leader synthesizing an Deep Space Council. Do not modify files.',
         `Objective: ${council.getAttribute('objective')}`,
         `Decision criterion: ${criterionText(council)}`,
         `Perspectives: ${JSON.stringify(items)}`,

@@ -83,7 +83,7 @@ describe('WSL workspace runtime', () => {
         ORKESTRAI_API_URL: 'http://127.0.0.1:4321',
         ORKESTRAI_AGENT_TOKEN: 'terminal-token',
         ORKESTRAI_WORKSPACE_CONFIG: '/home/raoni/app/.orkestrai/workspace.json',
-        ORKESTRAI_CLI_JS: 'C:\\Orkestrai\\orkestrai.js',
+        ORKESTRAI_CLI_JS: 'C:\\Deep Space\\orkestrai.js',
         CODEX_HOME: '/home/raoni/.codex-work',
       },
       forwardEnvToWsl: ['CODEX_HOME'],

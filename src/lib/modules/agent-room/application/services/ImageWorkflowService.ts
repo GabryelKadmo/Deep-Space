@@ -125,7 +125,7 @@ function deliveryContract(target: { width: number; height: number } | null, pres
     safeAreaContract(preset),
     'Fill the complete frame. Do not add letterboxing, pillarboxing, borders, a mock device, or a canvas shown inside another canvas.',
     'Do not crop, stretch, squeeze, or distort the composition to imitate the requested frame.',
-    `The native tool may return a nearby pixel grid. Orkestrai accepts exact-size resampling only when its aspect ratio already matches this frame within ${(MAX_DELIVERY_ASPECT_DEVIATION * 100).toFixed(1)}%; otherwise native ImageGen must safely recompose it before delivery.`,
+    `The native tool may return a nearby pixel grid. Deep Space accepts exact-size resampling only when its aspect ratio already matches this frame within ${(MAX_DELIVERY_ASPECT_DEVIATION * 100).toFixed(1)}%; otherwise native ImageGen must safely recompose it before delivery.`,
   ].join(' ');
 }
 
@@ -587,7 +587,7 @@ export class ImageWorkflowService {
   async dispatch(dto: RunImageWorkflowDto) {
     const execution = await this.begin(dto);
     const message = [
-      '[Orkestrai Image Workflow]',
+      '[Deep Space Image Workflow]',
       `You are the Codex executor for workflow ${execution.workflowNodeId}, run ${execution.runId}.`,
       'Call image_workflow_read for this node to obtain the exact prompt, reference paths, and preallocated output paths.',
       'Use the built-in image_gen.imagegen tool only. Do not ask for an API key, do not call the OpenAI Images API directly, and do not use scripts/image_gen.py.',

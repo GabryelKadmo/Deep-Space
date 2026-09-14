@@ -11,7 +11,7 @@ function writePdf(path: string): Promise<void> {
     stream.on('finish', resolve);
     stream.on('error', reject);
     document.pipe(stream);
-    document.fontSize(22).text('Orkestrai Workbench');
+    document.fontSize(22).text('Deep Space Workbench');
     document.moveDown().fontSize(12).text('PDF preview validation');
     document.end();
   });

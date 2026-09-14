@@ -10,7 +10,7 @@ test.describe('Review Center', () => {
     const dir = mkdtempSync(join(tmpdir(), 'orkestrai-review-center-'));
     execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
     execFileSync('git', ['config', 'user.email', 'e2e@orkestrai.local'], { cwd: dir });
-    execFileSync('git', ['config', 'user.name', 'Orkestrai E2E'], { cwd: dir });
+    execFileSync('git', ['config', 'user.name', 'Deep Space E2E'], { cwd: dir });
     writeFileSync(join(dir, 'feature.ts'), 'export const phase = 4;\n');
     execFileSync('git', ['add', '.'], { cwd: dir });
     execFileSync('git', ['commit', '-m', 'initial'], { cwd: dir });

@@ -30,7 +30,7 @@ function sectionRange(source: string, name: string): SectionRange | null {
 
 /**
  * Repairs only the orphaned array tail and duplicate inline env emitted by
- * Orkestrai <= 0.20.0. Unrelated malformed TOML is rejected and never changed.
+ * Deep Space <= 0.20.0. Unrelated malformed TOML is rejected and never changed.
  */
 export function repairLegacyCodexMcpConfig(current: string): { content: string; repaired: boolean } {
   try {
@@ -98,7 +98,7 @@ export function codexMcpOverrideArgs(launch: CodexMcpLaunch): string[] {
 /**
  * Codex asks for project trust before its composer becomes available. An
  * automatic task sent to that screen would select an option instead of
- * reaching the agent. Orkestrai only suppresses that bootstrap prompt when
+ * reaching the agent. Deep Space only suppresses that bootstrap prompt when
  * the same launch already opted into Codex's full-access mode, and the trust
  * applies to this process and exact working directory only.
  */

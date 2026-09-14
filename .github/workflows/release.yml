@@ -177,15 +177,15 @@ jobs:
             xcrun stapler validate "$app"
           }
 
-          test -f release/mac-arm64/Orkestrai.app/Contents/Resources/app/node_modules/electron-updater/package.json
-          verify_trusted_app release/mac-arm64/Orkestrai.app
-          hdiutil verify release/Orkestrai-${{ needs.validate.outputs.version }}-arm64.dmg
-          unzip -tq release/Orkestrai-${{ needs.validate.outputs.version }}-arm64-mac.zip
+          test -f "release/mac-arm64/Deep Space.app/Contents/Resources/app/node_modules/electron-updater/package.json"
+          verify_trusted_app "release/mac-arm64/Deep Space.app"
+          hdiutil verify "release/DeepSpace-${{ needs.validate.outputs.version }}-arm64.dmg"
+          unzip -tq "release/DeepSpace-${{ needs.validate.outputs.version }}-arm64-mac.zip"
           if [[ "$BUILD_ONLY" != "true" ]]; then
-            test -f release/mac/Orkestrai.app/Contents/Resources/app/node_modules/electron-updater/package.json
-            verify_trusted_app release/mac/Orkestrai.app
-            hdiutil verify release/Orkestrai-${{ needs.validate.outputs.version }}.dmg
-            unzip -tq release/Orkestrai-${{ needs.validate.outputs.version }}-mac.zip
+            test -f "release/mac/Deep Space.app/Contents/Resources/app/node_modules/electron-updater/package.json"
+            verify_trusted_app "release/mac/Deep Space.app"
+            hdiutil verify "release/DeepSpace-${{ needs.validate.outputs.version }}-x64.dmg"
+            unzip -tq "release/DeepSpace-${{ needs.validate.outputs.version }}-x64-mac.zip"
           fi
 
       - name: Upload macOS artifacts
@@ -311,7 +311,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rpm -qlp "release/Orkestrai-${{ needs.validate.outputs.version }}.x86_64.rpm" > "$RUNNER_TEMP/orkestrai-rpm-files.txt"
+          rpm -qlp "release/DeepSpace-${{ needs.validate.outputs.version }}.x86_64.rpm" > "$RUNNER_TEMP/orkestrai-rpm-files.txt"
           if grep -Eq '^/usr/lib/\.build-id(/|$)' "$RUNNER_TEMP/orkestrai-rpm-files.txt"; then
             echo '::error::RPM contains shared build-id paths that can conflict with other Electron applications.'
             exit 1
@@ -374,7 +374,7 @@ jobs:
         run: |
           set -euo pipefail
           LOCAL_COUNT="$(find release -maxdepth 1 -type f | wc -l | tr -d ' ')"
-          MAIN_REPOSITORY="beeblock/orkestrai"
+          MAIN_REPOSITORY="GabryelKadmo/Deep-Space"
           LEGACY_REPOSITORY="beeblock/orkestrai-releases"
           LEGACY_TRANSITION_VERSION="0.1.4"
 
@@ -396,13 +396,13 @@ jobs:
                 fi
                 return
               fi
-              gh release edit "$TAG" --repo "$repository" --title "Orkestrai $VERSION" --notes-file "$NOTES_FILE"
+              gh release edit "$TAG" --repo "$repository" --title "Deep Space $VERSION" --notes-file "$NOTES_FILE"
             elif [[ "$target_mode" == "existing-tag" ]]; then
               gh release create "$TAG" --repo "$repository" --verify-tag --draft \
-                --title "Orkestrai $VERSION" --notes-file "$NOTES_FILE"
+                --title "Deep Space $VERSION" --notes-file "$NOTES_FILE"
             else
               gh release create "$TAG" --repo "$repository" --target main --draft \
-                --title "Orkestrai $VERSION" --notes-file "$NOTES_FILE"
+                --title "Deep Space $VERSION" --notes-file "$NOTES_FILE"
             fi
 
             gh release upload "$TAG" release/* --repo "$repository" --clobber

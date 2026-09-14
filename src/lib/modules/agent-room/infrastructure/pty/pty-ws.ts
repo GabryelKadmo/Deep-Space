@@ -278,7 +278,7 @@ export function handlePtyConnection(socket: WebSocket): void {
           // conclusões e pedidos de atenção, o agente usa `orkestrai notify`.
           const label = typeof message.label === 'string' && message.label.trim() ? message.label.trim() : null;
           if (label) {
-            const workspaceName = typeof message.workspace === 'string' && message.workspace.trim() ? message.workspace.trim() : 'Orkestrai';
+            const workspaceName = typeof message.workspace === 'string' && message.workspace.trim() ? message.workspace.trim() : 'Deep Space';
             ptySessionManager.attach(
               session.id,
               () => {},

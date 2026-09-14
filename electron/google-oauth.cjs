@@ -24,7 +24,7 @@ function safeEqual(left, right) {
 
 function html(message, ok) {
   const color = ok ? '#16a34a' : '#dc2626';
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><title>Orkestrai</title></head><body style="margin:0;background:#111318;color:#f7f7f8;font:15px system-ui;display:grid;min-height:100vh;place-items:center"><main style="max-width:420px;padding:32px"><div style="width:12px;height:12px;border-radius:50%;background:${color};margin-bottom:18px"></div><h1 style="font-size:20px;margin:0 0 10px">${ok ? 'Account connected' : 'Connection failed'}</h1><p style="color:#a9abb3;line-height:1.5;margin:0">${message}</p></main></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><title>Deep Space</title></head><body style="margin:0;background:#111318;color:#f7f7f8;font:15px system-ui;display:grid;min-height:100vh;place-items:center"><main style="max-width:420px;padding:32px"><div style="width:12px;height:12px;border-radius:50%;background:${color};margin-bottom:18px"></div><h1 style="font-size:20px;margin:0 0 10px">${ok ? 'Account connected' : 'Connection failed'}</h1><p style="color:#a9abb3;line-height:1.5;margin:0">${message}</p></main></body></html>`;
 }
 
 function listen(server) {
@@ -81,7 +81,7 @@ async function performGoogleDesktopOauth(options) {
       const returnedState = url.searchParams.get('state') ?? '';
       if (!safeEqual(returnedState, state)) {
         response.writeHead(400, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
-        response.end(html('The authorization state was invalid. Return to Orkestrai and try again.', false));
+        response.end(html('The authorization state was invalid. Return to Deep Space and try again.', false));
         settle.reject(new Error('Google OAuth state validation failed.'));
         return;
       }
@@ -94,7 +94,7 @@ async function performGoogleDesktopOauth(options) {
         return;
       }
       response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
-      response.end(html('Return to Orkestrai. This tab can be closed.', true));
+      response.end(html('Return to Deep Space. This tab can be closed.', true));
       settle.resolve(code);
     } catch {
       response.writeHead(400, { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' });

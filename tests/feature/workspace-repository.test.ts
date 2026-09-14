@@ -8,11 +8,11 @@ describe('WorkspaceRepository', () => {
 
   it('cria, atualiza, lista e apaga workspaces com cascata de nos e arestas', async () => {
     const workspace = await workspaceRepository.createWorkspace({
-      name: 'Orkestrai',
+      name: 'Deep Space',
       workingDir: '/tmp/orkestrai',
       icon: '🏛️',
     });
-    expect(workspace.name).toBe('Orkestrai');
+    expect(workspace.name).toBe('Deep Space');
     expect(workspace.syncAgentInstructionFiles).toBe(false);
     expect(workspace.runtimeKind).toBe('native');
     expect(workspace.wslDistribution).toBeNull();

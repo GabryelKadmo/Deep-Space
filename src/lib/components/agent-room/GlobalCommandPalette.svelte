@@ -96,7 +96,7 @@
       id: `command:${id}`,
       kind: 'command',
       title,
-      subtitle: 'Orkestrai',
+      subtitle: 'Deep Space',
       preview: null,
       workspaceId,
       workspaceName: '',

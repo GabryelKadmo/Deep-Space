@@ -8,7 +8,7 @@
   import { canvasEdgeRuntime, retainCanvasEdgeRuntime } from './edge-performance-runtime.svelte.js';
 
   /**
-   * Aresta do Orkestrai: corda com fisica verlet (segmentos com gravidade e
+   * Aresta do Deep Space: corda com fisica verlet (segmentos com gravidade e
    * restricao de comprimento). As duas pontas convergem para a bolinha do
    * handle flutuante de cada no (floatingAnchorFor) — com varias conexoes no
    * mesmo no, todas as cordas saem do mesmo ponto, como no Maestri.

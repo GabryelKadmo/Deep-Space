@@ -107,7 +107,7 @@ describe('ManagedPortService', () => {
     expect(killProcess).toHaveBeenCalledWith(120, 'SIGTERM');
   });
 
-  it('refuses a stale PID snapshot and protects the Orkestrai process', async () => {
+  it('refuses a stale PID snapshot and protects the Deep Space process', async () => {
     const changingCommand = vi
       .fn()
       .mockResolvedValueOnce('p120\ncnode\nn*:4173\n')
@@ -124,6 +124,6 @@ describe('ManagedPortService', () => {
       currentPid: 900,
       parentPid: 899,
     });
-    await expect(protectedService.kill(workspace.id, 4173, [900])).rejects.toThrow('servidor do Orkestrai');
+    await expect(protectedService.kill(workspace.id, 4173, [900])).rejects.toThrow('servidor do Deep Space');
   });
 });

@@ -1,12 +1,12 @@
 # Third-Party Notices
 
-Orkestrai uses third-party software, models, services, names, and trademarks.
+Deep Space uses third-party software, models, services, names, and trademarks.
 Their licenses apply to those components independently from the license selected
-for Orkestrai's own source code.
+for Deep Space's own source code.
 
 ## Embedded Voice
 
-Orkestrai downloads voice models only after user confirmation and executes them
+Deep Space downloads voice models only after user confirmation and executes them
 locally through sherpa-onnx.
 
 ### NVIDIA Parakeet-TDT 0.6B v3
@@ -17,8 +17,8 @@ locally through sherpa-onnx.
 - Model card: <https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3>
 - ONNX archive provider: <https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models>
 
-The model archive used by Orkestrai is an ONNX/int8 conversion distributed by
-the sherpa-onnx project. NVIDIA does not endorse Orkestrai.
+The model archive used by Deep Space is an ONNX/int8 conversion distributed by
+the sherpa-onnx project. NVIDIA does not endorse Deep Space.
 
 ### Supertonic 3
 
@@ -30,8 +30,8 @@ the sherpa-onnx project. NVIDIA does not endorse Orkestrai.
 - ONNX archive provider: <https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models>
 
 The Supertonic sample code is MIT-licensed, while the model weights downloaded
-by Orkestrai are governed by the separate OpenRAIL-M model license. Supertone
-does not endorse Orkestrai.
+by Deep Space are governed by the separate OpenRAIL-M model license. Supertone
+does not endorse Deep Space.
 
 ### sherpa-onnx
 
@@ -45,7 +45,7 @@ under their accompanying notices and license files.
 
 ## Node.js Runtime
 
-Orkestrai downloads a standalone Node.js runtime for the isolated voice worker
+Deep Space downloads a standalone Node.js runtime for the isolated voice worker
 when a suitable system runtime is unavailable.
 
 - Copyright: Node.js contributors
@@ -66,7 +66,7 @@ under the SIL Open Font License 1.1:
 
 The complete OFL-1.1 text accompanies each `@fontsource-variable` package in
 the installed dependency graph. The fonts are not sold by themselves and their
-project names do not imply endorsement of Orkestrai.
+project names do not imply endorsement of Deep Space.
 
 ## Workbench Search And Virtualization
 
@@ -96,8 +96,8 @@ offline.
 - `svg-pathdata`: Copyright Mikael Engel and contributors, MIT License.
   Source: <https://github.com/nfroidure/svg-pathdata>
 
-This package converts SVG path commands into Orkestrai's editable native vector
-geometry. Orkestrai does not bundle or execute code from imported SVG files.
+This package converts SVG path commands into Deep Space's editable native vector
+geometry. Deep Space does not bundle or execute code from imported SVG files.
 
 ## API Client Script Runtimes
 
@@ -112,7 +112,7 @@ geometry. Orkestrai does not bundle or execute code from imported SVG files.
   License. Source: <https://github.com/usebruno/bruno>
 
 These packages execute imported collection scripts through their native API
-contracts. Postman and Bruno do not sponsor or endorse Orkestrai. Postman cloud
+contracts. Postman and Bruno do not sponsor or endorse Deep Space. Postman cloud
 services and the Bruno desktop application are not bundled.
 
 ## Apple Simulator Integration
@@ -120,9 +120,9 @@ services and the Bruno desktop application are not bundled.
 - `serve-sim`: Copyright Evan Bacon and contributors, Apache License 2.0.
   Source: <https://github.com/EvanBacon/serve-sim>
 
-Orkestrai uses `serve-sim` as a loopback-only streaming and control helper for
+Deep Space uses `serve-sim` as a loopback-only streaming and control helper for
 Apple Simulators. Xcode and Apple Simulator runtimes are supplied separately by
-Apple and are not distributed with Orkestrai.
+Apple and are not distributed with Deep Space.
 
 ## Android Device Integration
 
@@ -134,11 +134,11 @@ Apple and are not distributed with Orkestrai.
 - scrcpy server 3.1: Copyright Genymobile and contributors, Apache License 2.0.
   Source: <https://github.com/Genymobile/scrcpy/releases/tag/v3.1>
 
-Orkestrai bundles only the scrcpy Android server component and sends it to the
+Deep Space bundles only the scrcpy Android server component and sends it to the
 selected device over the user's local ADB server. Android Studio, Android SDK
 Platform Tools, Emulator images, and physical-device drivers are supplied
 separately by Google, device vendors, or the user and are not distributed with
-Orkestrai.
+Deep Space.
 
 ## Agent Providers And Trademarks
 

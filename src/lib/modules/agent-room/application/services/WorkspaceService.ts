@@ -699,7 +699,7 @@ export class WorkspaceService {
       edges?: Array<{ sourceIndex: number; targetIndex: number; style?: 'cord' | 'circuit' }>;
     };
     if (parsed.format !== 'orkestrai-workspace' || !parsed.workspace) {
-      throw new Error('Arquivo nao e um workspace do Orkestrai (format: orkestrai-workspace).');
+      throw new Error('Arquivo nao e um workspace do Deep Space (format: orkestrai-workspace).');
     }
     const info = parsed.workspace;
     const workingDir = workingDirOverride ?? info.workingDir;

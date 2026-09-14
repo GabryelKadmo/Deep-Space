@@ -1,7 +1,7 @@
-# Releases e auto-update do Orkestrai
+# Releases e auto-update do Deep Space
 
 O código-fonte, o workflow, os instaladores, os blockmaps e os manifests de
-atualização ficam em `beeblock/orkestrai`. O repositório público legado
+atualização ficam em `GabryelKadmo/Deep-Space`. O repositório público legado
 `beeblock/orkestrai-releases` é preservado somente como ponte para instalações
 que ainda consultam o feed antigo.
 
@@ -13,7 +13,7 @@ de falhas e auditoria do feed público.
 ## Credenciais
 
 O workflow usa o `GITHUB_TOKEN` automático do próprio repositório, com
-`contents: write`, para criar releases em `beeblock/orkestrai`. Nenhum PAT é
+`contents: write`, para criar releases em `GabryelKadmo/Deep-Space`. Nenhum PAT é
 necessário para as versões normais.
 
 A versão `0.1.4` é a release única de transição. Ela precisa ser publicada com
@@ -25,7 +25,7 @@ mantenha também um fine-grained personal access token com:
 - permissão **Contents: Read and write**;
 - sem permissões adicionais.
 
-Cadastre o token em `beeblock/orkestrai` como secret de Actions chamado
+Cadastre o token em `GabryelKadmo/Deep-Space` como secret de Actions chamado
 `RELEASES_TOKEN`. Não remova o repositório legado nem a release `0.1.4`: uma
 instalação antiga pode permanecer offline por meses antes de fazer a migração.
 
@@ -102,7 +102,7 @@ autoridade Developer ID, Team ID, flag de Hardened Runtime, aceitação pelo
 Gatekeeper e ticket com `stapler`. DMG e ZIP também continuam passando por
 verificação de integridade.
 
-Também execute `node scripts/validate-macos-permissions.mjs <Orkestrai.app>`:
+Também execute `node scripts/validate-macos-permissions.mjs <Deep Space.app>`:
 o app e cada helper precisam de `com.apple.security.device.audio-input` e
 `com.apple.security.automation.apple-events`. Uma assinatura válida sem esses
 entitlements não comprova que o microfone ou a automação funcionam.
@@ -123,7 +123,7 @@ Prefira a CI quando a chave local exigir interação com o Keychain. Depois de
 commitar, enviar `main` e passar a CI nesse SHA, execute:
 
 ```sh
-gh workflow run release.yml --repo beeblock/orkestrai --ref main -f tag="$(git rev-parse HEAD)" -f build_only=true
+gh workflow run release.yml --repo GabryelKadmo/Deep-Space --ref main -f tag="$(git rev-parse HEAD)" -f build_only=true
 ```
 
 Esse modo gera apenas o instalador Apple Silicon assinado e notarizado, verifica

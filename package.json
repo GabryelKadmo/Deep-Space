@@ -1,16 +1,16 @@
 {
-  "name": "orkestrai",
-  "version": "0.30.1",
+  "name": "deep-space",
+  "version": "0.31.0",
   "description": "A visual canvas for orchestrating multidisciplinary teams of AI agents.",
   "private": true,
   "license": "Apache-2.0",
-  "homepage": "https://orkestrai.app",
+  "homepage": "https://github.com/GabryelKadmo/Deep-Space",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/beeblock/orkestrai.git"
+    "url": "git+https://github.com/GabryelKadmo/Deep-Space.git"
   },
   "bugs": {
-    "url": "https://github.com/beeblock/orkestrai/issues"
+    "url": "https://github.com/GabryelKadmo/Deep-Space/issues"
   },
   "engines": {
     "node": ">=24",
@@ -187,11 +187,11 @@
     "packages/*"
   ],
   "build": {
-    "appId": "com.orkestrai.desktop",
-    "productName": "Orkestrai",
+    "appId": "com.deepspace.desktop",
+    "productName": "Deep Space",
     "protocols": [
       {
-        "name": "Orkestrai Collaboration",
+        "name": "Deep Space Collaboration",
         "schemes": [
           "orkestrai"
         ]
@@ -232,6 +232,7 @@
       "!node_modules/pusher-js/**/*"
     ],
     "mac": {
+      "artifactName": "DeepSpace-${version}-${arch}-mac.${ext}",
       "category": "public.app-category.developer-tools",
       "entitlements": "electron/entitlements.mac.plist",
       "entitlementsInherit": "electron/entitlements.mac.inherit.plist",
@@ -256,26 +257,28 @@
         }
       ],
       "extendInfo": {
-        "NSMicrophoneUsageDescription": "Orkestrai uses the microphone only when you start voice dictation.",
-        "NSAppleEventsUsageDescription": "Orkestrai controls only the applications you authorize for Computer Control.",
-        "NSDownloadsFolderUsageDescription": "Orkestrai needs access to projects you choose inside Downloads.",
-        "NSDocumentsFolderUsageDescription": "Orkestrai needs access to projects you choose inside Documents.",
-        "NSDesktopFolderUsageDescription": "Orkestrai needs access to projects you choose on the Desktop."
+        "NSMicrophoneUsageDescription": "Deep Space uses the microphone only when you start voice dictation.",
+        "NSAppleEventsUsageDescription": "Deep Space controls only the applications you authorize for Computer Control.",
+        "NSDownloadsFolderUsageDescription": "Deep Space needs access to projects you choose inside Downloads.",
+        "NSDocumentsFolderUsageDescription": "Deep Space needs access to projects you choose inside Documents.",
+        "NSDesktopFolderUsageDescription": "Deep Space needs access to projects you choose on the Desktop."
       }
     },
     "win": {
       "target": [
         "nsis"
       ],
-      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "artifactName": "DeepSpace-${version}-${arch}.${ext}",
       "icon": "electron/resources/icon.ico"
     },
     "nsis": {
+      "artifactName": "DeepSpace-Setup-${version}.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "shortcutName": "Orkestrai"
+      "shortcutName": "Deep Space"
     },
     "dmg": {
+      "artifactName": "DeepSpace-${version}-${arch}.${ext}",
       "background": "electron/resources/dmg-background.png",
       "iconSize": 96,
       "window": {
@@ -301,12 +304,15 @@
         "AppImage",
         "rpm"
       ],
-      "maintainer": "Beeblock <11634143+rzeradev@users.noreply.github.com>",
+      "maintainer": "Gabryel Kadmo <GabryelKadmo@users.noreply.github.com>",
       "category": "Development",
       "icon": "electron/resources/icons"
     },
+    "appImage": {
+      "artifactName": "DeepSpace-${version}.${ext}"
+    },
     "rpm": {
-      "artifactName": "${productName}-${version}.${arch}.${ext}",
+      "artifactName": "DeepSpace-${version}.${arch}.${ext}",
       "fpm": ["--rpm-rpmbuild-define", "_build_id_links none"],
       "depends": [
         "gtk3",
@@ -322,8 +328,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "beeblock",
-        "repo": "orkestrai"
+        "owner": "GabryelKadmo",
+        "repo": "Deep-Space"
       }
     ]
   }

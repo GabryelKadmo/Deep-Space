@@ -129,7 +129,7 @@ function markdownPackage(input: {
   findings: CodeGraphFinding[];
 }): string {
   const lines = [
-    '# Orkestrai code context',
+    '# Deep Space code context',
     '',
     `Purpose: ${input.purpose}`,
     '',

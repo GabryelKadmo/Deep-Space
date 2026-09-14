@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="orkestrai-branding/logo.svg" alt="Orkestrai" width="360">
+  <img src="orkestrai-branding/logo.svg" alt="Deep Space" width="360">
 </p>
 
 <p align="center">
@@ -10,14 +10,14 @@
   <a href="README.md">English</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · Español
 </p>
 
-Orkestrai es una aplicación de escritorio local-first para macOS, Windows y
+Deep Space es una aplicación de escritorio local-first para macOS, Windows y
 Linux. Reúne Claude Code, Codex CLI, Kimi Code, OpenCode, Cursor, Antigravity,
 Cline, Devin, shells, tareas, notas,
 navegadores y worktrees de Git en un lienzo persistente donde developers, vibe
 coders, diseñadores, marketers y creators pueden dirigir un equipo de IA.
 
 Descarga los instaladores más recientes desde
-[beeblock/orkestrai](https://github.com/beeblock/orkestrai/releases/latest).
+[GabryelKadmo/Deep-Space](https://github.com/GabryelKadmo/Deep-Space/releases/latest).
 
 Para diagnosticar la aplicación de escritorio, abre **Ver → Herramientas de
 desarrollo** y reproduce el problema con Console visible. **Ayuda → Abrir
@@ -31,7 +31,7 @@ normal de los agentes no se guarda.
   trabajo activo disponibles en la bandeja después de cerrar todas las ventanas
   y, si quieres, iniciarlo silenciosamente al entrar al sistema. Configuración
   muestra el estado y tiempo activo, permite un reinicio protegido y conserva
-  **Salir de Orkestrai** como la parada explícita.
+  **Salir de Deep Space** como la parada explícita.
 - **Autonomía limitada y Bóveda cifrada:** aprueba una vez el perímetro
   rutinario del workspace en vez de supervisar cada comando. Capacidades,
   raíces, hosts, horario silencioso y concurrencia forman la autorización
@@ -53,7 +53,7 @@ normal de los agentes no se guarda.
   Consulta la [guía de Computer Control](docs/computer-control.md) para comandos,
   gates, credenciales protegidas y limitaciones por plataforma.
 - **Tool Workshop:** convierte trabajo repetido en una herramienta nativa y
-  versionada del workspace sin editar Orkestrai. Compone integraciones, HTTP,
+  versionada del workspace sin editar Deep Space. Compone integraciones, HTTP,
   transformaciones deterministas o comandos confinados; valida contratos JSON y
   fixtures, ejecuta una prueba seca y publica una revisión inmutable. Los agentes
   pueden proponer borradores, pero solo el dueño activa una versión. Las
@@ -107,7 +107,7 @@ normal de los agentes no se guarda.
   PNG/JPEG/WebP y un agente Codex activo a un nodo Generar imágenes en el mismo
   canvas; el mismo nodo se abre en Workbench. El Codex conectado usa la tool
   nativa `image_gen.imagegen` de su propia sesión autenticada, con una llamada por
-  resultado y transparencia PNG real solicitada en el prompt. Orkestrai nunca solicita ni almacena una clave de API
+  resultado y transparencia PNG real solicitada en el prompt. Deep Space nunca solicita ni almacena una clave de API
   de imagen. Valida los destinos preasignados dentro del workspace antes de que
   los resultados vuelvan como nodos Imagen conectados, con procedencia e
   historial limitado, listos para alimentar otra rama. Personas, CLI y tools MCP
@@ -175,11 +175,11 @@ normal de los agentes no se guarda.
   nativa inspecciona enlaces e importa páginas o frames, vectores, assets,
   estilos, variables, componentes, variantes, instancias e identidades de
   bibliotecas externas seleccionadas al mismo
-  documento Orkestrai. Los orígenes vinculados comparan hashes remotos y locales
+  documento Deep Space. Los orígenes vinculados comparan hashes remotos y locales
   antes de una sincronización selectiva, y los mappings de Code Connect forman
-  la relación nodo Figma → capa Orkestrai → código. Un plugin propio incluido en
+  la relación nodo Figma → capa Deep Space → código. Un plugin propio incluido en
   la app y restringido al loopback transfiere selecciones en vivo, SVG editable
-  o JSON estructural, abre un documento Orkestrai con recursos nativos en una
+  o JSON estructural, abre un documento Deep Space con recursos nativos en una
   nueva página de Figma y envía solo cambios locales vinculados y revisados de
   vuelta al archivo actual. La credencial
   REST queda cifrada en la bóveda del sistema operativo.
@@ -210,7 +210,7 @@ normal de los agentes no se guarda.
   cuando ya no sean necesarios.
 - **Equipos listos:** inicia o amplía un workspace con presets de Producto,
   Campaña y lanzamiento, Brand y diseño, Contenido y SEO, React, Next.js,
-  SvelteKit, Svelar, Laravel y Orkestrai Contributing. Los agentes comienzan en
+  SvelteKit, Svelar, Laravel y Deep Space Contributing. Los agentes comienzan en
   modo autónomo de acceso total y con roles en el nivel nativo de system/developer
   prompt, con frontmatter válido en el archivo de agente Kimi y sin instrucciones
   largas bloqueando la terminal como texto pegado. El líder recibe y asigna la
@@ -225,7 +225,7 @@ normal de los agentes no se guarda.
 - **Puente nativo para agentes:** la CLI `orkestrai` y el servidor MCP incluidos
   exponen comandos tipados para mensajes, tareas, notas, portales, dispositivos
   móviles, pisos, roles y notificaciones de escritorio. Codex recibe las
-  definiciones MCP de Orkestrai y del Figma oficial como parámetros temporales
+  definiciones MCP de Deep Space y del Figma oficial como parámetros temporales
   al iniciar, sin reescribir el `~/.codex/config.toml` global del usuario.
 - **Workspaces paralelos:** los agentes continúan trabajando cuando cambias de
   workspace, con indicadores de actividad y notificaciones nativas.
@@ -283,7 +283,7 @@ Instala y autentica solamente los proveedores que quieras usar:
 - [Cline CLI](https://docs.cline.bot/cli/cli-reference)
 - [Devin CLI](https://docs.devin.ai/cli)
 
-No necesitas instalar todos los providers ni conocer la terminal. Orkestrai
+No necesitas instalar todos los providers ni conocer la terminal. Deep Space
 activa las CLIs que detecta, mantiene cada conversación separada y permite
 organizar los agentes por resultado: investigación, diseño, contenido,
 marketing, producto, ingeniería o revisión.
@@ -301,7 +301,7 @@ Requisitos:
 - Git
 
 ```bash
-git clone https://github.com/beeblock/orkestrai.git
+git clone https://github.com/GabryelKadmo/Deep-Space.git
 cd orkestrai
 npm ci
 
@@ -309,13 +309,13 @@ npm run dev            # SvelteKit en http://localhost:5173
 npm run electron:dev   # build de producción seguido por Electron
 ```
 
-La voz funciona sin Docker ni Python. En el primer uso, Orkestrai solicita
+La voz funciona sin Docker ni Python. En el primer uso, Deep Space solicita
 confirmación antes de descargar el runtime integrado y los modelos locales. Un
 sidecar de voz compatible con OpenAI sigue disponible como backend opcional.
 
 ## Arquitectura
 
-Orkestrai está construido con Svelte 5, SvelteKit, Electron, Svelar, SQLite,
+Deep Space está construido con Svelte 5, SvelteKit, Electron, Svelar, SQLite,
 `node-pty` y `@xyflow/svelte`.
 
 - `src/lib/modules/agent-room/` contiene las capas de aplicación, dominio,
@@ -332,6 +332,8 @@ Orkestrai está construido con Svelte 5, SvelteKit, Electron, Svelar, SQLite,
   `packages/orkestrai-relay/` es un transporte
   WebSocket opaco que no puede descifrar el contenido del workspace. El
   servicio de producción está en `wss://relay.orkestrai.app/v1/connect`.
+  Define `PUBLIC_RELAY_URL` para apuntar a tu propio despliegue — consulta
+  [docs/relay.md](docs/relay.md).
 - `electron/` controla el ciclo de vida de escritorio, las notificaciones
   nativas y las actualizaciones.
 - `docs/` contiene la documentación de build y releases.
@@ -363,11 +365,16 @@ describe en [SECURITY.md](SECURITY.md).
 
 Las tags siguen Versionado Semántico. El workflow `Release Desktop` compila todas
 las plataformas, valida los manifests de actualización y publica los artefactos
-verificados en las [Releases de GitHub](https://github.com/beeblock/orkestrai/releases).
+verificados en las [Releases de GitHub](https://github.com/GabryelKadmo/Deep-Space/releases).
 Consulta [docs/releases.md](docs/releases.md) para ver el proceso completo.
 
 ## Licencia
 
-Orkestrai se distribuye bajo la [Apache License 2.0](LICENSE). Los componentes
+Deep Space es un fork de [Orkestrai](https://github.com/beeblock/orkestrai),
+Copyright 2026 Orkestrai contributors, y hereda su Apache License 2.0. Consulta
+el [NOTICE](NOTICE) para la atribución y para los archivos de marca que aún
+pertenecen al proyecto original.
+
+Deep Space se distribuye bajo la [Apache License 2.0](LICENSE). Los componentes
 de terceros y los modelos descargados siguen sujetos a las licencias indicadas
 en [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

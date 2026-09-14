@@ -321,7 +321,7 @@ export class PresetService {
   async publish(id: string, input: { version: string; releaseNotes?: string | null; minimumOrkestraiVersion?: string | null }): Promise<PresetSummary> {
     if (id.startsWith('builtin:')) throw new Error('Team Packs embutidos nao podem publicar revisoes locais.');
     if (!SEMVER.test(input.version)) throw new Error('Use uma versao semantica valida, como 1.1.0.');
-    if (input.minimumOrkestraiVersion && !SEMVER.test(input.minimumOrkestraiVersion)) throw new Error('A versao minima do Orkestrai deve usar SemVer.');
+    if (input.minimumOrkestraiVersion && !SEMVER.test(input.minimumOrkestraiVersion)) throw new Error('A versao minima do Deep Space deve usar SemVer.');
     const model = await AgentPreset.find(id);
     if (!model) throw new Error('Team Pack nao encontrado.');
     const current = JSON.parse(String(model.getAttribute('data'))) as PresetData;

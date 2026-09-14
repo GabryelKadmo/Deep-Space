@@ -162,8 +162,8 @@ describe('PTY WebSocket protocol', () => {
   });
 
   it('injects the packaged MCP before the Codex resume subcommand', async () => {
-    vi.stubEnv('ORKESTRAI_CLI_RUNTIME', '/Applications/Orkestrai.app/Contents/MacOS/Orkestrai');
-    vi.stubEnv('ORKESTRAI_CLI_JS', '/Applications/Orkestrai.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js');
+    vi.stubEnv('ORKESTRAI_CLI_RUNTIME', '/Applications/Deep Space.app/Contents/MacOS/Deep Space');
+    vi.stubEnv('ORKESTRAI_CLI_JS', '/Applications/Deep Space.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js');
     vi.stubEnv('ORKESTRAI_CLI_RUNTIME_IS_ELECTRON', '1');
     const create = vi.spyOn(ptySessionManager, 'create');
     const socket = new FakeSocket();
@@ -181,9 +181,9 @@ describe('PTY WebSocket protocol', () => {
     await vi.waitFor(() => expect(create).toHaveBeenCalled());
     const args = create.mock.calls[0][0].args ?? [];
     expect(args[0]).toBe('--dangerously-bypass-approvals-and-sandbox');
-    expect(args).toContain('mcp_servers.orkestrai.command="/Applications/Orkestrai.app/Contents/MacOS/Orkestrai"');
+    expect(args).toContain('mcp_servers.orkestrai.command="/Applications/Deep Space.app/Contents/MacOS/Deep Space"');
     expect(args.slice(-2)).toEqual(['resume', 'conversation-1']);
-    expect(args.indexOf('mcp_servers.orkestrai.args=["/Applications/Orkestrai.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js", "mcp"]'))
+    expect(args.indexOf('mcp_servers.orkestrai.args=["/Applications/Deep Space.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js", "mcp"]'))
       .toBeLessThan(args.indexOf('resume'));
     const created = socket.frames.find((frame) => frame.type === 'created');
     const sessionId = String((created?.session as { id?: string } | undefined)?.id ?? '');

@@ -208,10 +208,10 @@ const roots: Record<Exclude<ApiCodeCompletionProfile, 'none'>, Entry[]> = {
     { label: 'pm', detail: 'Postman API', type: 'variable' },
   ],
   orkestrai: [
-    { label: 'bru', detail: 'Orkestrai compatibility API', type: 'variable' },
+    { label: 'bru', detail: 'Deep Space compatibility API', type: 'variable' },
     { label: 'req', detail: 'Request', type: 'variable' },
     { label: 'res', detail: 'Response', type: 'variable' },
-    { label: 'pm', detail: 'Orkestrai compatibility API', type: 'variable' },
+    { label: 'pm', detail: 'Deep Space compatibility API', type: 'variable' },
     { label: 'test', snippet: 'test(${name}, () => {\n  ${}\n})', detail: '(name, callback)', type: 'function' },
     { label: 'expect', snippet: 'expect(${actual})', detail: '(actual)', type: 'function' },
   ],

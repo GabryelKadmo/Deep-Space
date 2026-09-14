@@ -964,7 +964,7 @@
 </script>
 
 <svelte:head>
-  <title>Orkestrai - {m['workspace_view.workbench']()}</title>
+  <title>Deep Space - {m['workspace_view.workbench']()}</title>
 </svelte:head>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -1112,7 +1112,7 @@
   <aside class="flex min-h-0 flex-col border-r border-[var(--app-border)] bg-[var(--app-sidebar)]">
     <div class="flex h-11 shrink-0 items-center gap-2 px-3">
       <img src="/brand/icon.svg" width="20" height="20" alt="" />
-      <strong class="font-['Sora_Variable'] text-[14px] font-semibold text-[var(--app-text)]">Orkestrai</strong>
+      <strong class="font-['Sora_Variable'] text-[14px] font-semibold text-[var(--app-text)]">Deep Space</strong>
       <div class="ml-auto"><WorkspaceSharingButton variant="icon" workspaceId={selectedWorkspaceId} onOpen={() => (sharingOpen = true)} /></div>
     </div>
     <div class="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-[var(--app-border)] px-3">

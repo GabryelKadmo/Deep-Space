@@ -105,7 +105,7 @@ describe('orkestrai CLI', () => {
         } else if (req.url?.startsWith('/api/agent-room/bridge/code-graph/evidence?')) {
           res.end(JSON.stringify({ data: { counts: { runs: 1, coveredSymbols: 4, failures: 0, observedCalls: 0, runtimeOnlyCalls: 0 }, runs: [], graph: { nodes: [], edges: [] } } }));
         } else if (req.url === '/api/agent-room/bridge/code-graph/context' && req.method === 'POST') {
-          res.end(JSON.stringify({ data: { markdown: '# Orkestrai code context\n\ncheckoutTotal', estimatedTokens: 120, symbols: [{ id: 's1' }], relationships: [] } }));
+          res.end(JSON.stringify({ data: { markdown: '# Deep Space code context\n\ncheckoutTotal', estimatedTokens: 120, symbols: [{ id: 's1' }], relationships: [] } }));
         } else if (req.url === '/api/agent-room/bridge/code-graph/operations') {
           res.end(JSON.stringify({ data: { agents: [{ nodeId: 'n1' }], graph: { nodes: [{ id: 's1' }], edges: [] }, conflicts: [] } }));
         } else if (req.url === '/api/agent-room/bridge/code-graph/relationships/00000000-0000-7000-8000-000000000030') {
@@ -318,7 +318,7 @@ describe('orkestrai CLI', () => {
     expect(await run(['graph', 'evidence', 'import', projectId, 'coverage/lcov.info', '--kind', 'coverage'], { cwd, out, env: {} })).toBe(0);
     expect(requests.at(-1)).toMatchObject({ method: 'POST', url: '/api/agent-room/bridge/code-graph/evidence', body: { projectId, path: 'coverage/lcov.info', kind: 'coverage' } });
     expect(await run(['graph', 'context', symbolId, '--purpose', 'review', '--tokens', '2000'], { cwd, out, env: {} })).toBe(0);
-    expect(lines.join('\n')).toContain('Orkestrai code context');
+    expect(lines.join('\n')).toContain('Deep Space code context');
     expect(requests.at(-1).body).toMatchObject({ selection: { symbolIds: [symbolId] }, purpose: 'review', maxTokens: 2000 });
     expect(await run(['graph', 'operations'], { cwd, out, env: {} })).toBe(0);
     expect(lines.join('\n')).toContain('Operations: 1 agents');
@@ -633,7 +633,7 @@ describe('orkestrai CLI', () => {
     })).rejects.toThrow('Token');
   });
 
-  it('MCP completa o handshake mesmo fora de um workspace Orkestrai', async () => {
+  it('MCP completa o handshake mesmo fora de um workspace Deep Space', async () => {
     const emptyDir = mkdtempSync(join(tmpdir(), 'orkestrai-mcp-empty-'));
     const input = new PassThrough();
     const chunks: string[] = [];

@@ -1,5 +1,5 @@
 /**
- * Processo principal do Electron — Orkestrai.
+ * Processo principal do Electron — Deep Space.
  *
  * Sobe o servidor SvelteKit (adapter-node, em build/) como processo filho
  * usando o proprio Electron como runtime Node (ELECTRON_RUN_AS_NODE=1) e
@@ -57,7 +57,7 @@ let managedPortalExecutor = null;
 function initializeDiagnostics() {
   app.setAppLogsPath();
   diagnostics = createDiagnosticsLogger(app.getPath('logs'));
-  diagnostics.write('info', 'app', `Starting Orkestrai ${app.getVersion()} on ${process.platform} ${process.arch}`);
+  diagnostics.write('info', 'app', `Starting Deep Space ${app.getVersion()} on ${process.platform} ${process.arch}`);
 
   for (const level of ['warn', 'error']) {
     const original = console[level].bind(console);
@@ -228,15 +228,15 @@ function deleteAutomationSecret(key) {
 const MENU_COPY = {
   'pt-BR': {
     workspace: 'Workspace', canvas: 'Canvas', terminals: 'Workbench', providers: 'Central de Providers', remote: 'Entrar em workspace remoto', newWorkspace: 'Novo workspace', presets: 'Biblioteca de presets', floors: 'Andares', roles: 'Responsabilidades', huddles: 'Huddles', usage: 'Uso', ports: 'Portas',
-    settings: 'Configurações', checkUpdates: 'Verificar atualizações', edit: 'Editar', view: 'Visualizar', commandPalette: 'Paleta de comandos', reload: 'Recarregar', forceReload: 'Forçar recarga', developerTools: 'Ferramentas do desenvolvedor', fullscreen: 'Tela cheia', window: 'Janela', minimize: 'Minimizar', close: 'Fechar', help: 'Ajuda', docs: 'Documentação', changelog: 'Changelog', openLogs: 'Abrir pasta de logs', reportIssue: 'Reportar problema', open: 'Abrir Orkestrai', quit: 'Sair', pickDirectory: 'Escolher pasta do workspace', exportApiCollection: 'Escolher destino da coleção Bruno', portalWindow: 'Portal do Orkestrai', coreActive: 'Core 24/7 ativo', coreWindowBound: 'Core encerra com o app', notifications: (count) => `${count} notificações`,
+    settings: 'Configurações', checkUpdates: 'Verificar atualizações', edit: 'Editar', view: 'Visualizar', commandPalette: 'Paleta de comandos', reload: 'Recarregar', forceReload: 'Forçar recarga', developerTools: 'Ferramentas do desenvolvedor', fullscreen: 'Tela cheia', window: 'Janela', minimize: 'Minimizar', close: 'Fechar', help: 'Ajuda', docs: 'Documentação', changelog: 'Changelog', openLogs: 'Abrir pasta de logs', reportIssue: 'Reportar problema', open: 'Abrir Deep Space', quit: 'Sair', pickDirectory: 'Escolher pasta do workspace', exportApiCollection: 'Escolher destino da coleção Bruno', portalWindow: 'Portal do Deep Space', coreActive: 'Core 24/7 ativo', coreWindowBound: 'Core encerra com o app', notifications: (count) => `${count} notificações`,
   },
   en: {
     workspace: 'Workspace', canvas: 'Canvas', terminals: 'Workbench', providers: 'Provider Center', remote: 'Join remote workspace', newWorkspace: 'New workspace', presets: 'Preset library', floors: 'Floors', roles: 'Roles', huddles: 'Huddles', usage: 'Usage', ports: 'Ports',
-    settings: 'Settings', checkUpdates: 'Check for updates', edit: 'Edit', view: 'View', commandPalette: 'Command palette', reload: 'Reload', forceReload: 'Force reload', developerTools: 'Developer tools', fullscreen: 'Full screen', window: 'Window', minimize: 'Minimize', close: 'Close', help: 'Help', docs: 'Documentation', changelog: 'Changelog', openLogs: 'Open logs folder', reportIssue: 'Report an issue', open: 'Open Orkestrai', quit: 'Quit', pickDirectory: 'Choose workspace folder', exportApiCollection: 'Choose Bruno collection destination', portalWindow: 'Orkestrai Portal', coreActive: '24/7 Core active', coreWindowBound: 'Core stops with the app', notifications: (count) => `${count} notifications`,
+    settings: 'Settings', checkUpdates: 'Check for updates', edit: 'Edit', view: 'View', commandPalette: 'Command palette', reload: 'Reload', forceReload: 'Force reload', developerTools: 'Developer tools', fullscreen: 'Full screen', window: 'Window', minimize: 'Minimize', close: 'Close', help: 'Help', docs: 'Documentation', changelog: 'Changelog', openLogs: 'Open logs folder', reportIssue: 'Report an issue', open: 'Open Deep Space', quit: 'Quit', pickDirectory: 'Choose workspace folder', exportApiCollection: 'Choose Bruno collection destination', portalWindow: 'Deep Space Portal', coreActive: '24/7 Core active', coreWindowBound: 'Core stops with the app', notifications: (count) => `${count} notifications`,
   },
   es: {
     workspace: 'Workspace', canvas: 'Canvas', terminals: 'Workbench', providers: 'Central de Providers', remote: 'Entrar a workspace remoto', newWorkspace: 'Nuevo workspace', presets: 'Biblioteca de presets', floors: 'Pisos', roles: 'Roles', huddles: 'Huddles', usage: 'Uso', ports: 'Puertos',
-    settings: 'Configuración', checkUpdates: 'Buscar actualizaciones', edit: 'Editar', view: 'Ver', commandPalette: 'Paleta de comandos', reload: 'Recargar', forceReload: 'Forzar recarga', developerTools: 'Herramientas de desarrollo', fullscreen: 'Pantalla completa', window: 'Ventana', minimize: 'Minimizar', close: 'Cerrar', help: 'Ayuda', docs: 'Documentación', changelog: 'Changelog', openLogs: 'Abrir carpeta de logs', reportIssue: 'Reportar un problema', open: 'Abrir Orkestrai', quit: 'Salir', pickDirectory: 'Elegir carpeta del workspace', exportApiCollection: 'Elegir destino de la colección Bruno', portalWindow: 'Portal de Orkestrai', coreActive: 'Core 24/7 activo', coreWindowBound: 'El Core se detiene con la app', notifications: (count) => `${count} notificaciones`,
+    settings: 'Configuración', checkUpdates: 'Buscar actualizaciones', edit: 'Editar', view: 'Ver', commandPalette: 'Paleta de comandos', reload: 'Recargar', forceReload: 'Forzar recarga', developerTools: 'Herramientas de desarrollo', fullscreen: 'Pantalla completa', window: 'Ventana', minimize: 'Minimizar', close: 'Cerrar', help: 'Ayuda', docs: 'Documentación', changelog: 'Changelog', openLogs: 'Abrir carpeta de logs', reportIssue: 'Reportar un problema', open: 'Abrir Deep Space', quit: 'Salir', pickDirectory: 'Elegir carpeta del workspace', exportApiCollection: 'Elegir destino de la colección Bruno', portalWindow: 'Portal de Deep Space', coreActive: 'Core 24/7 activo', coreWindowBound: 'El Core se detiene con la app', notifications: (count) => `${count} notificaciones`,
   },
 };
 
@@ -321,7 +321,7 @@ function buildApplicationMenu() {
         { label: copy.changelog, click: () => sendMenuAction('changelog') },
         { label: copy.openLogs, click: () => void openLogsDirectory() },
         { type: 'separator' },
-        { label: copy.reportIssue, click: () => shell.openExternal('https://github.com/beeblock/orkestrai/issues/new') },
+        { label: copy.reportIssue, click: () => shell.openExternal('https://github.com/GabryelKadmo/Deep-Space/issues/new') },
       ],
     },
   ];
@@ -602,7 +602,7 @@ async function startServer(port) {
       if (structuredMatch) {
         try {
           const payload = JSON.parse(structuredMatch[1]);
-          showNativeNotification(String(payload.title || 'Orkestrai'), String(payload.body || ''));
+          showNativeNotification(String(payload.title || 'Deep Space'), String(payload.body || ''));
           continue;
         } catch {
           // cai no formato legado abaixo
@@ -610,7 +610,7 @@ async function startServer(port) {
       }
       const notifyMatch = line.match(/\[orkestrai:notify\] \[(.+?)\] (.+)/);
       if (notifyMatch) {
-        showNativeNotification(`Orkestrai — ${notifyMatch[1]}`, notifyMatch[2]);
+        showNativeNotification(`Deep Space — ${notifyMatch[1]}`, notifyMatch[2]);
       }
     }
   });
@@ -743,7 +743,7 @@ async function createWindow() {
     height: 900,
     minWidth: 960,
     minHeight: 600,
-    title: 'Orkestrai',
+    title: 'Deep Space',
     icon: path.join(appRoot, 'electron', 'resources', 'icon.png'),
     backgroundColor: '#0D0B2E',
     ...(process.platform === 'win32' ? {
@@ -866,7 +866,7 @@ ipcMain.handle('orkestrai:pick-api-collection', async (_event, kind) => {
       : isOpenCollection
         ? [{ name: 'OpenCollection YAML', extensions: ['yml', 'yaml'] }]
       : isNative
-        ? [{ name: 'Orkestrai API Collection', extensions: ['json'] }]
+        ? [{ name: 'Deep Space API Collection', extensions: ['json'] }]
         : [{ name: 'Bruno / OpenCollection', extensions: ['bru', 'yml', 'yaml'] }],
   });
   return result.canceled ? null : (result.filePaths[0] ?? null);
@@ -926,7 +926,7 @@ if (app.isPackaged) {
 let latestUpdateState = { status: 'idle' };
 let updateCheckPromise = null;
 let automaticUpdateInstallSupported = process.platform !== 'darwin';
-const MAC_LATEST_RELEASE_API = 'https://api.github.com/repos/beeblock/orkestrai/releases/latest';
+const MAC_LATEST_RELEASE_API = 'https://api.github.com/repos/GabryelKadmo/Deep-Space/releases/latest';
 
 function sendUpdate(payload) {
   latestUpdateState = payload;
@@ -941,7 +941,7 @@ function updateErrorPayload(error) {
 
 async function checkManualMacUpdate() {
   const response = await fetch(MAC_LATEST_RELEASE_API, {
-    headers: { accept: 'application/vnd.github+json', 'user-agent': 'Orkestrai updater' },
+    headers: { accept: 'application/vnd.github+json', 'user-agent': 'Deep Space updater' },
     signal: AbortSignal.timeout(10_000),
   });
   if (!response.ok) throw new Error(`GitHub releases respondeu HTTP ${response.status}.`);
@@ -1154,7 +1154,7 @@ ipcMain.handle('orkestrai:menu-command', (_event, action) => {
   else if (action === 'minimize') mainWindow.minimize();
   else if (action === 'toggle-maximize') mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
   else if (action === 'close') mainWindow.close();
-  else if (action === 'report-issue') void shell.openExternal('https://github.com/beeblock/orkestrai/issues/new');
+  else if (action === 'report-issue') void shell.openExternal('https://github.com/GabryelKadmo/Deep-Space/issues/new');
   else return false;
   return true;
 });
@@ -1208,7 +1208,7 @@ function showNativeNotification(title, body) {
 
 function updateTrayTitle() {
   if (!tray) return;
-  tray.setToolTip(pendingNotifications > 0 ? `Orkestrai — ${MENU_COPY[menuLocale].notifications(pendingNotifications)}` : 'Orkestrai');
+  tray.setToolTip(pendingNotifications > 0 ? `Deep Space — ${MENU_COPY[menuLocale].notifications(pendingNotifications)}` : 'Deep Space');
 }
 
 function rebuildTrayMenu() {
@@ -1242,7 +1242,7 @@ function createTray() {
   const image = nativeImage.createFromPath(path.join(resourcesDir, trayFile));
   if (process.platform === 'darwin') image.setTemplateImage(true);
   tray = new Tray(image);
-  tray.setToolTip('Orkestrai');
+  tray.setToolTip('Deep Space');
   rebuildTrayMenu();
   tray.on('click', () => {
     if (mainWindow) {
@@ -1326,7 +1326,7 @@ if (!gotLock) {
     });
     setupAutoUpdater();
   }).catch((error) => {
-    console.error('Falha ao iniciar o Orkestrai:', error);
+    console.error('Falha ao iniciar o Deep Space:', error);
     closeSplash();
     app.exit(1);
   });

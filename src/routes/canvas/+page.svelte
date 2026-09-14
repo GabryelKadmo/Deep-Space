@@ -2607,8 +2607,8 @@
   <aside class="sidebar" inert={designModeNodeId !== null} aria-hidden={designModeNodeId ? 'true' : undefined}>
     {#if !sidebarCollapsed}
       <div class="brand-row">
-        <img src="/brand/icon.svg" width="22" height="22" alt="Orkestrai" />
-        <span class="brand-name">Orkestrai</span>
+        <img src="/brand/icon.svg" width="22" height="22" alt="Deep Space" />
+        <span class="brand-name">Deep Space</span>
       </div>
       <div class="flex items-center justify-between gap-2 px-3 pb-2">
         <WorkspaceModeSwitch

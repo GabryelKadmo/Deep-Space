@@ -1719,7 +1719,7 @@ export class DesignDocumentService {
       await this.appendHistory(context.historyPath, {
         revision: validated.revision,
         baseRevision: current.revision,
-        actor: { kind: 'system', id: null, name: 'Orkestrai', taskId: null },
+        actor: { kind: 'system', id: null, name: 'Deep Space', taskId: null },
         summary: `Rename design to ${normalizedName}`,
         operations: [{ kind: 'rename-document', name: normalizedName }],
         createdAt: now,
@@ -1766,7 +1766,7 @@ export class DesignDocumentService {
       await this.appendHistory(context.historyPath, {
         revision: restored.revision,
         baseRevision: current.revision,
-        actor: { kind: 'system', id: null, name: 'Orkestrai', taskId: null },
+        actor: { kind: 'system', id: null, name: 'Deep Space', taskId: null },
         summary: `Restore automatic backup from revision ${backup.revision}`,
         operations: [],
         createdAt: now,

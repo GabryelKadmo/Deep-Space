@@ -801,7 +801,7 @@ function toBrunoRequest(request: ApiClientRequestInput, sequence: number): any {
 }
 
 async function availableCollectionDirectory(parent: string, name: string): Promise<string> {
-  const base = safePathSegment(name, 'Orkestrai API');
+  const base = safePathSegment(name, 'Deep Space API');
   for (let suffix = 1; suffix <= 1000; suffix += 1) {
     const candidate = join(parent, suffix === 1 ? base : `${base}-${suffix}`);
     if (!await pathExists(candidate)) return candidate;
@@ -990,8 +990,8 @@ export class ApiClientService {
       const result = await this.export(workspaceId, new ExportApiClientCollectionDto({ nodeId, kind: 'bruno', path: destination }), payload);
       return { ...result, secretsRedacted: true };
     }
-    const path = join(destination, postmanCollectionFilename(node.title ?? 'Orkestrai API'));
-    await writeFile(path, `${JSON.stringify(serializePostmanCollection(node.title ?? 'Orkestrai API', payload), null, 2)}\n`, 'utf8');
+    const path = join(destination, postmanCollectionFilename(node.title ?? 'Deep Space API'));
+    await writeFile(path, `${JSON.stringify(serializePostmanCollection(node.title ?? 'Deep Space API', payload), null, 2)}\n`, 'utf8');
     return { kind: 'postman' as const, path, files: 1, secretsRedacted: true };
   }
 
@@ -1167,7 +1167,7 @@ export class ApiClientService {
         script: '',
         request,
         scopes,
-        collectionName: node.title ?? 'Orkestrai API',
+        collectionName: node.title ?? 'Deep Space API',
         collectionPath: payload.sourcePath,
         iterationIndex: dto.input.iterationIndex,
         iterationCount: dto.input.iterationCount,
@@ -1248,7 +1248,7 @@ export class ApiClientService {
           request,
           response,
           scopes,
-          collectionName: node.title ?? 'Orkestrai API',
+          collectionName: node.title ?? 'Deep Space API',
           collectionPath: runtimeCollectionPath,
           iterationIndex: dto.input.iterationIndex,
           iterationCount: dto.input.iterationCount,
@@ -1311,7 +1311,7 @@ export class ApiClientService {
           request,
           response: finalResult,
           scopes,
-          collectionName: node.title ?? 'Orkestrai API',
+          collectionName: node.title ?? 'Deep Space API',
           collectionPath: runtimeCollectionPath,
           iterationIndex: dto.input.iterationIndex,
           iterationCount: dto.input.iterationCount,
@@ -1705,13 +1705,13 @@ export class ApiClientService {
     const payload = payloadOverride ?? (node.payload ?? {}) as ApiClientNodePayload;
     const requests = (payload.requests ?? []).map((request) => persistedApiClientRequestSchema.parse(request));
     const folders = payload.folders ?? [];
-    const output = await availableCollectionDirectory(dto.input.path, node.title ?? 'Orkestrai API');
+    const output = await availableCollectionDirectory(dto.input.path, node.title ?? 'Deep Space API');
     await mkdir(output, { recursive: false });
     const openCollection = dto.input.kind === 'openCollection';
     if (!openCollection) {
       await writeFile(join(output, 'bruno.json'), `${JSON.stringify({
         version: '1',
-        name: node.title ?? 'Orkestrai API',
+        name: node.title ?? 'Deep Space API',
         type: 'collection',
         ignore: ['node_modules', '.git'],
       }, null, 2)}\n`, 'utf8');
@@ -1739,7 +1739,7 @@ export class ApiClientService {
     };
     await writeFile(
       join(output, openCollection ? 'opencollection.yml' : 'collection.bru'),
-      stringifyCollection(collection, openCollection ? { name: node.title ?? 'Orkestrai API' } : {}, { format: openCollection ? 'yml' : 'bru' }),
+      stringifyCollection(collection, openCollection ? { name: node.title ?? 'Deep Space API' } : {}, { format: openCollection ? 'yml' : 'bru' }),
       'utf8',
     );
 

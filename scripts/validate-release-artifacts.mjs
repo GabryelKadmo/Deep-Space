@@ -89,18 +89,18 @@ export function validateReleaseArtifacts(directory, version) {
 
   /** @type {Array<[RegExp, string]>} */
   const required = [
-    [new RegExp(`^Orkestrai-${v}-arm64\\.dmg$`), 'Apple Silicon DMG'],
-    [new RegExp(`^Orkestrai-${v}-arm64\\.dmg\\.blockmap$`), 'Apple Silicon DMG blockmap'],
-    [new RegExp(`^Orkestrai-${v}-arm64-mac\\.zip$`), 'Apple Silicon update ZIP'],
-    [new RegExp(`^Orkestrai-${v}-arm64-mac\\.zip\\.blockmap$`), 'Apple Silicon ZIP blockmap'],
-    [new RegExp(`^Orkestrai-${v}\\.dmg$`), 'Intel macOS DMG'],
-    [new RegExp(`^Orkestrai-${v}\\.dmg\\.blockmap$`), 'Intel macOS DMG blockmap'],
-    [new RegExp(`^Orkestrai-${v}-mac\\.zip$`), 'Intel macOS update ZIP'],
-    [new RegExp(`^Orkestrai-${v}-mac\\.zip\\.blockmap$`), 'Intel macOS ZIP blockmap'],
-    [new RegExp(`^Orkestrai-Setup-${v}\\.exe$`), 'Windows NSIS installer'],
-    [new RegExp(`^Orkestrai-Setup-${v}\\.exe\\.blockmap$`), 'Windows NSIS blockmap'],
-    [new RegExp(`^Orkestrai-${v}\\.AppImage$`), 'Linux AppImage'],
-    [new RegExp(`^Orkestrai-${v}\\.x86_64\\.rpm$`), 'Linux RPM'],
+    [new RegExp(`^DeepSpace-${v}-arm64\\.dmg$`), 'Apple Silicon DMG'],
+    [new RegExp(`^DeepSpace-${v}-arm64\\.dmg\\.blockmap$`), 'Apple Silicon DMG blockmap'],
+    [new RegExp(`^DeepSpace-${v}-arm64-mac\\.zip$`), 'Apple Silicon update ZIP'],
+    [new RegExp(`^DeepSpace-${v}-arm64-mac\\.zip\\.blockmap$`), 'Apple Silicon ZIP blockmap'],
+    [new RegExp(`^DeepSpace-${v}-x64\\.dmg$`), 'Intel macOS DMG'],
+    [new RegExp(`^DeepSpace-${v}-x64\\.dmg\\.blockmap$`), 'Intel macOS DMG blockmap'],
+    [new RegExp(`^DeepSpace-${v}-x64-mac\\.zip$`), 'Intel macOS update ZIP'],
+    [new RegExp(`^DeepSpace-${v}-x64-mac\\.zip\\.blockmap$`), 'Intel macOS ZIP blockmap'],
+    [new RegExp(`^DeepSpace-Setup-${v}\\.exe$`), 'Windows NSIS installer'],
+    [new RegExp(`^DeepSpace-Setup-${v}\\.exe\\.blockmap$`), 'Windows NSIS blockmap'],
+    [new RegExp(`^DeepSpace-${v}\\.AppImage$`), 'Linux AppImage'],
+    [new RegExp(`^DeepSpace-${v}\\.x86_64\\.rpm$`), 'Linux RPM'],
   ];
   for (const [pattern, description] of required) requireFile(files, pattern, description);
 
@@ -123,7 +123,7 @@ export function validateReleaseArtifacts(directory, version) {
   if (!linuxUrls.some((url) => url.endsWith('.AppImage'))) fail('latest-linux.yml does not contain the AppImage');
   if (!linuxUrls.some((url) => url.endsWith('.rpm'))) fail('latest-linux.yml does not contain the RPM');
 
-  console.log(`Validated ${files.length} release assets for Orkestrai ${version}.`);
+  console.log(`Validated ${files.length} release assets for Deep Space ${version}.`);
   return files;
 }
 

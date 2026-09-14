@@ -379,7 +379,7 @@
 </script>
 
 <svelte:head>
-  <title>Orkestrai — {m['settings.title']()}</title>
+  <title>Deep Space — {m['settings.title']()}</title>
 </svelte:head>
 
 <svelte:window onkeydown={captureHotkey} />

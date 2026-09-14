@@ -1084,7 +1084,7 @@
       values: Object.entries(environments[name] ?? {}).map(([key, value]) => ({ key, value, type: 'default', enabled: true })),
       _postman_variable_scope: 'environment',
       _postman_exported_at: new Date().toISOString(),
-      _postman_exported_using: 'Orkestrai',
+      _postman_exported_using: 'Deep Space',
     };
     const slug = name.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'environment';
     downloadText(`${JSON.stringify(environment, null, 2)}\n`, `${slug}.postman_environment.json`, 'application/json');
@@ -1768,7 +1768,7 @@
             <div class="mb-2 flex flex-wrap items-center gap-1 border-b border-[var(--app-border)] pb-2">
               <button aria-pressed={scriptScope === 'request'} class={`rounded border px-2 py-1 text-ui-xs transition-colors ${scriptScope === 'request' ? 'border-[var(--app-accent)]/35 bg-[var(--app-accent-soft)] font-medium text-[var(--app-accent)]' : 'border-transparent text-[var(--app-text-muted)] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)]'}`} onclick={() => (scriptScope = 'request')}>{m['api_client.request_scripts']()}</button>
               <button aria-pressed={scriptScope === 'collection'} class={`rounded border px-2 py-1 text-ui-xs transition-colors ${scriptScope === 'collection' ? 'border-[var(--app-accent)]/35 bg-[var(--app-accent-soft)] font-medium text-[var(--app-accent)]' : 'border-transparent text-[var(--app-text-muted)] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)]'}`} onclick={() => (scriptScope = 'collection')}>{m['api_client.collection_scripts']()}</button>
-              <label class="ml-auto flex items-center gap-2 text-ui-xs text-[var(--app-text-muted)]"><span>{m['api_client.script_runtime']()}</span><NativeSelect.Root class="w-32" size="sm" value={scriptDialect} onchange={(event: Event) => { scriptDialect = inputValue(event) as typeof scriptDialect; persist(); }}><NativeSelect.Option value="orkestrai">Orkestrai</NativeSelect.Option><NativeSelect.Option value="postman">Postman</NativeSelect.Option><NativeSelect.Option value="bruno">Bruno</NativeSelect.Option></NativeSelect.Root></label>
+              <label class="ml-auto flex items-center gap-2 text-ui-xs text-[var(--app-text-muted)]"><span>{m['api_client.script_runtime']()}</span><NativeSelect.Root class="w-32" size="sm" value={scriptDialect} onchange={(event: Event) => { scriptDialect = inputValue(event) as typeof scriptDialect; persist(); }}><NativeSelect.Option value="orkestrai">Deep Space</NativeSelect.Option><NativeSelect.Option value="postman">Postman</NativeSelect.Option><NativeSelect.Option value="bruno">Bruno</NativeSelect.Option></NativeSelect.Root></label>
             </div>
             <div class="grid h-full min-h-[260px] grid-cols-2 auto-rows-fr gap-2 max-[720px]:grid-cols-1">
               {#if scriptScope === 'request'}

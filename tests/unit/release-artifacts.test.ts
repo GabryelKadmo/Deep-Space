@@ -15,18 +15,18 @@ const { canInstallUpdatesAutomatically, isNewerVersion, macBundlePath } = requir
 
 const VERSION = '1.2.3';
 const requiredAssets = [
-  `Orkestrai-${VERSION}-arm64.dmg`,
-  `Orkestrai-${VERSION}-arm64.dmg.blockmap`,
-  `Orkestrai-${VERSION}-arm64-mac.zip`,
-  `Orkestrai-${VERSION}-arm64-mac.zip.blockmap`,
-  `Orkestrai-${VERSION}.dmg`,
-  `Orkestrai-${VERSION}.dmg.blockmap`,
-  `Orkestrai-${VERSION}-mac.zip`,
-  `Orkestrai-${VERSION}-mac.zip.blockmap`,
-  `Orkestrai-Setup-${VERSION}.exe`,
-  `Orkestrai-Setup-${VERSION}.exe.blockmap`,
-  `Orkestrai-${VERSION}.AppImage`,
-  `Orkestrai-${VERSION}.x86_64.rpm`,
+  `Deep Space-${VERSION}-arm64.dmg`,
+  `Deep Space-${VERSION}-arm64.dmg.blockmap`,
+  `Deep Space-${VERSION}-arm64-mac.zip`,
+  `Deep Space-${VERSION}-arm64-mac.zip.blockmap`,
+  `Deep Space-${VERSION}.dmg`,
+  `Deep Space-${VERSION}.dmg.blockmap`,
+  `Deep Space-${VERSION}-mac.zip`,
+  `Deep Space-${VERSION}-mac.zip.blockmap`,
+  `Deep Space-Setup-${VERSION}.exe`,
+  `Deep Space-Setup-${VERSION}.exe.blockmap`,
+  `Deep Space-${VERSION}.AppImage`,
+  `Deep Space-${VERSION}.x86_64.rpm`,
 ];
 
 const temporaryDirectories: string[] = [];
@@ -54,22 +54,22 @@ function fixture() {
     stringify({
       version: VERSION,
       files: [
-        manifestEntry(directory, `Orkestrai-${VERSION}-arm64-mac.zip`),
-        manifestEntry(directory, `Orkestrai-${VERSION}-mac.zip`),
+        manifestEntry(directory, `Deep Space-${VERSION}-arm64-mac.zip`),
+        manifestEntry(directory, `Deep Space-${VERSION}-mac.zip`),
       ],
     }),
   );
   writeFileSync(
     path.join(directory, 'latest.yml'),
-    stringify({ version: VERSION, files: [manifestEntry(directory, `Orkestrai-Setup-${VERSION}.exe`)] }),
+    stringify({ version: VERSION, files: [manifestEntry(directory, `Deep Space-Setup-${VERSION}.exe`)] }),
   );
   writeFileSync(
     path.join(directory, 'latest-linux.yml'),
     stringify({
       version: VERSION,
       files: [
-        manifestEntry(directory, `Orkestrai-${VERSION}.AppImage`),
-        manifestEntry(directory, `Orkestrai-${VERSION}.x86_64.rpm`),
+        manifestEntry(directory, `Deep Space-${VERSION}.AppImage`),
+        manifestEntry(directory, `Deep Space-${VERSION}.x86_64.rpm`),
       ],
     }),
   );
@@ -122,7 +122,7 @@ describe('release artifact validation', () => {
 
   it('rejects a manifest checksum that does not match the installer', () => {
     const directory = fixture();
-    writeFileSync(path.join(directory, `Orkestrai-${VERSION}.AppImage`), 'corrupted');
+    writeFileSync(path.join(directory, `Deep Space-${VERSION}.AppImage`), 'corrupted');
     expect(() => validateReleaseArtifacts(directory, VERSION)).toThrow(/invalid sha512/);
   });
 
@@ -130,7 +130,7 @@ describe('release artifact validation', () => {
     const directory = fixture();
     writeFileSync(
       path.join(directory, 'latest-mac.yml'),
-      stringify({ version: VERSION, files: [manifestEntry(directory, `Orkestrai-${VERSION}-arm64-mac.zip`)] }),
+      stringify({ version: VERSION, files: [manifestEntry(directory, `Deep Space-${VERSION}-arm64-mac.zip`)] }),
     );
     expect(() => validateReleaseArtifacts(directory, VERSION)).toThrow(/Intel update ZIP/);
   });
@@ -139,7 +139,7 @@ describe('release artifact validation', () => {
     const directory = fixture();
     writeFileSync(
       path.join(directory, 'latest-linux.yml'),
-      stringify({ version: VERSION, files: [manifestEntry(directory, `Orkestrai-${VERSION}.AppImage`)] }),
+      stringify({ version: VERSION, files: [manifestEntry(directory, `Deep Space-${VERSION}.AppImage`)] }),
     );
     expect(() => validateReleaseArtifacts(directory, VERSION)).toThrow(/RPM/);
   });
@@ -254,8 +254,8 @@ describe('packaged updater', () => {
   });
 
   it('allows automatic replacement only for a trusted macOS bundle', () => {
-    const execPath = '/Applications/Orkestrai.app/Contents/MacOS/Orkestrai';
-    expect(macBundlePath(execPath)).toBe('/Applications/Orkestrai.app');
+    const execPath = '/Applications/Deep Space.app/Contents/MacOS/Deep Space';
+    expect(macBundlePath(execPath)).toBe('/Applications/Deep Space.app');
     expect(canInstallUpdatesAutomatically({ platform: 'win32', execPath, assess: () => ({ status: 1 }) })).toBe(true);
     expect(canInstallUpdatesAutomatically({ platform: 'darwin', execPath, assess: () => ({ status: 1 }) })).toBe(false);
     expect(canInstallUpdatesAutomatically({ platform: 'darwin', execPath, assess: () => ({ status: 0 }) })).toBe(true);

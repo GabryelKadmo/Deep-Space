@@ -97,7 +97,7 @@ describe('Code Intelligence benchmark gate', () => {
   useSvelarTest({ refreshDatabase: true });
 
   it('measures real and synthetic repositories against the local SQLite targets', async () => {
-    const roots = [{ name: 'Orkestrai', path: process.cwd() }, ...configuredRoots()];
+    const roots = [{ name: 'Deep Space', path: process.cwd() }, ...configuredRoots()];
     const reports: Array<Record<string, unknown>> = [];
 
     for (const root of roots) {
@@ -145,13 +145,13 @@ describe('Code Intelligence benchmark gate', () => {
     }
 
     const mirror = await createRepositoryMirror(process.cwd());
-    const mirrorWorkspaceId = await registerWorkspace('Benchmark Orkestrai mirror', mirror.directory);
+    const mirrorWorkspaceId = await registerWorkspace('Benchmark Deep Space mirror', mirror.directory);
     await codeGraphIndexService.index(mirrorWorkspaceId);
     const mirrorFile = join(mirror.directory, mirror.changedPath);
     const mirrorScan = await codeGraphFileScanner.scan(mirror.directory);
     const original = mirrorScan.files.find((file) => file.relativePath === mirror.changedPath)?.content;
     if (original == null) throw new Error('The mirrored benchmark file disappeared.');
-    await writeFile(mirrorFile, `${original}\n// Orkestrai incremental benchmark marker.\n`);
+    await writeFile(mirrorFile, `${original}\n// Deep Space incremental benchmark marker.\n`);
     const mirrorIncrementalStartedAt = performance.now();
     const mirrorIncremental = await codeGraphIndexService.index(mirrorWorkspaceId);
     const mirrorIncrementalWallMs = Number((performance.now() - mirrorIncrementalStartedAt).toFixed(2));
@@ -164,7 +164,7 @@ describe('Code Intelligence benchmark gate', () => {
     });
     expect(mirrorIncrementalWallMs).toBeLessThan(2_000);
     reports.push({
-      root: `Orkestrai ${mirror.fileCount}-file mirror incremental`,
+      root: `Deep Space ${mirror.fileCount}-file mirror incremental`,
       incrementalWallMs: mirrorIncrementalWallMs,
       serviceMs: mirrorProject.stats.durationMs,
       timings: mirrorProject.stats.timings,

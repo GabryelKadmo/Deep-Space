@@ -1,4 +1,4 @@
-# Build do Orkestrai no Windows
+# Build do Deep Space no Windows
 
 Guia para compilar o app desktop nativamente numa máquina Windows (o caminho
 recomendado para produzir o instalador NSIS — cross-build via Docker/wine em
@@ -33,9 +33,9 @@ npx electron-builder --win zip --x64 --publish never "-c.npmRebuild=false"
 
 Artefatos em `release/`:
 
-- `Orkestrai-Setup-<versão>.exe` — instalador NSIS (unsigned: o SmartScreen vai
+- `DeepSpace-Setup-<versão>.exe` — instalador NSIS (unsigned: o SmartScreen vai
   avisar; "Mais informações" → "Executar assim mesmo")
-- `Orkestrai-<versão>-win.zip` — versão portátil (descompactar e rodar `Orkestrai.exe`)
+- `DeepSpace-<versão>-x64.zip` — versão portátil (descompactar e rodar `Deep Space.exe`)
 
 ## Decisões de empacotamento (não mude sem ler)
 

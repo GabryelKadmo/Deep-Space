@@ -38,6 +38,6 @@ export function validateSignedMacPermissions(appPath) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  if (!process.argv[2]) throw new Error('Usage: node scripts/validate-macos-permissions.mjs <Orkestrai.app>');
+  if (!process.argv[2]) throw new Error('Usage: node scripts/validate-macos-permissions.mjs <Deep Space.app>');
   validateSignedMacPermissions(process.argv[2]);
 }

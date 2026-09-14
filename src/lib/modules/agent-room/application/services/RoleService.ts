@@ -38,7 +38,7 @@ function instructionFileContents(role: AgentRole): string {
   return [
     '---',
     `name: ${role.slug}`,
-    `description: ${JSON.stringify(`Orkestrai workspace role: ${role.name}`)}`,
+    `description: ${JSON.stringify(`Deep Space workspace role: ${role.name}`)}`,
     '---',
     '',
     role.prompt.trim(),

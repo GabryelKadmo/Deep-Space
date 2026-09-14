@@ -77,7 +77,7 @@ describe('ApiClientService', () => {
         request: {
           method: 'POST',
           url: { raw: '{{baseUrl}}/users?expand=roles', query: [{ key: 'expand', value: 'roles' }] },
-          header: [{ key: 'X-Project', value: 'Orkestrai' }],
+          header: [{ key: 'X-Project', value: 'Deep Space' }],
           auth: { type: 'bearer', bearer: [{ key: 'token', value: '{{token}}' }] },
           body: { mode: 'raw', raw: '{"name":"Ada"}', options: { raw: { language: 'json' } } },
         },
@@ -280,7 +280,7 @@ settings {
     expect(exportedFolder.request.script.req).toContain('folderReady');
   });
 
-  it('restores the complete versioned Orkestrai collection state', async () => {
+  it('restores the complete versioned Deep Space collection state', async () => {
     const { workspace, node } = await fixture();
     const path = join(tempDir!, 'project.orkestrai-api.json');
     await writeFile(path, JSON.stringify({
@@ -551,10 +551,10 @@ paths:
     };
     await workspaceRepository.updateNode(node.id, { payload: { requests: [request] } });
 
-    const result = await apiClientService.executeSaved(workspace.id, node.id, request.id, { name: 'Orkestrai' });
+    const result = await apiClientService.executeSaved(workspace.id, node.id, request.id, { name: 'Deep Space' });
 
-    expect(result).toMatchObject({ status: 200, ok: true, body: expect.stringContaining('Orkestrai') });
-    expect(received).toMatchObject({ operationName: 'Hello', variables: { name: 'Orkestrai' } });
+    expect(result).toMatchObject({ status: 200, ok: true, body: expect.stringContaining('Deep Space') });
+    expect(received).toMatchObject({ operationName: 'Hello', variables: { name: 'Deep Space' } });
   });
 
   it('executes WebSocket handshakes and preserves the bidirectional transcript', async () => {
@@ -672,12 +672,12 @@ message WatchReply { string event = 1; }
     ]);
     const result = await apiClientService.executeSaved(workspace.id, node.id, request.id, {
       baseUrl: `http://127.0.0.1:${address.port}`,
-      project: 'Orkestrai',
+      project: 'Deep Space',
       token: 'secret',
     }, agent.id);
 
     expect(result).toMatchObject({ status: 200, ok: true, contentType: 'application/json' });
-    expect(JSON.parse(result.body)).toEqual({ path: '/health', project: 'Orkestrai', authorization: 'Bearer secret' });
+    expect(JSON.parse(result.body)).toEqual({ path: '/health', project: 'Deep Space', authorization: 'Bearer secret' });
     expect(result.durationMs).toBeGreaterThanOrEqual(0);
     expect(result.size).toBeGreaterThan(0);
   });

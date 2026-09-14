@@ -1,6 +1,6 @@
-# Contributing to Orkestrai
+# Contributing to Deep Space
 
-Thank you for helping improve Orkestrai. This guide keeps changes reviewable and
+Thank you for helping improve Deep Space. This guide keeps changes reviewable and
 protects the desktop release process across macOS, Windows, and Linux.
 
 ## Before You Start
@@ -21,7 +21,7 @@ Requirements:
 - Git
 
 ```bash
-git clone https://github.com/beeblock/orkestrai.git
+git clone https://github.com/GabryelKadmo/Deep-Space.git
 cd orkestrai
 npm ci
 npm run dev

@@ -98,7 +98,7 @@ describe('BridgeService', () => {
     const dir = await mkdtemp(join(tmpdir(), 'orkestrai-wsl-console-'));
     const previous = process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME;
     try {
-      process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME = 'C:\\Program Files\\Orkestrai\\resources\\orkestrai-cli-runtime\\node.exe';
+      process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME = 'C:\\Program Files\\Deep Space\\resources\\orkestrai-cli-runtime\\node.exe';
       const workspace = await workspaceRepository.createWorkspace({
         name: 'wsl-console',
         workingDir: dir,
@@ -109,7 +109,7 @@ describe('BridgeService', () => {
       await bridgeService.provisionSkill(workspace, await bridgeService.getOrCreateToken(workspace.id));
 
       const launcher = await readFile(join(dir, '.orkestrai', 'bin', 'orkestrai'), 'utf8');
-      expect(launcher).toContain("console_runtime=\"$(wslpath -u 'C:\\Program Files\\Orkestrai\\resources\\orkestrai-cli-runtime\\node.exe')\"");
+      expect(launcher).toContain("console_runtime=\"$(wslpath -u 'C:\\Program Files\\Deep Space\\resources\\orkestrai-cli-runtime\\node.exe')\"");
       expect(launcher).toContain('exec "$console_runtime" "$cli_win" "$@"');
       expect(launcher).toContain('where node.exe');
     } finally {

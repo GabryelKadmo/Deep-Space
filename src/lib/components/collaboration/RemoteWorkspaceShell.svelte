@@ -567,7 +567,7 @@
       <span class="grid size-7 place-items-center rounded-[6px] bg-[#10101d]"
         ><img src="/brand/icon.svg" class="size-4" alt="" /></span
       >
-      <strong class="text-sm font-semibold tracking-[0]">Orkestrai</strong>
+      <strong class="text-sm font-semibold tracking-[0]">Deep Space</strong>
       <Badge variant="outline" class="ml-auto h-5 px-1.5 text-ui-xs uppercase"
         >{m["remote.companion_badge"]()}</Badge
       >

@@ -99,10 +99,10 @@ export class ApiClientController extends Controller {
     } catch { /* The renderer poll reports the actionable error. */ }
     const locale = event.url.searchParams.get('locale');
     const copy = locale === 'pt-BR'
-      ? { complete: 'Autorização concluída', failed: 'A autorização falhou', done: 'Você pode fechar esta janela e voltar ao Orkestrai.', review: 'Volte ao Orkestrai para revisar o erro.' }
+      ? { complete: 'Autorização concluída', failed: 'A autorização falhou', done: 'Você pode fechar esta janela e voltar ao Deep Space.', review: 'Volte ao Deep Space para revisar o erro.' }
       : locale === 'es'
-        ? { complete: 'Autorización completada', failed: 'La autorización falló', done: 'Puedes cerrar esta ventana y volver a Orkestrai.', review: 'Vuelve a Orkestrai para revisar el error.' }
-        : { complete: 'Authorization complete', failed: 'Authorization failed', done: 'You can close this window and return to Orkestrai.', review: 'Return to Orkestrai to review the error.' };
+        ? { complete: 'Autorización completada', failed: 'La autorización falló', done: 'Puedes cerrar esta ventana y volver a Deep Space.', review: 'Vuelve a Deep Space para revisar el error.' }
+        : { complete: 'Authorization complete', failed: 'Authorization failed', done: 'You can close this window and return to Deep Space.', review: 'Return to Deep Space to review the error.' };
     const title = complete ? copy.complete : copy.failed;
     const detail = complete ? copy.done : copy.review;
     return new Response(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${title}</title><body style="margin:0;display:grid;min-height:100vh;place-items:center;background:#111;color:#f5f5f5;font:16px system-ui"><main><h1>${title}</h1><p>${detail}</p></main></body></html>`, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });

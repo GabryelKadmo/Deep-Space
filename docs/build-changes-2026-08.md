@@ -89,7 +89,7 @@ pequenos, não os pesos de runtime.
 
 ### ⚠️ AÇÃO no Mac (importante — só validei no Windows)
 1. `npx electron-builder --mac dmg` — deve completar normal.
-2. Abra o app: a janela deve renderizar o canvas (**"Orkestrai — Canvas"**) e o
+2. Abra o app: a janela deve renderizar o canvas (**"Deep Space — Canvas"**) e o
    servidor interno deve subir sem erro (`database.db` criado em
    `~/Library/Application Support/orkestrai/`).
 3. Se **qualquer** recurso quebrar por módulo faltando, olhe o stderr do processo

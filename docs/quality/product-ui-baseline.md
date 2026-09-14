@@ -7,7 +7,7 @@ Last reviewed: 2026-08-12
 ## Reproducible visual matrix
 
 `tests/e2e/workbench-visual.spec.ts` owns the reference screenshots for the
-Workbench at 1280x720, 1440x900, and 1920x1080 in Orkestrai Light and Orkestrai
+Workbench at 1280x720, 1440x900, and 1920x1080 in Deep Space Light and Deep Space
 Dark. Its APIs and usage values are deterministic, animations are disabled, and
 the test uses locally packaged fonts.
 

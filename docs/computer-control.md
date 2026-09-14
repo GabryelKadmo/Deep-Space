@@ -1,7 +1,7 @@
 # Computer Control
 
 Computer Control operates the interactive desktop of the computer running
-Orkestrai. It does not open a replacement browser profile or move desktop apps
+Deep Space. It does not open a replacement browser profile or move desktop apps
 into a Portal. The Computer node, Workbench, agent MCP and CLI share the same
 workspace configuration, evidence and execution boundary.
 
@@ -43,7 +43,7 @@ can launch or revoke them. Under **Automations > Security**, set the standing
 application boundary and risk gates for unattended work. Display grants are
 separate; agents cannot capture or click the entire desktop.
 
-On macOS, grant Orkestrai **Accessibility**, **Screen & System Audio Recording**
+On macOS, grant Deep Space **Accessibility**, **Screen & System Audio Recording**
 and **Automation** when requested by the operating system. The signed app and
 helpers include microphone and Apple Events entitlements. Entitlements allow
 the OS to request access; they do not grant consent on the user's behalf.
@@ -73,7 +73,7 @@ The host must be awake with Core, provider access and the interactive session
 available. Locked sessions, sleep and missing OS grants can block execution.
 Remote chat is an instruction channel, not a live desktop video stream.
 
-For a site already in an Orkestrai Portal, use that same Portal's typed tools.
+For a site already in an Deep Space Portal, use that same Portal's typed tools.
 Prefer Portal or Integration Center when structured actions and narrower
 website/account grants are available. A native browser application grant is
 broader than a per-site Portal grant.
@@ -130,7 +130,7 @@ shell also remains outside this broker's hard enforcement boundary. The agent
 instructions prohibit using shell automation to bypass a denial or gate.
 
 For manual keyboard input, select an allowed window in the panel first. The
-selection stays bound to that window while you type in Orkestrai; changing
+selection stays bound to that window while you type in Deep Space; changing
 the desktop's foreground app does not silently redirect the text. A closed
 or revoked target disables input until you choose another allowed window.
 

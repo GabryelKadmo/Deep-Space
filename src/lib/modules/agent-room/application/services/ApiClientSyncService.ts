@@ -80,7 +80,7 @@ export class ApiClientSyncService {
     if (persisted.sourceKind === 'postman') {
       await writeApiClientFileAtomic(
         sourceRoot,
-        `${JSON.stringify(serializePostmanCollection(node.title ?? 'Orkestrai API', incoming), null, 2)}\n`,
+        `${JSON.stringify(serializePostmanCollection(node.title ?? 'Deep Space API', incoming), null, 2)}\n`,
       );
       managedFiles = [];
     } else {

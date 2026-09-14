@@ -90,7 +90,7 @@ describe('RoleService', () => {
     expect(readFileSync(instructionFile, 'utf8')).toBe([
       '---',
       'name: revisor-de-arquitetura',
-      'description: "Orkestrai workspace role: Revisor de Arquitetura"',
+      'description: "Deep Space workspace role: Revisor de Arquitetura"',
       '---',
       '',
       'Revise limites de modulo e riscos de acoplamento.',
@@ -100,7 +100,7 @@ describe('RoleService', () => {
     writeFileSync(instructionFile, 'formato legado sem frontmatter\n');
     expect((await roleService.launchContext(workspace.id, 'Revisor de Arquitetura'))?.instructionFile)
       .toBe(instructionFile);
-    expect(readFileSync(instructionFile, 'utf8')).toContain('\ndescription: "Orkestrai workspace role: Revisor de Arquitetura"\n');
+    expect(readFileSync(instructionFile, 'utf8')).toContain('\ndescription: "Deep Space workspace role: Revisor de Arquitetura"\n');
     expect(readFileSync(instructionFile, 'utf8')).not.toContain('formato legado');
   });
 

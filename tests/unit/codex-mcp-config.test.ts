@@ -10,18 +10,18 @@ import {
 
 describe('configuracao MCP do Codex', () => {
   const windowsLaunch = {
-    command: 'C:\\Program Files\\Orkestrai\\Orkestrai.exe',
-    args: ['C:\\Program Files\\Orkestrai\\resources\\app\\packages\\orkestrai-cli\\bin\\orkestrai.js', 'mcp'],
+    command: 'C:\\Program Files\\Deep Space\\Deep Space.exe',
+    args: ['C:\\Program Files\\Deep Space\\resources\\app\\packages\\orkestrai-cli\\bin\\orkestrai.js', 'mcp'],
     electronRuntime: true,
   };
 
   it('repara exatamente o TOML corrompido por versoes anteriores', () => {
     const corrupted = [
       '[mcp_servers.orkestrai]',
-      'command = "/Applications/Orkestrai.app/Contents/MacOS/Orkestrai"',
-      'args = ["/Applications/Orkestrai.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js", "mcp"]',
+      'command = "/Applications/Deep Space.app/Contents/MacOS/Deep Space"',
+      'args = ["/Applications/Deep Space.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js", "mcp"]',
       'default_tools_approval_mode = "approve"',
-      '  "/Applications/Orkestrai.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js",',
+      '  "/Applications/Deep Space.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js",',
       '  "mcp"',
       ']',
       'env = { ELECTRON_RUN_AS_NODE = "1" }',
@@ -37,19 +37,19 @@ describe('configuracao MCP do Codex', () => {
     const result = repairLegacyCodexMcpConfig(corrupted);
 
     expect(result.repaired).toBe(true);
-    expect(result.content).not.toContain('\n  "/Applications/Orkestrai.app');
+    expect(result.content).not.toContain('\n  "/Applications/Deep Space.app');
     expect(result.content).not.toContain('env = { ELECTRON_RUN_AS_NODE');
     expect(result.content).toContain('default_tools_approval_mode = "approve"');
     expect(result.content).toContain('[features]\njs_repl = false');
     expect(() => parse(result.content)).not.toThrow();
   });
 
-  it('nao altera TOML invalido que nao tenha a assinatura de corrupcao do Orkestrai', () => {
+  it('nao altera TOML invalido que nao tenha a assinatura de corrupcao do Deep Space', () => {
     const malformed = '[features]\nthis is not toml\n';
     expect(repairLegacyCodexMcpConfig(malformed)).toEqual({ content: malformed, repaired: false });
   });
 
-  it('nao altera configuracao global valida, inclusive uma secao Orkestrai customizada', () => {
+  it('nao altera configuracao global valida, inclusive uma secao Deep Space customizada', () => {
     const valid = [
       '[mcp_servers.orkestrai]',
       'command = "my-wrapper"',
@@ -63,7 +63,7 @@ describe('configuracao MCP do Codex', () => {
   it('gera overrides efemeros completos sem persistir configuracao', () => {
     const args = codexMcpOverrideArgs(windowsLaunch);
 
-    expect(args).toContain('mcp_servers.orkestrai.command="C:\\\\Program Files\\\\Orkestrai\\\\Orkestrai.exe"');
+    expect(args).toContain('mcp_servers.orkestrai.command="C:\\\\Program Files\\\\Deep Space\\\\Deep Space.exe"');
     expect(args).toContain('mcp_servers.orkestrai.env={ ELECTRON_RUN_AS_NODE = "1" }');
     expect(args).toContain(`mcp_servers.figma.url="${FIGMA_MCP_URL}"`);
     const forwarded = args.find((arg) => arg.startsWith('mcp_servers.orkestrai.env_vars='))!;

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Servidor de producao do Orkestrai: HTTP (handler do adapter-node) +
+ * Servidor de producao do Deep Space: HTTP (handler do adapter-node) +
  * WebSocket de PTY no mesmo processo/porta.
  *
  * Usado pelo Electron (electron/main.cjs) e por `npm run start`.
@@ -208,7 +208,7 @@ server.on('upgrade', (request, socket, head) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`Orkestrai ouvindo em http://${host}:${port}`);
+  console.log(`Deep Space ouvindo em http://${host}:${port}`);
   writeOrkestraiRuntimeFile({
     apiUrl: `http://${host}:${port}`,
     coreId: process.env.ORKESTRAI_CORE_ID ?? null,

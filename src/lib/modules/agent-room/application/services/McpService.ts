@@ -82,7 +82,7 @@ export class McpService {
     if (!name) throw new Error('Informe o nome do servidor.');
     if (!/^[a-z0-9-_]+$/i.test(name)) throw new Error('Nome so com letras, numeros, - e _.');
     if (name === 'orkestrai' || name === 'figma')
-      throw new Error(`O nome "${name}" e reservado para o servidor do Orkestrai.`);
+      throw new Error(`O nome "${name}" e reservado para o servidor do Deep Space.`);
     const workspace = await this.getWorkspace(workspaceId);
     const config = await this.readConfig(workspaceId);
     const url = input.url?.trim();
@@ -119,7 +119,7 @@ export class McpService {
   }
 
   async remove(workspaceId: string, name: string): Promise<McpServerDef[]> {
-    if (name === 'orkestrai' || name === 'figma') throw new Error(`Servidor "${name}" e gerenciado pelo Orkestrai.`);
+    if (name === 'orkestrai' || name === 'figma') throw new Error(`Servidor "${name}" e gerenciado pelo Deep Space.`);
     const workspace = await this.getWorkspace(workspaceId);
     const config = await this.readConfig(workspaceId);
     if (!(name in config.mcpServers)) throw new Error(`Servidor "${name}" nao encontrado.`);

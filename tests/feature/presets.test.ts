@@ -207,10 +207,10 @@ describe('PresetService', () => {
     });
   });
 
-  it('installs the Orkestrai contributing consensus team and its complete workflow', async () => {
+  it('installs the Deep Space contributing consensus team and its complete workflow', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'orkestrai-contributing-'));
     const applied = await presetService.apply('builtin:orkestrai-contributing', {
-      name: 'Contribuição Orkestrai',
+      name: 'Contribuição Deep Space',
       workingDir: dir,
       locale: 'pt-BR',
     });
