@@ -377,7 +377,7 @@
 
   onMount(() => {
     let fontSize = 13;
-    let fontFamily = 'ui-monospace, SFMono-Regular, Menlo, monospace';
+    let fontFamily = "'JetBrains Mono Variable', 'JetBrains Mono', Consolas, 'Cascadia Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
 
     const terminal = new Terminal({
       cursorBlink: true,
