@@ -1,4 +1,21 @@
-# Svelar App — Agent Guidelines
+# Deep Space — Agent Guidelines
+
+## Fork Identity (read this first)
+
+- This repository is **Deep Space**, a fork of [Orkestrai](https://github.com/beeblock/orkestrai) under Apache 2.0. Attribution lives in `NOTICE`; `LICENSE` keeps the upstream copyright and must not be edited.
+- Remotes in a full working copy: `origin` is `GabryelKadmo/Deep-Space` (the product), and the fork `GabryelKadmo/orkestrai` plus `beeblock/orkestrai` exist only as mirrors for pulling upstream work. Never push product branches to the mirrors.
+- **The user-facing name is Deep Space. The agent bridge is deliberately still `orkestrai`.** The `orkestrai` CLI command, the `.orkestrai/` workspace directory, the `ORKESTRAI_*` environment variables, the `orkestraiDesktop` preload bridge, `packages/orkestrai-*` and the agent skill files keep their names, because renaming them breaks workspaces that already exist and the agent instructions cached inside them. Do not "finish the rename" unless the user asks for that migration explicitly.
+- Glued identifiers (`OrkestraiInputs`, `OrkestraiVersion`, `OrkestraiEdge`) are code, not branding. Only the standalone capitalized word was renamed.
+- Release artifacts must stay spaceless (`DeepSpace-*`) even though `productName` is `Deep Space`: GitHub rewrites spaces in release asset names, which breaks the match against `latest-*.yml` and silently kills auto-update. Any shell step that touches `Deep Space.app` needs quoting.
+- `orkestrai-branding/` still holds the upstream logo, and the READMEs render it. Apache 2.0 does not grant trademark rights, so these assets must be replaced before any public distribution.
+- The collaboration relay defaults to the upstream public endpoint until `PUBLIC_RELAY_URL` is set; `docs/relay.md` covers deploying `packages/orkestrai-relay`.
+
+### Known environment traps on Windows
+
+- `npm test` reports ~97 failures that are environmental, not regressions: node-pty spawning POSIX commands (`/bin/sh`), plus a pre-existing parse error in `tests/unit/release-artifacts.test.ts`. `tests/unit/tour-engine.test.ts` also times out. Compare against a clean tree with `git stash` before blaming a change.
+- `better-sqlite3` cannot serve both runtimes at once: `npm run electron:rebuild` builds it for Electron and breaks `npm run dev`; `npm rebuild better-sqlite3` puts it back for Node. Stop any running dev server first, or the rebuild fails with `EPERM: unlink`.
+- The e2e config builds before starting its server and times out at 180s on a cold build. Build first, or point a temporary Playwright config at an already running server.
+- A workspace whose working directory is this repository will provision agent skill files into it (`.agents/`, `.cline/`, `.devin/`, `.mcp.json`, and an edited `AGENTS.md`). Use a scratch directory for test workspaces.
 
 ## Required Flow
 
