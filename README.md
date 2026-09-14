@@ -1,6 +1,8 @@
 <p align="center">
-  <img src="deepspace-branding/logo.svg" alt="Deep Space" width="360">
+  <img src="deepspace-branding/kraken.png" alt="Deep Space" width="420">
 </p>
+
+<h1 align="center">Deep Space</h1>
 
 <p align="center">
   <strong>Orchestrate AI teams for building, designing, marketing, and shipping on a visual canvas.</strong>

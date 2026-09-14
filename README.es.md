@@ -1,6 +1,8 @@
 <p align="center">
-  <img src="deepspace-branding/logo.svg" alt="Deep Space" width="360">
+  <img src="deepspace-branding/kraken.png" alt="Deep Space" width="420">
 </p>
+
+<h1 align="center">Deep Space</h1>
 
 <p align="center">
   <strong>Orquesta equipos de IA para crear, diseñar, promocionar y entregar en un lienzo visual.</strong>
