@@ -245,6 +245,14 @@ function normalizeMenuLocale(value) {
   return 'en';
 }
 
+/** Idioma do sistema operacional, disponivel sem servidor nem settings. */
+function systemLocale() {
+  const locale = app.getLocale().toLowerCase();
+  if (locale.startsWith('pt')) return 'pt-BR';
+  if (locale.startsWith('es')) return 'es';
+  return 'en';
+}
+
 function sendMenuAction(action) {
   if (!mainWindow) {
     createWindow().then(() => mainWindow?.webContents.send('orkestrai:menu-action', action)).catch((error) => console.error(error));
@@ -345,7 +353,10 @@ function createSplash() {
     webPreferences: { contextIsolation: true },
   });
   splashWindow.center();
-  splashWindow.loadFile(path.join(__dirname, 'splash.html'));
+  // O splash abre antes das settings existirem, então o idioma vem do sistema —
+  // mesma fonte que o menu já usa em whenReady. Pode divergir de uiLanguage em
+  // quem configurou o app num idioma diferente do SO; o inglês é o padrão.
+  splashWindow.loadFile(path.join(__dirname, 'splash.html'), { query: { lang: systemLocale() } });
   splashWindow.once('ready-to-show', () => splashWindow?.show());
 }
 
@@ -1289,7 +1300,7 @@ if (!gotLock) {
   app.whenReady().then(async () => {
     initializeDiagnostics();
     registerCollaborationProtocol();
-    menuLocale = normalizeMenuLocale(app.getLocale().toLowerCase().startsWith('pt') ? 'pt-BR' : app.getLocale().toLowerCase().startsWith('es') ? 'es' : 'en');
+    menuLocale = systemLocale();
     // Ícone do dock em dev (empacotado vem do electron-builder).
     if (process.platform === 'darwin' && !app.isPackaged) {
       app.dock.setIcon(path.join(appRoot, 'electron', 'resources', 'icon.png'));

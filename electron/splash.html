@@ -163,8 +163,21 @@
     <div class="content">
       <img class="logo" src="./resources/icon.png" alt="" width="92" height="92" />
       <div class="wordmark">Deep Space</div>
-      <div class="tagline">Many agents. One space.</div>
+      <div class="tagline" data-tagline data-pt-BR="Múltiplos agentes. Um só espaço." data-es="Múltiples agentes. Un solo espacio.">Many agents. One space.</div>
       <div class="loader" aria-label="Loading..."><span></span><span></span><span></span></div>
     </div>
+    <script>
+      /*
+       * O idioma chega por query string porque o splash abre antes do servidor e
+       * das settings. O main envia o locale do sistema; sem parametro ou com um
+       * idioma desconhecido, fica o ingles que ja esta no HTML.
+       */
+      var lang = new URLSearchParams(location.search).get('lang');
+      var node = document.querySelector('[data-tagline]');
+      // getAttribute e nao dataset: o parser minuscula os atributos, entao
+      // data-pt-BR vira a chave ptBr no dataset e a busca por ptBR falha calada.
+      var translated = lang && node && node.getAttribute('data-' + lang);
+      if (translated) node.textContent = translated;
+    </script>
   </body>
 </html>
