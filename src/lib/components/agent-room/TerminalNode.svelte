@@ -807,6 +807,30 @@
         <Tooltip.Content side="left">{m['term.idle']()}</Tooltip.Content>
       </Tooltip.Root>
   {/if}
+  {#if searchOpen}
+    <div class="terminal-search nodrag">
+      <input
+        bind:value={searchQuery}
+        oninput={() => searchQuery && searchAddon?.findNext(searchQuery)}
+        placeholder={m['ph.search_terminal']()}
+        spellcheck="false"
+      />
+      <span class="search-hint">{m['term.esc_closes']()}</span>
+    </div>
+  {/if}
+  {#if dictateError}
+    <p class="terminal-status">{dictateError}</p>
+  {/if}
+  {#if dictateStatus && !dictateError}
+    <p class="terminal-status">{dictateStatus}</p>
+  {/if}
+  {#if statusMessage}
+    <p class="terminal-status">{statusMessage}</p>
+  {/if}
+  {#if exited !== null}
+    <p class="terminal-status">{m['term.process_exited']({ code: exited })}</p>
+  {/if}
+  <div class="terminal-container" bind:this={container} style:--terminal-padding="{terminalPaddingPx}px"></div>
   {#if dictationSupported}
     <div class="dictate-controls">
       {#if dictating}
@@ -844,30 +868,6 @@
       </HeaderIconButton>
     </div>
   {/if}
-  {#if searchOpen}
-    <div class="terminal-search nodrag">
-      <input
-        bind:value={searchQuery}
-        oninput={() => searchQuery && searchAddon?.findNext(searchQuery)}
-        placeholder={m['ph.search_terminal']()}
-        spellcheck="false"
-      />
-      <span class="search-hint">{m['term.esc_closes']()}</span>
-    </div>
-  {/if}
-  {#if dictateError}
-    <p class="terminal-status">{dictateError}</p>
-  {/if}
-  {#if dictateStatus && !dictateError}
-    <p class="terminal-status">{dictateStatus}</p>
-  {/if}
-  {#if statusMessage}
-    <p class="terminal-status">{statusMessage}</p>
-  {/if}
-  {#if exited !== null}
-    <p class="terminal-status">{m['term.process_exited']({ code: exited })}</p>
-  {/if}
-  <div class="terminal-container" bind:this={container} style:--terminal-padding="{terminalPaddingPx}px"></div>
   <VoiceConfirmDialog bind:open={voiceConfirmOpen} onConfirm={() => toggleDictation()} onCancel={() => {}} />
 </div>
 
@@ -919,14 +919,18 @@
     color: #6d6d78;
   }
 
+  /*
+   * Fora do fluxo, estes controles cobriam a linha de prompt do agente. Como
+   * .terminal-node ja e flex column e o container e flex:1, uma regua estatica
+   * abaixo do terminal nunca sobrepoe o que esta sendo digitado.
+   */
   .dictate-controls {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
     display: flex;
-    gap: 4px;
-    z-index: 10;
+    flex-shrink: 0;
+    justify-content: flex-end;
     align-items: center;
+    gap: 4px;
+    padding: 3px 8px 5px;
   }
 
   :global(.dictate-lang) {
