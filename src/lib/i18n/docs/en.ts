@@ -915,7 +915,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'desktop-diagnostics',
       title: 'Diagnose a desktop action that does not respond',
-      body: 'Open View > Developer tools and reproduce the problem while watching Console. Then choose Help > Open logs folder and share orkestrai.log with support. The rotating local log includes renderer errors, internal-server failures, and unexpected exits; common credentials are redacted and normal agent output is not persisted.',
+      body: 'Open View > Developer tools and reproduce the problem while watching Console. Then choose Help > Open logs folder and share deep-space.log with support. The rotating local log includes renderer errors, internal-server failures, and unexpected exits; common credentials are redacted and normal agent output is not persisted.',
       tags: ['Developer tools', 'local logs', 'support'],
     },
   ],

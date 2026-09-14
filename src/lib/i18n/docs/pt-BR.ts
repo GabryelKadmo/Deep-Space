@@ -919,7 +919,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'desktop-diagnostics',
       title: 'Diagnosticar uma ação do desktop que não responde',
-      body: 'Abra Visualizar > Ferramentas do desenvolvedor e reproduza o problema observando o Console. Depois escolha Ajuda > Abrir pasta de logs e compartilhe o arquivo orkestrai.log com o suporte. O log local rotativo inclui erros do renderer, falhas do servidor interno e encerramentos inesperados; credenciais comuns são ocultadas e a saída normal dos agentes não é persistida.',
+      body: 'Abra Visualizar > Ferramentas do desenvolvedor e reproduza o problema observando o Console. Depois escolha Ajuda > Abrir pasta de logs e compartilhe o arquivo deep-space.log com o suporte. O log local rotativo inclui erros do renderer, falhas do servidor interno e encerramentos inesperados; credenciais comuns são ocultadas e a saída normal dos agentes não é persistida.',
       tags: ['Ferramentas do desenvolvedor', 'logs locais', 'suporte'],
     },
   ],

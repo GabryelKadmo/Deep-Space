@@ -46,7 +46,7 @@ function createDiagnosticsLogger(logDirectory, options = {}) {
   const maxBytes = Math.max(1_024, Number(options.maxBytes) || DEFAULT_MAX_BYTES);
   const backups = Math.max(1, Math.min(5, Number(options.backups) || DEFAULT_BACKUPS));
   fs.mkdirSync(logDirectory, { recursive: true, mode: 0o700 });
-  const filePath = path.join(logDirectory, 'orkestrai.log');
+  const filePath = path.join(logDirectory, 'deep-space.log');
 
   function write(level, scope, ...values) {
     try {

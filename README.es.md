@@ -21,7 +21,7 @@ Descarga los instaladores más recientes desde
 
 Para diagnosticar la aplicación de escritorio, abre **Ver → Herramientas de
 desarrollo** y reproduce el problema con Console visible. **Ayuda → Abrir
-carpeta de logs** abre el `orkestrai.log` rotativo, que registra fallos del
+carpeta de logs** abre el `deep-space.log` rotativo, que registra fallos del
 renderer y del servidor interno ocultando credenciales comunes; la salida
 normal de los agentes no se guarda.
 

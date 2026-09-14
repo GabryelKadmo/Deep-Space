@@ -21,7 +21,7 @@ Baixe os instaladores mais recentes em
 
 Para diagnosticar o app desktop, abra **Visualizar → Ferramentas do
 desenvolvedor** e reproduza o problema com o Console visível. **Ajuda → Abrir
-pasta de logs** abre o `orkestrai.log` rotativo, que registra falhas do renderer
+pasta de logs** abre o `deep-space.log` rotativo, que registra falhas do renderer
 e do servidor interno com credenciais comuns ocultadas; a saída normal dos
 agentes não é persistida.
 

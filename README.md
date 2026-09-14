@@ -21,7 +21,7 @@ Download the latest installers from
 
 For desktop troubleshooting, open **View → Developer tools** and reproduce the
 problem with Console visible. **Help → Open logs folder** opens the rotating
-`orkestrai.log`, which captures renderer and internal-server failures with
+`deep-space.log`, which captures renderer and internal-server failures with
 common credentials redacted; normal agent output is not persisted.
 
 ## Highlights

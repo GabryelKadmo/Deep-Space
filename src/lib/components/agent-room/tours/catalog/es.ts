@@ -1917,7 +1917,7 @@ export const TOURS_ES: Tour[] = [
     steps: [
       { id: 'open-developer-tools', title: 'Abre las Herramientas de desarrollo', body: 'Abre Ver > Herramientas de desarrollo o presiona Ctrl+Shift+I en Windows y Linux. Mantén Console visible y reproduce la acción que no respondió.' },
       { id: 'read-console-error', title: 'Captura el primer error relevante', body: 'Copia el primer error rojo y su stack después de reproducir el problema. Console es la vista más rápida para Uso, Workbench y otras acciones del renderer que fallan sin mensaje visible.' },
-      { id: 'open-desktop-logs', title: 'Abre los logs persistentes', body: 'Elige Ayuda > Abrir carpeta de logs y envía orkestrai.log con el reporte. Los archivos rotan automáticamente, las credenciales comunes se ocultan y la salida normal de los agentes no se guarda.' },
+      { id: 'open-desktop-logs', title: 'Abre los logs persistentes', body: 'Elige Ayuda > Abrir carpeta de logs y envía deep-space.log con el reporte. Los archivos rotan automáticamente, las credenciales comunes se ocultan y la salida normal de los agentes no se guarda.' },
     ],
   },
 ];

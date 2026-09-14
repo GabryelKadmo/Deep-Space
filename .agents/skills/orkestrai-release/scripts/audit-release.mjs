@@ -27,18 +27,18 @@ const requiredAssets = [
   'latest-linux.yml',
   'latest-mac.yml',
   'latest.yml',
-  `Orkestrai-${version}-arm64-mac.zip`,
-  `Orkestrai-${version}-arm64-mac.zip.blockmap`,
-  `Orkestrai-${version}-arm64.dmg`,
-  `Orkestrai-${version}-arm64.dmg.blockmap`,
-  `Orkestrai-${version}-mac.zip`,
-  `Orkestrai-${version}-mac.zip.blockmap`,
-  `Orkestrai-${version}.AppImage`,
-  `Orkestrai-${version}.x86_64.rpm`,
-  `Orkestrai-${version}.dmg`,
-  `Orkestrai-${version}.dmg.blockmap`,
-  `Orkestrai-Setup-${version}.exe`,
-  `Orkestrai-Setup-${version}.exe.blockmap`,
+  `DeepSpace-${version}-arm64-mac.zip`,
+  `DeepSpace-${version}-arm64-mac.zip.blockmap`,
+  `DeepSpace-${version}-arm64.dmg`,
+  `DeepSpace-${version}-arm64.dmg.blockmap`,
+  `DeepSpace-${version}-mac.zip`,
+  `DeepSpace-${version}-mac.zip.blockmap`,
+  `DeepSpace-${version}.AppImage`,
+  `DeepSpace-${version}.x86_64.rpm`,
+  `DeepSpace-${version}.dmg`,
+  `DeepSpace-${version}.dmg.blockmap`,
+  `DeepSpace-Setup-${version}.exe`,
+  `DeepSpace-Setup-${version}.exe.blockmap`,
 ];
 
 async function auditRepository(repository) {
@@ -101,7 +101,7 @@ async function auditRepository(repository) {
     }
   }
 
-  console.log(`Audited ${repository} at Orkestrai ${version}: ${release.assets.length} public assets.`);
+  console.log(`Audited ${repository} at Deep Space ${version}: ${release.assets.length} public assets.`);
   console.log(release.url);
   return release;
 }
