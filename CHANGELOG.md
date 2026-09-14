@@ -5,7 +5,7 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
-## 0.31.0 - 2026-09-13
+## 0.31.0 - 2026-09-14
 
 ### Changed
 
@@ -15,7 +15,35 @@ pt-BR, English, and Spanish translations.
 
 - The collaboration relay endpoint moved behind `PUBLIC_RELAY_URL` (`src/lib/modules/collaboration/relay.ts`), read by both the sharing dialog and the Remote page. It still falls back to the upstream public relay until a private deployment is configured; `docs/relay.md` documents the deploy.
 
-- The agent bridge keeps its current surface on purpose: the `deepspace` CLI command, the `.deepspace/` workspace directory, `DEEPSPACE_*` environment variables, and the agent skill files are unchanged, because renaming them breaks existing workspaces and cached agent instructions.
+- The agent bridge was renamed as well: the CLI command is `deepspace`, the workspace directory is `.deepspace/`, the environment variables are `DEEPSPACE_*`, and the collaboration protocol is `deepspace:`. The bridge had been left on the old naming to protect workspaces provisioned by earlier installs; with no published release, there were none to protect. A workspace created before the rename is repaired on first open, though the previous `.deepspace/` predecessor is left behind rather than deleted.
+
+- The default theme is monochrome on near black. Accent is white, and page, canvas and sidebar share one tone so panels no longer read as grey bars against the content. The surface ladder was recalibrated rather than darkened: it came from a palette anchored on a lighter page, so the first step spanned 27 points and the order inverted midway. Muted text was lightened to clear the 4.5 contrast ratio the theme test enforces, and the light theme took the neutral equivalent, since white cannot be an accent there.
+
+- The splash screen was redesigned around the deep sea motif: black, with a cold light falling from the surface, fine particles rising, and ice white loading dots. It now follows the system language, which is available before the persisted settings are, and falls back to English for any other locale.
+
+- Application icons were replaced across every target: Windows, Linux and macOS bundles, the tray, the favicon and the in-app mark. Windows and Linux icons are cropped so the artwork fills the box edge to edge, while the macOS icon keeps the padding Apple's icon grid expects.
+
+### Added
+
+- The quick prompt in a terminal node can be collapsed, giving the space back to anyone who does not attach files or mention agents with `@`. Each terminal remembers its own state, and dropping an attachment reopens it so the file reference is not written into a hidden field.
+
+### Fixed
+
+- The splash no longer stays on screen after the application is ready. It closed only on a paint event, which Chromium defers while the window is minimised or in the background, so it could sit there until the window was clicked. It also opens before the server boots now, instead of after, which is the wait it exists to cover.
+
+- Dragging the window by the empty area of the title bar works. The menu strip claimed that whole region as a non-draggable zone, leaving only the logo able to move the window.
+
+- Terminal output renders block-drawing characters correctly. The terminal asked for three macOS-only fonts and fell through to a generic monospace on Windows, which broke the banners agent CLIs draw with half blocks.
+
+- The dictation controls no longer cover the agent prompt. They were pinned over the bottom right of the terminal, which is exactly where the prompt line sits.
+
+- The Windows taskbar shows the application icon instead of the generic Electron mark, and native notifications can be delivered, both of which require the application to declare an AppUserModelID.
+
+- The update dialog's manual download link points at this project's releases rather than the upstream project's.
+
+- Theme import and export no longer carry each other's icons.
+
+- The desktop log is `deep-space.log`, matching the name the documentation and the guided tours tell people to send with a report.
 
 ## 0.30.1 - 2026-09-13
 
