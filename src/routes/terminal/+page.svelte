@@ -1111,7 +1111,7 @@
 <main class="grid h-full min-h-0 grid-cols-[300px_minmax(0,1fr)] overflow-hidden bg-[var(--app-canvas)] text-[var(--app-text)] max-[720px]:grid-cols-[236px_minmax(420px,1fr)]" data-testid="workbench-shell">
   <aside class="flex min-h-0 flex-col border-r border-[var(--app-border)] bg-[var(--app-sidebar)]">
     <div class="flex h-11 shrink-0 items-center gap-2 px-3">
-      <img src="/brand/icon.svg" width="20" height="20" alt="" />
+      <img src="/brand/icon.png" width="20" height="20" alt="" />
       <strong class="font-['Sora_Variable'] text-[14px] font-semibold text-[var(--app-text)]">Deep Space</strong>
       <div class="ml-auto"><WorkspaceSharingButton variant="icon" workspaceId={selectedWorkspaceId} onOpen={() => (sharingOpen = true)} /></div>
     </div>

@@ -12,7 +12,7 @@
 </script>
 
 <header class="desktop-titlebar" data-dictation-ignore>
-  <div class="brand"><img src="/brand/icon.svg" alt="" width="17" height="17" /><strong>Deep Space</strong></div>
+  <div class="brand"><img src="/brand/icon.png" alt="" width="17" height="17" /><strong>Deep Space</strong></div>
 
   <nav aria-label={m['desktop.menu_aria']()}>
     <DropdownMenu.Root>

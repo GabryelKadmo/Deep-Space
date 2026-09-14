@@ -2607,7 +2607,7 @@
   <aside class="sidebar" inert={designModeNodeId !== null} aria-hidden={designModeNodeId ? 'true' : undefined}>
     {#if !sidebarCollapsed}
       <div class="brand-row">
-        <img src="/brand/icon.svg" width="22" height="22" alt="Deep Space" />
+        <img src="/brand/icon.png" width="22" height="22" alt="Deep Space" />
         <span class="brand-name">Deep Space</span>
       </div>
       <div class="flex items-center justify-between gap-2 px-3 pb-2">
@@ -3045,7 +3045,7 @@
       </div>
     {:else}
       <div class="canvas-empty">
-        <img src="/brand/icon.svg" width="56" height="56" alt="" />
+        <img src="/brand/icon.png" width="56" height="56" alt="" />
         <p>{m['canvas.empty']()}</p>
       </div>
     {/if}
