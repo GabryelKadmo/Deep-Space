@@ -112,11 +112,20 @@
     font-weight: 600;
   }
 
+  /*
+   * O nav ocupa a coluna 1fr inteira, então marcá-lo como no-drag tornava todo o
+   * espaço vazio à direita dos menus não-arrastável — sobrava só a logo para mover
+   * a janela. O no-drag pertence aos botões; o vazio entre e depois deles herda o
+   * drag do header.
+   */
   nav,
   .window-controls {
     height: 100%;
     display: flex;
     align-items: center;
+  }
+
+  .window-controls {
     -webkit-app-region: no-drag;
   }
 
@@ -128,6 +137,7 @@
     background: transparent;
     color: var(--app-text-soft);
     font-size: 11px;
+    -webkit-app-region: no-drag;
   }
 
   :global(.menu-trigger:hover),
