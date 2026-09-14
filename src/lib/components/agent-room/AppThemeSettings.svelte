@@ -170,11 +170,11 @@
         {m['theme.duplicate']()}
       </Button>
       <Button variant="outline" size="sm" onclick={() => importInput.click()}>
-        <Upload size={14} aria-hidden="true" />
+        <Download size={14} aria-hidden="true" />
         {m['theme.import']()}
       </Button>
       <Button variant="outline" size="icon-sm" title={m['theme.export']()} aria-label={m['theme.export']()} onclick={exportTheme}>
-        <Download size={14} aria-hidden="true" />
+        <Upload size={14} aria-hidden="true" />
       </Button>
       <input bind:this={importInput} class="hidden-input" type="file" accept="application/json,.json" onchange={importTheme} />
     </div>
