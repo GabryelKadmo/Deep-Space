@@ -15,18 +15,18 @@ const { canInstallUpdatesAutomatically, isNewerVersion, macBundlePath } = requir
 
 const VERSION = '1.2.3';
 const requiredAssets = [
-  `Deep Space-${VERSION}-arm64.dmg`,
-  `Deep Space-${VERSION}-arm64.dmg.blockmap`,
-  `Deep Space-${VERSION}-arm64-mac.zip`,
-  `Deep Space-${VERSION}-arm64-mac.zip.blockmap`,
-  `Deep Space-${VERSION}.dmg`,
-  `Deep Space-${VERSION}.dmg.blockmap`,
-  `Deep Space-${VERSION}-mac.zip`,
-  `Deep Space-${VERSION}-mac.zip.blockmap`,
-  `Deep Space-Setup-${VERSION}.exe`,
-  `Deep Space-Setup-${VERSION}.exe.blockmap`,
-  `Deep Space-${VERSION}.AppImage`,
-  `Deep Space-${VERSION}.x86_64.rpm`,
+  `DeepSpace-${VERSION}-arm64.dmg`,
+  `DeepSpace-${VERSION}-arm64.dmg.blockmap`,
+  `DeepSpace-${VERSION}-arm64-mac.zip`,
+  `DeepSpace-${VERSION}-arm64-mac.zip.blockmap`,
+  `DeepSpace-${VERSION}-x64.dmg`,
+  `DeepSpace-${VERSION}-x64.dmg.blockmap`,
+  `DeepSpace-${VERSION}-x64-mac.zip`,
+  `DeepSpace-${VERSION}-x64-mac.zip.blockmap`,
+  `DeepSpace-Setup-${VERSION}.exe`,
+  `DeepSpace-Setup-${VERSION}.exe.blockmap`,
+  `DeepSpace-${VERSION}.AppImage`,
+  `DeepSpace-${VERSION}.x86_64.rpm`,
 ];
 
 const temporaryDirectories: string[] = [];
@@ -54,22 +54,22 @@ function fixture() {
     stringify({
       version: VERSION,
       files: [
-        manifestEntry(directory, `Deep Space-${VERSION}-arm64-mac.zip`),
-        manifestEntry(directory, `Deep Space-${VERSION}-mac.zip`),
+        manifestEntry(directory, `DeepSpace-${VERSION}-arm64-mac.zip`),
+        manifestEntry(directory, `DeepSpace-${VERSION}-x64-mac.zip`),
       ],
     }),
   );
   writeFileSync(
     path.join(directory, 'latest.yml'),
-    stringify({ version: VERSION, files: [manifestEntry(directory, `Deep Space-Setup-${VERSION}.exe`)] }),
+    stringify({ version: VERSION, files: [manifestEntry(directory, `DeepSpace-Setup-${VERSION}.exe`)] }),
   );
   writeFileSync(
     path.join(directory, 'latest-linux.yml'),
     stringify({
       version: VERSION,
       files: [
-        manifestEntry(directory, `Deep Space-${VERSION}.AppImage`),
-        manifestEntry(directory, `Deep Space-${VERSION}.x86_64.rpm`),
+        manifestEntry(directory, `DeepSpace-${VERSION}.AppImage`),
+        manifestEntry(directory, `DeepSpace-${VERSION}.x86_64.rpm`),
       ],
     }),
   );
@@ -109,7 +109,7 @@ describe('release artifact validation', () => {
   it('declares the maintainer metadata required by native Linux packages', () => {
     const packageJson = JSON.parse(readFileSync(path.resolve('package.json'), 'utf8'));
     expect(packageJson.build?.linux?.maintainer).toMatch(/^[^<>]+ <[^<>\s]+@[^<>\s]+>$/);
-    expect(packageJson.build?.rpm?.artifactName).toBe('${productName}-${version}.${arch}.${ext}');
+    expect(packageJson.build?.rpm?.artifactName).toBe('DeepSpace-${version}.${arch}.${ext}');
     expect(packageJson.build?.rpm?.fpm).toEqual(['--rpm-rpmbuild-define', '_build_id_links none']);
     expect(readFileSync(path.resolve('.github/workflows/release.yml'), 'utf8')).toContain('Verify RPM does not claim shared build-id paths');
   });
@@ -122,7 +122,7 @@ describe('release artifact validation', () => {
 
   it('rejects a manifest checksum that does not match the installer', () => {
     const directory = fixture();
-    writeFileSync(path.join(directory, `Deep Space-${VERSION}.AppImage`), 'corrupted');
+    writeFileSync(path.join(directory, `DeepSpace-${VERSION}.AppImage`), 'corrupted');
     expect(() => validateReleaseArtifacts(directory, VERSION)).toThrow(/invalid sha512/);
   });
 
@@ -130,7 +130,7 @@ describe('release artifact validation', () => {
     const directory = fixture();
     writeFileSync(
       path.join(directory, 'latest-mac.yml'),
-      stringify({ version: VERSION, files: [manifestEntry(directory, `Deep Space-${VERSION}-arm64-mac.zip`)] }),
+      stringify({ version: VERSION, files: [manifestEntry(directory, `DeepSpace-${VERSION}-arm64-mac.zip`)] }),
     );
     expect(() => validateReleaseArtifacts(directory, VERSION)).toThrow(/Intel update ZIP/);
   });
@@ -139,7 +139,7 @@ describe('release artifact validation', () => {
     const directory = fixture();
     writeFileSync(
       path.join(directory, 'latest-linux.yml'),
-      stringify({ version: VERSION, files: [manifestEntry(directory, `Deep Space-${VERSION}.AppImage`)] }),
+      stringify({ version: VERSION, files: [manifestEntry(directory, `DeepSpace-${VERSION}.AppImage`)] }),
     );
     expect(() => validateReleaseArtifacts(directory, VERSION)).toThrow(/RPM/);
   });
