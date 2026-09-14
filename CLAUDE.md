@@ -44,6 +44,14 @@
 - Keep commits focused on one coherent concern. Do not mix unrelated cleanup or user changes into the same commit.
 - Before committing, review the full staged diff and run the verification appropriate to the change. Never commit secrets, runtime databases, generated installers, build output, or local workspace data.
 
+### Branches and delivery
+
+- `main` is production and `dev` is integration. Work branches start from an updated `dev`, never from `main`, and nothing is committed straight onto either.
+- A feature pull request targets `dev` and is squash merged as soon as its checks pass, without waiting for approval.
+- Right after that merge, open (or reuse) the promotion pull request `dev` -> `main`. Its title is a one-line preview of what the version changes, never a generic "promote dev to main", because it becomes the version title. **It is never merged without the owner's explicit approval.**
+- This repository has no auto-delete workflow, so a feature merge needs `--delete-branch` to clean up. Never pass that flag on the promotion pull request: its head is `dev` itself, and deleting it breaks the next promotion.
+- The changelog does not use an `[Unreleased]` heading. Entries go under the current version heading, which stays open until a release is actually tagged.
+
 ## Frontend
 
 - Use Svelte 5 runes in `.svelte` files: `$props`, `$state`, `$derived`, `$effect`, and `{@render children()}`.
