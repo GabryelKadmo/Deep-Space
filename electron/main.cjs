@@ -33,6 +33,13 @@ const appRoot = path.resolve(__dirname, '..');
 // roda a partir dos arquivos unpacked quando empacotado.
 const runtimeRoot = app.isPackaged ? appRoot.replace('app.asar', 'app.asar.unpacked') : appRoot;
 
+// Sem AppUserModelId o Windows agrupa a janela pela identidade do executavel e
+// ignora o icone da BrowserWindow: a barra de tarefas mostrava o icone do
+// Electron em vez da marca. Tambem e requisito para notificacoes nativas.
+if (process.platform === 'win32') {
+  app.setAppUserModelId(require('../package.json').build.appId);
+}
+
 let serverProcess = null;
 let mainWindow = null;
 let splashWindow = null;
