@@ -47,10 +47,10 @@ export const BUILTIN_APP_THEMES: AppTheme[] = [
     dark: true,
     builtin: true,
     tokens: {
-      page: '#0d0f12', canvas: '#0a0d10', sidebar: '#111419', surface: '#171b20', surfaceRaised: '#20262d', surfaceSubtle: '#12161b',
-      text: '#f4f5f6', textSoft: '#c2c7cd', textMuted: '#85909a', border: '#2a3037', borderStrong: '#404852',
-      accent: '#f3c34f', accentSoft: '#302915', accentContrast: '#17130a', secondary: '#63b3d1', success: '#42c990', warning: '#e7b557',
-      danger: '#e26670', grid: '#252b31', edge: '#59636e',
+      page: '#0d0d0d', canvas: '#0d0d0d', sidebar: '#0d0d0d', surface: '#1b1c1f', surfaceRaised: '#232428', surfaceSubtle: '#131315',
+      text: '#f2f3f5', textSoft: '#c5c8ce', textMuted: '#8d929c', border: '#2e2f34', borderStrong: '#43454c',
+      accent: '#e5e7eb', accentSoft: '#2a2b30', accentContrast: '#151619', secondary: '#8fa3b8', success: '#45c992', warning: '#e7b657',
+      danger: '#ed6a70', grid: '#2a2b30', edge: '#55585f',
     },
   },
   {
@@ -85,7 +85,7 @@ export const BUILTIN_APP_THEMES: AppTheme[] = [
     tokens: {
       page: '#f5f6f7', canvas: '#edf0f2', sidebar: '#fbfcfd', surface: '#ffffff', surfaceRaised: '#e7ebee', surfaceSubtle: '#f2f4f5',
       text: '#171a1f', textSoft: '#424951', textMuted: '#606a74', border: '#d4d9de', borderStrong: '#adb5bd',
-      accent: '#8a6300', accentSoft: '#fff1c7', accentContrast: '#ffffff', secondary: '#116f8f', success: '#167a55', warning: '#8a5c00',
+      accent: '#1f2328', accentSoft: '#e4e7ea', accentContrast: '#ffffff', secondary: '#116f8f', success: '#167a55', warning: '#8a5c00',
       danger: '#b83440', grid: '#cbd1d6', edge: '#7d8791',
     },
   },
@@ -254,7 +254,7 @@ export function appThemeCssVariables(theme: AppTheme): Record<string, string> {
  * sabermos o tema. Sem esse cache as rotas com SSR piscam o tema padrao.
  * Se mudar o formato, suba a versao aqui E no script do app.html.
  */
-export const APP_THEME_CACHE_KEY = 'orkestrai.theme.v1';
+export const APP_THEME_CACHE_KEY = 'orkestrai.theme.v2';
 
 export function applyAppTheme(settings: Record<string, string>, root?: HTMLElement): AppTheme {
   const theme = resolveAppTheme(settings);
