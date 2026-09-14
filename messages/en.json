@@ -1296,6 +1296,8 @@
   "term.remove_terminal": "Remove terminal",
   "term.no_command": "No command associated.",
   "term.preparing_agent": "Preparing the agent session…",
+  "term.composer_hide": "Hide quick prompt",
+  "term.composer_show": "Show quick prompt",
   "term.send": "Send",
   "term.no_session": "No session provided.",
   "term.ws_error": "WebSocket connection to the server failed.",

@@ -1296,6 +1296,8 @@
   "term.remove_terminal": "Eliminar terminal",
   "term.no_command": "Sin comando asociado.",
   "term.preparing_agent": "Preparando la sesión del agente…",
+  "term.composer_hide": "Ocultar prompt rápido",
+  "term.composer_show": "Mostrar prompt rápido",
   "term.send": "Enviar",
   "term.no_session": "Ninguna sesion informada.",
   "term.ws_error": "Fallo en la conexion WebSocket con el servidor.",

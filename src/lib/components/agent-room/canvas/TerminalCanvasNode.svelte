@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, untrack } from 'svelte';
   import type { NodeProps } from '@xyflow/svelte';
-  import { ArrowLeftRight, BadgeCheck, Bot, Ellipsis, Globe2, History, ListRestart, LoaderCircle, MonitorCog, Paperclip, Play, RotateCcw, Scale, SendHorizontal, SquareTerminal, Star, SwatchBook, UserRound, X } from '@lucide/svelte';
+  import { ArrowLeftRight, BadgeCheck, Bot, ChevronDown, ChevronUp, Ellipsis, Globe2, History, ListRestart, LoaderCircle, MonitorCog, Paperclip, Play, RotateCcw, Scale, SendHorizontal, SquareTerminal, Star, SwatchBook, UserRound, X } from '@lucide/svelte';
   import { toast } from '@beeblock/svelar/ui';
   import { Button } from '$lib/components/ui/button';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -367,6 +367,31 @@
   let attachmentInput: HTMLInputElement;
   let attachmentBusy = $state(false);
   let attachmentDropActive = $state(false);
+
+  /*
+   * Conveniencia de tela por usuario, nao estado do workspace: quem nao usa anexo
+   * nem mencao @ so quer o espaco de volta. Fica em localStorage para nao gerar
+   * escrita no banco a cada clique, e por no porque cada agente tem um uso.
+   */
+  const composerKey = `orkestrai.composer.${id}`;
+  let composerOpen = $state(readComposerOpen());
+
+  function readComposerOpen(): boolean {
+    try {
+      return localStorage.getItem(composerKey) !== 'closed';
+    } catch {
+      return true;
+    }
+  }
+
+  function toggleComposer() {
+    composerOpen = !composerOpen;
+    try {
+      localStorage.setItem(composerKey, composerOpen ? 'open' : 'closed');
+    } catch {
+      // Storage indisponivel: o estado vale so para esta sessao.
+    }
+  }
   let attachmentError = $state('');
 
   const filteredMentions = $derived(
@@ -443,6 +468,9 @@
     if (!attachments.length) return;
     const references = attachments.map(attachmentPromptReference).join(' · ');
     prompt = `${prompt.trim()}${prompt.trim() ? ' · ' : ''}${references}`;
+    // Com o composer recolhido a referencia cairia num campo invisivel: quem
+    // solta um arquivo precisa ver onde ele foi parar.
+    if (!composerOpen) toggleComposer();
     promptInput?.focus();
   }
 
@@ -914,6 +942,7 @@
 
   <div
     class="composer nodrag"
+    class:composer-closed={!composerOpen}
     class:attachment-drop-active={attachmentDropActive}
     role="group"
     aria-label={m['attachment.agent_drop_target']()}
@@ -921,6 +950,16 @@
     ondragleave={() => (attachmentDropActive = false)}
     ondrop={handleAttachmentDrop}
   >
+    <button
+      class="composer-toggle"
+      aria-label={composerOpen ? m['term.composer_hide']() : m['term.composer_show']()}
+      title={composerOpen ? m['term.composer_hide']() : m['term.composer_show']()}
+      aria-expanded={composerOpen}
+      onclick={toggleComposer}
+    >
+      {#if composerOpen}<ChevronDown size={13} aria-hidden="true" />{:else}<ChevronUp size={13} aria-hidden="true" />{/if}
+    </button>
+    {#if composerOpen}
     <input bind:this={attachmentInput} type="file" multiple class="attachment-input" onchange={handleAttachmentFiles} />
     <button
       class="composer-attach"
@@ -942,6 +981,7 @@
     <button class="composer-send" aria-label={m['term.send']()} onclick={sendPrompt} disabled={!prompt.trim()}>
       <SendHorizontal size={13} />
     </button>
+    {/if}
   </div>
   {#if attachmentError}<p class="attachment-error" role="status">{attachmentError}</p>{/if}
 </NodeShell>
@@ -1016,6 +1056,29 @@
     padding: 6px 8px;
     border-top: 1px solid var(--app-border);
     background: var(--app-surface);
+  }
+
+  .composer.composer-closed {
+    padding: 0 8px;
+    justify-content: flex-end;
+  }
+
+  .composer-toggle {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--app-text-muted);
+    cursor: pointer;
+  }
+
+  .composer-toggle:hover {
+    background: var(--app-hover);
+    color: var(--app-text);
   }
 
   .composer input {
