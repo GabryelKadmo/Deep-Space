@@ -929,7 +929,7 @@ Header: Authorization = Bearer {{accessToken}}`,
   "title": "Deep Space 0.31.0: nova identidade",
   "summary": "O aplicativo passa a se chamar Deep Space",
   "items": [
-    "Nome do produto, identificador do aplicativo, instalador, atalhos, documentação e textos da interface nos três idiomas passaram a usar Deep Space. A atribuição ao projeto original permanece em NOTICE, LICENSE e no README.",
+    "Nome do produto, identificador do aplicativo, instalador, atalhos, documentação e textos da interface nos três idiomas passaram a usar Deep Space. A atribuição ao projeto original permanece em NOTICE, LICENSE e no README. A descrição do pacote passou a ser a assinatura do produto, que também alimenta o resumo exibido pelos instaladores.",
     "A atualização automática e a automação de release apontam para o repositório do Deep Space, então uma instalação nunca oferece o aplicativo original por cima dela.",
     "O endereço do relay de compartilhamento passou a ser configurável por PUBLIC_RELAY_URL, com o passo a passo de implantação em docs/relay.md.",
     "A ponte dos agentes continua igual de propósito: o comando orkestrai, a pasta .orkestrai/ e as variáveis de ambiente não mudaram, porque renomeá-las quebraria workspaces existentes."

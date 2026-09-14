@@ -9,7 +9,7 @@ pt-BR, English, and Spanish translations.
 
 ### Changed
 
-- The application is now Deep Space, a fork of Orkestrai. Product name, desktop application id (`com.deepspace.desktop`), installer and shortcut names, documentation, and in-app strings in the three languages were renamed. Attribution to the upstream project is kept in `NOTICE`, `LICENSE`, and the README.
+- The application is now Deep Space, a fork of Orkestrai. Product name, desktop application id (`com.deepspace.desktop`), installer and shortcut names, documentation, and in-app strings in the three languages were renamed. Attribution to the upstream project is kept in `NOTICE`, `LICENSE`, and the README. The package description is now the product tagline, which also feeds the summary shown by the installers.
 
 - Auto-update and release automation target `GabryelKadmo/Deep-Space` instead of the upstream repository, so an installed build never offers the original application over itself. Installer artifacts are named `DeepSpace-*` so the update feed builds URLs without spaces.
 

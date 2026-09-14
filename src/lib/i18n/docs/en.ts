@@ -925,7 +925,7 @@ Header: Authorization = Bearer {{accessToken}}`,
   "title": "Deep Space 0.31.0: a new identity",
   "summary": "The application is now called Deep Space",
   "items": [
-    "Product name, application id, installer, shortcuts, documentation, and interface strings in all three languages now use Deep Space. Attribution to the upstream project stays in NOTICE, LICENSE, and the README.",
+    "Product name, application id, installer, shortcuts, documentation, and interface strings in all three languages now use Deep Space. Attribution to the upstream project stays in NOTICE, LICENSE, and the README. The package description is now the product tagline, which also feeds the summary shown by the installers.",
     "Auto-update and release automation target the Deep Space repository, so an installed build never offers the original application over itself.",
     "The sharing relay endpoint is now configurable through PUBLIC_RELAY_URL, with the deployment walkthrough in docs/relay.md.",
     "The agent bridge is unchanged on purpose: the orkestrai command, the .orkestrai/ directory, and the environment variables stay as they are, because renaming them would break existing workspaces."
