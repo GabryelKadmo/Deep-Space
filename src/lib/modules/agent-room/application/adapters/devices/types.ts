@@ -12,7 +12,7 @@ export type DeviceRuntimeSession = {
   streamUrl: string;
   helperBaseUrl: string;
   controlUrl: string | null;
-  helperStartedByOrkestrai: boolean;
+  helperStartedByDeepSpace: boolean;
   restartDeviceId?: string;
   touchedAt: number;
 };

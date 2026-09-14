@@ -136,7 +136,7 @@
   }
 
   const desktop = typeof window !== 'undefined'
-    ? (window as unknown as { orkestraiDesktop?: { pickDirectory: () => Promise<string | null> } }).orkestraiDesktop
+    ? (window as unknown as { deepspaceDesktop?: { pickDirectory: () => Promise<string | null> } }).deepspaceDesktop
     : undefined;
 
   // Variante do schema compartilhado com todos os campos presentes (o form

@@ -1,6 +1,6 @@
 import type { editor } from 'monaco-editor';
 
-export const WORKBENCH_EDITOR_STATE_EVENT = 'orkestrai:workbench-editor-state';
+export const WORKBENCH_EDITOR_STATE_EVENT = 'deepspace:workbench-editor-state';
 
 export type WorkbenchEditorBuffer = {
   key: string;

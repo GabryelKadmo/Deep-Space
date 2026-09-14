@@ -75,20 +75,20 @@ export class AndroidDeviceAdapter implements DeviceAdapter {
           deviceName: device.name,
           status: 'streaming',
           orientation: 'portrait',
-          startedByOrkestrai: attached.startedByOrkestrai,
+          startedByDeepSpace: attached.startedByDeepSpace,
           attachedAt: new Date().toISOString(),
           lastError: null,
         },
         streamUrl: helper.streamUrl,
         helperBaseUrl: helper.baseUrl,
         controlUrl: null,
-        helperStartedByOrkestrai: true,
+        helperStartedByDeepSpace: true,
         restartDeviceId: device.id,
         touchedAt: Date.now(),
       };
     } catch (error) {
       await helper?.close().catch(() => undefined);
-      if (attached.startedByOrkestrai) await this.sdk.shutdown(attached.serial);
+      if (attached.startedByDeepSpace) await this.sdk.shutdown(attached.serial);
       throw error;
     }
   }
@@ -97,7 +97,7 @@ export class AndroidDeviceAdapter implements DeviceAdapter {
     const helper = this.helpers.get(session.helperBaseUrl);
     this.helpers.delete(session.helperBaseUrl);
     await helper?.close().catch(() => undefined);
-    if (session.public.startedByOrkestrai) {
+    if (session.public.startedByDeepSpace) {
       await this.sdk.shutdown(session.public.deviceId);
     }
   }

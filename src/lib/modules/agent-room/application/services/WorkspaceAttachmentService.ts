@@ -49,7 +49,7 @@ export class WorkspaceAttachmentService {
     if (!file || file.size <= 0) throw new Error('The attachment is empty.');
     if (file.size > MAX_WORKSPACE_ATTACHMENT_BYTES) throw new Error('The attachment exceeds the 10 MB limit.');
     const id = uuidv7();
-    const path = `.orkestrai/attachments/${id}-${safeFilename(file.name)}`;
+    const path = `.deepspace/attachments/${id}-${safeFilename(file.name)}`;
     await filesystemService.writeBinary(workspaceId, path, new Uint8Array(await file.arrayBuffer()));
     return {
       id,
@@ -65,7 +65,7 @@ export class WorkspaceAttachmentService {
   async remove(workspaceId: string, dto: WorkspaceAttachmentDeleteDto): Promise<void> {
     const attachment = dto.attachment;
     if (attachment.kind === 'link') return;
-    const expectedPrefix = `.orkestrai/attachments/${attachment.id}-`;
+    const expectedPrefix = `.deepspace/attachments/${attachment.id}-`;
     if (!attachment.path?.startsWith(expectedPrefix)) {
       throw new Error('The attachment path does not match its identifier.');
     }

@@ -1,18 +1,18 @@
 type StartupState = { ready: Promise<void>; release: () => void };
 
 // Node's production launcher and the bundled Svelar hooks load separate copies.
-const state = globalThis as typeof globalThis & { __orkestraiDatabaseStartup?: StartupState };
+const state = globalThis as typeof globalThis & { __deepspaceDatabaseStartup?: StartupState };
 
 export function holdBackgroundStartup(): () => void {
-  if (!state.__orkestraiDatabaseStartup) {
+  if (!state.__deepspaceDatabaseStartup) {
     let release!: () => void;
     const ready = new Promise<void>((resolve) => { release = resolve; });
-    state.__orkestraiDatabaseStartup = { ready, release };
+    state.__deepspaceDatabaseStartup = { ready, release };
   }
-  return state.__orkestraiDatabaseStartup.release;
+  return state.__deepspaceDatabaseStartup.release;
 }
 
 export async function afterDatabaseReady(start: () => void): Promise<void> {
-  await state.__orkestraiDatabaseStartup?.ready;
+  await state.__deepspaceDatabaseStartup?.ready;
   start();
 }

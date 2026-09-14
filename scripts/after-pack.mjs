@@ -17,7 +17,7 @@ async function download(url, destination) {
 }
 
 async function verifiedArchive(projectDir) {
-  const cacheDir = resolve(projectDir, 'node_modules', '.cache', 'orkestrai-cli-runtime');
+  const cacheDir = resolve(projectDir, 'node_modules', '.cache', 'deepspace-cli-runtime');
   const archivePath = join(cacheDir, WINDOWS_NODE_ARCHIVE);
   try {
     const actual = createHash('sha256').update(await readFile(archivePath)).digest('hex');
@@ -37,11 +37,11 @@ async function verifiedArchive(projectDir) {
 export default async function afterPack(context) {
   if (context.electronPlatformName !== 'win32') return;
   const archivePath = await verifiedArchive(context.packager.projectDir);
-  const staging = await mkdtemp(join(tmpdir(), 'orkestrai-cli-runtime-'));
+  const staging = await mkdtemp(join(tmpdir(), 'deepspace-cli-runtime-'));
   try {
     await extractZip(archivePath, { dir: staging });
     const source = join(staging, WINDOWS_NODE_ARCHIVE.replace(/\.zip$/, ''), 'node.exe');
-    const destination = join(context.appOutDir, 'resources', 'orkestrai-cli-runtime', 'node.exe');
+    const destination = join(context.appOutDir, 'resources', 'deepspace-cli-runtime', 'node.exe');
     await mkdir(dirname(destination), { recursive: true });
     await copyFile(source, destination);
   } finally {

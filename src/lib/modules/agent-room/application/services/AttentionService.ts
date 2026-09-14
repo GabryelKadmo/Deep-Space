@@ -19,7 +19,7 @@ function severityFor(activity: AgentActivity): AgentActivitySeverity {
 }
 
 function broadcast(workspaceId: string, item?: AgentAttentionItem): void {
-  const send = (globalThis as { __orkestraiBroadcast?: (frame: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const send = (globalThis as { __deepspaceBroadcast?: (frame: Record<string, unknown>) => void }).__deepspaceBroadcast;
   send?.({ type: 'attentionChanged', workspaceId, item });
 }
 

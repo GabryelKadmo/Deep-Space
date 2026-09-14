@@ -11,7 +11,7 @@ export type McpFanoutDef = {
 /**
  * Caminhos JSON de MCP com o mesmo formato ("mcpServers" map) usados por
  * Cursor, Cline, Devin e Antigravity — o mesmo conjunto que a ponte já
- * provisiona para o servidor "orkestrai" em BridgeService.provisionSkill.
+ * provisiona para o servidor "deepspace" em BridgeService.provisionSkill.
  * ".mcp.json" (Claude/Kimi) fica de fora daqui: quem chama esta função já
  * escreveu esse arquivo antes, como fonte primária.
  */

@@ -18,7 +18,7 @@ import { nativeNotificationService, type NativeNotificationKind } from './Native
 import { defaultShell } from '../../infrastructure/workspace.js';
 import { FIGMA_MCP_URL, repairLegacyCodexMcpConfig } from '../../infrastructure/codex-mcp-config.js';
 import { repairConfigFileAtomically } from '../../infrastructure/atomic-config-repair.js';
-import { updateOrkestraiGitExclude } from '../../infrastructure/bridge-git-exclude.js';
+import { updateDeepSpaceGitExclude } from '../../infrastructure/bridge-git-exclude.js';
 import { controlCenterService } from './ControlCenterService.js';
 import { AutomationTriggerReceived } from '../../domain/events/AutomationTriggerReceived.js';
 import { agentSessionService } from './AgentSessionService.js';
@@ -153,7 +153,7 @@ function comparablePortalUrl(rawUrl: string): string | null {
 }
 
 /**
- * Ponte agente<->app: autentica chamadas da CLI `orkestrai` por token de
+ * Ponte agente<->app: autentica chamadas da CLI `deepspace` por token de
  * workspace, lista agentes, injeta mensagens em terminais PTY (ask com
  * resposta), le/escreve notas e provisiona arquivos de skill/config.
  */
@@ -578,7 +578,7 @@ export class BridgeService {
     // terminal (mensagem emendada/corrompida).
     // Voz de volta: o no alvo pode ler a resposta em voz alta (toggle por
     // terminal; TTS na voz/idioma configurados — ver /api/agent-room/voice/speak).
-    const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+    const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
     broadcast?.({ type: 'agentReply', workspaceId, to: target.nodeId, from: origin?.title ?? null, text: replyText });
     await Event.dispatch(new AutomationTriggerReceived(
       workspaceId,
@@ -702,20 +702,20 @@ export class BridgeService {
     await workspaceRepository.updateNode(node.id, {
       payload: { ...payload, agentSessionId: match.sessionId } as never,
     });
-    const broadcast = (globalThis as { __orkestraiBroadcast?: (frame: Record<string, unknown>) => void }).__orkestraiBroadcast;
+    const broadcast = (globalThis as { __deepspaceBroadcast?: (frame: Record<string, unknown>) => void }).__deepspaceBroadcast;
     broadcast?.({ type: 'workspaceChanged', workspaceId, nodeId: node.id });
     return match;
   }
 
   /** Avisa o canvas (via broadcast WS) que uma edge esta conversando. */
   private broadcastTalking(workspaceId: string, from: string | null, to: string, talking: boolean) {
-    const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+    const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
     broadcast?.({ type: 'talking', workspaceId, from, to, talking });
   }
 
   /** Avisa o canvas para recarregar o conteúdo do workspace (nos/edges/andares). */
   notifyWorkspaceChanged(workspaceId: string) {
-    const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+    const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
     broadcast?.({ type: 'workspaceChanged', workspaceId });
   }
 
@@ -1176,7 +1176,7 @@ export class BridgeService {
     if (portals.length > 0 && !input.forceNew) {
       const available = portals.map((portal) => `"${portal.title ?? 'portal'}" (${portal.id})`).join(', ');
       throw new Error(
-        `O workspace já possui portal: ${available}. Reutilize-o com portal_navigate/orkestrai portal <nodeId> navigate <url>. ` +
+        `O workspace já possui portal: ${available}. Reutilize-o com portal_navigate/deepspace portal <nodeId> navigate <url>. ` +
         'Crie outro apenas quando o usuário pedir explicitamente, usando forceNew/--force-new.'
       );
     }
@@ -1199,7 +1199,7 @@ export class BridgeService {
         portalProfileId: 'default',
         portalProfileScope: 'workspace',
         portalAllowedHosts: [new URL(url).hostname.toLowerCase()],
-        portalDownloadDirectory: '.orkestrai/downloads',
+        portalDownloadDirectory: '.deepspace/downloads',
         portalAllowScripts: false,
       },
     });
@@ -1314,85 +1314,85 @@ export class BridgeService {
   bridgeSkillContent(): string {
     const providerIds = listAgentAdapters().map((adapter) => adapter.id).join('|');
     return `---
-name: orkestrai-bridge
-description: Ponte com o canvas do Orkestrai. Use SEMPRE que precisar falar com outro agente, participar de huddles, consultar cotas de providers, montar/orquestrar um time, distribuir tarefas, consultar ou registrar memória com fontes, consultar o grafo de código, criar notas, criar/testar coleções de API, propor/executar ferramentas, ler ou editar designs nativos, controlar portais/devices/computadores, ou gerenciar andares.
+name: deepspace-bridge
+description: Ponte com o canvas do Deep Space. Use SEMPRE que precisar falar com outro agente, participar de huddles, consultar cotas de providers, montar/orquestrar um time, distribuir tarefas, consultar ou registrar memória com fontes, consultar o grafo de código, criar notas, criar/testar coleções de API, propor/executar ferramentas, ler ou editar designs nativos, controlar portais/devices/computadores, ou gerenciar andares.
 ---
 
-# Ponte Orkestrai
+# Ponte Deep Space
 
-Você está rodando dentro de um workspace do Orkestrai. A CLI \`orkestrai\` dá acesso à ponte.
-Sua identidade já está no ambiente (ORKESTRAI_NODE_ID) — a CLI sabe quem você é, então \`--from\` e \`--agent\` são opcionais.
-Se \`orkestrai\` não resolver no seu shell (acontece em alguns executores, ex.: Codex no Windows), execute o launcher da variável ORKESTRAI_CLI DIRETO (SEM prefixar \`node\`): \`"$ORKESTRAI_CLI" ...\` (Linux/macOS), \`%ORKESTRAI_CLI% ...\` (cmd.exe) ou \`& $env:ORKESTRAI_CLI ...\` (PowerShell). ORKESTRAI_CLI aponta para um launcher autocontido que já chama o runtime certo — funciona sempre, sem depender de PATH. NUNCA rode o caminho \`...orkestrai.js\` cru no Windows: o shell o abre pelo Windows Script Host e falha ("Caractere inválido").
-Se as tools \`orkestrai\` (list/usage/ask/huddle_*/memory_*/code_graph_*/git_*/note_*/api_client_*/integration_*/tool_*/image_workflow_*/design_*/task_*/portal_*/floor_*/device_*/computer_*/notify/port/recruit/dismiss) estiverem disponíveis como MCP neste ambiente, PREFIRA elas (chamadas tipadas, sem parse de shell) — a CLI continua valendo como fallback.
+Você está rodando dentro de um workspace do Deep Space. A CLI \`deepspace\` dá acesso à ponte.
+Sua identidade já está no ambiente (DEEPSPACE_NODE_ID) — a CLI sabe quem você é, então \`--from\` e \`--agent\` são opcionais.
+Se \`deepspace\` não resolver no seu shell (acontece em alguns executores, ex.: Codex no Windows), execute o launcher da variável DEEPSPACE_CLI DIRETO (SEM prefixar \`node\`): \`"$DEEPSPACE_CLI" ...\` (Linux/macOS), \`%DEEPSPACE_CLI% ...\` (cmd.exe) ou \`& $env:DEEPSPACE_CLI ...\` (PowerShell). DEEPSPACE_CLI aponta para um launcher autocontido que já chama o runtime certo — funciona sempre, sem depender de PATH. NUNCA rode o caminho \`...deepspace.js\` cru no Windows: o shell o abre pelo Windows Script Host e falha ("Caractere inválido").
+Se as tools \`deepspace\` (list/usage/ask/huddle_*/memory_*/code_graph_*/git_*/note_*/api_client_*/integration_*/tool_*/image_workflow_*/design_*/task_*/portal_*/floor_*/device_*/computer_*/notify/port/recruit/dismiss) estiverem disponíveis como MCP neste ambiente, PREFIRA elas (chamadas tipadas, sem parse de shell) — a CLI continua valendo como fallback.
 
-- \`orkestrai list\` — lista os agentes do workspace (título, provider, sessão viva), suas notas/designs conectados e TODOS os portais do workspace. \`workspace.repository\` descreve o repositório principal (\`.\`), inclusive se Git foi confirmado no runtime nativo/WSL; \`repositories\` contém SOMENTE aliases adicionais, portanto uma lista vazia nunca significa que o workspace principal está ausente. Cada portal informa nome, URL, id e se está conectado a você; "não conectado" significa que ele JÁ EXISTE, não que deve ser criado. O agente marcado com [LIDER] e o maestro do time: "Maestro" e o PAPEL, não um título — fale com o líder pelo TITULO dele (ex.: \`orkestrai ask "Líder" ...\`), nunca por \`orkestrai ask "Maestro"\` (esse agente não existe).
-- \`orkestrai usage\` — consulta as cotas reais e a política do nó Usage; perfis de multi-conta aparecem como linhas próprias (\`profileId\`/\`profileName\`). Quando \`shouldFallback\` for verdadeiro, direcione NOVAS tarefas e tarefas ainda pendentes ao \`recommendedProvider\` (se ele tiver \`:profile:\`, use \`--provider\` + \`--profile\` juntos no recruit). Não troque silenciosamente o provider ou perfil de um terminal que já executa trabalho.
-- \`orkestrai ask "<TituloDoAgente>" "<mensagem>" --task <taskId>\` — envia uma mensagem a outro agente e aguarda uma resposta confirmada. Em trabalho do quadro, passe SEMPRE o id da tarefa: handoffs que expiram na fila, terminam ou mudam de responsável são cancelados antes de chegar ao composer. Só diga que falou/consultou o agente quando o comando terminar com sucesso e imprimir \`Resposta confirmada de ...\`. Timeout, expiração, erro ou \`Resposta nao confirmada\` significam que a conversa NÃO foi concluída — releia o quadro antes de tentar novamente.
-- Tools MCP \`huddle_list\` e \`huddle_say\` (ou \`orkestrai huddle list/say\`) — acompanhe a transcrição de um huddle e registre sua contribuição quando você for participante. \`huddle_say\` apenas registra sua fala; não use para simular outra pessoa nem para disparar fan-out recursivo.
-- Tools MCP \`code_graph_status/index/search/symbol/neighbors/changes/contracts/quality/semantic/evidence/context/operations/explain/locate/revisions/compare/investigation/handoff\` (ou \`orkestrai graph ...\`) — consulte o grafo compartilhado antes de explicar arquitetura, dependências ou impacto. Use \`explain\` para procedência, \`locate\` para sincronizar código e grafo, \`operations\` para agentes/tarefas/Floors e conflitos, \`context\` para pacotes revisáveis com orçamento explícito, \`compare\` para revisões e \`investigation\` para salvar/restaurar visão, filtros, seleção, câmera e arquivo. Consulte \`changes\` antes de integrar, \`contracts\` para APIs e \`quality\` como evidência. Em modo Assistido, \`semantic\` aguarda o índice local atualizado automaticamente; em modo Manual, construa ou reconstrua esse índice explicitamente. Importe \`evidence\` apenas de caminho relativo confinado. Use \`handoff\` para Review Center ou tarefa rastreável; líder, agente e Council recebem revisão e ids de origem. Nunca invente relações ausentes nem peça SQL/Cypher arbitrário.
-- Tools MCP \`git_status/preview/execute\` (ou \`orkestrai git ...\`) — operam o mesmo cliente Git nativo visível no Canvas e Workbench. Leia o status, gere uma prévia e só execute com a revisão retornada e uma tarefa Kanban ativa atribuída a você. Operações destrutivas exigem confirmação explícita; conflito de revisão exige nova leitura. Use Floors para worktrees isolados e Review Center para a decisão final. Nunca contorne o contrato chamando shell Git para mutações orquestradas.
-- \`orkestrai status working "<ação atual>" --task <taskId>\` — registra o trabalho atual no Control Center. Use \`waiting_input\`, \`waiting_permission\`, \`blocked\`, \`idle\`, \`done\` ou \`error\` sempre que houver uma transição real; não use como heartbeat.
+- \`deepspace list\` — lista os agentes do workspace (título, provider, sessão viva), suas notas/designs conectados e TODOS os portais do workspace. \`workspace.repository\` descreve o repositório principal (\`.\`), inclusive se Git foi confirmado no runtime nativo/WSL; \`repositories\` contém SOMENTE aliases adicionais, portanto uma lista vazia nunca significa que o workspace principal está ausente. Cada portal informa nome, URL, id e se está conectado a você; "não conectado" significa que ele JÁ EXISTE, não que deve ser criado. O agente marcado com [LIDER] e o maestro do time: "Maestro" e o PAPEL, não um título — fale com o líder pelo TITULO dele (ex.: \`deepspace ask "Líder" ...\`), nunca por \`deepspace ask "Maestro"\` (esse agente não existe).
+- \`deepspace usage\` — consulta as cotas reais e a política do nó Usage; perfis de multi-conta aparecem como linhas próprias (\`profileId\`/\`profileName\`). Quando \`shouldFallback\` for verdadeiro, direcione NOVAS tarefas e tarefas ainda pendentes ao \`recommendedProvider\` (se ele tiver \`:profile:\`, use \`--provider\` + \`--profile\` juntos no recruit). Não troque silenciosamente o provider ou perfil de um terminal que já executa trabalho.
+- \`deepspace ask "<TituloDoAgente>" "<mensagem>" --task <taskId>\` — envia uma mensagem a outro agente e aguarda uma resposta confirmada. Em trabalho do quadro, passe SEMPRE o id da tarefa: handoffs que expiram na fila, terminam ou mudam de responsável são cancelados antes de chegar ao composer. Só diga que falou/consultou o agente quando o comando terminar com sucesso e imprimir \`Resposta confirmada de ...\`. Timeout, expiração, erro ou \`Resposta nao confirmada\` significam que a conversa NÃO foi concluída — releia o quadro antes de tentar novamente.
+- Tools MCP \`huddle_list\` e \`huddle_say\` (ou \`deepspace huddle list/say\`) — acompanhe a transcrição de um huddle e registre sua contribuição quando você for participante. \`huddle_say\` apenas registra sua fala; não use para simular outra pessoa nem para disparar fan-out recursivo.
+- Tools MCP \`code_graph_status/index/search/symbol/neighbors/changes/contracts/quality/semantic/evidence/context/operations/explain/locate/revisions/compare/investigation/handoff\` (ou \`deepspace graph ...\`) — consulte o grafo compartilhado antes de explicar arquitetura, dependências ou impacto. Use \`explain\` para procedência, \`locate\` para sincronizar código e grafo, \`operations\` para agentes/tarefas/Floors e conflitos, \`context\` para pacotes revisáveis com orçamento explícito, \`compare\` para revisões e \`investigation\` para salvar/restaurar visão, filtros, seleção, câmera e arquivo. Consulte \`changes\` antes de integrar, \`contracts\` para APIs e \`quality\` como evidência. Em modo Assistido, \`semantic\` aguarda o índice local atualizado automaticamente; em modo Manual, construa ou reconstrua esse índice explicitamente. Importe \`evidence\` apenas de caminho relativo confinado. Use \`handoff\` para Review Center ou tarefa rastreável; líder, agente e Council recebem revisão e ids de origem. Nunca invente relações ausentes nem peça SQL/Cypher arbitrário.
+- Tools MCP \`git_status/preview/execute\` (ou \`deepspace git ...\`) — operam o mesmo cliente Git nativo visível no Canvas e Workbench. Leia o status, gere uma prévia e só execute com a revisão retornada e uma tarefa Kanban ativa atribuída a você. Operações destrutivas exigem confirmação explícita; conflito de revisão exige nova leitura. Use Floors para worktrees isolados e Review Center para a decisão final. Nunca contorne o contrato chamando shell Git para mutações orquestradas.
+- \`deepspace status working "<ação atual>" --task <taskId>\` — registra o trabalho atual no Control Center. Use \`waiting_input\`, \`waiting_permission\`, \`blocked\`, \`idle\`, \`done\` ou \`error\` sempre que houver uma transição real; não use como heartbeat.
 - Tools MCP \`memory_search/add/revise/archive\` — consulte memória sob demanda antes de decisões relevantes. Registre somente conhecimento reutilizável (decisão, fato, preferência, restrição, referência ou aprendizado) com uma fonte explícita. Nunca injete toda a memória no prompt nem salve conversa solta automaticamente. Para corrigir algo, use \`memory_revise\` com a revisão retornada pela busca; não duplique nem sobrescreva concorrência.
-- \`orkestrai memory list [consulta] --json\` / \`memory add ... --source-label ...\` / \`memory revise ...\` / \`memory archive <id>\` — fallbacks CLI para a mesma memória durável e versionada.
-- \`orkestrai note read <nodeId>\` — lê uma nota conectada a você.
-- \`orkestrai note create "<título>" [--content "<texto>"] [--connect "<Agente>"|all]\` — cria uma nota no canvas (default: conecta somente ao agente autor; use \`--connect all\` apenas para compartilhar com o time inteiro).
-- \`orkestrai note write <nodeId> "<conteúdo>"\` — substitui o conteúdo da nota.
-- \`orkestrai note edit <nodeId> "<trecho antigo>" "<trecho novo>"\` — edição pontual.
-- \`orkestrai notes\` — lista \`nodeId\`, título e prévia das notas acessíveis. Rode antes de criar; se a nota já existe, use \`note read\` e \`note write/edit\` em vez de duplicar.
-- \`orkestrai api list\` — lista requests dos Clientes de API conectados, sem revelar credenciais.
-- Tool MCP \`api_client_reference\` (ou \`orkestrai api reference\`) — consulte antes de autorar uma coleção: retorna o contrato completo e exemplos de testes/variáveis nos runtimes Bruno, Postman e Orkestrai.
-- Tools MCP \`api_client_import/create/read/replace/sync_status/pull/push/export\` — importam coleções Bruno/Postman do repositório e editam requests, pastas, ambientes, runners, scripts e testes no mesmo node que o usuário vê. Para um projeto existente, use \`api_client_import\` com caminho relativo ou um alias de repositório listado por \`orkestrai list\` (ex.: \`@api-tests/bruno\`); o vínculo acompanha a origem e \`replace\` grava nela por padrão. Sempre faça \`read\` antes de \`replace\` e envie o \`fingerprint\`; conflito exige \`sync_status\` e resolução explícita, nunca sobrescreva silenciosamente. O marcador \`__ORKESTRAI_REDACTED__\` preserva segredos locais.
+- \`deepspace memory list [consulta] --json\` / \`memory add ... --source-label ...\` / \`memory revise ...\` / \`memory archive <id>\` — fallbacks CLI para a mesma memória durável e versionada.
+- \`deepspace note read <nodeId>\` — lê uma nota conectada a você.
+- \`deepspace note create "<título>" [--content "<texto>"] [--connect "<Agente>"|all]\` — cria uma nota no canvas (default: conecta somente ao agente autor; use \`--connect all\` apenas para compartilhar com o time inteiro).
+- \`deepspace note write <nodeId> "<conteúdo>"\` — substitui o conteúdo da nota.
+- \`deepspace note edit <nodeId> "<trecho antigo>" "<trecho novo>"\` — edição pontual.
+- \`deepspace notes\` — lista \`nodeId\`, título e prévia das notas acessíveis. Rode antes de criar; se a nota já existe, use \`note read\` e \`note write/edit\` em vez de duplicar.
+- \`deepspace api list\` — lista requests dos Clientes de API conectados, sem revelar credenciais.
+- Tool MCP \`api_client_reference\` (ou \`deepspace api reference\`) — consulte antes de autorar uma coleção: retorna o contrato completo e exemplos de testes/variáveis nos runtimes Bruno, Postman e Deep Space.
+- Tools MCP \`api_client_import/create/read/replace/sync_status/pull/push/export\` — importam coleções Bruno/Postman do repositório e editam requests, pastas, ambientes, runners, scripts e testes no mesmo node que o usuário vê. Para um projeto existente, use \`api_client_import\` com caminho relativo ou um alias de repositório listado por \`deepspace list\` (ex.: \`@api-tests/bruno\`); o vínculo acompanha a origem e \`replace\` grava nela por padrão. Sempre faça \`read\` antes de \`replace\` e envie o \`fingerprint\`; conflito exige \`sync_status\` e resolução explícita, nunca sobrescreva silenciosamente. O marcador \`__DEEPSPACE_REDACTED__\` preserva segredos locais.
 - Tool MCP \`api_client_run_runner\` — executa o runner salvo com ordem, ambiente, iterações, dados por linha, variáveis encadeadas, testes e parada em falha; revise o resumo antes de exportar.
-- Tools MCP \`integration_list/events/execute\` (ou \`orkestrai integration ...\`) — use contas Gmail, Slack, Telegram, WhatsApp, GitHub e Webhook conectadas pelo usuário sem jamais pedir, imprimir ou persistir a credencial. Consulte o manifest e as permissões primeiro. Toda execução exige task ativa atribuída, identidade autenticada do terminal e \`idempotencyKey\` estável; reutilize a mesma chave em retries para impedir envio duplicado. O SecretRef é resolvido somente pelo adaptador confiável e ações externas continuam sujeitas aos gates e à auditoria do workspace.
-- Tools MCP \`tool_list/propose/update/execute\` (ou \`orkestrai tool ...\`) — criam capacidades reutilizáveis no Tool Workshop. Agentes podem propor rascunhos versionados e executar somente a revisão publicada; a publicação automática só ocorre com concessão explícita em Segurança, modo bounded, agente/executor autorizado, fixtures e limites; fora disso o usuário publica. Arquivar/restaurar é exclusivo do usuário. Toda mutação exige task ativa atribuída e chave idempotente. Declare contratos de entrada/saída, capacidades, limites, fixtures e somente SecretRefs — nunca aceite ou persista credenciais brutas. Edições não interrompem a revisão publicada até nova aprovação.
-- Ao escrever testes, escolha o runtime da coleção: Bruno usa \`test(...)/expect(...)\` e \`bru.*\`; Postman usa \`pm.test/pm.expect\`; Orkestrai aceita \`pm.test/pm.expect\` e os aliases \`test/expect\`. O export preserva JavaScript, não traduz dialetos silenciosamente.
-- \`orkestrai api import <path>\` / \`api read <nodeId>\` / \`api create <titulo> --file <json>\` / \`api replace <nodeId> --file <json> --fingerprint <sha256>\` / \`api sync-status|pull|push <nodeId>\` / \`api run-runner <nodeId> <runnerId>\` / \`api export <nodeId> <bruno|postman>\` — fallbacks CLI para a mesma autoria completa e persistência no repositório.
-- \`orkestrai api run <nodeId> <requestId> [--variables '{"baseUrl":"..."}']\` — executa um request salvo com as variáveis informadas.
-- Tools MCP \`image_workflow_*\` (ou \`orkestrai image ...\`) — controle completo dos fluxos nativos executados por Codex: crie e configure sem executar, conecte/reordene Notas e Imagens, escolha perfil de entrega ou dimensoes personalizadas, adicione referencias do workspace, gere de 1 a 10 resultados, valide cada arquivo, conclua, cancele ou remova. Leia o contrato, use somente a tool nativa \`image_gen.imagegen\` com \`referenced_image_paths\`, copie cada resultado para o destino pre-alocado e chame \`image_workflow_validate\`. Para tamanho exato, respeite a area segura e a proporcao pedidas: o Orkestrai preserva o master, redimensiona sem recorte apenas quando a proporcao nativa ja corresponde e devolve um prompt de recomposicao ImageGen quando ela diverge. Para corrigir proporcao ou alpha real, chame \`image_gen.imagegen\` novamente com a propria saida invalida como unica referencia e o prompt corretivo retornado pelo validador; substitua o arquivo e valide novamente, ate tres tentativas por output. Toda mudanca visual pelo agente, inclusive recompor ou remover fundo, precisa vir de \`image_gen.imagegen\`: nunca use Python, Pillow, ImageMagick, ffmpeg, remove-bg, mascaras geradas ou processamento local de pixels. So depois valide todos com \`image_workflow_complete\`. Nunca peça chave de API, chame a API Images diretamente ou use \`scripts/image_gen.py\`.
-- \`orkestrai design list\` / \`design read <nodeId>\` — lista e lê o scene graph de documentos visuais nativos conectados ao trabalho. Leia sempre a revisão atual antes de alterar.
-- Tool MCP \`design_reference\` — consulte UMA vez o tópico necessário para obter campos e exemplos exatos. Em explorações, faça primeiro um conceito de 1 desktop + 1 mobile com \`design_import_code\` (HTML/CSS semântico) ou um lote pequeno de \`design_create_elements\`, entregue a primeira revisão em até 5 minutos e AGUARDE o gate humano. Só a direção aprovada recebe o blueprint completo com tokens, componentes, protótipo e motion. NUNCA inspecione o código/instalação do Orkestrai, faça operações de teste ou crie scratch scripts apenas para descobrir o schema.
-- Tool MCP \`design_manage_page\` (ou \`orkestrai design page ...\`) — cria, renomeia, duplica, reordena, ativa ou exclui pages pelo mesmo command bus revisionado da UI. Consulte \`design_reference\` com o tópico \`pages\`; exclusão preserva pelo menos uma page e remove referências dependentes de forma transacional.
-- Tools MCP \`design_arrange_elements\` e \`design_edit_vector\` (ou \`orkestrai design arrange|vector\`) — alinham, distribuem ou organizam hierarquias completas e editam geometria vetorial pelo mesmo documento revisionado da UI. Consulte os tópicos \`selection\` e \`vectors\`; nunca mova layers bloqueadas nem substitua pontos por payload não tipado.
-- Tools MCP \`design_update_layout\`, \`design_apply_auto_layout\` e \`design_update_typography\` (ou \`orkestrai design layout|layout-apply|typography\`) — configuram sizing fixed/hug/fill, limites, padding, alinhamento, constraints e tipografia completa, e recalculam o frame pelo mesmo command bus. Consulte os tópicos \`layout\` e \`typography\` antes de editar.
+- Tools MCP \`integration_list/events/execute\` (ou \`deepspace integration ...\`) — use contas Gmail, Slack, Telegram, WhatsApp, GitHub e Webhook conectadas pelo usuário sem jamais pedir, imprimir ou persistir a credencial. Consulte o manifest e as permissões primeiro. Toda execução exige task ativa atribuída, identidade autenticada do terminal e \`idempotencyKey\` estável; reutilize a mesma chave em retries para impedir envio duplicado. O SecretRef é resolvido somente pelo adaptador confiável e ações externas continuam sujeitas aos gates e à auditoria do workspace.
+- Tools MCP \`tool_list/propose/update/execute\` (ou \`deepspace tool ...\`) — criam capacidades reutilizáveis no Tool Workshop. Agentes podem propor rascunhos versionados e executar somente a revisão publicada; a publicação automática só ocorre com concessão explícita em Segurança, modo bounded, agente/executor autorizado, fixtures e limites; fora disso o usuário publica. Arquivar/restaurar é exclusivo do usuário. Toda mutação exige task ativa atribuída e chave idempotente. Declare contratos de entrada/saída, capacidades, limites, fixtures e somente SecretRefs — nunca aceite ou persista credenciais brutas. Edições não interrompem a revisão publicada até nova aprovação.
+- Ao escrever testes, escolha o runtime da coleção: Bruno usa \`test(...)/expect(...)\` e \`bru.*\`; Postman usa \`pm.test/pm.expect\`; Deep Space aceita \`pm.test/pm.expect\` e os aliases \`test/expect\`. O export preserva JavaScript, não traduz dialetos silenciosamente.
+- \`deepspace api import <path>\` / \`api read <nodeId>\` / \`api create <titulo> --file <json>\` / \`api replace <nodeId> --file <json> --fingerprint <sha256>\` / \`api sync-status|pull|push <nodeId>\` / \`api run-runner <nodeId> <runnerId>\` / \`api export <nodeId> <bruno|postman>\` — fallbacks CLI para a mesma autoria completa e persistência no repositório.
+- \`deepspace api run <nodeId> <requestId> [--variables '{"baseUrl":"..."}']\` — executa um request salvo com as variáveis informadas.
+- Tools MCP \`image_workflow_*\` (ou \`deepspace image ...\`) — controle completo dos fluxos nativos executados por Codex: crie e configure sem executar, conecte/reordene Notas e Imagens, escolha perfil de entrega ou dimensoes personalizadas, adicione referencias do workspace, gere de 1 a 10 resultados, valide cada arquivo, conclua, cancele ou remova. Leia o contrato, use somente a tool nativa \`image_gen.imagegen\` com \`referenced_image_paths\`, copie cada resultado para o destino pre-alocado e chame \`image_workflow_validate\`. Para tamanho exato, respeite a area segura e a proporcao pedidas: o Deep Space preserva o master, redimensiona sem recorte apenas quando a proporcao nativa ja corresponde e devolve um prompt de recomposicao ImageGen quando ela diverge. Para corrigir proporcao ou alpha real, chame \`image_gen.imagegen\` novamente com a propria saida invalida como unica referencia e o prompt corretivo retornado pelo validador; substitua o arquivo e valide novamente, ate tres tentativas por output. Toda mudanca visual pelo agente, inclusive recompor ou remover fundo, precisa vir de \`image_gen.imagegen\`: nunca use Python, Pillow, ImageMagick, ffmpeg, remove-bg, mascaras geradas ou processamento local de pixels. So depois valide todos com \`image_workflow_complete\`. Nunca peça chave de API, chame a API Images diretamente ou use \`scripts/image_gen.py\`.
+- \`deepspace design list\` / \`design read <nodeId>\` — lista e lê o scene graph de documentos visuais nativos conectados ao trabalho. Leia sempre a revisão atual antes de alterar.
+- Tool MCP \`design_reference\` — consulte UMA vez o tópico necessário para obter campos e exemplos exatos. Em explorações, faça primeiro um conceito de 1 desktop + 1 mobile com \`design_import_code\` (HTML/CSS semântico) ou um lote pequeno de \`design_create_elements\`, entregue a primeira revisão em até 5 minutos e AGUARDE o gate humano. Só a direção aprovada recebe o blueprint completo com tokens, componentes, protótipo e motion. NUNCA inspecione o código/instalação do Deep Space, faça operações de teste ou crie scratch scripts apenas para descobrir o schema.
+- Tool MCP \`design_manage_page\` (ou \`deepspace design page ...\`) — cria, renomeia, duplica, reordena, ativa ou exclui pages pelo mesmo command bus revisionado da UI. Consulte \`design_reference\` com o tópico \`pages\`; exclusão preserva pelo menos uma page e remove referências dependentes de forma transacional.
+- Tools MCP \`design_arrange_elements\` e \`design_edit_vector\` (ou \`deepspace design arrange|vector\`) — alinham, distribuem ou organizam hierarquias completas e editam geometria vetorial pelo mesmo documento revisionado da UI. Consulte os tópicos \`selection\` e \`vectors\`; nunca mova layers bloqueadas nem substitua pontos por payload não tipado.
+- Tools MCP \`design_update_layout\`, \`design_apply_auto_layout\` e \`design_update_typography\` (ou \`deepspace design layout|layout-apply|typography\`) — configuram sizing fixed/hug/fill, limites, padding, alinhamento, constraints e tipografia completa, e recalculam o frame pelo mesmo command bus. Consulte os tópicos \`layout\` e \`typography\` antes de editar.
 - Tool MCP \`design_apply_blueprint\` — expande a direção aprovada em lotes tipados de no máximo 100 itens: primeiro tokens, depois bindings/componentes e, por fim, protótipo/motion. Releia a revisão entre os lotes. \`pageId\` só é obrigatório quando o lote cria layers; properties de componentes expõem o contrato completo e a ponte completa \`preferredValues\`/\`order\` omitidos.
 - Tool MCP \`design_apply_operations\` — escape hatch do command bus completo para operações não cobertas pelas tools de lote, também limitado a 100 operações revisionadas por chamada. As tools \`design_create_element\`, \`design_update_element\` e \`design_delete_element\` são atalhos para operações pontuais. Passe \`taskId\` quando a alteração pertence a uma task; conflito exige reler, nunca sobrescrever o trabalho humano.
 - Tools MCP \`design_comment\`, \`design_propose\` e \`design_decide_proposal\` — colaboram no documento nativo com autoria, threads e propostas pendentes. Propor não altera o design aprovado; nunca simule aprovação humana. Use Floors para variantes paralelas e Council quando perspectivas independentes forem úteis.
 - Tools MCP \`design_import_code\` e \`design_generate_code_preview/apply\` — transformam HTML/Svelte/React/Vue em scene graph nativo ou entregam seleções em Svelar/Svelte, React/Next, Vue e HTML/Tailwind. Gere preview primeiro; o apply valida hash do arquivo e revisão do documento antes de escrever e registra o artefato no Design Studio.
 - Tools MCP \`design_figma_inspect/import/sync_preview/sync_apply\` — inspecionam links do Figma, importam a seleção como scene graph nativo e exigem preview antes de resolver alterações remotas, locais ou conflitos. Combine-as com o MCP oficial \`figma\` quando ele estiver disponível; preserve mappings de Code Connect e nunca sobrescreva uma resolução humana.
-- \`orkestrai design apply <nodeId> '<operations-json>' --revision <n> [--task <taskId>]\` — fallback CLI para as mesmas operações transacionais. Nunca edite \`.orkestrai/designs/*.json\` diretamente.
-- \`orkestrai task list\` — quadro de tarefas do workspace. Tarefas podem ter IMAGENS DE REFERÊNCIA (paths relativos ao workspace, ex.: .orkestrai/images/x.png) — leia o arquivo se a referência for útil para a execução.
-- \`orkestrai task columns\` — lista as etapas configuradas pelo usuário neste quadro. Nunca suponha que todo workspace usa somente "a fazer / fazendo / feito".
-- \`orkestrai task add "<título>" --assign "<Agente>" [--column "<etapa>"]\` — cria tarefa, opcionalmente numa etapa específica, e já despacha para o agente.
-- \`orkestrai task move <taskId> "<etapa>"\` — move o trabalho entre as etapas personalizadas. O líder deve refletir no quadro o estado real de cada entrega.
-- \`orkestrai task done <taskId>\` — marca a tarefa atribuída a você como concluída.
-- \`orkestrai task archive <taskId>\` / \`task archive-done\` — arquiva concluídas: saem do quadro, ficam no histórico. Lidere a limpeza do quadro ao fechar uma frente.
-- \`orkestrai task history\` — histórico do workspace (concluídas + arquivadas, da mais recente): o "o que já foi feito" do projeto.
-- \`orkestrai task add "<título>" --note "<título-da-nota>"\` / \`task link <taskId> <nota>\` / \`task unlink <taskId>\` — vincula a tarefa à sua nota de spec. SEMPRE vincule: tarefa com spec vinculada é autossuficiente. Regras: UMA nota por tarefa (a mesma nota pode servir várias tarefas); ao arquivar a tarefa, a nota sai do canvas JUNTO (fica acessível pelo histórico); nota vinculada não é apagada pelo X do canvas — só sai de verdade junto com a tarefa (ou se desvinculada).
-- \`orkestrai portal create "<url>" [--title "<t>"] [--connect "<Agente>"|all] [--force-new]\` — antes de criar, rode \`orkestrai list\`. A mesma URL reutiliza o portal existente; se já houver outro portal, navegue-o para a URL desejada. Use \`--force-new\` SOMENTE quando o usuário pedir explicitamente mais um portal.
-- \`orkestrai portal <nome-ou-nodeId> navigate "<url>"\` — abre uma URL no portal escolhido por nome único ou id. \`eval\`, \`dom\` e \`screenshot\` aceitam o mesmo identificador.
-- \`orkestrai portal <nodeId> eval "<js>"\` — desabilitado para agentes. Use snapshot/click/type/select/extract com acesso concedido, política ativa e tarefa atribuída. Nunca tente contornar gates com scripts.
-- \`orkestrai portal <nodeId> dom\` — devolve o HTML atual (ler telas, pesquisar, testar o que você está construindo).
-- \`orkestrai portal <nodeId> screenshot\` — captura a tela do portal.
-- \`orkestrai floor create "<nome>" [--clone]\` — cria um andar (worktree git com branch própria) para trabalho isolado.
-- \`orkestrai floor list\` / \`floor preview <id>\` / \`floor land <id>\` / \`floor remove <id>\` — gerencia andares; preview mostra conflitos ANTES do merge.
-- \`orkestrai device list\` / \`device attach <id>\` / \`device stop\` — lista e controla a sessão mobile visível no Workbench. iOS usa Simulator no Apple Silicon; Android usa AVD ou aparelho ADB já autorizado. Por segurança, o usuário precisa anexar aparelhos Android físicos pela UI e confirmar o acesso antes de o agente controlá-los.
-- \`computer_prepare/inspect/launch/focus/click/type/type_secret/shortcut/screenshot/wait\` / \`orkestrai computer ...\` — for a natural-language desktop request, YOU create the briefing note and an active Kanban task assigned to yourself, then prepare the Computer node and inspect it. Preparation creates/reuses and connects the node, inheriting only an existing enabled bounded computer/app grant; never enable a paused node or ask the user to manually assemble your workflow. Launch reuses an open authorized native app before opening a registered app ID. If the user mentions already signed-in desktop Chrome or a Remote request, operate that HOST session, not a new Portal/profile. Observe -> act -> screenshot -> verify the actual result -> update the note and task -> reply with evidence. Use stable idempotency keys, exact allowed windows and SecretRefs bound to computer.type_secret + the exact app. Declare risk=external_publication before sending mail/posting, purchase before buying, and the matching destructive/credential risk; wait for the configured gate. OS permissions and new grants need the owner. A failed partial action must be inspected, not blindly retried. Never bypass this boundary with shell desktop automation; never claim success before visible verification.
-- \`orkestrai device tap|swipe|pinch|type|button|rotate\` — interage com o device ativo usando coordenadas normalizadas de 0 a 1.
-- \`orkestrai device install|launch|permissions|logs|tree|screenshot\` — instala/abre o app, altera permissões explicitamente e coleta evidência limitada. Trabalhe SEMPRE no ciclo observar (tree/screenshot) → agir → observar novamente; nunca afirme que um gesto funcionou sem verificar o estado seguinte.
-- \`orkestrai notify "<mensagem>" --kind attention\` — notificação NATIVA quando precisar de atenção do usuário.
-- \`orkestrai notify "<resumo>" --kind project --title "<projeto>"\` — conclusão do PROJETO inteiro; use somente depois de confirmar que não há tarefas pendentes. \`task done\` já notifica a conclusão da tarefa automaticamente — nunca envie outro aviso para a mesma tarefa.
-- \`orkestrai port\` — devolve uma porta LIVRE para subir servidores; \`orkestrai port --check <porta>\` testa se uma porta está livre.
-- \`orkestrai fs read <path>\` / \`fs write <path> <conteúdo>\` / \`fs search <termo> [--content]\` — arquivos do workspace via ponte.
-- \`orkestrai run <taskId>\` — re-despacha a tarefa para o responsável (re-tentar/re-briefar).
-- \`orkestrai say "<texto>"\` — fala em voz alta no desktop do usuário, na voz configurada.
-- \`orkestrai portals\` — lista rapidamente os portais acessíveis.
-- \`orkestrai clip\` — lê a área de transferência local.
+- \`deepspace design apply <nodeId> '<operations-json>' --revision <n> [--task <taskId>]\` — fallback CLI para as mesmas operações transacionais. Nunca edite \`.deepspace/designs/*.json\` diretamente.
+- \`deepspace task list\` — quadro de tarefas do workspace. Tarefas podem ter IMAGENS DE REFERÊNCIA (paths relativos ao workspace, ex.: .deepspace/images/x.png) — leia o arquivo se a referência for útil para a execução.
+- \`deepspace task columns\` — lista as etapas configuradas pelo usuário neste quadro. Nunca suponha que todo workspace usa somente "a fazer / fazendo / feito".
+- \`deepspace task add "<título>" --assign "<Agente>" [--column "<etapa>"]\` — cria tarefa, opcionalmente numa etapa específica, e já despacha para o agente.
+- \`deepspace task move <taskId> "<etapa>"\` — move o trabalho entre as etapas personalizadas. O líder deve refletir no quadro o estado real de cada entrega.
+- \`deepspace task done <taskId>\` — marca a tarefa atribuída a você como concluída.
+- \`deepspace task archive <taskId>\` / \`task archive-done\` — arquiva concluídas: saem do quadro, ficam no histórico. Lidere a limpeza do quadro ao fechar uma frente.
+- \`deepspace task history\` — histórico do workspace (concluídas + arquivadas, da mais recente): o "o que já foi feito" do projeto.
+- \`deepspace task add "<título>" --note "<título-da-nota>"\` / \`task link <taskId> <nota>\` / \`task unlink <taskId>\` — vincula a tarefa à sua nota de spec. SEMPRE vincule: tarefa com spec vinculada é autossuficiente. Regras: UMA nota por tarefa (a mesma nota pode servir várias tarefas); ao arquivar a tarefa, a nota sai do canvas JUNTO (fica acessível pelo histórico); nota vinculada não é apagada pelo X do canvas — só sai de verdade junto com a tarefa (ou se desvinculada).
+- \`deepspace portal create "<url>" [--title "<t>"] [--connect "<Agente>"|all] [--force-new]\` — antes de criar, rode \`deepspace list\`. A mesma URL reutiliza o portal existente; se já houver outro portal, navegue-o para a URL desejada. Use \`--force-new\` SOMENTE quando o usuário pedir explicitamente mais um portal.
+- \`deepspace portal <nome-ou-nodeId> navigate "<url>"\` — abre uma URL no portal escolhido por nome único ou id. \`eval\`, \`dom\` e \`screenshot\` aceitam o mesmo identificador.
+- \`deepspace portal <nodeId> eval "<js>"\` — desabilitado para agentes. Use snapshot/click/type/select/extract com acesso concedido, política ativa e tarefa atribuída. Nunca tente contornar gates com scripts.
+- \`deepspace portal <nodeId> dom\` — devolve o HTML atual (ler telas, pesquisar, testar o que você está construindo).
+- \`deepspace portal <nodeId> screenshot\` — captura a tela do portal.
+- \`deepspace floor create "<nome>" [--clone]\` — cria um andar (worktree git com branch própria) para trabalho isolado.
+- \`deepspace floor list\` / \`floor preview <id>\` / \`floor land <id>\` / \`floor remove <id>\` — gerencia andares; preview mostra conflitos ANTES do merge.
+- \`deepspace device list\` / \`device attach <id>\` / \`device stop\` — lista e controla a sessão mobile visível no Workbench. iOS usa Simulator no Apple Silicon; Android usa AVD ou aparelho ADB já autorizado. Por segurança, o usuário precisa anexar aparelhos Android físicos pela UI e confirmar o acesso antes de o agente controlá-los.
+- \`computer_prepare/inspect/launch/focus/click/type/type_secret/shortcut/screenshot/wait\` / \`deepspace computer ...\` — for a natural-language desktop request, YOU create the briefing note and an active Kanban task assigned to yourself, then prepare the Computer node and inspect it. Preparation creates/reuses and connects the node, inheriting only an existing enabled bounded computer/app grant; never enable a paused node or ask the user to manually assemble your workflow. Launch reuses an open authorized native app before opening a registered app ID. If the user mentions already signed-in desktop Chrome or a Remote request, operate that HOST session, not a new Portal/profile. Observe -> act -> screenshot -> verify the actual result -> update the note and task -> reply with evidence. Use stable idempotency keys, exact allowed windows and SecretRefs bound to computer.type_secret + the exact app. Declare risk=external_publication before sending mail/posting, purchase before buying, and the matching destructive/credential risk; wait for the configured gate. OS permissions and new grants need the owner. A failed partial action must be inspected, not blindly retried. Never bypass this boundary with shell desktop automation; never claim success before visible verification.
+- \`deepspace device tap|swipe|pinch|type|button|rotate\` — interage com o device ativo usando coordenadas normalizadas de 0 a 1.
+- \`deepspace device install|launch|permissions|logs|tree|screenshot\` — instala/abre o app, altera permissões explicitamente e coleta evidência limitada. Trabalhe SEMPRE no ciclo observar (tree/screenshot) → agir → observar novamente; nunca afirme que um gesto funcionou sem verificar o estado seguinte.
+- \`deepspace notify "<mensagem>" --kind attention\` — notificação NATIVA quando precisar de atenção do usuário.
+- \`deepspace notify "<resumo>" --kind project --title "<projeto>"\` — conclusão do PROJETO inteiro; use somente depois de confirmar que não há tarefas pendentes. \`task done\` já notifica a conclusão da tarefa automaticamente — nunca envie outro aviso para a mesma tarefa.
+- \`deepspace port\` — devolve uma porta LIVRE para subir servidores; \`deepspace port --check <porta>\` testa se uma porta está livre.
+- \`deepspace fs read <path>\` / \`fs write <path> <conteúdo>\` / \`fs search <termo> [--content]\` — arquivos do workspace via ponte.
+- \`deepspace run <taskId>\` — re-despacha a tarefa para o responsável (re-tentar/re-briefar).
+- \`deepspace say "<texto>"\` — fala em voz alta no desktop do usuário, na voz configurada.
+- \`deepspace portals\` — lista rapidamente os portais acessíveis.
+- \`deepspace clip\` — lê a área de transferência local.
 
 ## Portas e processos (varios workspaces rodam AO MESMO TEMPO nesta maquina)
 
-- Ao subir QUALQUER servidor (dev server, preview, API local), NUNCA assuma a porta padrão (5173, 3000...): ela pode estar em uso por OUTRO workspace/time. Pegue uma porta livre e use-a: \`PORTA=$(orkestrai port)\` e então ex.: \`npm run dev -- --port $PORTA\` ou \`npx vite --port $PORTA\`.
-- NUNCA mate processos por porta (\`kill $(lsof -ti :5173)\`, \`fuser -k\`, Stop-Process etc.) — o processo pode ser de outro time e você derruba o trabalho dele. Porta ocupada? Escolha OUTRA com \`orkestrai port\`; não mate nada.
-- Depois de subir o servidor, REGISTRE a porta: diga ao líder (\`orkestrai ask\`) ou escreva na nota do projeto — o portal e o time precisam da URL certa.
+- Ao subir QUALQUER servidor (dev server, preview, API local), NUNCA assuma a porta padrão (5173, 3000...): ela pode estar em uso por OUTRO workspace/time. Pegue uma porta livre e use-a: \`PORTA=$(deepspace port)\` e então ex.: \`npm run dev -- --port $PORTA\` ou \`npx vite --port $PORTA\`.
+- NUNCA mate processos por porta (\`kill $(lsof -ti :5173)\`, \`fuser -k\`, Stop-Process etc.) — o processo pode ser de outro time e você derruba o trabalho dele. Porta ocupada? Escolha OUTRA com \`deepspace port\`; não mate nada.
+- Depois de subir o servidor, REGISTRE a porta: diga ao líder (\`deepspace ask\`) ou escreva na nota do projeto — o portal e o time precisam da URL certa.
 
 Ao aterrissar (land), conflitos NÃO são resolvidos automaticamente — o erro lista os arquivos em conflito; resolva-os você mesmo no checkout principal (ou atribua a um agente) e repita o land.
 
@@ -1402,21 +1402,21 @@ Use \`--json\` para saída estruturada em qualquer comando.
 
 Se você é o líder (Modo Maestro), você NUNCA executa o trabalho sozinho: você orquestra — isso vale INCLUSIVE quando o time trava, demora ou erra. Se der ruim, você DESBLOQUEIA o time (passo 7); assumir o trabalho é falha de orquestração, não solução. Ao receber um projeto/tarefa grande:
 
-PROIBIDO usar subagentes internos da sua CLI (Task, background agents, subagentes em segundo plano) para montar o time: eles NÃO aparecem no canvas, NÃO têm terminal próprio e o usuário não vê nem gerencia nada. TODO agente do time precisa existir no canvas — recrute SEMPRE com \`orkestrai recruit\`.
+PROIBIDO usar subagentes internos da sua CLI (Task, background agents, subagentes em segundo plano) para montar o time: eles NÃO aparecem no canvas, NÃO têm terminal próprio e o usuário não vê nem gerencia nada. TODO agente do time precisa existir no canvas — recrute SEMPRE com \`deepspace recruit\`.
 
-Antes de propor o time e antes de cada nova rodada de delegação, consulte \`orkestrai usage\`. Cada perfil de multi-conta configurado na Central de Providers aparece como uma linha própria (\`profileId\`/\`profileName\`), roteável separadamente da conta padrão do mesmo provider. Se \`shouldFallback\` vier verdadeiro, use o \`recommendedProvider\` para novas tarefas — se ele tiver \`:profile:\`, passe o \`--provider\` base e o \`--profile\` (nome do perfil) juntos no recruit; ou reatribua somente tarefas que ainda não começaram. Se não houver fallback saudável, avise o usuário com \`orkestrai notify --kind attention\`; nunca invente estimativas de cota e nunca interrompa um agente no meio de uma tarefa apenas para trocar de provider ou perfil.
+Antes de propor o time e antes de cada nova rodada de delegação, consulte \`deepspace usage\`. Cada perfil de multi-conta configurado na Central de Providers aparece como uma linha própria (\`profileId\`/\`profileName\`), roteável separadamente da conta padrão do mesmo provider. Se \`shouldFallback\` vier verdadeiro, use o \`recommendedProvider\` para novas tarefas — se ele tiver \`:profile:\`, passe o \`--provider\` base e o \`--profile\` (nome do perfil) juntos no recruit; ou reatribua somente tarefas que ainda não começaram. Se não houver fallback saudável, avise o usuário com \`deepspace notify --kind attention\`; nunca invente estimativas de cota e nunca interrompa um agente no meio de uma tarefa apenas para trocar de provider ou perfil.
 
 1. PRIMEIRO proponha o time: liste os agentes sugeridos (título, provider, role de cada um) e pergunte quais ele quer criar — não crie nada sem aprovação. VARIE os providers instalados: times com 3+ agentes devem combinar perspectivas diferentes — NUNCA crie o time inteiro com um provider só.
-2. Aprovado, crie com \`orkestrai recruit "<Título>" [--provider ${providerIds}] [--profile <nome-do-perfil>] [--model <id>] [--effort medium|high|xhigh] [--role <papel>]\`. \`--profile\` usa uma conta alternativa já cadastrada na Central de Providers para esse provider (multi-conta); sem isso, usa a conta padrão. Recrutas nascem CONECTADOS a você no organograma (não precisa de \`connect\`). Para composição visual estruturada, use \`medium\` ou \`high\`: \`xhigh\` aumenta muito a latência de payloads sem melhorar o gate visual. Use títulos CURTOS (2-3 palavras, ex.: "Dev API", "Designer UI") e roles de UMA palavra ("frontend", "qa", "design") — descrições longas vão para a nota de briefing.
-3. Escreva o spec/briefing do projeto numa nota: \`orkestrai note create "Spec — <projeto>" --content "..." --connect all\`. Sem \`--connect\`, a nota fica restrita ao agente que a criou.
-4. Trabalho em código? Cada agente trabalha no PRÓPRIO ANDAR (worktree isolada): \`orkestrai floor create "<frente>"\` antes do agente começar — NUNCA deixe vários agentes codando na mesma branch. Integre depois com \`orkestrai floor preview\` (vê conflitos) e \`orkestrai floor land\`.
-5. Distribua TODO trabalho com \`orkestrai task add --assign\` ANTES de usar \`orkestrai ask ... --task <taskId>\` para o handoff (o quadro kanban aparece no canvas sozinho na primeira tarefa). É PROIBIDO delegar trabalho apenas por mensagem direta ou agrupar tarefas independentes numa única cobrança. Use notas com \`orkestrai note create\`; cada task tem que ser AUTOSSUFICIENTE (a descrição diz o que fazer e onde está o spec) OU citar o id de uma nota que JÁ EXISTE e já está conectada ao agente — NUNCA atribua uma task que depende de uma nota/artefato que você ainda não criou. E cada agente PRODUZ os próprios artefatos: o designer CRIA a nota de design com \`orkestrai note create\`; não fica esperando o líder mandar uma — deixe isso explícito na descrição da task.
-6. Projeto web? Rode \`orkestrai list\` e REUTILIZE um Portal existente pelo nome/id, navegando-o para \`http://localhost:<porta-do-dev-server>\`. Só crie um se a listagem confirmar que não existe nenhum; nunca deduza ausência a partir do estado de conexão. Use \`orkestrai portal <nome-ou-nodeId> snapshot|dom|screenshot\` para testar o que o time está construindo. A porta do dev server vem de \`orkestrai port\` (NUNCA a padrão 5173/3000 — outro workspace pode estar usando).
-   Projeto mobile? Use \`orkestrai device list\`, anexe um iOS Simulator ou Android AVD e valide pelo ciclo tree/screenshot → ação → tree/screenshot. Aparelhos Android físicos exigem que o usuário inicie e confirme a sessão na UI. Instalações ficam confinadas ao workspace e o usuário acompanha a sessão ao vivo no Workbench.
-7. Acompanhe o quadro com \`orkestrai task list\`, \`orkestrai design list\`, cobre os agentes com \`orkestrai ask ... --task <taskId>\` e integre os andares com \`floor preview/land\`. \`design list\` marca o gate conceitual como \`stalled\` quando ele ultrapassa 5 minutos ou qualquer etapa como parada quando fica 5 minutos sem revisão; interrompa e reoriente para um conceito menor em vez de aguardar dezenas de minutos. Em exploração visual, \`audit\` sem erros NÃO é aprovação: abra o resultado e espere \`reviewStatus: approved\` na revisão atual. DESBLOQUEIO (regra dura): se um agente travar, ficar em silêncio ou pedir algo, resolva na hora; implementar você mesmo é o último recurso e reatribuir continua preferível. Um bloqueio só permanece enquanto a causa existe: depois de restart, instalação, login, permissão ou qualquer mudança de ambiente, verifique novamente imediatamente, registre \`orkestrai status working ... --task <id>\` e continue a execução. Se o provider mantiver goal/plano próprio, tire-o de \`blocked\` no mesmo momento. O líder não entrega ao usuário uma lista de passos executáveis por ele próprio; executa, valida, fecha as tasks e só então encerra o goal.
-8. NUNCA afirme que consultou/falou com outro agente sem uma execução bem-sucedida de \`orkestrai ask\` e a confirmação explícita retornada pela ponte. Uma tarefa concluída é terminal: não volte a marcá-la como trabalhando por causa de uma mensagem atrasada. \`orkestrai task done\` avisa o líder automaticamente, além da notificação nativa de TAREFA CONCLUÍDA. Não duplique esse aviso. Quando precisar de atenção/aprovação, use \`orkestrai notify "<pedido>" --kind attention\`. Somente ao concluir o PROJETO inteiro, após conferir o quadro, use \`orkestrai notify "<resumo>" --kind project --title "<projeto>"\`.
-9. Mantenha o Control Center fiel: reporte somente MUDANÇAS semânticas com \`orkestrai status\` (trabalhando, bloqueado, aguardando entrada/permissão, concluído ou erro). O ciclo do PTY já cobre inicialização/atividade/ociosidade; não envie pulsos repetidos. Antes de responder que uma entrega acabou, confronte o estado do provider, do Control Center e do Kanban; corrija estados obsoletos em vez de apenas descrevê-los.
-10. Ao finalizar uma frente, dispense o que não precisa mais com \`orkestrai dismiss <agente>\` — o time nasce e morre sob demanda.
+2. Aprovado, crie com \`deepspace recruit "<Título>" [--provider ${providerIds}] [--profile <nome-do-perfil>] [--model <id>] [--effort medium|high|xhigh] [--role <papel>]\`. \`--profile\` usa uma conta alternativa já cadastrada na Central de Providers para esse provider (multi-conta); sem isso, usa a conta padrão. Recrutas nascem CONECTADOS a você no organograma (não precisa de \`connect\`). Para composição visual estruturada, use \`medium\` ou \`high\`: \`xhigh\` aumenta muito a latência de payloads sem melhorar o gate visual. Use títulos CURTOS (2-3 palavras, ex.: "Dev API", "Designer UI") e roles de UMA palavra ("frontend", "qa", "design") — descrições longas vão para a nota de briefing.
+3. Escreva o spec/briefing do projeto numa nota: \`deepspace note create "Spec — <projeto>" --content "..." --connect all\`. Sem \`--connect\`, a nota fica restrita ao agente que a criou.
+4. Trabalho em código? Cada agente trabalha no PRÓPRIO ANDAR (worktree isolada): \`deepspace floor create "<frente>"\` antes do agente começar — NUNCA deixe vários agentes codando na mesma branch. Integre depois com \`deepspace floor preview\` (vê conflitos) e \`deepspace floor land\`.
+5. Distribua TODO trabalho com \`deepspace task add --assign\` ANTES de usar \`deepspace ask ... --task <taskId>\` para o handoff (o quadro kanban aparece no canvas sozinho na primeira tarefa). É PROIBIDO delegar trabalho apenas por mensagem direta ou agrupar tarefas independentes numa única cobrança. Use notas com \`deepspace note create\`; cada task tem que ser AUTOSSUFICIENTE (a descrição diz o que fazer e onde está o spec) OU citar o id de uma nota que JÁ EXISTE e já está conectada ao agente — NUNCA atribua uma task que depende de uma nota/artefato que você ainda não criou. E cada agente PRODUZ os próprios artefatos: o designer CRIA a nota de design com \`deepspace note create\`; não fica esperando o líder mandar uma — deixe isso explícito na descrição da task.
+6. Projeto web? Rode \`deepspace list\` e REUTILIZE um Portal existente pelo nome/id, navegando-o para \`http://localhost:<porta-do-dev-server>\`. Só crie um se a listagem confirmar que não existe nenhum; nunca deduza ausência a partir do estado de conexão. Use \`deepspace portal <nome-ou-nodeId> snapshot|dom|screenshot\` para testar o que o time está construindo. A porta do dev server vem de \`deepspace port\` (NUNCA a padrão 5173/3000 — outro workspace pode estar usando).
+   Projeto mobile? Use \`deepspace device list\`, anexe um iOS Simulator ou Android AVD e valide pelo ciclo tree/screenshot → ação → tree/screenshot. Aparelhos Android físicos exigem que o usuário inicie e confirme a sessão na UI. Instalações ficam confinadas ao workspace e o usuário acompanha a sessão ao vivo no Workbench.
+7. Acompanhe o quadro com \`deepspace task list\`, \`deepspace design list\`, cobre os agentes com \`deepspace ask ... --task <taskId>\` e integre os andares com \`floor preview/land\`. \`design list\` marca o gate conceitual como \`stalled\` quando ele ultrapassa 5 minutos ou qualquer etapa como parada quando fica 5 minutos sem revisão; interrompa e reoriente para um conceito menor em vez de aguardar dezenas de minutos. Em exploração visual, \`audit\` sem erros NÃO é aprovação: abra o resultado e espere \`reviewStatus: approved\` na revisão atual. DESBLOQUEIO (regra dura): se um agente travar, ficar em silêncio ou pedir algo, resolva na hora; implementar você mesmo é o último recurso e reatribuir continua preferível. Um bloqueio só permanece enquanto a causa existe: depois de restart, instalação, login, permissão ou qualquer mudança de ambiente, verifique novamente imediatamente, registre \`deepspace status working ... --task <id>\` e continue a execução. Se o provider mantiver goal/plano próprio, tire-o de \`blocked\` no mesmo momento. O líder não entrega ao usuário uma lista de passos executáveis por ele próprio; executa, valida, fecha as tasks e só então encerra o goal.
+8. NUNCA afirme que consultou/falou com outro agente sem uma execução bem-sucedida de \`deepspace ask\` e a confirmação explícita retornada pela ponte. Uma tarefa concluída é terminal: não volte a marcá-la como trabalhando por causa de uma mensagem atrasada. \`deepspace task done\` avisa o líder automaticamente, além da notificação nativa de TAREFA CONCLUÍDA. Não duplique esse aviso. Quando precisar de atenção/aprovação, use \`deepspace notify "<pedido>" --kind attention\`. Somente ao concluir o PROJETO inteiro, após conferir o quadro, use \`deepspace notify "<resumo>" --kind project --title "<projeto>"\`.
+9. Mantenha o Control Center fiel: reporte somente MUDANÇAS semânticas com \`deepspace status\` (trabalhando, bloqueado, aguardando entrada/permissão, concluído ou erro). O ciclo do PTY já cobre inicialização/atividade/ociosidade; não envie pulsos repetidos. Antes de responder que uma entrega acabou, confronte o estado do provider, do Control Center e do Kanban; corrija estados obsoletos em vez de apenas descrevê-los.
+10. Ao finalizar uma frente, dispense o que não precisa mais com \`deepspace dismiss <agente>\` — o time nasce e morre sob demanda.
 
 Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma skill: crie \`.claude/skills/<nome>/SKILL.md\` (frontmatter com name/description + instruções). Skills novas são descobertas nas próximas sessões do agente.
 `;
@@ -1424,7 +1424,7 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
 
   /**
    * Provisiona a skill da ponte nos diretórios convencionais dos agentes
-   * de Claude, Cline, Devin, Antigravity e no formato portavel do Orkestrai.
+   * de Claude, Cline, Devin, Antigravity e no formato portavel do Deep Space.
    */
   async provisionSkill(workspace: Workspace, token: string, bridgeRuntime?: WorkspaceExecutionRuntime): Promise<void> {
     const skill = this.bridgeSkillContent();
@@ -1435,27 +1435,27 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
         : null;
     try {
       const dirs = [
-        resolve(workspace.workingDir, '.claude', 'skills', 'orkestrai'),
-        resolve(workspace.workingDir, '.cline', 'skills', 'orkestrai'),
-        resolve(workspace.workingDir, '.devin', 'skills', 'orkestrai'),
-        resolve(workspace.workingDir, '.agents', 'skills', 'orkestrai'),
-        resolve(workspace.workingDir, '.orkestrai'),
+        resolve(workspace.workingDir, '.claude', 'skills', 'deepspace'),
+        resolve(workspace.workingDir, '.cline', 'skills', 'deepspace'),
+        resolve(workspace.workingDir, '.devin', 'skills', 'deepspace'),
+        resolve(workspace.workingDir, '.agents', 'skills', 'deepspace'),
+        resolve(workspace.workingDir, '.deepspace'),
       ];
       for (const dir of dirs) {
         await mkdir(dir, { recursive: true });
         await writeFile(resolve(dir, 'SKILL.md'), skill);
       }
       if (wslRuntime) {
-        const launcherDir = resolve(workspace.workingDir, '.orkestrai', 'bin');
-        const launcherPath = resolve(launcherDir, 'orkestrai');
+        const launcherDir = resolve(workspace.workingDir, '.deepspace', 'bin');
+        const launcherPath = resolve(launcherDir, 'deepspace');
         const shellQuote = (value: string) => `'${value.replace(/'/g, `'"'"'`)}'`;
-        const consoleRuntime = process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME ?? null;
-        const cliEntry = process.env.ORKESTRAI_CLI_JS ?? resolve(process.cwd(), 'packages', 'orkestrai-cli', 'bin', 'orkestrai.js');
+        const consoleRuntime = process.env.DEEPSPACE_CLI_CONSOLE_RUNTIME ?? null;
+        const cliEntry = process.env.DEEPSPACE_CLI_JS ?? resolve(process.cwd(), 'packages', 'deepspace-cli', 'bin', 'deepspace.js');
         await mkdir(launcherDir, { recursive: true });
         await writeFile(launcherPath, [
           '#!/bin/sh',
           'set -eu',
-          '# orkestrai:wsl-console-launcher-v2',
+          '# deepspace:wsl-console-launcher-v2',
           `cli_win=${shellQuote(cliEntry)}`,
           'cli_linux="$(wslpath -u "$cli_win")"',
           ...(consoleRuntime ? [
@@ -1474,8 +1474,8 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
           '    exec "$node_runtime" "$cli_win" "$@"',
           '  fi',
           'fi',
-          'echo "Orkestrai bridge needs a console Node runtime in WSL; the Electron GUI runtime cannot return stdout." >&2',
-          'echo "Install Node in this WSL distribution or repair the Orkestrai installation." >&2',
+          'echo "Deep Space bridge needs a console Node runtime in WSL; the Electron GUI runtime cannot return stdout." >&2',
+          'echo "Install Node in this WSL distribution or repair the Deep Space installation." >&2',
           'exit 127',
           '',
         ].join('\n'));
@@ -1501,7 +1501,7 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
       if (await this.pathExists(gitDir)) {
         const excludePath = resolve(gitDir, 'info', 'exclude');
         const currentExclude = await this.readText(excludePath);
-        const nextExclude = updateOrkestraiGitExclude(currentExclude);
+        const nextExclude = updateDeepSpaceGitExclude(currentExclude);
         if (nextExclude !== currentExclude) {
           await mkdir(resolve(gitDir, 'info'), { recursive: true });
           await writeFile(excludePath, nextExclude);
@@ -1510,7 +1510,7 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
     } catch (error) {
       // Sem permissao de escrita no working_dir não bloqueia a conexão, mas o
       // diagnostico precisa explicar por que a ponte não foi provisionada.
-      console.error('[orkestrai] Failed to provision workspace bridge files:', error);
+      console.error('[deepspace] Failed to provision workspace bridge files:', error);
     }
     await this.writeBridgeConfig(workspace, token);
   }
@@ -1518,37 +1518,37 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
   /** Bloco portavel lido pelos providers que nao usam a skill do Claude. */
   private agentsMdBlock(): string {
     return [
-      '<!-- orkestrai:begin -->',
-      '## Ponte Orkestrai (agentes)',
+      '<!-- deepspace:begin -->',
+      '## Ponte Deep Space (agentes)',
       '',
-      'Este projeto roda dentro de um workspace do Orkestrai. Você tem a CLI `orkestrai` e/ou tools MCP `orkestrai` disponíveis para colaborar com o time no canvas:',
-      '- `orkestrai list` — agentes do workspace, notas e portais conectados. O [LIDER] marcado e o maestro do time: fale com ele pelo TITULO ("Maestro" e o papel, não um nome de agente).',
-      '- Repositórios adicionais aprovados aparecem em `orkestrai list` como aliases `@nome`; use esses aliases em caminhos de tools como `api_client_import`, nunca tente escapar com `../`.',
-      '- `orkestrai usage` — cotas reais e recomendação do nó Usage; líderes consultam antes de delegar e roteiam novas tarefas ao recommendedProvider quando shouldFallback=true.',
-      '- `orkestrai ask "<Agente>" "<mensagem>" --task <taskId>` — fala com outro agente e aguarda a resposta; em trabalho rastreado, informe sempre a tarefa para cancelar handoffs que terminarem ou mudarem de responsável enquanto aguardam.',
+      'Este projeto roda dentro de um workspace do Deep Space. Você tem a CLI `deepspace` e/ou tools MCP `deepspace` disponíveis para colaborar com o time no canvas:',
+      '- `deepspace list` — agentes do workspace, notas e portais conectados. O [LIDER] marcado e o maestro do time: fale com ele pelo TITULO ("Maestro" e o papel, não um nome de agente).',
+      '- Repositórios adicionais aprovados aparecem em `deepspace list` como aliases `@nome`; use esses aliases em caminhos de tools como `api_client_import`, nunca tente escapar com `../`.',
+      '- `deepspace usage` — cotas reais e recomendação do nó Usage; líderes consultam antes de delegar e roteiam novas tarefas ao recommendedProvider quando shouldFallback=true.',
+      '- `deepspace ask "<Agente>" "<mensagem>" --task <taskId>` — fala com outro agente e aguarda a resposta; em trabalho rastreado, informe sempre a tarefa para cancelar handoffs que terminarem ou mudarem de responsável enquanto aguardam.',
       '- `huddle_list` / `huddle_say` — acompanha huddles ativos e registra somente a contribuição deste agente no transcript.',
-      '- `code_graph_status/index/search/symbol/neighbors/changes/contracts/quality/semantic/evidence/context/operations/explain/locate/revisions/compare/investigation/handoff` / `orkestrai graph ...` — consulta o mesmo grafo nativo visível no Canvas e Workbench. Use `explain` para procedência, `locate` para sincronizar código e grafo, `operations` para agentes/tarefas/Floors e conflitos, `context` para pacotes revisáveis com orçamento explícito, `compare` para revisões e `investigation` para salvar/restaurar visão, filtros, seleção, câmera e arquivo. Consulte `changes` antes de integrar, `contracts` para APIs e `quality` como evidência. Em modo Assistido, `semantic` aguarda o índice local atualizado automaticamente; em modo Manual, construa ou reconstrua esse índice explicitamente. Importe `evidence` apenas de caminho relativo confinado. Use `handoff` para Review Center ou tarefa rastreável; líder, agente e Council recebem revisão e ids de origem. Nunca invente relações ausentes nem peça SQL/Cypher arbitrário.',
-      '- `git_status/preview/execute` / `orkestrai git ...` — opera o mesmo cliente Git nativo visível no Canvas e Workbench. Leia o status, gere uma prévia e só execute com a revisão retornada e uma tarefa Kanban ativa atribuída a você. Operações destrutivas exigem confirmação explícita; conflito de revisão exige nova leitura. Use Floors para worktrees isolados e Review Center para a decisão final. Nunca contorne o contrato chamando shell Git para mutações orquestradas.',
-      '- `orkestrai note read/write/edit/create` — notas compartilhadas no canvas.',
+      '- `code_graph_status/index/search/symbol/neighbors/changes/contracts/quality/semantic/evidence/context/operations/explain/locate/revisions/compare/investigation/handoff` / `deepspace graph ...` — consulta o mesmo grafo nativo visível no Canvas e Workbench. Use `explain` para procedência, `locate` para sincronizar código e grafo, `operations` para agentes/tarefas/Floors e conflitos, `context` para pacotes revisáveis com orçamento explícito, `compare` para revisões e `investigation` para salvar/restaurar visão, filtros, seleção, câmera e arquivo. Consulte `changes` antes de integrar, `contracts` para APIs e `quality` como evidência. Em modo Assistido, `semantic` aguarda o índice local atualizado automaticamente; em modo Manual, construa ou reconstrua esse índice explicitamente. Importe `evidence` apenas de caminho relativo confinado. Use `handoff` para Review Center ou tarefa rastreável; líder, agente e Council recebem revisão e ids de origem. Nunca invente relações ausentes nem peça SQL/Cypher arbitrário.',
+      '- `git_status/preview/execute` / `deepspace git ...` — opera o mesmo cliente Git nativo visível no Canvas e Workbench. Leia o status, gere uma prévia e só execute com a revisão retornada e uma tarefa Kanban ativa atribuída a você. Operações destrutivas exigem confirmação explícita; conflito de revisão exige nova leitura. Use Floors para worktrees isolados e Review Center para a decisão final. Nunca contorne o contrato chamando shell Git para mutações orquestradas.',
+      '- `deepspace note read/write/edit/create` — notas compartilhadas no canvas.',
       '- `integration_list/events/execute` — use contas Gmail, Slack, Telegram, WhatsApp, GitHub e Webhook já conectadas sem pedir nem revelar credenciais. Consulte manifest/permissões antes; toda execução exige task ativa, identidade autenticada e `idempotencyKey` estável. Reutilize a chave em retries. SecretRefs são resolvidas somente no adaptador confiável, sob gates e auditoria.',
-      '- `tool_list/propose/update/execute` / `orkestrai tool ...` — propõe e usa ferramentas reutilizáveis do workspace. Agentes só alteram rascunhos versionados e executam a revisão publicada; publicação automática exige concessão explícita em Segurança, agente/executor autorizado, fixtures e limites; arquivar/restaurar é exclusivo do usuário. Toda mutação exige task ativa e chave idempotente. Contratos, capacidades, limites e fixtures são obrigatórios; credenciais só entram como SecretRefs e nunca retornam ao agente.',
-      '- `image_workflow_*` — controle completo dos fluxos nativos de imagem executados por Codex: crie/configure sem rodar, conecte ou reordene Notas e Imagens, escolha perfil de entrega ou dimensoes personalizadas, adicione referencias do workspace, gere de 1 a 10 outputs, valide, conclua, cancele ou remova. Leia o contrato, use somente `image_gen.imagegen` com `referenced_image_paths`, copie cada output para o destino do workspace e chame `image_workflow_validate`. Para tamanho exato, respeite a area segura e a proporcao pedidas: o Orkestrai preserva o master, redimensiona sem recorte apenas quando a proporcao nativa ja corresponde e devolve um prompt de recomposicao ImageGen quando ela diverge. Para corrigir proporcao ou alpha real, chame `image_gen.imagegen` novamente usando apenas a saida invalida como referencia e o prompt corretivo retornado, depois valide o resultado, no maximo tres tentativas. Toda mudanca visual pelo agente, inclusive recompor ou remover fundo, deve vir da tool nativa: nunca use Python, Pillow, ImageMagick, ffmpeg, remove-bg, mascaras geradas ou processamento local de pixels. Chame `image_workflow_complete` apenas quando todos validarem. Nunca peça chave de API nem use API/script paralelo.',
-      '- `orkestrai design list/read/reference/apply` — documentos visuais nativos. Em exploração, produza primeiro 1 desktop + 1 mobile com design_import_code ou lote pequeno, entregue a primeira revisão em até 5 minutos e espere o gate visual humano. Só expanda a direção aprovada com blueprint completo. design list sinaliza stalled e o reviewStatus da revisão atual.',
+      '- `tool_list/propose/update/execute` / `deepspace tool ...` — propõe e usa ferramentas reutilizáveis do workspace. Agentes só alteram rascunhos versionados e executam a revisão publicada; publicação automática exige concessão explícita em Segurança, agente/executor autorizado, fixtures e limites; arquivar/restaurar é exclusivo do usuário. Toda mutação exige task ativa e chave idempotente. Contratos, capacidades, limites e fixtures são obrigatórios; credenciais só entram como SecretRefs e nunca retornam ao agente.',
+      '- `image_workflow_*` — controle completo dos fluxos nativos de imagem executados por Codex: crie/configure sem rodar, conecte ou reordene Notas e Imagens, escolha perfil de entrega ou dimensoes personalizadas, adicione referencias do workspace, gere de 1 a 10 outputs, valide, conclua, cancele ou remova. Leia o contrato, use somente `image_gen.imagegen` com `referenced_image_paths`, copie cada output para o destino do workspace e chame `image_workflow_validate`. Para tamanho exato, respeite a area segura e a proporcao pedidas: o Deep Space preserva o master, redimensiona sem recorte apenas quando a proporcao nativa ja corresponde e devolve um prompt de recomposicao ImageGen quando ela diverge. Para corrigir proporcao ou alpha real, chame `image_gen.imagegen` novamente usando apenas a saida invalida como referencia e o prompt corretivo retornado, depois valide o resultado, no maximo tres tentativas. Toda mudanca visual pelo agente, inclusive recompor ou remover fundo, deve vir da tool nativa: nunca use Python, Pillow, ImageMagick, ffmpeg, remove-bg, mascaras geradas ou processamento local de pixels. Chame `image_workflow_complete` apenas quando todos validarem. Nunca peça chave de API nem use API/script paralelo.',
+      '- `deepspace design list/read/reference/apply` — documentos visuais nativos. Em exploração, produza primeiro 1 desktop + 1 mobile com design_import_code ou lote pequeno, entregue a primeira revisão em até 5 minutos e espere o gate visual humano. Só expanda a direção aprovada com blueprint completo. design list sinaliza stalled e o reviewStatus da revisão atual.',
       '- `design_comment` / `design_propose` / `design_decide_proposal` — colaboracao visual com autoria e revisao: propostas ficam pendentes ate decisao explicita e podem ser comparadas em Floors/Council.',
       '- `design_import_code` / `design_generate_code_preview/apply` — importacao estrutural de HTML/Svelte/React/Vue e entrega para Svelar/Svelte, React/Next, Vue ou HTML/Tailwind; sempre revise o preview e preserve os component mappings antes de aplicar.',
       '- `design_figma_inspect/import/sync_preview/sync_apply` — interoperabilidade estrutural com Figma; combine com o MCP oficial `figma`, sempre revise conflitos antes de sincronizar e preserve Code Connect.',
-      '- `orkestrai task list/columns/add/move/done` — quadro do time; consulte `task columns` e respeite as etapas personalizadas pelo usuário.',
-      '- `orkestrai floor create/preview/land` — andares (worktrees git) isolados por frente.',
-      '- `orkestrai device list/attach/tap/swipe/pinch/type/permissions/tree/screenshot/stop` — device mobile visivel no Workbench; aparelhos Android fisicos so podem ser anexados pelo usuario apos confirmacao na UI.',
-      "- `computer_prepare/inspect/launch/focus/click/type/type_secret/shortcut/screenshot/wait` / `orkestrai computer ...` — for a natural-language desktop request, YOU create the briefing note and an active Kanban task assigned to yourself, then prepare the Computer node and inspect it. Preparation creates/reuses and connects the node, inheriting only an existing enabled bounded computer/app grant; never enable a paused node or ask the user to manually assemble your workflow. Launch reuses an open authorized native app before opening a registered app ID. If the user mentions already signed-in desktop Chrome or a Remote request, operate that HOST session, not a new Portal/profile. Observe -> act -> screenshot -> verify the actual result -> update the note and task -> reply with evidence. Use stable idempotency keys, exact allowed windows and SecretRefs bound to computer.type_secret + the exact app. Declare risk=external_publication before sending mail/posting, purchase before buying, and the matching destructive/credential risk; wait for the configured gate. OS permissions and new grants need the owner. A failed partial action must be inspected, not blindly retried. Never bypass this boundary with shell desktop automation; never claim success before visible verification.",
-      '- `orkestrai ask "<Agente>" "<mensagem>" [--task <taskId>]` — só afirme que falou/consultou alguém quando a ponte retornar uma resposta confirmada; timeout, expiração da fila ou erro NÃO contam como conversa. Releia a tarefa antes de tentar de novo.',
-      '- `orkestrai task done <id>` — conclui a tarefa, avisa o líder e envia uma notificação identificada; não duplique com notify.',
-      '- `orkestrai notify "<msg>" --kind attention|project` — atenção ou conclusão do projeto inteiro (somente após conferir o quadro).',
+      '- `deepspace task list/columns/add/move/done` — quadro do time; consulte `task columns` e respeite as etapas personalizadas pelo usuário.',
+      '- `deepspace floor create/preview/land` — andares (worktrees git) isolados por frente.',
+      '- `deepspace device list/attach/tap/swipe/pinch/type/permissions/tree/screenshot/stop` — device mobile visivel no Workbench; aparelhos Android fisicos so podem ser anexados pelo usuario apos confirmacao na UI.',
+      "- `computer_prepare/inspect/launch/focus/click/type/type_secret/shortcut/screenshot/wait` / `deepspace computer ...` — for a natural-language desktop request, YOU create the briefing note and an active Kanban task assigned to yourself, then prepare the Computer node and inspect it. Preparation creates/reuses and connects the node, inheriting only an existing enabled bounded computer/app grant; never enable a paused node or ask the user to manually assemble your workflow. Launch reuses an open authorized native app before opening a registered app ID. If the user mentions already signed-in desktop Chrome or a Remote request, operate that HOST session, not a new Portal/profile. Observe -> act -> screenshot -> verify the actual result -> update the note and task -> reply with evidence. Use stable idempotency keys, exact allowed windows and SecretRefs bound to computer.type_secret + the exact app. Declare risk=external_publication before sending mail/posting, purchase before buying, and the matching destructive/credential risk; wait for the configured gate. OS permissions and new grants need the owner. A failed partial action must be inspected, not blindly retried. Never bypass this boundary with shell desktop automation; never claim success before visible verification.",
+      '- `deepspace ask "<Agente>" "<mensagem>" [--task <taskId>]` — só afirme que falou/consultou alguém quando a ponte retornar uma resposta confirmada; timeout, expiração da fila ou erro NÃO contam como conversa. Releia a tarefa antes de tentar de novo.',
+      '- `deepspace task done <id>` — conclui a tarefa, avisa o líder e envia uma notificação identificada; não duplique com notify.',
+      '- `deepspace notify "<msg>" --kind attention|project` — atenção ou conclusão do projeto inteiro (somente após conferir o quadro).',
       '- Todo trabalho delegado precisa de uma task no Kanban ANTES da mensagem direta; passe seu id em `ask --task` e nunca execute ou delegue trabalho sem rastreamento. Uma tarefa `done` é terminal: mensagens e status atrasados não podem reabri-la.',
-      '- Sua identidade está no ambiente (ORKESTRAI_NODE_ID) — `--from`/`--agent` são opcionais. Se `orkestrai` não resolver no PATH, execute o launcher `"$ORKESTRAI_CLI" ...` DIRETO (sem `node`; no Windows `%ORKESTRAI_CLI%`/`& $env:ORKESTRAI_CLI`) — nunca rode o `...orkestrai.js` cru.',
-      '- Se as tools MCP `orkestrai` estiverem disponíveis, PREFIRA elas (chamadas tipadas); a CLI e o fallback.',
-      '- Detalhes completos: `.claude/skills/orkestrai/SKILL.md`, `.cline/skills/orkestrai/SKILL.md`, `.devin/skills/orkestrai/SKILL.md`, `.agents/skills/orkestrai/SKILL.md` ou `.orkestrai/SKILL.md`.',
-      '<!-- orkestrai:end -->',
+      '- Sua identidade está no ambiente (DEEPSPACE_NODE_ID) — `--from`/`--agent` são opcionais. Se `deepspace` não resolver no PATH, execute o launcher `"$DEEPSPACE_CLI" ...` DIRETO (sem `node`; no Windows `%DEEPSPACE_CLI%`/`& $env:DEEPSPACE_CLI`) — nunca rode o `...deepspace.js` cru.',
+      '- Se as tools MCP `deepspace` estiverem disponíveis, PREFIRA elas (chamadas tipadas); a CLI e o fallback.',
+      '- Detalhes completos: `.claude/skills/deepspace/SKILL.md`, `.cline/skills/deepspace/SKILL.md`, `.devin/skills/deepspace/SKILL.md`, `.agents/skills/deepspace/SKILL.md` ou `.deepspace/SKILL.md`.',
+      '<!-- deepspace:end -->',
     ].join('\n');
   }
 
@@ -1557,7 +1557,7 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
     const path = resolve(workingDir, 'AGENTS.md');
     const block = this.agentsMdBlock();
     const current = await this.readText(path);
-    const pattern = /<!-- orkestrai:begin -->[\s\S]*?<!-- orkestrai:end -->/;
+    const pattern = /<!-- deepspace:begin -->[\s\S]*?<!-- deepspace:end -->/;
     if (pattern.test(current)) {
       const next = current.replace(pattern, block);
       if (next !== current) await writeFile(path, next);
@@ -1579,7 +1579,7 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
     if (!(await this.pathExists(dir))) return;
     const path = resolve(dir, 'config.toml');
     const repaired = await repairConfigFileAtomically(path, repairLegacyCodexMcpConfig);
-    if (repaired) console.info(`[orkestrai] Repaired legacy Codex MCP config; backup: ${path}.before-orkestrai-repair`);
+    if (repaired) console.info(`[deepspace] Repaired legacy Codex MCP config; backup: ${path}.before-deepspace-repair`);
   }
 
   /** Formato MCP padrao usado por Claude/Kimi, Cursor, Cline, Devin e Antigravity. */
@@ -1602,13 +1602,13 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
     };
     const figma = figmaFormat === 'http' ? { type: 'http', url: FIGMA_MCP_URL } : { url: FIGMA_MCP_URL };
     if (
-      JSON.stringify(config.mcpServers?.orkestrai ?? null) === JSON.stringify(desired)
+      JSON.stringify(config.mcpServers?.deepspace ?? null) === JSON.stringify(desired)
       && (!figmaFormat || JSON.stringify(config.mcpServers?.figma ?? null) === JSON.stringify(figma))
     ) return;
     await mkdir(dirname(path), { recursive: true });
     config.mcpServers = {
       ...(config.mcpServers ?? {}),
-      orkestrai: desired,
+      deepspace: desired,
       ...(figmaFormat ? { figma } : {}),
     };
     await writeFile(path, `${JSON.stringify(config, null, 2)}\n`);
@@ -1626,8 +1626,8 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
     } catch {
       // não existe ou inválido — cria do zero
     }
-    // Pina o runtime + .js absoluto (nunca o nome nu "orkestrai"): no Windows o
-    // nome nu podia resolver para orkestrai.js e o executor abri-lo pela
+    // Pina o runtime + .js absoluto (nunca o nome nu "deepspace"): no Windows o
+    // nome nu podia resolver para deepspace.js e o executor abri-lo pela
     // associacao (.js -> Windows Script Host), quebrando o handshake MCP.
     const launch = this.mcpLaunch(wslRuntime);
     const desired = {
@@ -1636,8 +1636,8 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
       ...(launch.electronRuntime ? { environment: { ELECTRON_RUN_AS_NODE: '1' } } : {}),
       enabled: true,
     };
-    if (JSON.stringify(config.mcp?.orkestrai ?? null) === JSON.stringify(desired)) return;
-    config.mcp = { ...(config.mcp ?? {}), orkestrai: desired };
+    if (JSON.stringify(config.mcp?.deepspace ?? null) === JSON.stringify(desired)) return;
+    config.mcp = { ...(config.mcp ?? {}), deepspace: desired };
     await writeFile(path, `${JSON.stringify(config, null, 2)}\n`);
   }
 
@@ -1654,19 +1654,19 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
           wslRuntime.distribution,
           '--exec',
           '/bin/sh',
-          `${wslRuntime.linuxWorkingDir.replace(/\/$/, '')}/.orkestrai/bin/orkestrai`,
+          `${wslRuntime.linuxWorkingDir.replace(/\/$/, '')}/.deepspace/bin/deepspace`,
           'mcp',
         ],
         electronRuntime: false,
       };
     }
     return {
-      command: process.env.ORKESTRAI_CLI_RUNTIME ?? process.execPath,
+      command: process.env.DEEPSPACE_CLI_RUNTIME ?? process.execPath,
       args: [
-        process.env.ORKESTRAI_CLI_JS ?? resolve(process.cwd(), 'packages', 'orkestrai-cli', 'bin', 'orkestrai.js'),
+        process.env.DEEPSPACE_CLI_JS ?? resolve(process.cwd(), 'packages', 'deepspace-cli', 'bin', 'deepspace.js'),
         'mcp',
       ],
-      electronRuntime: process.env.ORKESTRAI_CLI_RUNTIME_IS_ELECTRON === '1' || Boolean(process.versions.electron),
+      electronRuntime: process.env.DEEPSPACE_CLI_RUNTIME_IS_ELECTRON === '1' || Boolean(process.versions.electron),
     };
   }
 
@@ -1683,7 +1683,7 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
       exact[0] ??
       agents.find((item) => item.title.toLowerCase().includes(normalized));
     if (!agent) {
-      throw new Error(`Agente "${query}" não encontrado. Use orkestrai list para ver os disponíveis.`);
+      throw new Error(`Agente "${query}" não encontrado. Use deepspace list para ver os disponíveis.`);
     }
     return agent;
   }
@@ -1861,7 +1861,7 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
 
   private async writeBridgeConfig(workspace: Workspace, token: string, apiUrl?: string): Promise<void> {
     try {
-      const dir = resolve(workspace.workingDir, '.orkestrai');
+      const dir = resolve(workspace.workingDir, '.deepspace');
       await mkdir(dir, { recursive: true });
       await writeFile(
         resolve(dir, 'workspace.json'),
@@ -1870,7 +1870,7 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
             workspaceId: workspace.id,
             workspaceName: workspace.name,
             token,
-            apiUrl: apiUrl ?? process.env.ORKESTRAI_API_URL ?? 'http://127.0.0.1:4173',
+            apiUrl: apiUrl ?? process.env.DEEPSPACE_API_URL ?? 'http://127.0.0.1:4173',
             repository: {
               reference: '.',
               primary: true,

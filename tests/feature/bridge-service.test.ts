@@ -60,7 +60,7 @@ describe('BridgeService', () => {
   });
 
   it('provisiona launcher e MCP usando caminhos Linux em workspaces WSL', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'orkestrai-wsl-'));
+    const dir = await mkdtemp(join(tmpdir(), 'deepspace-wsl-'));
     try {
       const workspace = await workspaceRepository.createWorkspace({
         name: 'wsl',
@@ -72,20 +72,20 @@ describe('BridgeService', () => {
       const token = await bridgeService.getOrCreateToken(workspace.id);
       await bridgeService.provisionSkill(workspace, token);
 
-      const launcher = await readFile(join(dir, '.orkestrai', 'bin', 'orkestrai'), 'utf8');
+      const launcher = await readFile(join(dir, '.deepspace', 'bin', 'deepspace'), 'utf8');
       const mcp = JSON.parse(await readFile(join(dir, '.mcp.json'), 'utf8'));
-      expect(launcher).toContain('orkestrai:wsl-console-launcher-v2');
+      expect(launcher).toContain('deepspace:wsl-console-launcher-v2');
       expect(launcher).toContain('command -v node');
       expect(launcher).toContain('exec node "$cli_linux" "$@"');
       expect(launcher).not.toContain('ELECTRON_RUN_AS_NODE');
-      expect(mcp.mcpServers.orkestrai).toEqual({
+      expect(mcp.mcpServers.deepspace).toEqual({
         command: 'wsl.exe',
         args: [
           '--distribution',
           'Ubuntu-24.04',
           '--exec',
           '/bin/sh',
-          '/home/dev/project/.orkestrai/bin/orkestrai',
+          '/home/dev/project/.deepspace/bin/deepspace',
           'mcp',
         ],
       });
@@ -95,10 +95,10 @@ describe('BridgeService', () => {
   });
 
   it('provisiona fallback de console do Windows quando o WSL nao possui Node', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'orkestrai-wsl-console-'));
-    const previous = process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME;
+    const dir = await mkdtemp(join(tmpdir(), 'deepspace-wsl-console-'));
+    const previous = process.env.DEEPSPACE_CLI_CONSOLE_RUNTIME;
     try {
-      process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME = 'C:\\Program Files\\Orkestrai\\resources\\orkestrai-cli-runtime\\node.exe';
+      process.env.DEEPSPACE_CLI_CONSOLE_RUNTIME = 'C:\\Program Files\\Deep Space\\resources\\deepspace-cli-runtime\\node.exe';
       const workspace = await workspaceRepository.createWorkspace({
         name: 'wsl-console',
         workingDir: dir,
@@ -108,20 +108,20 @@ describe('BridgeService', () => {
       });
       await bridgeService.provisionSkill(workspace, await bridgeService.getOrCreateToken(workspace.id));
 
-      const launcher = await readFile(join(dir, '.orkestrai', 'bin', 'orkestrai'), 'utf8');
-      expect(launcher).toContain("console_runtime=\"$(wslpath -u 'C:\\Program Files\\Orkestrai\\resources\\orkestrai-cli-runtime\\node.exe')\"");
+      const launcher = await readFile(join(dir, '.deepspace', 'bin', 'deepspace'), 'utf8');
+      expect(launcher).toContain("console_runtime=\"$(wslpath -u 'C:\\Program Files\\Deep Space\\resources\\deepspace-cli-runtime\\node.exe')\"");
       expect(launcher).toContain('exec "$console_runtime" "$cli_win" "$@"');
       expect(launcher).toContain('where node.exe');
     } finally {
-      if (previous === undefined) delete process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME;
-      else process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME = previous;
+      if (previous === undefined) delete process.env.DEEPSPACE_CLI_CONSOLE_RUNTIME;
+      else process.env.DEEPSPACE_CLI_CONSOLE_RUNTIME = previous;
       await rm(dir, { recursive: true, force: true });
     }
   });
 
   it('preserva stdout ao executar o launcher WSL pelo runtime de console', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'orkestrai-wsl-stdout-'));
-    const previous = process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME;
+    const dir = await mkdtemp(join(tmpdir(), 'deepspace-wsl-stdout-'));
+    const previous = process.env.DEEPSPACE_CLI_CONSOLE_RUNTIME;
     try {
       const fakeBin = join(dir, 'fake-bin');
       const fakeNode = join(dir, 'node.exe');
@@ -129,7 +129,7 @@ describe('BridgeService', () => {
       await writeFile(join(fakeBin, 'wslpath'), '#!/bin/sh\n[ "$1" = "-u" ] && shift\nprintf "%s\\n" "$1"\n');
       await writeFile(fakeNode, '#!/bin/sh\nprintf "console:%s\\n" "$*"\n');
       await Promise.all([chmod(join(fakeBin, 'wslpath'), 0o755), chmod(fakeNode, 0o755)]);
-      process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME = fakeNode;
+      process.env.DEEPSPACE_CLI_CONSOLE_RUNTIME = fakeNode;
       const workspace = await workspaceRepository.createWorkspace({
         name: 'wsl-stdout',
         workingDir: dir,
@@ -139,15 +139,15 @@ describe('BridgeService', () => {
       });
       await bridgeService.provisionSkill(workspace, await bridgeService.getOrCreateToken(workspace.id));
 
-      const launcher = join(dir, '.orkestrai', 'bin', 'orkestrai');
+      const launcher = join(dir, '.deepspace', 'bin', 'deepspace');
       const { stdout } = await execFileAsync('/bin/sh', [launcher, 'ask', 'Leader', 'hello'], {
         env: { ...process.env, PATH: fakeBin },
       });
       expect(stdout).toContain('console:');
       expect(stdout).toContain('ask Leader hello');
     } finally {
-      if (previous === undefined) delete process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME;
-      else process.env.ORKESTRAI_CLI_CONSOLE_RUNTIME = previous;
+      if (previous === undefined) delete process.env.DEEPSPACE_CLI_CONSOLE_RUNTIME;
+      else process.env.DEEPSPACE_CLI_CONSOLE_RUNTIME = previous;
       await rm(dir, { recursive: true, force: true });
     }
   });
@@ -416,7 +416,7 @@ describe('Modo Maestro', () => {
       id: uuidv7(),
       workspace_id: workspace.id,
       name: 'Checkout',
-      branch: 'orkestrai/checkout',
+      branch: 'deepspace/checkout',
       path: '/tmp/checkout',
       status: 'active',
     });
@@ -445,7 +445,7 @@ describe('Modo Maestro', () => {
       id: uuidv7(),
       workspace_id: workspace.id,
       name: 'WSL team',
-      branch: 'orkestrai/wsl-team',
+      branch: 'deepspace/wsl-team',
       path: '/tmp/wsl-team',
       status: 'active',
     });

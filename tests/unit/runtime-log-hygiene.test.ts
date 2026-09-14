@@ -11,7 +11,7 @@ describe('runtime log hygiene', () => {
 
     expect(audio).not.toContain('createScriptProcessor');
     expect(audio).toContain("audioWorklet.addModule('/audio/pcm-capture-worklet.js')");
-    expect(worklet).toContain("registerProcessor('orkestrai-pcm-capture'");
+    expect(worklet).toContain("registerProcessor('deepspace-pcm-capture'");
     expect(electron).toContain("on('console-message', (details) =>");
     expect(electron).not.toContain('legacyLevel');
     expect(electron).toContain('autoUpdater.disableWebInstaller = true;');

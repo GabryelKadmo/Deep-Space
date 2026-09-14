@@ -47,7 +47,7 @@
 
   const desktop =
     typeof window !== 'undefined'
-      ? (window as unknown as { orkestraiDesktop?: { pickDirectory: () => Promise<string | null> } }).orkestraiDesktop
+      ? (window as unknown as { deepspaceDesktop?: { pickDirectory: () => Promise<string | null> } }).deepspaceDesktop
       : undefined;
 
   $effect(() => {
@@ -56,7 +56,7 @@
       // o wizard volte ao seletor logo depois de salvar a preferencia.
       let savedStep: WizardStep = 'language';
       try {
-        if (sessionStorage.getItem('orkestrai.onboarding-step') === 'welcome') savedStep = 'welcome';
+        if (sessionStorage.getItem('deepspace.onboarding-step') === 'welcome') savedStep = 'welcome';
       } catch {
         // storage indisponivel: recomeca pela escolha de idioma
       }
@@ -77,7 +77,7 @@
     try {
       // Grave o proximo passo antes do PUT: getAppSettings troca o locale e
       // remonta este componente assim que a resposta chega.
-      sessionStorage.setItem('orkestrai.onboarding-step', 'welcome');
+      sessionStorage.setItem('deepspace.onboarding-step', 'welcome');
       const csrf = getCsrfToken();
       const response = await fetch('/api/agent-room/settings', {
         method: 'PUT',
@@ -98,7 +98,7 @@
       await getAppSettings(true);
       step = 'welcome';
     } catch {
-      try { sessionStorage.removeItem('orkestrai.onboarding-step'); } catch {}
+      try { sessionStorage.removeItem('deepspace.onboarding-step'); } catch {}
       toast.error(m['onboarding.language_error']());
       languageSaving = null;
     }

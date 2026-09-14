@@ -27,7 +27,7 @@ describe('Tool Workshop', () => {
   useSvelarTest({ refreshDatabase: true });
 
   it('auto-publishes only bounded tools for named agents with valid fixtures and limits', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-tool-publication-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-tool-publication-'));
     const workspace = await workspaceRepository.createWorkspace({name:'Tool grants',workingDir:root});
     const agent = await workspaceRepository.createNode({workspaceId:workspace.id,type:'terminal',title:'Author'});
     const current = await autonomyPolicyService.get(workspace.id);
@@ -50,7 +50,7 @@ describe('Tool Workshop', () => {
   });
 
   it('resumes browser sequences after a gate without replaying completed steps or changing the published revision', async () => {
-    const root=await mkdtemp(join(tmpdir(),'orkestrai-tool-checkpoint-'));
+    const root=await mkdtemp(join(tmpdir(),'deepspace-tool-checkpoint-'));
     const workspace=await workspaceRepository.createWorkspace({name:'Browser checkpoint',workingDir:root});
     const portal=await workspaceRepository.createNode({workspaceId:workspace.id,type:'portal',title:'Fixture'});
     const current=await autonomyPolicyService.get(workspace.id);
@@ -124,7 +124,7 @@ describe('Tool Workshop', () => {
   });
 
   it('keeps the published revision live while an agent proposes a newer draft', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-tool-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-tool-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Tool Workshop', workingDir: root });
     const service = new AgentWorkspaceToolService();
     const execution = new ToolExecutionService();
@@ -157,7 +157,7 @@ describe('Tool Workshop', () => {
   });
 
   it('deduplicates a published effect and rejects idempotency-key reuse with different input', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-tool-idempotency-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-tool-idempotency-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Tool idempotency', workingDir: root });
     const service = new AgentWorkspaceToolService();
     const execution = new ToolExecutionService();
@@ -181,7 +181,7 @@ describe('Tool Workshop', () => {
   });
 
   it('requires explicit tool, operation, and destination bindings before publishing a SecretRef', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-tool-secret-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-tool-secret-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Tool secrets', workingDir: root });
     const service = new AgentWorkspaceToolService();
     const unbound = await secretRefService.create(workspace.id, {
@@ -220,7 +220,7 @@ describe('Tool Workshop', () => {
   });
 
   it('never persists or returns a credential echoed by an HTTP tool endpoint', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-tool-secret-output-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-tool-secret-output-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Tool output redaction', workingDir: root });
     const service = new AgentWorkspaceToolService();
     const ref = await secretRefService.create(workspace.id, {
@@ -243,8 +243,8 @@ describe('Tool Workshop', () => {
       actor: { type: 'user', id: 'workspace-owner' },
     });
     await service.publish(workspace.id, tool.id, { type: 'user', id: 'workspace-owner' });
-    const state = globalThis as typeof globalThis & { __orkestraiHostVaultResolve?: (reference: string) => Promise<string | null> };
-    state.__orkestraiHostVaultResolve = async (reference) => reference === ref.ref ? 'raw-http-secret' : null;
+    const state = globalThis as typeof globalThis & { __deepspaceHostVaultResolve?: (reference: string) => Promise<string | null> };
+    state.__deepspaceHostVaultResolve = async (reference) => reference === ref.ref ? 'raw-http-secret' : null;
     const execution = new ToolExecutionService({
       request: async () => ({
         status: 200, ok: true,
@@ -263,7 +263,7 @@ describe('Tool Workshop', () => {
       expect(JSON.stringify(await execution.listRuns(workspace.id, tool.id))).not.toContain('raw-http-secret');
       expect(JSON.stringify(await autonomyPolicyService.exportAudit(workspace.id))).not.toContain('raw-http-secret');
     } finally {
-      delete state.__orkestraiHostVaultResolve;
+      delete state.__deepspaceHostVaultResolve;
     }
   });
 });

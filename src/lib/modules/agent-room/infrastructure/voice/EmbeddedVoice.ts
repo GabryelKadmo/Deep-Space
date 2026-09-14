@@ -74,7 +74,7 @@ type ModelDef = typeof PARAKEET;
 
 /** Diretorio de modelos (userData no empacotado; storage/voice em dev). */
 export function voiceModelsDir(): string {
-  const base = process.env.ORKESTRAI_DATA_DIR ?? join(process.cwd(), 'storage');
+  const base = process.env.DEEPSPACE_DATA_DIR ?? join(process.cwd(), 'storage');
   const dir = join(base, 'voice', 'models');
   mkdirSync(dir, { recursive: true });
   return dir;
@@ -303,7 +303,7 @@ function resolveVoiceNode(): string | undefined {
   if (!process.versions.electron) return undefined;
   if (resolvedNode !== undefined) return resolvedNode ?? undefined;
   const candidates: string[] = [];
-  if (process.env.ORKESTRAI_VOICE_NODE) candidates.push(process.env.ORKESTRAI_VOICE_NODE);
+  if (process.env.DEEPSPACE_VOICE_NODE) candidates.push(process.env.DEEPSPACE_VOICE_NODE);
   // Runtime embarcado (baixado com os modelos) — nao depende do usuario ter Node.
   const bundled = bundledVoiceNode();
   if (bundled) candidates.push(bundled);

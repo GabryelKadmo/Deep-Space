@@ -20,23 +20,23 @@ type PendingPortalRequest = {
 };
 
 const runtime = globalThis as typeof globalThis & {
-  __orkestraiPortalPending?: Map<string, PendingPortalRequest>;
-  __orkestraiPortalListenerReady?: boolean;
-  __orkestraiExecutePortal?: (request: ManagedPortalExecutorRequest) => Promise<ManagedPortalExecutorResult>;
+  __deepspacePortalPending?: Map<string, PendingPortalRequest>;
+  __deepspacePortalListenerReady?: boolean;
+  __deepspaceExecutePortal?: (request: ManagedPortalExecutorRequest) => Promise<ManagedPortalExecutorResult>;
 };
-const pending = runtime.__orkestraiPortalPending ??= new Map<string, PendingPortalRequest>();
+const pending = runtime.__deepspacePortalPending ??= new Map<string, PendingPortalRequest>();
 
-if (!runtime.__orkestraiPortalListenerReady && typeof process.on === 'function') {
+if (!runtime.__deepspacePortalListenerReady && typeof process.on === 'function') {
   process.on('message', (message: unknown) => {
     const response = message as { type?: string; requestId?: string; result?: ManagedPortalExecutorResult } | null;
-    if (response?.type !== 'orkestrai:portal:result' || !response.requestId) return;
+    if (response?.type !== 'deepspace:portal:result' || !response.requestId) return;
     const request = pending.get(response.requestId);
     if (!request) return;
     clearTimeout(request.timer);
     pending.delete(response.requestId);
     request.resolve(response.result ?? { ok: false, error: 'Managed browser returned no result.' });
   });
-  runtime.__orkestraiPortalListenerReady = true;
+  runtime.__deepspacePortalListenerReady = true;
 }
 
 export function portalProfileFromPayload(payload: CanvasNodePayload): PortalProfile {
@@ -45,7 +45,7 @@ export function portalProfileFromPayload(payload: CanvasNodePayload): PortalProf
     profileId: values.portalProfileId ?? 'default',
     profileScope: values.portalProfileScope ?? 'workspace',
     allowedHosts: Array.isArray(values.portalAllowedHosts) ? values.portalAllowedHosts : [],
-    downloadDirectory: values.portalDownloadDirectory ?? '.orkestrai/downloads',
+    downloadDirectory: values.portalDownloadDirectory ?? '.deepspace/downloads',
     control: values.portalControl ?? 'disabled',
     agentIds: values.portalAgentIds ?? [],
     paused: values.portalPaused ?? false,
@@ -94,7 +94,7 @@ export async function preparePortalDirectory(root: string, candidate: string): P
 }
 
 async function requestElectron(request: ManagedPortalExecutorRequest, inspect = false): Promise<ManagedPortalExecutorResult | null> {
-  if (runtime.__orkestraiExecutePortal) return runtime.__orkestraiExecutePortal({ ...request, ...(inspect ? { inspect: true } : {}) } as ManagedPortalExecutorRequest);
+  if (runtime.__deepspaceExecutePortal) return runtime.__deepspaceExecutePortal({ ...request, ...(inspect ? { inspect: true } : {}) } as ManagedPortalExecutorRequest);
   if (typeof process.send !== 'function') return null;
   return new Promise((resolveResult) => {
     const timer = setTimeout(() => {
@@ -103,7 +103,7 @@ async function requestElectron(request: ManagedPortalExecutorRequest, inspect = 
     }, request.timeoutMs + 2_000);
     timer.unref?.();
     pending.set(request.requestId, { resolve: resolveResult, timer });
-    process.send?.({ type: inspect ? 'orkestrai:portal:inspect' : 'orkestrai:portal:execute', ...request });
+    process.send?.({ type: inspect ? 'deepspace:portal:inspect' : 'deepspace:portal:execute', ...request });
   });
 }
 
@@ -228,7 +228,7 @@ export class ManagedPortalService {
       category: 'portal', verb: command.action, objectType: 'portal', objectId: portal.id, objectTitle: portal.title,
       outcome: result.ok ? 'succeeded' : 'failed', severity: result.ok ? 'info' : 'error',
       sourceType: command.from ? 'agent' : 'automation', sourceId: command.from ?? null,
-      metadata: { managed: Boolean(runtime.__orkestraiExecutePortal || process.send), profileId: profile.profileId, action: command.action }, attentionRequired: false,
+      metadata: { managed: Boolean(runtime.__deepspaceExecutePortal || process.send), profileId: profile.profileId, action: command.action }, attentionRequired: false,
     });
     return result;
   }

@@ -351,7 +351,7 @@ export function exportMotionCss(
     );
     if (!element) continue;
     const track = effectiveTrack(document, sourceTrack);
-    const name = `orkestrai-${track.id.replace(/-/g, "").slice(0, 16)}`;
+    const name = `deepspace-${track.id.replace(/-/g, "").slice(0, 16)}`;
     const keyframes = [...track.keyframes].sort(
       (left, right) => left.timeMs - right.timeMs,
     );

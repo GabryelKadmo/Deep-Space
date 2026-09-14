@@ -65,13 +65,13 @@ describe('Electron Portal popup policy', () => {
   it('denies invalid popup destinations without creating a window', () => {
     expect(portalWindowOpenResponse('https://example.com/auth')).toEqual({ action: 'deny' });
     expect(portalWindowOpenResponse('about:blank')).toEqual({ action: 'deny' });
-    expect(portalWindowOpenResponse('orkestrai://join/secret')).toEqual({ action: 'deny' });
+    expect(portalWindowOpenResponse('deepspace://join/secret')).toEqual({ action: 'deny' });
     expect(isAllowedPortalUrl(`https://example.com/${'a'.repeat(4096)}`)).toBe(false);
   });
 
   it('isolates managed profiles by workspace or Portal', () => {
-    expect(managedPortalPartition('workspace-a', 'portal-a', 'signed-in', 'workspace')).toBe('persist:orkestrai-portal-workspace-a-signed-in');
-    expect(managedPortalPartition('workspace-a', 'portal-a', 'signed-in', 'private')).toBe('persist:orkestrai-portal-portal-a-signed-in');
-    expect(managedPortalPartition('../../bad', 'portal:a', 'x y', 'private')).toBe('persist:orkestrai-portal-portala-xy');
+    expect(managedPortalPartition('workspace-a', 'portal-a', 'signed-in', 'workspace')).toBe('persist:deepspace-portal-workspace-a-signed-in');
+    expect(managedPortalPartition('workspace-a', 'portal-a', 'signed-in', 'private')).toBe('persist:deepspace-portal-portal-a-signed-in');
+    expect(managedPortalPartition('../../bad', 'portal:a', 'x y', 'private')).toBe('persist:deepspace-portal-portala-xy');
   });
 });

@@ -31,7 +31,7 @@ export function writeReleaseNotes(version, changelogPath, outputPath) {
   const section = versionChangelogSection(readFileSync(changelogPath, 'utf8'), version);
   const notes = `${section}\n\nDownloads for macOS, Windows and Linux are attached below.\n`;
   writeFileSync(outputPath, notes);
-  console.log(`Prepared release notes for Orkestrai ${version}.`);
+  console.log(`Prepared release notes for Deep Space ${version}.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

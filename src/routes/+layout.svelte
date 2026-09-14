@@ -23,7 +23,7 @@
   };
 
   const desktopMenu = typeof window !== 'undefined'
-    ? (window as unknown as { orkestraiDesktop?: DesktopMenuBridge }).orkestraiDesktop
+    ? (window as unknown as { deepspaceDesktop?: DesktopMenuBridge }).deepspaceDesktop
     : undefined;
   const windowsDesktop = desktopMenu?.platform === 'win32';
 
@@ -61,13 +61,13 @@
       else if (action === 'settings') void goto('/settings');
       else if (action === 'docs') void goto('/docs');
       else if (action === 'changelog') void goto('/docs#changelog');
-      else if (action === 'command-palette') window.dispatchEvent(new CustomEvent('orkestrai:global-search'));
+      else if (action === 'command-palette') window.dispatchEvent(new CustomEvent('deepspace:global-search'));
       else if (canvasActions.has(action)) {
         if (location.pathname !== '/canvas') {
-          sessionStorage.setItem('orkestrai.menu-action', action);
+          sessionStorage.setItem('deepspace.menu-action', action);
           void goto('/canvas');
         } else {
-          window.dispatchEvent(new CustomEvent('orkestrai:menu-action', { detail: action }));
+          window.dispatchEvent(new CustomEvent('deepspace:menu-action', { detail: action }));
         }
       }
     });
@@ -100,9 +100,9 @@
 
 <!-- Site-wide SEO defaults — override per page with another <Seo> -->
 <Seo
-  title="Orkestrai Agent Room"
+  title="Deep Space Agent Room"
   description={m['app.seo_description']()}
-  ogSiteName="Orkestrai Agent Room"
+  ogSiteName="Deep Space Agent Room"
   ogType="website"
 />
 

@@ -58,7 +58,7 @@
       targetWidth: payload.targetWidth ?? dimensions?.width ?? 1080,
       targetHeight: payload.targetHeight ?? dimensions?.height ?? 1920,
       outputDirectory: String(payload.outputDirectory ?? 'generated/images'),
-      filePrefix: String(payload.filePrefix ?? 'orkestrai-image'),
+      filePrefix: String(payload.filePrefix ?? 'deepspace-image'),
       running: payload.status === 'running',
       lastError: payload.lastError ?? null,
     };
@@ -86,7 +86,7 @@
     targetWidth = data.payload.targetWidth ?? dimensions?.width ?? 1080;
     targetHeight = data.payload.targetHeight ?? dimensions?.height ?? 1920;
     outputDirectory = String(data.payload.outputDirectory ?? 'generated/images');
-    filePrefix = String(data.payload.filePrefix ?? 'orkestrai-image');
+    filePrefix = String(data.payload.filePrefix ?? 'deepspace-image');
   });
 
   const flowEdges = useEdges();

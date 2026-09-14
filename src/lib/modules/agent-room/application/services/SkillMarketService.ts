@@ -12,7 +12,7 @@ const MAX_SKILL_TOTAL_BYTES = 5_000_000;
 
 /**
  * Diretorios de skills convencionais dos agentes — o mesmo conjunto que a
- * ponte usa para a skill "orkestrai" (menos ".orkestrai/", que é o fallback
+ * ponte usa para a skill "deepspace" (menos ".deepspace/", que é o fallback
  * portavel sem convencao de skill por diretorio).
  */
 const SKILL_DIRS = ['.claude/skills', '.cline/skills', '.devin/skills', '.agents/skills'] as const;

@@ -541,10 +541,10 @@ async function runAction(action: TourAction): Promise<void> {
         });
         if (!updated) throw new Error(m['tour.action_failed']());
         const desktop = (window as typeof window & {
-          orkestraiDesktop?: {
+          deepspaceDesktop?: {
             configureCore?: (preferences: { runInBackground: boolean; launchAtLogin: boolean }) => Promise<unknown>;
           };
-        }).orkestraiDesktop;
+        }).deepspaceDesktop;
         await desktop?.configureCore?.({
           runInBackground: action.runInBackground,
           launchAtLogin: action.runInBackground && action.launchAtLogin === true,
@@ -583,13 +583,13 @@ async function runAction(action: TourAction): Promise<void> {
         break;
       }
       case 'openCouncil': {
-        window.dispatchEvent(new CustomEvent('orkestrai:open-council', {
+        window.dispatchEvent(new CustomEvent('deepspace:open-council', {
           detail: { workspaceId },
         }));
         break;
       }
       case 'openSharing': {
-        window.dispatchEvent(new CustomEvent('orkestrai:open-sharing', {
+        window.dispatchEvent(new CustomEvent('deepspace:open-sharing', {
           detail: { workspaceId },
         }));
         break;

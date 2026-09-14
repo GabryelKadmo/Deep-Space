@@ -184,7 +184,7 @@ export class CanvasNodeTransferService {
       const file = await filesystemService.readBinary(sourceWorkspace.id, attachment.path).catch(() => null);
       if (!file) throw new CanvasNodeTransferError('canvas_transfer_asset_missing');
       const id = uuidv7();
-      const path = `.orkestrai/attachments/${id}-${safeName(attachment.name)}`;
+      const path = `.deepspace/attachments/${id}-${safeName(attachment.name)}`;
       await this.assertWritableAsset(destinationWorkspace, path);
       await filesystemService.writeBinary(destinationWorkspace.id, path, file.data);
       destinationFiles.push({ workspaceId: destinationWorkspace.id, path });
@@ -204,7 +204,7 @@ export class CanvasNodeTransferService {
     await this.assertExistingAsset(sourceWorkspace, payload.path);
     const file = await filesystemService.readBinary(sourceWorkspace.id, payload.path).catch(() => null);
     if (!file) throw new CanvasNodeTransferError('canvas_transfer_asset_missing');
-    const path = `.orkestrai/transfers/${destinationNodeId}/${safeName(file.name)}`;
+    const path = `.deepspace/transfers/${destinationNodeId}/${safeName(file.name)}`;
     await this.assertWritableAsset(destinationWorkspace, path);
     await filesystemService.writeBinary(destinationWorkspace.id, path, file.data);
     destinationFiles.push({ workspaceId: destinationWorkspace.id, path });
@@ -213,7 +213,7 @@ export class CanvasNodeTransferService {
       await this.assertExistingAsset(sourceWorkspace, generatedBy.sourceMasterPath);
       const master = await filesystemService.readBinary(sourceWorkspace.id, generatedBy.sourceMasterPath).catch(() => null);
       if (!master) throw new CanvasNodeTransferError('canvas_transfer_asset_missing');
-      const masterPath = `.orkestrai/transfers/${destinationNodeId}/masters/${safeName(master.name)}`;
+      const masterPath = `.deepspace/transfers/${destinationNodeId}/masters/${safeName(master.name)}`;
       await this.assertWritableAsset(destinationWorkspace, masterPath);
       await filesystemService.writeBinary(destinationWorkspace.id, masterPath, master.data);
       destinationFiles.push({ workspaceId: destinationWorkspace.id, path: masterPath });
@@ -256,8 +256,8 @@ export class CanvasNodeTransferService {
       }
       if (node.type === 'device') {
         await (globalThis as typeof globalThis & {
-          __orkestraiStopWorkspaceDevice?: (targetWorkspaceId: string) => Promise<void>;
-        }).__orkestraiStopWorkspaceDevice?.(workspaceId).catch(() => undefined);
+          __deepspaceStopWorkspaceDevice?: (targetWorkspaceId: string) => Promise<void>;
+        }).__deepspaceStopWorkspaceDevice?.(workspaceId).catch(() => undefined);
       }
       if (node.type === 'computer') await computerService.removeEvidence(workspaceId).catch(() => undefined);
       if (node.type === 'design') await designDocumentService.removeWorkspaceFiles(workspaceId, node.id).catch(() => undefined);
@@ -266,8 +266,8 @@ export class CanvasNodeTransferService {
 
   private broadcast(workspaceId: string): void {
     try {
-      (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void })
-        .__orkestraiBroadcast?.({ type: 'workspaceChanged', workspaceId });
+      (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void })
+        .__deepspaceBroadcast?.({ type: 'workspaceChanged', workspaceId });
     } catch {
       // The next workspace load still reads the committed state.
     }

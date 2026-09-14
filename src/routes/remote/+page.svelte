@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { getCsrfToken } from "@beeblock/svelar/http";
+  import { DEFAULT_RELAY_URL } from "$lib/modules/collaboration/relay.js";
   import { toast } from "@beeblock/svelar/ui";
   import {
     ArrowRight,
@@ -69,7 +70,7 @@
   let loading = $state(true);
   let busy = $state(false);
   let inviteUri = $state("");
-  let relayUrl = $state("wss://relay.orkestrai.app/v1/connect");
+  let relayUrl = $state(DEFAULT_RELAY_URL);
   let displayName = $state("");
   let activeTab = $state<RemoteTab>("overview");
   let taskDialogOpen = $state(false);
@@ -79,7 +80,7 @@
   let leaderMessage = $state("");
   const desktop = typeof window === 'undefined'
     ? undefined
-    : (window as typeof window & { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+    : (window as typeof window & { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
   const desktopAvailable = Boolean(desktop) || import.meta.env.DEV;
   const snapshot = $derived(remoteState.snapshot);
 
@@ -297,7 +298,7 @@
   });
 </script>
 
-<svelte:head><title>{m["remote.title"]()} - Orkestrai</title></svelte:head>
+<svelte:head><title>{m["remote.title"]()} - Deep Space</title></svelte:head>
 
 {#if !desktopAvailable}
   <main
@@ -357,7 +358,7 @@
             bind:value={inviteUri}
             autocomplete="off"
             spellcheck="false"
-            placeholder="orkestrai://join/..."
+            placeholder="deepspace://join/..."
           /></label
         >
         <div class="grid gap-4 sm:grid-cols-2">

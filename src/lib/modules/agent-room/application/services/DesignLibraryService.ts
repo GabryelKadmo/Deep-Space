@@ -35,7 +35,7 @@ export type DesignLibrarySummary = {
 };
 
 function libraryDirectory(root: string): string {
-  const directory = resolve(root, '.orkestrai', 'designs', 'libraries');
+  const directory = resolve(root, '.deepspace', 'designs', 'libraries');
   if (!directory.startsWith(resolve(root) + sep)) throw new Error('Invalid design library directory.');
   return directory;
 }
@@ -237,7 +237,7 @@ export class DesignLibraryService {
     for (const asset of library.assets) {
       const id = reserve(asset.id);
       const existing = current.assets.find((candidate) => candidate.id === id);
-      const relativePath = existing?.path ?? `.orkestrai/designs/assets/${nodeId}/${id}-${basename(asset.path)}`;
+      const relativePath = existing?.path ?? `.deepspace/designs/assets/${nodeId}/${id}-${basename(asset.path)}`;
       const targetPath = safeAssetPath(targetWorkspace.workingDir, relativePath);
       await mkdir(dirname(targetPath), { recursive: true });
       await copyFile(safeAssetPath(sourceRoot, asset.path), targetPath);

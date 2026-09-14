@@ -90,7 +90,7 @@ export class AutonomyPolicyController extends Controller {
       return new Response(JSON.stringify(payload, null, 2), {
         headers: {
           'content-type': 'application/json; charset=utf-8',
-          'content-disposition': `attachment; filename="orkestrai-audit-${date}.json"`,
+          'content-disposition': `attachment; filename="deepspace-audit-${date}.json"`,
           'cache-control': 'no-store',
         },
       });

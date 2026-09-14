@@ -65,7 +65,7 @@ test.describe('workbench accessibility', () => {
     const originalSettings = (await settingsResponse.json()).data as Record<string, string>;
 
     try {
-      for (const appTheme of ['orkestrai-light', 'orkestrai-dark']) {
+      for (const appTheme of ['deepspace-light', 'deepspace-dark']) {
         await request.put('/api/agent-room/settings', {
           data: { ...originalSettings, appTheme, workbenchTabPlacement: 'vertical' },
         });

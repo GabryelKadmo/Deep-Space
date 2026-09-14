@@ -212,7 +212,7 @@
 </script>
 
 <svelte:head>
-  <title>Orkestrai — {m['providers.title']()}</title>
+  <title>Deep Space — {m['providers.title']()}</title>
 </svelte:head>
 
 <main class="providers-page">

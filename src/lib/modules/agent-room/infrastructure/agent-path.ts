@@ -32,8 +32,8 @@ export function fallbackCliLauncher(
   env: Record<string, string>,
   cliJs: string
 ): string | undefined {
-  const launcherName = platform === 'win32' ? 'orkestrai.cmd' : 'orkestrai';
-  const searchDirs = [env.ORKESTRAI_SHIM_DIR, ...(env.PATH ?? '').split(delimiter)].filter(Boolean) as string[];
+  const launcherName = platform === 'win32' ? 'deepspace.cmd' : 'deepspace';
+  const searchDirs = [env.DEEPSPACE_SHIM_DIR, ...(env.PATH ?? '').split(delimiter)].filter(Boolean) as string[];
   const launcher = searchDirs.map((dir) => join(dir, launcherName)).find((path) => existsSync(path));
   if (launcher) return launcher;
   // POSIX executa o .js pelo shebang. No Windows isso abriria o Windows Script
@@ -121,19 +121,19 @@ const ALWAYS_PRIVATE_CHILD_ENV_KEYS = [
   'ORIGIN',
   'BODY_SIZE_LIMIT',
   'DB_PATH',
-  'ORKESTRAI_DATA_DIR',
-  'ORKESTRAI_PTY_MODULE',
-  'ORKESTRAI_PRIVATE_ENV_KEYS',
+  'DEEPSPACE_DATA_DIR',
+  'DEEPSPACE_PTY_MODULE',
+  'DEEPSPACE_PRIVATE_ENV_KEYS',
 ] as const;
 
 const REQUIRED_AGENT_ENV_KEYS = new Set([
-  'ORKESTRAI_API_URL',
-  'ORKESTRAI_SHIM_DIR',
-  'ORKESTRAI_CLI',
-  'ORKESTRAI_CLI_JS',
-  'ORKESTRAI_CLI_RUNTIME',
-  'ORKESTRAI_CLI_RUNTIME_IS_ELECTRON',
-  'ORKESTRAI_CLI_CONSOLE_RUNTIME',
+  'DEEPSPACE_API_URL',
+  'DEEPSPACE_SHIM_DIR',
+  'DEEPSPACE_CLI',
+  'DEEPSPACE_CLI_JS',
+  'DEEPSPACE_CLI_RUNTIME',
+  'DEEPSPACE_CLI_RUNTIME_IS_ELECTRON',
+  'DEEPSPACE_CLI_CONSOLE_RUNTIME',
 ]);
 
 /**
@@ -149,7 +149,7 @@ export function sanitizeAgentEnvironment(
   );
   const privateKeys = new Set([
     ...ALWAYS_PRIVATE_CHILD_ENV_KEYS,
-    ...(source.ORKESTRAI_PRIVATE_ENV_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean),
+    ...(source.DEEPSPACE_PRIVATE_ENV_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean),
   ]);
   for (const key of privateKeys) {
     if (!REQUIRED_AGENT_ENV_KEYS.has(key)) delete env[key];
@@ -165,16 +165,16 @@ export function sanitizeAgentEnvironment(
 export function agentEnv(): Record<string, string> {
   const env = sanitizeAgentEnvironment(process.env);
   const current = (env.PATH ?? '').split(delimiter).filter(Boolean);
-  const shimDir = env.ORKESTRAI_SHIM_DIR ? [env.ORKESTRAI_SHIM_DIR] : [];
+  const shimDir = env.DEEPSPACE_SHIM_DIR ? [env.DEEPSPACE_SHIM_DIR] : [];
   const merged = [...shimDir, ...current, ...windowsRegistryPathDirs(), ...EXTRA_PATH_DIRS, ...nvmBins()];
   env.PATH = [...new Set(merged.filter(Boolean))].join(delimiter);
-  // ORKESTRAI_CLI_JS e argumento do runtime nos configs MCP. ORKESTRAI_CLI e
+  // DEEPSPACE_CLI_JS e argumento do runtime nos configs MCP. DEEPSPACE_CLI e
   // executado diretamente pelos agentes e nunca pode apontar ao .js no Windows.
-  const cliJs = resolve(process.cwd(), 'packages', 'orkestrai-cli', 'bin', 'orkestrai.js');
-  if (!env.ORKESTRAI_CLI_JS) env.ORKESTRAI_CLI_JS = cliJs;
-  if (!env.ORKESTRAI_CLI) {
+  const cliJs = resolve(process.cwd(), 'packages', 'deepspace-cli', 'bin', 'deepspace.js');
+  if (!env.DEEPSPACE_CLI_JS) env.DEEPSPACE_CLI_JS = cliJs;
+  if (!env.DEEPSPACE_CLI) {
     const launcher = fallbackCliLauncher(process.platform, env, cliJs);
-    if (launcher) env.ORKESTRAI_CLI = launcher;
+    if (launcher) env.DEEPSPACE_CLI = launcher;
   }
   return env;
 }

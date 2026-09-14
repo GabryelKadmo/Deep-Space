@@ -8,7 +8,7 @@ export default class CreateAgentPresetsTable extends Migration {
       table.text('name');
       table.text('icon').nullable();
       table.text('description').nullable();
-      table.text('data'); // JSON: orkestrai-preset v1
+      table.text('data'); // JSON: deepspace-preset v1
       table.text('created_at');
       table.text('updated_at');
     });

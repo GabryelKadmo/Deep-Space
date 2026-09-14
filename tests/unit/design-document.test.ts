@@ -249,7 +249,7 @@ describe('documento de Design', () => {
     const asset = {
       id: ASSET_ID,
       name: 'hero.png',
-      path: `.orkestrai/designs/assets/${NODE_ID}/${ASSET_ID}-hero.png`,
+      path: `.deepspace/designs/assets/${NODE_ID}/${ASSET_ID}-hero.png`,
       mimeType: 'image/png' as const,
       size: 1024,
       width: 640,

@@ -240,7 +240,7 @@ describe("Design prototype and motion", () => {
       `data-design-element="${buttonId}"`,
     );
     expect(exportMotionCss(animated, [trackId])).toContain(
-      "@keyframes orkestrai-",
+      "@keyframes deepspace-",
     );
     expect(exportMotionDev(animated, [trackId])).toContain(
       "import { animate } from 'motion'",

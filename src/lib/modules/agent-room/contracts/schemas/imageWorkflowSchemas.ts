@@ -50,7 +50,7 @@ export const imageWorkflowConfigSchema = z.object({
   targetWidth: workflowConfigFields.targetWidth.default(null),
   targetHeight: workflowConfigFields.targetHeight.default(null),
   outputDirectory: workflowConfigFields.outputDirectory.default('generated/images'),
-  filePrefix: workflowConfigFields.filePrefix.default('orkestrai-image'),
+  filePrefix: workflowConfigFields.filePrefix.default('deepspace-image'),
 }).superRefine(validateTargetDimensions);
 
 export const runImageWorkflowSchema = imageWorkflowConfigSchema;
@@ -76,7 +76,7 @@ export const createImageWorkflowSchema = z.object({
   targetWidth: workflowConfigFields.targetWidth.default(null),
   targetHeight: workflowConfigFields.targetHeight.default(null),
   outputDirectory: workflowConfigFields.outputDirectory.default('generated/images'),
-  filePrefix: workflowConfigFields.filePrefix.default('orkestrai-image'),
+  filePrefix: workflowConfigFields.filePrefix.default('deepspace-image'),
   from: z.string().trim().min(1).max(120),
 }).superRefine(validateTargetDimensions);
 

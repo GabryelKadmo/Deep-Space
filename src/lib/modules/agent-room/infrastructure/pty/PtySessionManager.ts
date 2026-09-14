@@ -726,14 +726,14 @@ export class PtySessionManager {
   private recordLifecycle(session: PtySession, state: 'starting' | 'working' | 'idle' | 'error' | 'disconnected', action: string | null = null): void {
     if (!session.workspaceId || !session.nodeId) return;
     const recorder = (globalThis as unknown as {
-      __orkestraiRecordActivity?: (input: {
+      __deepspaceRecordActivity?: (input: {
         workspaceId: string;
         nodeId: string;
         state: typeof state;
         action?: string | null;
         metadata?: Record<string, unknown>;
       }) => void;
-    }).__orkestraiRecordActivity;
+    }).__deepspaceRecordActivity;
     recorder?.({
       workspaceId: session.workspaceId,
       nodeId: session.nodeId,
@@ -949,11 +949,11 @@ export class PtySessionManager {
 // Import dinamico adiado para não carregar o nativo fora do servidor.
 // Em producao empacotada (macOS 15+), o spawn-helper do node-pty não executa
 // de dentro do bundle não-notarizado — o Electron extrai o módulo para o
-// userData e aponta ORKESTRAI_PTY_MODULE para la.
+// userData e aponta DEEPSPACE_PTY_MODULE para la.
 import { createRequire } from 'node:module';
 
 const nodeRequire = createRequire(import.meta.url);
-const { spawn: ptySpawn } = nodeRequire(process.env.ORKESTRAI_PTY_MODULE ?? 'node-pty') as typeof import('node-pty');
+const { spawn: ptySpawn } = nodeRequire(process.env.DEEPSPACE_PTY_MODULE ?? 'node-pty') as typeof import('node-pty');
 
 /**
  * Singleton process-wide via globalThis: o código SSR e bundlado pelo vite
@@ -961,5 +961,5 @@ const { spawn: ptySpawn } = nodeRequire(process.env.ORKESTRAI_PTY_MODULE ?? 'nod
  * stripping — sem isso cada copia teria seu proprio "singleton" e as sessões
  * PTY criadas pelo WS ficariam invisiveis para os services (rotinas, bridge).
  */
-const globalRef = globalThis as unknown as { __orkestraiPtyManager?: PtySessionManager };
-export const ptySessionManager = (globalRef.__orkestraiPtyManager ??= new PtySessionManager(ptySpawn));
+const globalRef = globalThis as unknown as { __deepspacePtyManager?: PtySessionManager };
+export const ptySessionManager = (globalRef.__deepspacePtyManager ??= new PtySessionManager(ptySpawn));

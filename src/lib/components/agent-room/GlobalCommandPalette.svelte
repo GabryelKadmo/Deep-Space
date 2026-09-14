@@ -52,8 +52,8 @@
   type PaletteKind = WorkspaceSearchResultKind | 'documentation' | 'command';
   type PaletteItem = Omit<WorkspaceSearchResult, 'kind'> & { kind: PaletteKind };
 
-  const RECENTS_KEY = 'orkestrai.globalSearch.recents.v1';
-  const FAVORITES_KEY = 'orkestrai.globalSearch.favorites.v1';
+  const RECENTS_KEY = 'deepspace.globalSearch.recents.v1';
+  const FAVORITES_KEY = 'deepspace.globalSearch.favorites.v1';
   const MAX_RECENTS = 8;
   const GROUP_ORDER: Exclude<PaletteKind, 'command'>[] = [
     'documentation',
@@ -87,7 +87,7 @@
   let commandWorkspaceId = $state('');
 
   function activeWorkspaceId(): string | null {
-    return typeof localStorage === 'undefined' ? null : localStorage.getItem('orkestrai.activeWorkspaceId');
+    return typeof localStorage === 'undefined' ? null : localStorage.getItem('deepspace.activeWorkspaceId');
   }
 
   const commands = $derived.by<PaletteItem[]>(() => {
@@ -96,7 +96,7 @@
       id: `command:${id}`,
       kind: 'command',
       title,
-      subtitle: 'Orkestrai',
+      subtitle: 'Deep Space',
       preview: null,
       workspaceId,
       workspaceName: '',
@@ -281,13 +281,13 @@
     query = '';
 
     if (item.id === 'command:council' && (location.pathname === '/canvas' || location.pathname === '/terminal')) {
-      window.dispatchEvent(new CustomEvent('orkestrai:open-council', {
+      window.dispatchEvent(new CustomEvent('deepspace:open-council', {
         detail: { workspaceId: item.workspaceId },
       }));
       return;
     }
     if (item.id === 'command:attention') {
-      window.dispatchEvent(new CustomEvent('orkestrai:open-attention'));
+      window.dispatchEvent(new CustomEvent('deepspace:open-attention'));
       return;
     }
     if (
@@ -310,21 +310,21 @@
 
     if (item.kind === 'role') {
       if (location.pathname === '/canvas') {
-        window.dispatchEvent(new CustomEvent('orkestrai:menu-action', { detail: 'roles' }));
+        window.dispatchEvent(new CustomEvent('deepspace:menu-action', { detail: 'roles' }));
         return;
       }
-      sessionStorage.setItem('orkestrai.menu-action', 'roles');
+      sessionStorage.setItem('deepspace.menu-action', 'roles');
       await goto(`/canvas?workspace=${item.workspaceId}`);
       return;
     }
     if ((item.kind === 'file' || item.id.startsWith('design-code:')) && item.path) {
       if (location.pathname === '/terminal') {
-        window.dispatchEvent(new CustomEvent('orkestrai:open-file', {
+        window.dispatchEvent(new CustomEvent('deepspace:open-file', {
           detail: { workspaceId: item.workspaceId, path: item.path },
         }));
         return;
       }
-      sessionStorage.setItem('orkestrai.open-file', JSON.stringify({ workspaceId: item.workspaceId, path: item.path }));
+      sessionStorage.setItem('deepspace.open-file', JSON.stringify({ workspaceId: item.workspaceId, path: item.path }));
       await goto(`/terminal?workspace=${item.workspaceId}`);
       return;
     }
@@ -374,10 +374,10 @@
       selectedId = idleItems[0]?.id ?? '';
     };
     window.addEventListener('keydown', handleShortcut);
-    window.addEventListener('orkestrai:global-search', handleOpen);
+    window.addEventListener('deepspace:global-search', handleOpen);
     return () => {
       window.removeEventListener('keydown', handleShortcut);
-      window.removeEventListener('orkestrai:global-search', handleOpen);
+      window.removeEventListener('deepspace:global-search', handleOpen);
     };
   });
 </script>

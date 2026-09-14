@@ -574,7 +574,7 @@ describe('ImageWorkflowService', () => {
     } as any;
     const logo = {
       ...agent, id: 'image-logo', type: 'image', title: 'XYZ Sample Logo',
-      payload: { path: '.orkestrai/tours/xyz-sample-logo.png' },
+      payload: { path: '.deepspace/tours/xyz-sample-logo.png' },
     } as any;
     const nodes: any[] = [agent, characterBrief, campaignBrief, logo];
     const edges: any[] = [];
@@ -650,7 +650,7 @@ describe('ImageWorkflowService', () => {
     const brandedExecution = await service.begin(new RunImageWorkflowDto(workspace.id, brandedWorkflow.id, brandedConfig, agent.id));
     expect(brandedExecution.tool.referenced_image_paths).toEqual([
       `/workspace/${characterOutput.payload.path}`,
-      '/workspace/.orkestrai/tours/xyz-sample-logo.png',
+      '/workspace/.deepspace/tours/xyz-sample-logo.png',
     ]);
     const branded = await service.complete({
       workspaceId: workspace.id, nodeId: brandedWorkflow.id, runId: brandedExecution.runId,

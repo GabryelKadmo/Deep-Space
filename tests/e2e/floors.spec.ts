@@ -22,10 +22,10 @@ async function cleanup(request: import('@playwright/test').APIRequestContext, na
 
 test.describe('andares e rotinas', () => {
   test('cria andar, alterna visao e exclui', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-floor-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-floor-'));
     const { execFileSync } = await import('node:child_process');
     execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-    execFileSync('git', ['config', 'user.email', 'e2e@orkestrai.local'], { cwd: dir });
+    execFileSync('git', ['config', 'user.email', 'e2e@deepspace.local'], { cwd: dir });
     execFileSync('git', ['config', 'user.name', 'E2E'], { cwd: dir });
     writeFileSync(join(dir, 'README.md'), '# x\n');
     execFileSync('git', ['add', '.'], { cwd: dir });
@@ -64,7 +64,7 @@ test.describe('andares e rotinas', () => {
   });
 
   test('automacao manual dispara prompt no terminal alvo', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-routine-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-routine-'));
     const workspaceName = `E2E routine ${Date.now()}`;
     await createWorkspaceIn(page, workspaceName, dir);
 

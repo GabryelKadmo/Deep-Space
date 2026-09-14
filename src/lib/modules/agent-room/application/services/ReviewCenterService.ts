@@ -13,7 +13,7 @@ import { gitService } from './GitService.js';
 import { bridgeService } from './BridgeService.js';
 
 function broadcast(workspaceId: string): void {
-  const send = (globalThis as { __orkestraiBroadcast?: (frame: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const send = (globalThis as { __deepspaceBroadcast?: (frame: Record<string, unknown>) => void }).__deepspaceBroadcast;
   send?.({ type: 'gitReviewChanged', workspaceId });
 }
 

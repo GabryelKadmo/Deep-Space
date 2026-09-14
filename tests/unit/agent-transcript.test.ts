@@ -168,7 +168,7 @@ describe('transcritos estruturados dos providers adicionais', () => {
   });
 
   it('encontra o prompt do Claude no home da distribuição WSL', async () => {
-    const home = await mkdtemp(join(tmpdir(), 'orkestrai-wsl-transcript-'));
+    const home = await mkdtemp(join(tmpdir(), 'deepspace-wsl-transcript-'));
     const sessionId = '01a11111-2222-7333-8444-555555555555';
     const directory = join(home, '.claude', 'projects', '-home-dev-project');
     try {
@@ -192,7 +192,7 @@ describe('transcritos estruturados dos providers adicionais', () => {
   });
 
   it('confirma a resposta completa do Claude no transcript da distribuição WSL', async () => {
-    const home = await mkdtemp(join(tmpdir(), 'orkestrai-wsl-reply-'));
+    const home = await mkdtemp(join(tmpdir(), 'deepspace-wsl-reply-'));
     const sessionId = '01a11111-2222-7333-8444-666666666666';
     const directory = join(home, '.claude', 'projects', '-home-dev-project');
     try {

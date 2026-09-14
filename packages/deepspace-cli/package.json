@@ -1,0 +1,13 @@
+{
+  "name": "deepspace-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "CLI da ponte DeepSpace: comunicacao entre agentes e notas no canvas.",
+  "bin": {
+    "deepspace": "./bin/deepspace.js"
+  },
+  "exports": {
+    "./cli": "./src/cli.js"
+  }
+}

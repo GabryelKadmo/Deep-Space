@@ -26,7 +26,7 @@ describe('WorkspaceAttachmentService', () => {
   });
 
   it('stores files in the workspace attachment directory with a safe relative path', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-attachment-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-attachment-'));
     tempDirs.push(dir);
     const workspace = await workspaceRepository.createWorkspace({ name: 'attachments', workingDir: dir });
     const file = new File(['# Brief\n'], '../brief coração?.md', { type: 'text/markdown' });
@@ -43,7 +43,7 @@ describe('WorkspaceAttachmentService', () => {
       mimeType: 'text/markdown',
       size: file.size,
     });
-    expect(attachment.path).toMatch(/^\.orkestrai\/attachments\/[0-9a-f-]+-brief-coracao-.md$/);
+    expect(attachment.path).toMatch(/^\.deepspace\/attachments\/[0-9a-f-]+-brief-coracao-.md$/);
     expect(existsSync(join(dir, attachment.path!))).toBe(true);
     expect(readFileSync(join(dir, attachment.path!), 'utf8')).toBe('# Brief\n');
     expect(workspaceAttachmentSchema.parse(attachment)).toEqual(attachment);
@@ -61,7 +61,7 @@ describe('WorkspaceAttachmentService', () => {
   });
 
   it('refuses to delete an attachment path that does not belong to its identifier', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-attachment-delete-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-attachment-delete-'));
     tempDirs.push(dir);
     const workspace = await workspaceRepository.createWorkspace({ name: 'delete guard', workingDir: dir });
     const attachment = await workspaceAttachmentService.create(
@@ -78,7 +78,7 @@ describe('WorkspaceAttachmentService', () => {
   });
 
   it('rejects oversized files and unsafe persisted paths or protocols', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-attachment-limit-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-attachment-limit-'));
     tempDirs.push(dir);
     const workspace = await workspaceRepository.createWorkspace({ name: 'limits', workingDir: dir });
     const oversized = new File(

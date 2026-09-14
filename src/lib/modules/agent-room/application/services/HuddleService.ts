@@ -14,15 +14,15 @@ export type HuddleActor = {
 };
 
 type LockState = { tails: Map<string, Promise<unknown>> };
-const lockKey = Symbol.for('orkestrai.huddle.locks');
+const lockKey = Symbol.for('deepspace.huddle.locks');
 const lockState = ((globalThis as typeof globalThis & { [lockKey]?: LockState })[lockKey] ??= { tails: new Map() });
 
 function broadcast(workspaceId: string): void {
   (
     globalThis as {
-      __orkestraiBroadcast?: (frame: Record<string, unknown>) => void;
+      __deepspaceBroadcast?: (frame: Record<string, unknown>) => void;
     }
-  ).__orkestraiBroadcast?.({ type: 'huddleChanged', workspaceId });
+  ).__deepspaceBroadcast?.({ type: 'huddleChanged', workspaceId });
 }
 
 function errorCode(error: unknown): string {
@@ -270,7 +270,7 @@ export class HuddleService {
     const huddle = await huddleRepository.find(workspaceId, huddleId);
     if (!huddle) return;
     const prompt = [
-      'You are participating in a live Orkestrai huddle.',
+      'You are participating in a live Deep Space huddle.',
       `Topic: ${huddle.title}`,
       huddle.agenda ? `Agenda: ${huddle.agenda}` : '',
       'Reply conversationally in the same language as the latest speaker. Be concrete and concise (2-5 sentences).',

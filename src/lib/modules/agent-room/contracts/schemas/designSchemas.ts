@@ -420,7 +420,7 @@ export const designPathPointSchema = z.object({
 export const designAssetSchema = z.object({
   id: z.string().uuid(),
   name: z.string().trim().min(1).max(180),
-  path: z.string().trim().regex(/^\.orkestrai\/designs\/assets\/[A-Za-z0-9._/-]+$/).max(512),
+  path: z.string().trim().regex(/^\.deepspace\/designs\/assets\/[A-Za-z0-9._/-]+$/).max(512),
   mimeType: z.enum(['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg+xml']),
   size: z.number().int().min(1).max(20 * 1024 * 1024),
   width: z.number().int().min(1).max(100_000).nullable().default(null),

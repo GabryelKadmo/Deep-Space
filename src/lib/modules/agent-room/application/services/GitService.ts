@@ -161,7 +161,7 @@ function parseNameStatus(output: string, source: string): GitChange[] {
 /** Git operations scoped to the workspace root and executed without a shell. */
 export class GitService {
   private notifyChanged(workspaceId: string): void {
-    const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+    const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
     broadcast?.({ type: 'gitReviewChanged', workspaceId });
   }
 

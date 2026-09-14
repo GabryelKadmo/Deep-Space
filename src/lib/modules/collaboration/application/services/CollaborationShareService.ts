@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { Features } from '@beeblock/svelar/feature-flags';
-import { createInviteUri, createWebInviteUri } from '@orkestrai/collaboration-protocol';
+import { createInviteUri, createWebInviteUri } from '@deepspace/collaboration-protocol';
 import { workspaceService } from '$lib/modules/agent-room/application/services/WorkspaceService.js';
 import type { CreateCollaborationShareDto, ApproveCollaborationDeviceDto } from '../dto/CollaborationDto.js';
 import type { CollaborationJoinRequestInput } from '../../contracts/schemas/collaboration.schema.js';
@@ -186,7 +186,7 @@ export class CollaborationShareService {
   private inviteLinks(shareId: string, pairingSecret: string): { inviteUri: string; webInviteUri: string } {
     return {
       inviteUri: createInviteUri(shareId, pairingSecret),
-      webInviteUri: createWebInviteUri(process.env.ORKESTRAI_REMOTE_URL ?? 'https://remote.orkestrai.app', shareId, pairingSecret),
+      webInviteUri: createWebInviteUri(process.env.DEEPSPACE_REMOTE_URL ?? 'https://remote.deepspace.app', shareId, pairingSecret),
     };
   }
 }

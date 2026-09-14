@@ -15,7 +15,7 @@ async function fileTransfer(page: import('@playwright/test').Page, name: string,
 
 test.describe('workspace attachments', () => {
   test('drops files and links onto notes, agent prompts, and tasks', async ({ page, request }) => {
-    const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-attachments-'));
+    const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-attachments-'));
     const workspaceResponse = await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E attachments ${Date.now()}`, workingDir },
     });
@@ -54,7 +54,7 @@ test.describe('workspace attachments', () => {
         noteAttachmentPath = attachments?.[0]?.path ?? '';
         return attachments?.length ?? 0;
       }).toBe(1);
-      expect(noteAttachmentPath).toMatch(/^\.orkestrai\/attachments\//);
+      expect(noteAttachmentPath).toMatch(/^\.deepspace\/attachments\//);
       expect(readFileSync(join(workingDir, noteAttachmentPath), 'utf8')).toBe('fake-png-content');
 
       await page.getByRole('button', {
@@ -75,7 +75,7 @@ test.describe('workspace attachments', () => {
       const agentTransfer = await fileTransfer(page, 'agent-context.pdf', 'application/pdf', 'PDF context');
       await page.locator('.composer').dispatchEvent('drop', { dataTransfer: agentTransfer });
       await expect(page.getByTestId('terminal-quick-prompt')).toHaveValue(/agent-context\.pdf/);
-      await expect(page.getByTestId('terminal-quick-prompt')).toHaveValue(/\.orkestrai\/attachments\//);
+      await expect(page.getByTestId('terminal-quick-prompt')).toHaveValue(/\.deepspace\/attachments\//);
 
       await page.goto(`/terminal?workspace=${workspace.id}&node=${board.id}`);
       await expect(page.locator('article.tb-card')).toHaveCount(1);
@@ -98,7 +98,7 @@ test.describe('workspace attachments', () => {
   });
 
   test('rejects attachments larger than 10 MB before writing them', async ({ request }) => {
-    const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-attachment-limit-'));
+    const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-attachment-limit-'));
     const workspaceResponse = await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E attachment limit ${Date.now()}`, workingDir },
     });

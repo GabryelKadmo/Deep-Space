@@ -11,7 +11,7 @@ describe('managed Portal contracts', () => {
 
   it('normalizes bounded browser profiles without credentials', () => {
     expect(portalProfileSchema.parse({})).toEqual({
-      profileId: 'default', profileScope: 'workspace', allowedHosts: [], downloadDirectory: '.orkestrai/downloads',
+      profileId: 'default', profileScope: 'workspace', allowedHosts: [], downloadDirectory: '.deepspace/downloads',
       control: 'disabled', agentIds: [], paused: false, allowBackground: false,
     });
     expect(portalProfileFromPayload({ portalProfileId: 'team', portalAllowedHosts: ['APP.EXAMPLE.COM'] })).toMatchObject({

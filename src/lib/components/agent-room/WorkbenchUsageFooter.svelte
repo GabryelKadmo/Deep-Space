@@ -39,7 +39,7 @@
   }
 
   async function openUsage() {
-    sessionStorage.setItem('orkestrai.menu-action', 'usage');
+    sessionStorage.setItem('deepspace.menu-action', 'usage');
     await goto(workspaceId ? `/canvas?workspace=${workspaceId}` : '/canvas');
   }
 

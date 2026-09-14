@@ -3,7 +3,7 @@ import { coreRuntimeService } from '../../../application/services/CoreRuntimeSer
 
 export class CoreRuntimeController extends Controller {
   async health(event: RequestEvent) {
-    const token = event.request.headers.get('x-orkestrai-core-token');
+    const token = event.request.headers.get('x-deepspace-core-token');
     if (!coreRuntimeService.authorized(token)) {
       return this.json({ error: 'Unauthorized Core health request.' }, 401);
     }

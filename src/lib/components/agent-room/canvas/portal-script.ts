@@ -1,4 +1,4 @@
-const RESULT_MARKER = '__orkestraiPortalScriptResult';
+const RESULT_MARKER = '__deepspacePortalScriptResult';
 const MAX_ERROR_LENGTH = 2_000;
 
 type PortalScriptEnvelope = {

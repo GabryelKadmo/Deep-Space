@@ -95,7 +95,7 @@ describe('native desktop adapters', () => {
   });
 
   it('does not capture an undefined region when a focused window loses its bounds', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-capture-bounds-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-capture-bounds-'));
     const adapter = new MacComputerAdapter();
     const state: ComputerSnapshot = { platform: 'macos', available: true, reason: 'ready', detail: null, permissions: { accessibility: 'granted', screenRecording: 'granted' }, displays: [], windows: [{ id: '42:cg:9', appId: 'com.apple.calculator', appName: 'Calculator', title: 'Calculator', focused: true, bounds: { x: 1, y: 1, width: 300, height: 500 } }], focusedWindowId: '42:cg:9' };
     vi.spyOn(adapter, 'snapshot').mockResolvedValueOnce(state).mockResolvedValueOnce({ ...state, windows: [{ ...state.windows[0], bounds: null }] });

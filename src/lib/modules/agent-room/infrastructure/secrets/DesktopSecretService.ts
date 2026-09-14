@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 type SecretResponse = {
-  type: 'orkestrai:secret:result';
+  type: 'deepspace:secret:result';
   requestId: string;
   value?: string | null;
   error?: string;
@@ -14,16 +14,16 @@ type PendingSecret = {
 };
 
 const state = globalThis as typeof globalThis & {
-  __orkestraiSecretPending?: Map<string, PendingSecret>;
-  __orkestraiSecretListenerReady?: boolean;
+  __deepspaceSecretPending?: Map<string, PendingSecret>;
+  __deepspaceSecretListenerReady?: boolean;
 };
 
-const pending = state.__orkestraiSecretPending ??= new Map<string, PendingSecret>();
+const pending = state.__deepspaceSecretPending ??= new Map<string, PendingSecret>();
 
-if (!state.__orkestraiSecretListenerReady && typeof process.on === 'function') {
+if (!state.__deepspaceSecretListenerReady && typeof process.on === 'function') {
   process.on('message', (message: unknown) => {
     const response = message as Partial<SecretResponse> | null;
-    if (response?.type !== 'orkestrai:secret:result' || !response.requestId) return;
+    if (response?.type !== 'deepspace:secret:result' || !response.requestId) return;
     const request = pending.get(response.requestId);
     if (!request) return;
     clearTimeout(request.timer);
@@ -31,16 +31,16 @@ if (!state.__orkestraiSecretListenerReady && typeof process.on === 'function') {
     if (response.error) request.reject(new Error(response.error));
     else request.resolve(response.value ?? null);
   });
-  state.__orkestraiSecretListenerReady = true;
+  state.__deepspaceSecretListenerReady = true;
 }
 
 export class DesktopSecretService {
-  private async request(type: 'orkestrai:secret:get' | 'orkestrai:secret:set' | 'orkestrai:secret:delete', key: string, value?: string): Promise<string | null> {
+  private async request(type: 'deepspace:secret:get' | 'deepspace:secret:set' | 'deepspace:secret:delete', key: string, value?: string): Promise<string | null> {
     if (!/^automation:[a-z0-9:_-]{1,240}$/i.test(key)) throw new Error('Invalid automation secret key.');
     if (typeof process.send !== 'function') {
-      if (type !== 'orkestrai:secret:get') return null;
-      if (key.includes(':github:')) return process.env.ORKESTRAI_GITHUB_TOKEN ?? process.env.GITHUB_TOKEN ?? null;
-      if (key.includes(':figma:')) return process.env.ORKESTRAI_FIGMA_TOKEN ?? process.env.FIGMA_ACCESS_TOKEN ?? null;
+      if (type !== 'deepspace:secret:get') return null;
+      if (key.includes(':github:')) return process.env.DEEPSPACE_GITHUB_TOKEN ?? process.env.GITHUB_TOKEN ?? null;
+      if (key.includes(':figma:')) return process.env.DEEPSPACE_FIGMA_TOKEN ?? process.env.FIGMA_ACCESS_TOKEN ?? null;
       return null;
     }
     const requestId = randomUUID();
@@ -55,9 +55,9 @@ export class DesktopSecretService {
     });
   }
 
-  get(key: string): Promise<string | null> { return this.request('orkestrai:secret:get', key); }
-  async set(key: string, value: string): Promise<void> { await this.request('orkestrai:secret:set', key, value); }
-  async delete(key: string): Promise<void> { await this.request('orkestrai:secret:delete', key); }
+  get(key: string): Promise<string | null> { return this.request('deepspace:secret:get', key); }
+  async set(key: string, value: string): Promise<void> { await this.request('deepspace:secret:set', key, value); }
+  async delete(key: string): Promise<void> { await this.request('deepspace:secret:delete', key); }
 }
 
 export const desktopSecretService = new DesktopSecretService();

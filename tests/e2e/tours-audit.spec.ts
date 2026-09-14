@@ -32,7 +32,7 @@ async function completeImageWorkflowFixture(
         width: 280,
         height: 240,
         payload: {
-          path: `.orkestrai/e2e/${workflow!.id}-${index}.png`,
+          path: `.deepspace/e2e/${workflow!.id}-${index}.png`,
           generatedBy: { workflowNodeId: workflow!.id, runId: 'e2e-image-run', outputIndex: index },
         },
       },
@@ -64,7 +64,7 @@ for (const tour of TOURS_PT) {
   test(`tour ${tour.id} completa sem travar`, async ({ page, request }) => {
     test.setTimeout(300_000);
 
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-tour-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-tour-'));
     execSync('git init -q && git config user.email tour@test.dev && git config user.name tour && touch README.md && git add -A && git commit -qm init', { cwd: dir });
 
     const workspaceName = `E2E tour-${tour.id} ${Date.now()}`;

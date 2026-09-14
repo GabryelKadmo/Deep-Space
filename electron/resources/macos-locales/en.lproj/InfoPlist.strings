@@ -1,5 +1,5 @@
-"NSMicrophoneUsageDescription" = "Orkestrai uses the microphone only when you start voice dictation.";
-"NSAppleEventsUsageDescription" = "Orkestrai controls only the applications you authorize for Computer Control.";
-"NSDownloadsFolderUsageDescription" = "Orkestrai needs access to projects you choose inside Downloads.";
-"NSDocumentsFolderUsageDescription" = "Orkestrai needs access to projects you choose inside Documents.";
-"NSDesktopFolderUsageDescription" = "Orkestrai needs access to projects you choose on the Desktop.";
+"NSMicrophoneUsageDescription" = "Deep Space uses the microphone only when you start voice dictation.";
+"NSAppleEventsUsageDescription" = "Deep Space controls only the applications you authorize for Computer Control.";
+"NSDownloadsFolderUsageDescription" = "Deep Space needs access to projects you choose inside Downloads.";
+"NSDocumentsFolderUsageDescription" = "Deep Space needs access to projects you choose inside Documents.";
+"NSDesktopFolderUsageDescription" = "Deep Space needs access to projects you choose on the Desktop.";

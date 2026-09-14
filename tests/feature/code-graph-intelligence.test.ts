@@ -19,7 +19,7 @@ describe('Code graph semantic and runtime intelligence', () => {
   useSvelarTest({ refreshDatabase: true });
 
   it('builds an offline semantic index and searches code by intent', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-semantic-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-semantic-'));
     directories.push(directory);
     await mkdir(join(directory, 'src'));
     await writeFile(join(directory, 'package.json'), '{"name":"semantic-test"}\n');
@@ -55,7 +55,7 @@ describe('Code graph semantic and runtime intelligence', () => {
   });
 
   it('automatically refreshes assisted semantic indexes and reuses unchanged vectors', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-semantic-assisted-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-semantic-assisted-'));
     directories.push(directory);
     await writeFile(join(directory, 'package.json'), '{"name":"semantic-assisted-test"}\n');
     const sourcePath = join(directory, 'service.ts');
@@ -127,7 +127,7 @@ describe('Code graph semantic and runtime intelligence', () => {
   });
 
   it('keeps semantic indexing empty when a repository has no supported symbols', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-semantic-empty-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-semantic-empty-'));
     directories.push(directory);
     await writeFile(join(directory, 'README.md'), '# Empty repository\n');
     const workspace = await workspaceRepository.createWorkspace({ name: 'Empty semantic test', workingDir: directory });
@@ -144,7 +144,7 @@ describe('Code graph semantic and runtime intelligence', () => {
   });
 
   it('imports bounded coverage and runtime call evidence without persisting raw output', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-evidence-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-evidence-'));
     directories.push(directory);
     await mkdir(join(directory, 'src'));
     await mkdir(join(directory, 'coverage'));
@@ -198,8 +198,8 @@ describe('Code graph semantic and runtime intelligence', () => {
   });
 
   it('rejects runtime evidence paths outside the approved repository', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-evidence-root-'));
-    const outside = await mkdtemp(join(tmpdir(), 'orkestrai-code-evidence-outside-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-evidence-root-'));
+    const outside = await mkdtemp(join(tmpdir(), 'deepspace-code-evidence-outside-'));
     directories.push(directory, outside);
     await writeFile(join(directory, 'package.json'), '{"name":"evidence-root"}\n');
     await writeFile(join(directory, 'source.ts'), 'export function source() {}\n');

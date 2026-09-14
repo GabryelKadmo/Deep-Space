@@ -7,7 +7,7 @@ import { isDesignExplorationPayload } from '../../domain/design-exploration.js';
 import { agentTerminalDeliveryService } from './AgentTerminalDeliveryService.js';
 
 function broadcast(workspaceId: string, nodeId: string): void {
-  const send = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const send = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
   send?.({ type: 'workspaceChanged', workspaceId, nodeId });
 }
 
@@ -75,11 +75,11 @@ export class DesignReviewService {
       }
 
       const tasks = await taskBoardService.list(dto.workspaceId);
-      const reviewTask = tasks.find((task) => task.description?.includes(`orkestrai:design-review=${explorationId}`));
+      const reviewTask = tasks.find((task) => task.description?.includes(`deepspace:design-review=${explorationId}`));
       if (reviewTask && reviewTask.status !== 'done') {
         await taskBoardService.update(dto.workspaceId, reviewTask.id, { status: 'done', completedBy: 'user' });
       }
-      const expansionTask = tasks.find((task) => task.description?.includes(`orkestrai:design-stage=expand;exploration=${explorationId}`));
+      const expansionTask = tasks.find((task) => task.description?.includes(`deepspace:design-stage=expand;exploration=${explorationId}`));
       expansionTaskId = expansionTask?.id ?? null;
       expansionDispatched = Boolean(expansionTask?.assigneeNodeId && expansionTask.status !== 'todo');
 

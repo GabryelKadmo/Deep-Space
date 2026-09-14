@@ -1,9 +1,49 @@
-# Orkestrai Changelog
+# Deep Space Changelog
 
-All notable changes to Orkestrai are documented here in English, from newest to
+All notable changes to Deep Space are documented here in English, from newest to
 oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
+
+## 0.31.0 - 2026-09-14
+
+### Changed
+
+- The application is now Deep Space, a fork of Orkestrai. Product name, desktop application id (`com.deepspace.desktop`), installer and shortcut names, documentation, and in-app strings in the three languages were renamed. Attribution to the upstream project is kept in `NOTICE`, `LICENSE`, and the README. The package description is now the product tagline, which also feeds the summary shown by the installers.
+
+- Auto-update and release automation target `GabryelKadmo/Deep-Space` instead of the upstream repository, so an installed build never offers the original application over itself. Installer artifacts are named `DeepSpace-*` so the update feed builds URLs without spaces.
+
+- The collaboration relay endpoint moved behind `PUBLIC_RELAY_URL` (`src/lib/modules/collaboration/relay.ts`), read by both the sharing dialog and the Remote page. It still falls back to the upstream public relay until a private deployment is configured; `docs/relay.md` documents the deploy.
+
+- The agent bridge was renamed as well: the CLI command is `deepspace`, the workspace directory is `.deepspace/`, the environment variables are `DEEPSPACE_*`, and the collaboration protocol is `deepspace:`. The bridge had been left on the old naming to protect workspaces provisioned by earlier installs; with no published release, there were none to protect. A workspace created before the rename is repaired on first open, though the previous `.deepspace/` predecessor is left behind rather than deleted.
+
+- The default theme is monochrome on near black. Accent is white, and page, canvas and sidebar share one tone so panels no longer read as grey bars against the content. The surface ladder was recalibrated rather than darkened: it came from a palette anchored on a lighter page, so the first step spanned 27 points and the order inverted midway. Muted text was lightened to clear the 4.5 contrast ratio the theme test enforces, and the light theme took the neutral equivalent, since white cannot be an accent there.
+
+- The splash screen was redesigned around the deep sea motif: black, with a cold light falling from the surface, fine particles rising, and ice white loading dots. It now follows the system language, which is available before the persisted settings are, and falls back to English for any other locale.
+
+- Application icons were replaced across every target: Windows, Linux and macOS bundles, the tray, the favicon and the in-app mark. Windows and Linux icons are cropped so the artwork fills the box edge to edge, while the macOS icon keeps the padding Apple's icon grid expects.
+
+### Added
+
+- The quick prompt in a terminal node can be collapsed, giving the space back to anyone who does not attach files or mention agents with `@`. Each terminal remembers its own state, and dropping an attachment reopens it so the file reference is not written into a hidden field.
+
+### Fixed
+
+- The splash no longer stays on screen after the application is ready. It closed only on a paint event, which Chromium defers while the window is minimised or in the background, so it could sit there until the window was clicked. It also opens before the server boots now, instead of after, which is the wait it exists to cover.
+
+- Dragging the window by the empty area of the title bar works. The menu strip claimed that whole region as a non-draggable zone, leaving only the logo able to move the window.
+
+- Terminal output renders block-drawing characters correctly. The terminal asked for three macOS-only fonts and fell through to a generic monospace on Windows, which broke the banners agent CLIs draw with half blocks.
+
+- The dictation controls no longer cover the agent prompt. They were pinned over the bottom right of the terminal, which is exactly where the prompt line sits.
+
+- The Windows taskbar shows the application icon instead of the generic Electron mark, and native notifications can be delivered, both of which require the application to declare an AppUserModelID.
+
+- The update dialog's manual download link points at this project's releases rather than the upstream project's.
+
+- Theme import and export no longer carry each other's icons.
+
+- The desktop log is `deep-space.log`, matching the name the documentation and the guided tours tell people to send with a report.
 
 ## 0.30.1 - 2026-09-13
 
@@ -11,7 +51,7 @@ pt-BR, English, and Spanish translations.
 
 - Terminal paste is now identical across every agent CLI. `Ctrl+V` (`Cmd+V` on macOS) pastes clipboard text, with `Ctrl+Shift+V` and `Shift+Insert` as aliases. xterm no longer cancels the keystroke, so the browser native paste reaches the terminal instead of a bare control character that each CLI interpreted on its own through a different shortcut.
 
-- Pasting an image or a file into a terminal stores it in the workspace under `.orkestrai/attachments/` and pastes the resulting path into the prompt, so every provider receives the reference the same way. `Alt+V` stays free for CLIs that document their own shortcut.
+- Pasting an image or a file into a terminal stores it in the workspace under `.deepspace/attachments/` and pastes the resulting path into the prompt, so every provider receives the reference the same way. `Alt+V` stays free for CLIs that document their own shortcut.
 
 ## 0.30.0 - 2026-09-11
 
@@ -53,7 +93,7 @@ pt-BR, English, and Spanish translations.
   persist completed steps and resume gated runs with the same revision and key.
 - Security exposes expandable, live audit details and a latched emergency stop.
   Webhook editors display the full local endpoint and its ingress boundary.
-- The local Orkestrai Core can now remain active in the system tray after every
+- The local Deep Space Core can now remain active in the system tray after every
   window closes, start silently when the user signs in, expose authenticated
   health metadata, and restart independently from the desktop window.
 - Automation runs are now durable database-backed jobs with renewable leases,
@@ -124,7 +164,7 @@ pt-BR, English, and Spanish translations.
 - Disabling an autonomy policy no longer bypasses an active emergency stop.
 - The desktop supervisor now reconnects to the Core after an unexpected server
   exit or system resume without starting a second provider writer. Explicitly
-  quitting Orkestrai still stops the Core and its child processes.
+  quitting Deep Space still stops the Core and its child processes.
 - Core discovery metadata is restricted to the current operating-system user,
   and its health endpoint requires a per-process token that is never returned
   to the renderer.
@@ -246,7 +286,7 @@ pt-BR, English, and Spanish translations.
   stashes, and worktrees shared with Floors. People can stage, unstage, commit,
   fetch, fast-forward pull, push, switch or create branches, merge, rebase,
   cherry-pick, revert, manage tags, and abort active operations without leaving
-  Orkestrai.
+  Deep Space.
 - Git operations are shell-free and workspace-confined. Destructive actions
   expose their exact command, require confirmation, and reject stale repository
   revisions; remote credentials are redacted. Agents use the same state through
@@ -327,7 +367,7 @@ pt-BR, English, and Spanish translations.
 - Packaged Windows builds now include a pinned, SHA-256-verified console Node
   runtime for the native bridge and WSL launchers. Bridge commands therefore
   return stdout, stderr, typed MCP responses, and confirmed `ask` replies
-  instead of silently launching the GUI-subsystem `Orkestrai.exe`; existing WSL
+  instead of silently launching the GUI-subsystem `Deep Space.exe`; existing WSL
   workspaces repair their launcher lazily when opened.
 - Inter-agent asks can now carry their Kanban task identity. A handoff waiting
   behind another conversation expires after a bounded interval and is cancelled
@@ -352,11 +392,11 @@ pt-BR, English, and Spanish translations.
   symlink aliases such as macOS `/tmp` are resolved to the physical directory
   Codex uses for its trust decision.
 - Leader-run Design exploration creation is now atomic: if the initial task
-  cannot reach the selected leader, Orkestrai removes the just-created brief,
+  cannot reach the selected leader, Deep Space removes the just-created brief,
   designs, tasks, group, and edges instead of leaving a partial workflow on
   the Canvas.
 - API Client HTML visualizers now resolve relative images, audio, fonts, and
-  styles against the credential-free request URL instead of Orkestrai's local
+  styles against the credential-free request URL instead of Deep Space's local
   server, while a bounded sandbox policy continues to block scripts, forms,
   frames, and objects.
 - Desktop diagnostics no longer flood the log with expected background bridge
@@ -514,7 +554,7 @@ pt-BR, English, and Spanish translations.
   outgoing, import, call, instantiation, inheritance, and implementation views
   in the same Canvas and Workbench artifact.
 - Agents use that exact persisted graph through typed `code_graph_*` MCP tools
-  or `orkestrai graph` commands. Multi-repository workspaces remain confined to
+  or `deepspace graph` commands. Multi-repository workspaces remain confined to
   explicitly approved roots, no arbitrary SQL or Cypher is exposed, and the
   storage contract can adopt a benchmark-qualified Memgraph adapter later.
 - A guided Code Intelligence use case adds the node, indexes approved
@@ -523,7 +563,7 @@ pt-BR, English, and Spanish translations.
   active Floor, maps changed files to directly and transitively affected
   symbols, recommends likely tests, and highlights cross-Floor conflicts before
   work is reviewed or landed. The same evidence is available through
-  `code_graph_changes` and `orkestrai graph changes`.
+  `code_graph_changes` and `deepspace graph changes`.
 - Each change scope can create a traceable Kanban task with bounded file,
   symbol, test, and conflict evidence. Primary working-tree changes can also
   create a Review Center review tied to the current Git revision; typed
@@ -535,14 +575,14 @@ pt-BR, English, and Spanish translations.
   cross-project route conflicts, handlers, and validation schemas without
   persisting credentials or exposing request hosts and query values. Agents use
   the same bounded map through `code_graph_contracts` or
-  `orkestrai graph contracts`.
+  `deepspace graph contracts`.
 - The Quality view surfaces bounded, confidence-scored evidence for structural
   duplication, import cycles, high coupling, inferred layer violations,
   oversized code, security-sensitive execution, and possible dead code. It
   also maps static environment, file, network-path, database-table, and IPC
   flows without persisting secret values, payloads, hosts, query strings, or
   source bodies. Agents use the same analysis through `code_graph_quality` or
-  `orkestrai graph quality`.
+  `deepspace graph quality`.
 - The local semantic index searches symbols by intent across names, qualified
   names, paths, signatures, bounded documentation, and graph neighbors. In
   Assisted mode it follows settled structural revisions automatically, reuses
@@ -552,14 +592,14 @@ pt-BR, English, and Spanish translations.
   controls. Compact vectors stay on-device with no API key or model download;
   Canvas, Workbench, CLI, and MCP expose the same explainable matches.
 - Runtime evidence imports LCOV, JUnit XML, bounded tracebacks, or structured
-  Orkestrai JSON from a relative path inside an approved repository. Coverage,
+  Deep Space JSON from a relative path inside an approved repository. Coverage,
   failures, observed calls, and runtime-only relationships are overlaid on the
   same graph while raw logs, test output, source bodies, and credentials are
   never persisted. The compact toolbar now groups Contracts, Quality, Semantic,
   and Runtime under Insights.
 - Code graph indexing now records bounded scan, parse, resolve, persistence,
   cache-hit, cache-miss, changed-file, and strategy telemetry in its existing
-  revision stats. `npm run benchmark:code-graph` exercises the Orkestrai
+  revision stats. `npm run benchmark:code-graph` exercises the Deep Space
   repository, a full temporary mirror for real incremental updates, and a
   synthetic repository against the documented SQLite latency gates; additional
   Laravel or monorepo roots can be supplied without changing the benchmark.
@@ -578,7 +618,7 @@ pt-BR, English, and Spanish translations.
   existing local history.
 - Foreground and background tab requests from a Portal now create a second,
   collision-aware Portal node inside the same Canvas. Real authentication and
-  payment pop-ups remain sandboxed Orkestrai child windows so `window.opener`
+  payment pop-ups remain sandboxed Deep Space child windows so `window.opener`
   and the shared persistent session continue to work.
 - Canvas connection rendering is now configurable as Adaptive, Elastic, or
   Static. Adaptive mode removes idle rope simulations much earlier as graph
@@ -609,7 +649,7 @@ pt-BR, English, and Spanish translations.
   their task, files, and symbols, while excluding them from new handoff targets.
 - Workspace and preset instructions now live in a bounded managed block inside
   `AGENTS.md` and, when enabled, `CLAUDE.md`. Existing user-authored content is
-  preserved, legacy Orkestrai-owned whole-file instructions migrate safely, and
+  preserved, legacy Deep Space-owned whole-file instructions migrate safely, and
   disabling synchronization removes only the managed block.
 - Code Intelligence now treats an approved repository with no supported source
   files as a valid empty graph instead of surfacing ripgrep's no-match exit code
@@ -628,7 +668,7 @@ pt-BR, English, and Spanish translations.
   node instead of launching a second writer for the same provider conversation.
   Stale duplicate PTYs are removed during reload, runtime/provider changes,
   dismissal, deletion, workspace unload, parent-process disconnect, and desktop
-  shutdown. Orkestrai now terminates the complete provider process group instead
+  shutdown. Deep Space now terminates the complete provider process group instead
   of leaving a forked CLI holding the conversation lock, and can recover a lost
   node binding from the exact provider conversation id.
 - Dictation captures at the microphone's native hardware rate before resampling
@@ -652,7 +692,7 @@ pt-BR, English, and Spanish translations.
   main repository and approved aliases explicitly, Change impact explains its
   Git and Floor scope, and the semantic-search control guides users to build its
   index instead of appearing inert.
-- A restored MCP or CLI session that lacks `ORKESTRAI_NODE_ID` can report its
+- A restored MCP or CLI session that lacks `DEEPSPACE_NODE_ID` can report its
   Control Center state when it supplies a task assigned to a real agent in the
   same workspace. Calls without either verified identity source remain denied.
 
@@ -708,7 +748,7 @@ pt-BR, English, and Spanish translations.
   spawn helper, so dependency installation or archive metadata cannot leave
   every terminal unable to launch.
 - Codex terminals created interactively from Canvas now receive the current
-  packaged Orkestrai MCP as an ephemeral launch override before any `resume`
+  packaged Deep Space MCP as an ephemeral launch override before any `resume`
   subcommand. A valid but stale global Codex MCP entry can no longer hide new
   tools such as `image_workflow_*`; native and WSL sessions remain isolated and
   user-owned `config.toml` files stay untouched.
@@ -739,7 +779,7 @@ pt-BR, English, and Spanish translations.
 
 ### Security
 
-- Orkestrai never requests, receives, stores, or logs an image API key and does
+- Deep Space never requests, receives, stores, or logs an image API key and does
   not call an image provider endpoint directly. Image generation access belongs
   to the authenticated Codex session. Only the connected live Codex can claim
   and complete its run; reference files, exact output paths, file signatures,
@@ -764,7 +804,7 @@ pt-BR, English, and Spanish translations.
   leaves it idle across navigation and app restarts. Only explicitly opening
   that workspace resumes it.
 - Internal CLI or server child invocations that reach Electron's Windows
-  single-instance handler no longer restore or focus the Orkestrai window.
+  single-instance handler no longer restore or focus the Deep Space window.
   Normal app launches, tray actions, menu actions, notification clicks, and
   collaboration links keep their existing foreground behavior.
 
@@ -775,7 +815,7 @@ pt-BR, English, and Spanish translations.
 - Roles can now be discovered from any folder, not only the workspace's own
   working directory: a new "Discover from another folder..." button next to
   the existing repository discovery opens a native folder picker and imports
-  any `role.json` found under `.orkestrai/roles/` there, so a role built in
+  any `role.json` found under `.deepspace/roles/` there, so a role built in
   one project can be reused from an unrelated one without copying files by
   hand.
 - Imported role files are bounded and validated before persistence, stay inside
@@ -820,18 +860,18 @@ pt-BR, English, and Spanish translations.
 
 ### Fixed
 
-- Codex agents now receive the Orkestrai and official Figma MCP definitions as
-  ephemeral launch overrides on native and WSL runtimes. Orkestrai no longer
+- Codex agents now receive the Deep Space and official Figma MCP definitions as
+  ephemeral launch overrides on native and WSL runtimes. Deep Space no longer
   rewrites the user's global `~/.codex/config.toml` during workspace
   provisioning.
-- Config files corrupted by Orkestrai 0.20.0 or earlier are repaired only when
+- Config files corrupted by Deep Space 0.20.0 or earlier are repaired only when
   they match the exact orphaned multiline `args` and duplicate inline `env`
   signature. The original is backed up, the repaired TOML is validated, and the
   replacement is serialized and atomic; unrelated malformed TOML is never
   modified.
 - Workspace provisioning no longer hides user-owned `AGENTS.md`, MCP files, or
   `opencode.json` through `.git/info/exclude`. Existing exact legacy exclude
-  blocks are narrowed to Orkestrai-owned runtime and skill directories, and
+  blocks are narrowed to Deep Space-owned runtime and skill directories, and
   provisioning failures are recorded in desktop diagnostics instead of being
   silently discarded.
 
@@ -867,7 +907,7 @@ pt-BR, English, and Spanish translations.
 - Workspace creation remains compatible with callers that omit the new optional
   additional-repository list, treating it as empty instead of interrupting
   provisioning.
-- `orkestrai list` now applies the terminal's automatic agent identity and
+- `deepspace list` now applies the terminal's automatic agent identity and
   inventories every workspace Portal with an explicit connection state. Portal
   names are visible and editable in the Canvas, automation accepts a unique
   name or node id, repeated URLs reuse the existing node, and creating an
@@ -917,7 +957,7 @@ pt-BR, English, and Spanish translations.
   legacy name collisions migrate deterministically, routing preserves full UUID
   profile ids, profile validation uses stable localized errors, and unavailable
   public status checks are shown as unknown instead of falsely operational.
-- The PTY WebSocket now accepts browser connections only from the Orkestrai
+- The PTY WebSocket now accepts browser connections only from the Deep Space
   server's exact port, including equivalent localhost loopback spellings. A
   different local web service can no longer open or control terminal sessions.
 - The Usage and routing node now opens at a useful default size, keeps Leader
@@ -929,12 +969,12 @@ pt-BR, English, and Spanish translations.
 
 ### Fixed
 
-- Shells and agent terminals no longer inherit the Orkestrai server's
+- Shells and agent terminals no longer inherit the Deep Space server's
   `APP_KEY` or other private Svelar runtime variables. Project `.env` files
   remain authoritative, preventing Laravel encrypted records, cookies, and
   sessions from failing with `The MAC is invalid` while user-owned system
-  variables and the Orkestrai bridge remain available.
-- Portal links that open a new window now stay inside a sandboxed Orkestrai
+  variables and the Deep Space bridge remain available.
+- Portal links that open a new window now stay inside a sandboxed Deep Space
   Portal window instead of escaping to the system browser. Pop-ups share the
   persistent Portal session, cookies and web storage are flushed to disk, and
   the main Portal restores its last navigated URL after restarting the app.
@@ -1058,7 +1098,7 @@ pt-BR, English, and Spanish translations.
 - Imported Bruno request and folder variables, post-response variable blocks,
   declarative assertions, and `tests {}` blocks now execute through Bruno's
   official Vars, Assert, and Test runtimes. Postman runner scripts receive the
-  actual `pm.info.iteration` and `pm.info.iterationCount` for each Orkestrai row.
+  actual `pm.info.iteration` and `pm.info.iterationCount` for each Deep Space row.
 - Added an operating-system-encrypted API vault. Only secret names enter the
   workspace payload; values remain in Electron safe storage and are available
   to `pm.vault` and Bruno secret-variable APIs.
@@ -1066,7 +1106,7 @@ pt-BR, English, and Spanish translations.
 ### Documentation
 
 - Updated the complete API Client scripting reference with separate, copyable
-  examples for Postman Runtime, Bruno QuickJS, and Orkestrai's native
+  examples for Postman Runtime, Bruno QuickJS, and Deep Space's native
   declarative tests. It now documents folder script order, scope precedence,
   iteration data, encrypted secrets, collection flow, and the explicit boundary
   around Postman services that require its hosted backend and Bruno's unsafe
@@ -1091,7 +1131,7 @@ pt-BR, English, and Spanish translations.
   runners with independent request selection and order, environment, iterations,
   delay, and stop-on-failure behavior; script variables chain into every next
   request in the run.
-- Added versioned `.orkestrai-api.json` import/export for lossless native
+- Added versioned `.deepspace-api.json` import/export for lossless native
   collection backups, including folders, runners, environments, scripts, and
   history. Bruno collections now export through Bruno's official serializer,
   including `collection.bru`, environments, requests, and folder metadata.
@@ -1184,7 +1224,7 @@ pt-BR, English, and Spanish translations.
 - Added RPM packaging for Linux (Fedora, RHEL, CentOS, and compatible
   distributions). The release pipeline now publishes `.rpm` alongside the
   existing AppImage, includes the required public maintainer metadata, and
-  uses the same stable `Orkestrai-<version>.<arch>.rpm` naming as the other
+  uses the same stable `Deep Space-<version>.<arch>.rpm` naming as the other
   installers. It validates both the RPM and its entry in `latest-linux.yml`
   before publication (thanks to @rlevidev).
 
@@ -1202,7 +1242,7 @@ pt-BR, English, and Spanish translations.
   response timing, size, status, and formatted previews; imports Bruno folders
   through Bruno's official parser and Postman Collection v2.1 JSON; and can
   reopen an imported source in its installed desktop application. Connected
-  agents can list and execute saved requests through typed Orkestrai MCP tools
+  agents can list and execute saved requests through typed Deep Space MCP tools
   without receiving stored authentication secrets in the inventory response.
 - Added an explicit agent-facing Design contract and high-throughput batch
   tools. `design_reference` provides exact schemas and examples on demand,
@@ -1245,7 +1285,7 @@ pt-BR, English, and Spanish translations.
   revision-safe command bus. Automatic backups, corruption recovery, schema
   migration, bounded history, explicit restore, and viewport-based incremental
   rendering protect large documents. Connected agents use the same audit and
-  template operations through typed Orkestrai CLI and MCP commands.
+  template operations through typed Deep Space CLI and MCP commands.
 - Expanded provider Usage into one capability-driven inventory for all eight
   supported agent CLIs. Claude, Codex, and Kimi retain verified automatic quota
   windows and routing. Antigravity, Cursor, Devin, OpenCode, and Cline now show
@@ -1261,7 +1301,7 @@ pt-BR, English, and Spanish translations.
   encrypted Remote Companion exposes only sanitized page, activity, comment,
   and proposal summaries, with independent per-device View, Comment, Propose,
   Edit, and Decide permissions. Connected agents use the same versioned
-  comments and proposals through typed Orkestrai MCP tools.
+  comments and proposals through typed Deep Space MCP tools.
 - Added native interactive prototyping and motion to Design Studio. Designers
   and agents can define multiple starting flows, attach click, press, hover, or
   timed interactions to any layer, navigate frames, open or close overlays,
@@ -1270,7 +1310,7 @@ pt-BR, English, and Spanish translations.
   device framing, fullscreen, and self-contained read-only HTML sharing.
   Reusable motion tokens, per-layer timelines, keyframes, easing, CSS keyframe
   export, and Motion.dev output live in the same revision-safe Design document
-  and are indexed by universal search and available through the Orkestrai MCP.
+  and are indexed by universal search and available through the Deep Space MCP.
 - Completed the native Design delivery phase with safe code-to-design import
   for HTML/Tailwind, Svelte, React/JSX, and Vue; design-to-code adapters for
   Svelar/Svelte 5, React, Next.js, Vue 3, and HTML/Tailwind; and preview-before-
@@ -1282,9 +1322,9 @@ pt-BR, English, and Spanish translations.
   device, compares it with the selected frame through normalized pixel diff
   and an adjustable overlay, and converts the evidence into a traceable Kanban
   task or a Review Center entry tied to the real Git change. Agents use the
-  same import, preview, and protected-write flow through typed Orkestrai MCP
+  same import, preview, and protected-write flow through typed Deep Space MCP
   tools or the bundled CLI, with revision and task attribution preserved.
-- Added first-party Figma interoperability to native Design Mode. Orkestrai now
+- Added first-party Figma interoperability to native Design Mode. Deep Space now
   provisions the official remote Figma MCP for compatible providers, stores the
   optional read-only REST credential in the operating-system vault, inspects
   file, page, and frame links, and imports native layers, editable vectors,
@@ -1294,10 +1334,10 @@ pt-BR, English, and Spanish translations.
   power a selective synchronization preview that distinguishes incoming
   changes, local edits, removals, and conflicts. Figma sources are searchable,
   preserve existing Code Connect links, and are exposed to agents through typed
-  inspect, import, preview, and sync tools in the Orkestrai MCP. The bundled
-  loopback-only Orkestrai Design Bridge plugin transfers live Figma selections,
+  inspect, import, preview, and sync tools in the Deep Space MCP. The bundled
+  loopback-only Deep Space Design Bridge plugin transfers live Figma selections,
   copies editable SVG or structural JSON, creates a new Figma page with native
-  assets, variables, styles, components, and variants from an Orkestrai
+  assets, variables, styles, components, and variants from an Deep Space
   document, and sends only reviewed linked changes back to the current Figma
   file without third-party editor code.
 - Completed the Design Systems phase of native Design Mode. Designers can start
@@ -1318,7 +1358,7 @@ pt-BR, English, and Spanish translations.
   typography, opacity, effect, breakpoint, string, and boolean tokens, reuse
   values through aliases, bind compatible layer properties, and switch the
   active mode with an immediate canvas preview. The same revision-safe command
-  bus is exposed to agents through `design_apply_operations` in the Orkestrai
+  bus is exposed to agents through `design_apply_operations` in the Deep Space
   MCP, including variable, mode, alias, and binding operations.
 - SVG files copied, pasted, dropped, or chosen in Design Mode are now parsed
   into editable native vector layers, including paths, primitive shapes,
@@ -1338,7 +1378,7 @@ pt-BR, English, and Spanish translations.
   library, and exported with the design to SVG, PNG, JPEG, WebP, or PDF.
   Revision-bound raster thumbnails keep large Design nodes inexpensive on the
   Canvas while preserving the live vector renderer as a fallback.
-- Added the first phase of Orkestrai's native Design Mode. A persistent Design
+- Added the first phase of Deep Space's native Design Mode. A persistent Design
   node now opens the same structured visual document in Canvas and Workbench,
   with frames, rectangles, ellipses, text, layers, property editing, zoom,
   undo/redo, revision history, and live refresh when an agent changes it.
@@ -1357,7 +1397,7 @@ pt-BR, English, and Spanish translations.
 - Preserved the current directory of native shell terminals across app restarts
   by tracking OSC 7 and the live PTY process directory, without changing the
   working directory of agent terminals or provider resume behavior.
-- Added explicit note discovery to the Orkestrai CLI and MCP so Cursor and other
+- Added explicit note discovery to the Deep Space CLI and MCP so Cursor and other
   providers can list existing workspace notes before reading, editing, or
   appending instead of treating an empty connected-node list as an empty
   workspace.
@@ -1412,7 +1452,7 @@ pt-BR, English, and Spanish translations.
   workspace runtime remains the default, while every terminal can inherit it,
   force native Windows, or target an exact installed WSL distribution and Linux
   project path. Provider detection and models, PTY sessions, generic resume,
-  Council runs, recruited agents, and the Orkestrai bridge follow the terminal's
+  Council runs, recruited agents, and the Deep Space bridge follow the terminal's
   effective runtime. Changing an override restarts only that terminal, and
   invalid paths or missing distributions fail clearly without a silent fallback.
 
@@ -1432,7 +1472,7 @@ pt-BR, English, and Spanish translations.
 
 - Added experimental end-to-end encrypted workspace sharing with one-time link
   and QR invites for either a browser/mobile companion or another installed
-  Orkestrai app, explicit device fingerprint approval, Viewer, Collaborator,
+  Deep Space app, explicit device fingerprint approval, Viewer, Collaborator,
   Operator, and Administrator roles, immediate revocation, command audit, and a
   bounded remote PWA for live team state, tasks, reviews, activity, provider
   usage, and leader messages. The browser stores its pairing key as a
@@ -1469,7 +1509,7 @@ pt-BR, English, and Spanish translations.
 - Added a single workspace attachment pipeline for files up to 10 MB and
   HTTP/HTTPS links, with upload, paste, and drag-and-drop support across agent
   prompts, tasks, notes, and composers. Files are stored under
-  `.orkestrai/attachments/` and complete references are delivered to agents.
+  `.deepspace/attachments/` and complete references are delivered to agents.
 - Added a compact provider usage footer to the Workbench with every reported
   5-hour, weekly, or monthly quota window and severity-matched percentages.
 - Added a lazy-loaded Monaco editor to Workbench files with persistent models,
@@ -1516,8 +1556,8 @@ pt-BR, English, and Spanish translations.
   bundled scrcpy 3.1 server with hardware-accelerated WebCodecs decoding and
   supports touch, swipe, pinch, rotation, Back, Home, Recents, text input, APK
   installation, package/activity launch, screenshots, bounded logcat output,
-  UIAutomator trees, and runtime permissions. Matching `orkestrai device` CLI
-  and MCP tools use the same workspace session. Orkestrai owns at most one
+  UIAutomator trees, and runtime permissions. Matching `deepspace device` CLI
+  and MCP tools use the same workspace session. Deep Space owns at most one
   session per workspace and stops only helpers and emulators it started.
 
 ### Changed
@@ -1531,7 +1571,7 @@ pt-BR, English, and Spanish translations.
   and added explicit Canvas and native Workspace menu entry points for joining
   a remote workspace.
 - Rebuilt the application visual system around semantic theme tokens. The
-  default dark palette now pairs graphite surfaces with the Orkestrai gold,
+  default dark palette now pairs graphite surfaces with the Deep Space gold,
   the light palette has deliberate contrast, and Canvas, Workbench, Settings,
   documentation, Provider Center, side panels, dialogs, menus, fields, and
   voice-orb docking now share one compact responsive hierarchy.
@@ -1540,7 +1580,7 @@ pt-BR, English, and Spanish translations.
   `EPERM`/`EACCES` errors with a recovery panel that can reauthorize the exact
   project folder and retry without restarting the app.
 - Workspace sharing now defaults to the production
-  `wss://relay.orkestrai.app/v1/connect` endpoint. The containerized relay
+  `wss://relay.deepspace.app/v1/connect` endpoint. The containerized relay
   accepts the installed app's dynamic loopback origins and the official website
   and Remote PWA origins, while rejecting unrelated browser origins. The web
   companion reconnects with bounded exponential backoff when its host is away.
@@ -1572,7 +1612,7 @@ pt-BR, English, and Spanish translations.
   updates from confirmed PTY, task, and bridge events. Informational events stay
   in Control Center; native notifications are reserved for attention and
   completion transitions.
-- Made `orkestrai ask` and its MCP tool return the persistent message id and
+- Made `deepspace ask` and its MCP tool return the persistent message id and
   succeed only after the response is confirmed and recorded.
 
 ### Fixed
@@ -1597,7 +1637,7 @@ pt-BR, English, and Spanish translations.
   and PDF workers run off the UI thread instead of being blocked after packaging.
 - Made note attachment removal delete the inserted Markdown reference and the
   workspace file together instead of hiding only the attachment chip and
-  leaving orphaned content under `.orkestrai/attachments/`.
+  leaving orphaned content under `.deepspace/attachments/`.
 - Docked the pinned voice orb in a dedicated Workbench header slot so it no
   longer covers tabs or contextual actions; unpinned placement remains freely
   movable and keeps the user's saved canvas position.
@@ -1696,9 +1736,9 @@ pt-BR, English, and Spanish translations.
 
 ### Changed
 
-- Made `orkestrai ask` preserve unquoted multi-word messages and require an
+- Made `deepspace ask` preserve unquoted multi-word messages and require an
   explicitly confirmed provider reply before agents may report a consultation.
-- Made `orkestrai task done` hand completion back to the workspace leader
+- Made `deepspace task done` hand completion back to the workspace leader
   automatically without colliding with a human draft in the leader terminal.
 
 ### Fixed
@@ -1728,7 +1768,7 @@ pt-BR, English, and Spanish translations.
   kept it clear of open panels such as Presets, Usage, Roles, and Ports.
 - Aligned Usage node progress colors with the panel's per-window green, yellow,
   and red thresholds, and loaded an initial Skills search automatically.
-- Improved Orkestrai Light contrast across panels, canvas nodes, text, buttons,
+- Improved Deep Space Light contrast across panels, canvas nodes, text, buttons,
   icons, provider marks, hover states, and onboarding surfaces.
 
 ### Fixed
@@ -1748,7 +1788,7 @@ pt-BR, English, and Spanish translations.
 
 - Added a persistent Usage canvas node for Claude, Codex, and Kimi quotas with
   configurable source provider, fallback provider, and routing threshold.
-- Added `orkestrai usage` to the native CLI and MCP bridge so leaders inspect
+- Added `deepspace usage` to the native CLI and MCP bridge so leaders inspect
   the same quota snapshot and recommendation before assigning new work.
 - Added three dark application themes, one light theme, and a semantic token
   editor with live preview, duplication, validated JSON import, and export.
@@ -1787,8 +1827,8 @@ pt-BR, English, and Spanish translations.
   conversation resume.
 - Added read-only discovery of concurrent Devin sessions by real workspace
   directory and clean agent replies from Devin's ATIF transcripts.
-- Added Orkestrai skill and MCP bridge provisioning for Devin through
-  `.devin/skills/orkestrai` and `.devin/mcp_config.json`.
+- Added Deep Space skill and MCP bridge provisioning for Devin through
+  `.devin/skills/deepspace` and `.devin/mcp_config.json`.
 - Added a localized Devin use case and guided onboarding tour in Brazilian
   Portuguese, English, and Spanish.
 
@@ -1912,12 +1952,12 @@ pt-BR, English, and Spanish translations.
 ### Added
 
 - Added up to ten customizable task-board stages with names, colors, ordering,
-  safe deletion, and automatic awareness through the Orkestrai CLI and MCP
+  safe deletion, and automatic awareness through the Deep Space CLI and MCP
   bridge.
 - Added Campaign and launch, Brand and design, and Content and SEO teams with
   localized briefs, specialist roles, portable skills, notes, tasks, and canvas
   layouts for marketers, designers, creators, and multidisciplinary teams.
-- Added the Orkestrai Contributing preset with a Claude lead, independent Codex
+- Added the Deep Space Contributing preset with a Claude lead, independent Codex
   and Kimi oracles, Svelar, desktop, and QA/release specialists, a six-stage
   board, and a consensus Flow that requires both oracle approvals before task
   creation.
@@ -2070,12 +2110,12 @@ pt-BR, English, and Spanish translations.
 
 ## Earlier Development - 2026-08-01 to 2026-08-06
 
-Before the first public release, Orkestrai was rebuilt as a local-first visual
+Before the first public release, Deep Space was rebuilt as a local-first visual
 orchestrator with:
 
 - a persistent multi-agent canvas, PTY sessions, Maestro orchestration, Git
   floors, task boards, notes, portals, flows, routines, roles, and presets;
-- the native `orkestrai` CLI and MCP bridge for Claude Code, Codex, Kimi Code,
+- the native `deepspace` CLI and MCP bridge for Claude Code, Codex, Kimi Code,
   and OpenCode;
 - complete pt-BR, English, and Spanish UI, documentation, onboarding, and tours;
 - local multilingual dictation and speech, provider Usage monitoring, managed

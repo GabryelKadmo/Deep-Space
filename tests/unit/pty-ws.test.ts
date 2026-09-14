@@ -15,8 +15,8 @@ class FakeSocket extends EventEmitter {
 
 describe('PTY WebSocket protocol', () => {
   afterEach(() => {
-    delete (globalThis as { __orkestraiResolveProviderProfileEnv?: unknown }).__orkestraiResolveProviderProfileEnv;
-    delete (globalThis as { __orkestraiCanStartWorkspaceSession?: unknown }).__orkestraiCanStartWorkspaceSession;
+    delete (globalThis as { __deepspaceResolveProviderProfileEnv?: unknown }).__deepspaceResolveProviderProfileEnv;
+    delete (globalThis as { __deepspaceCanStartWorkspaceSession?: unknown }).__deepspaceCanStartWorkspaceSession;
     vi.restoreAllMocks();
     vi.unstubAllEnvs();
   });
@@ -134,8 +134,8 @@ describe('PTY WebSocket protocol', () => {
   it('resolve o perfil no servidor somente ao criar a PTY', async () => {
     const create = vi.spyOn(ptySessionManager, 'create');
     (globalThis as {
-      __orkestraiResolveProviderProfileEnv?: (profileId: string, providerId: string) => Promise<Record<string, string>>;
-    }).__orkestraiResolveProviderProfileEnv = vi.fn(async () => ({ TEST_PROFILE_SECRET: 'runtime-only' }));
+      __deepspaceResolveProviderProfileEnv?: (profileId: string, providerId: string) => Promise<Record<string, string>>;
+    }).__deepspaceResolveProviderProfileEnv = vi.fn(async () => ({ TEST_PROFILE_SECRET: 'runtime-only' }));
     const socket = new FakeSocket();
     handlePtyConnection(socket as never);
 
@@ -162,9 +162,9 @@ describe('PTY WebSocket protocol', () => {
   });
 
   it('injects the packaged MCP before the Codex resume subcommand', async () => {
-    vi.stubEnv('ORKESTRAI_CLI_RUNTIME', '/Applications/Orkestrai.app/Contents/MacOS/Orkestrai');
-    vi.stubEnv('ORKESTRAI_CLI_JS', '/Applications/Orkestrai.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js');
-    vi.stubEnv('ORKESTRAI_CLI_RUNTIME_IS_ELECTRON', '1');
+    vi.stubEnv('DEEPSPACE_CLI_RUNTIME', '/Applications/Deep Space.app/Contents/MacOS/Deep Space');
+    vi.stubEnv('DEEPSPACE_CLI_JS', '/Applications/Deep Space.app/Contents/Resources/app/packages/deepspace-cli/bin/deepspace.js');
+    vi.stubEnv('DEEPSPACE_CLI_RUNTIME_IS_ELECTRON', '1');
     const create = vi.spyOn(ptySessionManager, 'create');
     const socket = new FakeSocket();
     handlePtyConnection(socket as never);
@@ -181,9 +181,9 @@ describe('PTY WebSocket protocol', () => {
     await vi.waitFor(() => expect(create).toHaveBeenCalled());
     const args = create.mock.calls[0][0].args ?? [];
     expect(args[0]).toBe('--dangerously-bypass-approvals-and-sandbox');
-    expect(args).toContain('mcp_servers.orkestrai.command="/Applications/Orkestrai.app/Contents/MacOS/Orkestrai"');
+    expect(args).toContain('mcp_servers.deepspace.command="/Applications/Deep Space.app/Contents/MacOS/Deep Space"');
     expect(args.slice(-2)).toEqual(['resume', 'conversation-1']);
-    expect(args.indexOf('mcp_servers.orkestrai.args=["/Applications/Orkestrai.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js", "mcp"]'))
+    expect(args.indexOf('mcp_servers.deepspace.args=["/Applications/Deep Space.app/Contents/Resources/app/packages/deepspace-cli/bin/deepspace.js", "mcp"]'))
       .toBeLessThan(args.indexOf('resume'));
     const created = socket.frames.find((frame) => frame.type === 'created');
     const sessionId = String((created?.session as { id?: string } | undefined)?.id ?? '');
@@ -194,8 +194,8 @@ describe('PTY WebSocket protocol', () => {
   it('refuses to recreate a terminal while its workspace is suspended', async () => {
     const create = vi.spyOn(ptySessionManager, 'create');
     (globalThis as {
-      __orkestraiCanStartWorkspaceSession?: (workspaceId: string) => Promise<boolean>;
-    }).__orkestraiCanStartWorkspaceSession = vi.fn(async () => false);
+      __deepspaceCanStartWorkspaceSession?: (workspaceId: string) => Promise<boolean>;
+    }).__deepspaceCanStartWorkspaceSession = vi.fn(async () => false);
     const socket = new FakeSocket();
     handlePtyConnection(socket as never);
 

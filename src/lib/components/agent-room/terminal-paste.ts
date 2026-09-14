@@ -23,7 +23,7 @@ export function terminalPathTokens(paths: string[]): string {
 /**
  * Guarda os arquivos colados no workspace e devolve os caminhos relativos, o
  * mesmo contrato que o composer do canvas ja usa para entregar anexos aos
- * agentes (.orkestrai/attachments/...).
+ * agentes (.deepspace/attachments/...).
  */
 export async function storePastedTerminalFiles(workspaceId: string, files: File[]): Promise<string[]> {
   const paths: string[] = [];

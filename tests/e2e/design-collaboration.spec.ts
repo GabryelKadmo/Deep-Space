@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 test('reviews a native design through comments and versioned proposals', async ({ page, request }) => {
-  const directory = mkdtempSync(join(tmpdir(), 'orkestrai-design-collaboration-e2e-'));
+  const directory = mkdtempSync(join(tmpdir(), 'deepspace-design-collaboration-e2e-'));
   const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
   const workspace = (await (await request.post('/api/agent-room/workspaces', {
     data: { name: `E2E design collaboration ${Date.now()}`, workingDir: directory },

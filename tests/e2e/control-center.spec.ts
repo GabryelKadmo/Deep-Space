@@ -7,7 +7,7 @@ test.describe('Control Center', () => {
   test('projects live agent state and verified message delivery in the Workbench', async ({ page, request }) => {
     test.setTimeout(45_000);
     const runId = Date.now();
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-control-center-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-control-center-'));
     const workspaceResponse = await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E Control Center ${runId}`, workingDir: dir },
     });
@@ -46,7 +46,7 @@ test.describe('Control Center', () => {
         return snapshot.agents.find((agent) => agent.nodeId === worker.id)?.sessionAlive ?? false;
       }).toBe(true);
 
-      const bridge = JSON.parse(readFileSync(join(dir, '.orkestrai', 'workspace.json'), 'utf8')) as { token: string };
+      const bridge = JSON.parse(readFileSync(join(dir, '.deepspace', 'workspace.json'), 'utf8')) as { token: string };
       const headers = { Authorization: `Bearer ${bridge.token}` };
       const message = `Confirm handoff ${runId}`;
       const askResponse = await request.post('/api/agent-room/bridge/ask', {

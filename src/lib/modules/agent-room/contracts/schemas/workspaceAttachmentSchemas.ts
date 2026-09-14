@@ -18,7 +18,7 @@ export const workspaceAttachmentSchema = z.discriminatedUnion('kind', [
     ...attachmentBase,
     kind: z.literal('file'),
     path: z.string().trim().regex(
-      /^\.orkestrai\/attachments\/[A-Za-z0-9._-]+$/,
+      /^\.deepspace\/attachments\/[A-Za-z0-9._-]+$/,
       'Attachment paths must point to the workspace attachment directory.',
     ).max(512),
     url: z.null(),

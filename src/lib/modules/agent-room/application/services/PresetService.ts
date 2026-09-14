@@ -23,13 +23,13 @@ export type PresetSummary = {
   agents: number;
   createdAt: string;
   builtin: boolean;
-  category: 'product' | 'frontend' | 'backend' | 'creative' | 'growth' | 'orkestrai' | 'custom';
+  category: 'product' | 'frontend' | 'backend' | 'creative' | 'growth' | 'deepspace' | 'custom';
   version: string;
   updatedAt: string;
 };
 
 export type PresetData = {
-  format: 'orkestrai-preset';
+  format: 'deepspace-preset';
   version: 1 | 2 | 3;
   createdAt: string;
   workspace: {
@@ -61,7 +61,7 @@ export type PresetData = {
     noteTitle?: string | null;
     images?: string[];
   }>;
-  /** Servidores MCP extras (a entrada 'orkestrai' da ponte NAO entra — e automatica). */
+  /** Servidores MCP extras (a entrada 'deepspace' da ponte NAO entra — e automatica). */
   mcpServers: Array<{ name: string; command: string; args: string[] }>;
   taskColumns?: BoardColumnRecipe[];
   /** Arquivos SKILL.md portaveis, sempre relativos ao projeto de destino. */
@@ -69,17 +69,17 @@ export type PresetData = {
   pack?: {
     packageId: string;
     version: string;
-    minimumOrkestraiVersion?: string | null;
+    minimumDeepSpaceVersion?: string | null;
     releaseNotes?: string | null;
   };
 };
 
 export type TeamPackRevision = { id: string; version: string; releaseNotes: string | null; checksum: string; createdAt: string };
 export type TeamPackBundle = {
-  format: 'orkestrai-team-pack';
+  format: 'deepspace-team-pack';
   schemaVersion: 1;
   exportedAt: string;
-  manifest: { packageId: string; name: string; icon: string | null; description: string | null; version: string; minimumOrkestraiVersion: string | null; releaseNotes: string | null; checksum: string };
+  manifest: { packageId: string; name: string; icon: string | null; description: string | null; version: string; minimumDeepSpaceVersion: string | null; releaseNotes: string | null; checksum: string };
   data: PresetData;
 };
 
@@ -177,7 +177,7 @@ function snapshotSkills(workingDir: string): NonNullable<PresetData['skills']> {
     const rootPath = resolve(workingDir, root);
     if (!existsSync(rootPath)) continue;
     for (const entry of readdirSync(rootPath, { withFileTypes: true })) {
-      if (!entry.isDirectory() || entry.name === 'orkestrai' || files.length >= MAX_SKILLS) continue;
+      if (!entry.isDirectory() || entry.name === 'deepspace' || files.length >= MAX_SKILLS) continue;
       const file = resolve(rootPath, entry.name, 'SKILL.md');
       if (!existsSync(file)) continue;
       const content = readFileSync(file, 'utf8');
@@ -256,13 +256,13 @@ export class PresetService {
       noteTitle: task.noteTitle ?? titleOf(task.noteId),
       images: task.images,
     }));
-    // MCPs extras (sem a entrada 'orkestrai' — provisionada sozinha).
+    // MCPs extras (sem a entrada 'deepspace' — provisionada sozinha).
     const mcpServers = (await mcpService.list(workspaceId).catch(() => []))
       .filter((server) => !server.builtin)
       .map(({ name, command, args }) => ({ name, command, args }));
     const id = uuidv7();
     const data: PresetData = {
-      format: 'orkestrai-preset',
+      format: 'deepspace-preset',
       version: 3,
       createdAt: new Date().toISOString(),
       workspace: exported.workspace,
@@ -274,7 +274,7 @@ export class PresetService {
       mcpServers,
       taskColumns: (await boardColumnService.list(workspaceId)).map(({ key, name, color, position }) => ({ key, name, color, position })),
       skills: snapshotSkills(sourceWorkingDir),
-      pack: { packageId: id, version: '1.0.0', minimumOrkestraiVersion: null, releaseNotes: null },
+      pack: { packageId: id, version: '1.0.0', minimumDeepSpaceVersion: null, releaseNotes: null },
     };
     const now = new Date().toISOString();
     await AgentPreset.query().insert({
@@ -318,10 +318,10 @@ export class PresetService {
     })).sort((left, right) => compareSemver(right.version, left.version) || right.createdAt.localeCompare(left.createdAt));
   }
 
-  async publish(id: string, input: { version: string; releaseNotes?: string | null; minimumOrkestraiVersion?: string | null }): Promise<PresetSummary> {
+  async publish(id: string, input: { version: string; releaseNotes?: string | null; minimumDeepSpaceVersion?: string | null }): Promise<PresetSummary> {
     if (id.startsWith('builtin:')) throw new Error('Team Packs embutidos nao podem publicar revisoes locais.');
     if (!SEMVER.test(input.version)) throw new Error('Use uma versao semantica valida, como 1.1.0.');
-    if (input.minimumOrkestraiVersion && !SEMVER.test(input.minimumOrkestraiVersion)) throw new Error('A versao minima do Orkestrai deve usar SemVer.');
+    if (input.minimumDeepSpaceVersion && !SEMVER.test(input.minimumDeepSpaceVersion)) throw new Error('A versao minima do Deep Space deve usar SemVer.');
     const model = await AgentPreset.find(id);
     if (!model) throw new Error('Team Pack nao encontrado.');
     const current = JSON.parse(String(model.getAttribute('data'))) as PresetData;
@@ -332,7 +332,7 @@ export class PresetService {
       pack: {
         packageId: current.pack?.packageId ?? id,
         version: input.version,
-        minimumOrkestraiVersion: input.minimumOrkestraiVersion ?? current.pack?.minimumOrkestraiVersion ?? null,
+        minimumDeepSpaceVersion: input.minimumDeepSpaceVersion ?? current.pack?.minimumDeepSpaceVersion ?? null,
         releaseNotes: input.releaseNotes?.trim() || null,
       },
     };
@@ -348,11 +348,11 @@ export class PresetService {
     if (!summary) throw new Error('Team Pack nao encontrado.');
     const digest = checksum(data);
     return {
-      format: 'orkestrai-team-pack', schemaVersion: 1, exportedAt: new Date().toISOString(),
+      format: 'deepspace-team-pack', schemaVersion: 1, exportedAt: new Date().toISOString(),
       manifest: {
         packageId: data.pack?.packageId ?? id, name: summary.name, icon: summary.icon,
         description: summary.description, version: dataVersion(data),
-        minimumOrkestraiVersion: data.pack?.minimumOrkestraiVersion ?? null,
+        minimumDeepSpaceVersion: data.pack?.minimumDeepSpaceVersion ?? null,
         releaseNotes: data.pack?.releaseNotes ?? null, checksum: digest,
       },
       data,
@@ -360,18 +360,18 @@ export class PresetService {
   }
 
   async importPack(bundle: TeamPackBundle): Promise<PresetSummary> {
-    if (!bundle || bundle.format !== 'orkestrai-team-pack' || bundle.schemaVersion !== 1) throw new Error('Arquivo de Team Pack invalido.');
+    if (!bundle || bundle.format !== 'deepspace-team-pack' || bundle.schemaVersion !== 1) throw new Error('Arquivo de Team Pack invalido.');
     if (!bundle.manifest?.name?.trim() || !SEMVER.test(bundle.manifest.version)) throw new Error('Manifesto do Team Pack invalido.');
     if (Buffer.byteLength(JSON.stringify(bundle)) > 5 * 1024 * 1024) throw new Error('Team Pack excede o limite de 5 MB.');
     const data = bundle.data;
-    if (!data || data.format !== 'orkestrai-preset' || ![1, 2, 3].includes(data.version)) throw new Error('Conteudo do Team Pack invalido.');
+    if (!data || data.format !== 'deepspace-preset' || ![1, 2, 3].includes(data.version)) throw new Error('Conteudo do Team Pack invalido.');
     if (checksum(data) !== bundle.manifest.checksum) throw new Error('Checksum do Team Pack nao confere.');
     if (data.nodes.length > 200 || data.edges.length > 500 || data.roles.length > 100 || (data.skills?.length ?? 0) > MAX_SKILLS) throw new Error('Team Pack excede os limites de conteudo.');
     const id = uuidv7();
     const normalized: PresetData = {
       ...data, version: 3,
       nodes: data.nodes.map((node) => ({ ...node, payload: sanitizePayload(node.payload) })),
-      pack: { packageId: bundle.manifest.packageId, version: bundle.manifest.version, minimumOrkestraiVersion: bundle.manifest.minimumOrkestraiVersion, releaseNotes: bundle.manifest.releaseNotes },
+      pack: { packageId: bundle.manifest.packageId, version: bundle.manifest.version, minimumDeepSpaceVersion: bundle.manifest.minimumDeepSpaceVersion, releaseNotes: bundle.manifest.releaseNotes },
     };
     const now = new Date().toISOString();
     await AgentPreset.create({ id, name: bundle.manifest.name.trim(), icon: bundle.manifest.icon, description: bundle.manifest.description, data: JSON.stringify(normalized), created_at: now, updated_at: now });

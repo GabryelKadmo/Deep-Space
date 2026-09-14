@@ -232,9 +232,9 @@ export async function resolveWslTrackingContext(input: {
     const { stdout } = await execFileAsync('wsl.exe', [
       '--distribution', input.runtime.distribution,
       '--cd', linuxWorkingDir,
-      '--exec', '/bin/sh', '-lc', 'printf "__ORKESTRAI_HOME__%s\\n" "$HOME"',
+      '--exec', '/bin/sh', '-lc', 'printf "__DEEPSPACE_HOME__%s\\n" "$HOME"',
     ], { encoding: 'utf8', windowsHide: true, timeout: 15_000 });
-    const home = stdout.split(/\r?\n/).find((line) => line.startsWith('__ORKESTRAI_HOME__'))?.slice('__ORKESTRAI_HOME__'.length).trim();
+    const home = stdout.split(/\r?\n/).find((line) => line.startsWith('__DEEPSPACE_HOME__'))?.slice('__DEEPSPACE_HOME__'.length).trim();
     if (!home?.startsWith('/')) throw new Error('WSL did not report its home directory.');
     return { homeHostPath: wslHostPath(input.runtime.distribution, home), linuxHomePath: home, linuxWorkingDir };
   } catch (error) {
@@ -257,7 +257,7 @@ export async function preflightWslLaunch(input: {
     await execFileAsync('wsl.exe', [
       '--distribution', input.runtime.distribution,
       '--cd', context.linuxWorkingDir,
-      '--exec', '/bin/bash', '-lic', 'command -v -- "$1" >/dev/null', 'orkestrai-preflight', command,
+      '--exec', '/bin/bash', '-lic', 'command -v -- "$1" >/dev/null', 'deepspace-preflight', command,
     ], { encoding: 'utf8', windowsHide: true, timeout: 15_000 });
     return context;
   } catch (error) {
@@ -298,31 +298,31 @@ export function buildWslLaunch(input: {
 }): { command: string; args: string[]; cwd: string; env: Record<string, string> } {
   const { runtime } = input;
   const linuxRoot = runtime.linuxWorkingDir.replace(/\/$/, '') || '/';
-  const workspaceBin = posix.join(linuxRoot, '.orkestrai', 'bin');
-  const cliJs = input.hostEnv.ORKESTRAI_CLI_JS ?? resolve(process.cwd(), 'packages', 'orkestrai-cli', 'bin', 'orkestrai.js');
+  const workspaceBin = posix.join(linuxRoot, '.deepspace', 'bin');
+  const cliJs = input.hostEnv.DEEPSPACE_CLI_JS ?? resolve(process.cwd(), 'packages', 'deepspace-cli', 'bin', 'deepspace.js');
   const originalCommand = input.command.trim();
   const command = /^(?:wsl(?:\.exe)?|cmd(?:\.exe)?|powershell(?:\.exe)?|pwsh(?:\.exe)?)$/i.test(originalCommand)
     ? '/bin/bash'
     : originalCommand;
   const env: Record<string, string> = {
     ...input.hostEnv,
-    ORKESTRAI_ROOT_PATH: linuxRoot,
-    ORKESTRAI_WORKSPACE_BIN: workspaceBin,
-    ORKESTRAI_CLI: posix.join(workspaceBin, 'orkestrai'),
-    ORKESTRAI_RUNTIME_WIN: process.execPath,
-    ORKESTRAI_CLI_JS_WIN: cliJs,
+    DEEPSPACE_ROOT_PATH: linuxRoot,
+    DEEPSPACE_WORKSPACE_BIN: workspaceBin,
+    DEEPSPACE_CLI: posix.join(workspaceBin, 'deepspace'),
+    DEEPSPACE_RUNTIME_WIN: process.execPath,
+    DEEPSPACE_CLI_JS_WIN: cliJs,
   };
   const forwarded = [
-    'ORKESTRAI_API_URL',
-    'ORKESTRAI_NODE_ID',
-    'ORKESTRAI_AGENT_TITLE',
-    'ORKESTRAI_AGENT_TOKEN',
-    'ORKESTRAI_WORKSPACE_CONFIG',
-    'ORKESTRAI_ROOT_PATH',
-    'ORKESTRAI_WORKSPACE_BIN',
-    'ORKESTRAI_CLI',
-    'ORKESTRAI_RUNTIME_WIN',
-    'ORKESTRAI_CLI_JS_WIN',
+    'DEEPSPACE_API_URL',
+    'DEEPSPACE_NODE_ID',
+    'DEEPSPACE_AGENT_TITLE',
+    'DEEPSPACE_AGENT_TOKEN',
+    'DEEPSPACE_WORKSPACE_CONFIG',
+    'DEEPSPACE_ROOT_PATH',
+    'DEEPSPACE_WORKSPACE_BIN',
+    'DEEPSPACE_CLI',
+    'DEEPSPACE_RUNTIME_WIN',
+    'DEEPSPACE_CLI_JS_WIN',
     'TERM',
     'COLORTERM',
     ...(input.forwardEnvToWsl ?? []).filter((name) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(name)),
@@ -339,8 +339,8 @@ export function buildWslLaunch(input: {
       '--exec',
       '/bin/bash',
       '-lic',
-      'export PATH="$ORKESTRAI_WORKSPACE_BIN:$PATH"; exec "$@"',
-      'orkestrai-runtime',
+      'export PATH="$DEEPSPACE_WORKSPACE_BIN:$PATH"; exec "$@"',
+      'deepspace-runtime',
       command,
       ...input.args.map((argument) => guestArgument(runtime, argument, input.workspaceRoot)),
     ],

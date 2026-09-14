@@ -347,8 +347,8 @@
     const selection = terminal.getSelection();
     if (!selection) return false;
     const desktop = (window as typeof window & {
-      orkestraiDesktop?: { writeClipboardText?: (value: string) => Promise<boolean> };
-    }).orkestraiDesktop;
+      deepspaceDesktop?: { writeClipboardText?: (value: string) => Promise<boolean> };
+    }).deepspaceDesktop;
     try {
       if (desktop?.writeClipboardText) return await desktop.writeClipboardText(selection);
       await navigator.clipboard.writeText(selection);
@@ -377,7 +377,7 @@
 
   onMount(() => {
     let fontSize = 13;
-    let fontFamily = 'ui-monospace, SFMono-Regular, Menlo, monospace';
+    let fontFamily = "'JetBrains Mono Variable', 'JetBrains Mono', Consolas, 'Cascadia Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
 
     const terminal = new Terminal({
       cursorBlink: true,
@@ -397,8 +397,8 @@
         void copyTerminalSelection(terminal);
         return false;
       }
-      const desktopPlatform = (window as typeof window & { orkestraiDesktop?: { platform?: string } })
-        .orkestraiDesktop?.platform;
+      const desktopPlatform = (window as typeof window & { deepspaceDesktop?: { platform?: string } })
+        .deepspaceDesktop?.platform;
       // Sem preventDefault: o xterm ignora a tecla e o Chromium dispara o
       // "paste" nativo, tratado abaixo — texto pelo proprio xterm, arquivo
       // pelo handler de captura. E o que padroniza o atalho entre as CLIs.
@@ -680,7 +680,7 @@
           }
           break;
         case 'say':
-          // orkestrai say: TTS sob demanda no desktop (falha silenciosa sem modelo).
+          // deepspace say: TTS sob demanda no desktop (falha silenciosa sem modelo).
           if ((!workspaceId || message.workspaceId === workspaceId) && typeof message.text === 'string' && message.text.trim()) {
             speakText(String(message.text), appSettingsStore.values.audioOutputDeviceId).catch(() => {});
           }
@@ -807,6 +807,30 @@
         <Tooltip.Content side="left">{m['term.idle']()}</Tooltip.Content>
       </Tooltip.Root>
   {/if}
+  {#if searchOpen}
+    <div class="terminal-search nodrag">
+      <input
+        bind:value={searchQuery}
+        oninput={() => searchQuery && searchAddon?.findNext(searchQuery)}
+        placeholder={m['ph.search_terminal']()}
+        spellcheck="false"
+      />
+      <span class="search-hint">{m['term.esc_closes']()}</span>
+    </div>
+  {/if}
+  {#if dictateError}
+    <p class="terminal-status">{dictateError}</p>
+  {/if}
+  {#if dictateStatus && !dictateError}
+    <p class="terminal-status">{dictateStatus}</p>
+  {/if}
+  {#if statusMessage}
+    <p class="terminal-status">{statusMessage}</p>
+  {/if}
+  {#if exited !== null}
+    <p class="terminal-status">{m['term.process_exited']({ code: exited })}</p>
+  {/if}
+  <div class="terminal-container" bind:this={container} style:--terminal-padding="{terminalPaddingPx}px"></div>
   {#if dictationSupported}
     <div class="dictate-controls">
       {#if dictating}
@@ -844,30 +868,6 @@
       </HeaderIconButton>
     </div>
   {/if}
-  {#if searchOpen}
-    <div class="terminal-search nodrag">
-      <input
-        bind:value={searchQuery}
-        oninput={() => searchQuery && searchAddon?.findNext(searchQuery)}
-        placeholder={m['ph.search_terminal']()}
-        spellcheck="false"
-      />
-      <span class="search-hint">{m['term.esc_closes']()}</span>
-    </div>
-  {/if}
-  {#if dictateError}
-    <p class="terminal-status">{dictateError}</p>
-  {/if}
-  {#if dictateStatus && !dictateError}
-    <p class="terminal-status">{dictateStatus}</p>
-  {/if}
-  {#if statusMessage}
-    <p class="terminal-status">{statusMessage}</p>
-  {/if}
-  {#if exited !== null}
-    <p class="terminal-status">{m['term.process_exited']({ code: exited })}</p>
-  {/if}
-  <div class="terminal-container" bind:this={container} style:--terminal-padding="{terminalPaddingPx}px"></div>
   <VoiceConfirmDialog bind:open={voiceConfirmOpen} onConfirm={() => toggleDictation()} onCancel={() => {}} />
 </div>
 
@@ -919,14 +919,18 @@
     color: #6d6d78;
   }
 
+  /*
+   * Fora do fluxo, estes controles cobriam a linha de prompt do agente. Como
+   * .terminal-node ja e flex column e o container e flex:1, uma regua estatica
+   * abaixo do terminal nunca sobrepoe o que esta sendo digitado.
+   */
   .dictate-controls {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
     display: flex;
-    gap: 4px;
-    z-index: 10;
+    flex-shrink: 0;
+    justify-content: flex-end;
     align-items: center;
+    gap: 4px;
+    padding: 3px 8px 5px;
   }
 
   :global(.dictate-lang) {

@@ -42,7 +42,7 @@ const MAX_CHAIN_DEPTH = 10;
 
 /** Avisa o canvas para recarregar (progresso do fluxo aparece ao vivo). */
 function notifyWorkspaceChanged(workspaceId: string) {
-  const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
   broadcast?.({ type: 'workspaceChanged', workspaceId });
 }
 

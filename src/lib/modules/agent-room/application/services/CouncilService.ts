@@ -30,7 +30,7 @@ import { usageService } from './UsageService.js';
 const execFileAsync = promisify(execFile);
 
 function broadcast(workspaceId: string, councilId: string): void {
-  const send = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const send = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
   send?.({ type: 'councilChanged', workspaceId, councilId });
 }
 
@@ -171,7 +171,7 @@ export class CouncilService {
       } else {
         artifactPath ??= join(
           workspace.workingDir,
-          '.orkestrai',
+          '.deepspace',
           'councils',
           String(council.getAttribute('id')),
           String(perspective.getAttribute('id')),
@@ -255,7 +255,7 @@ export class CouncilService {
       : null;
     const mode = String(council.getAttribute('mode'));
     return [
-      'You are contributing one independent perspective to an Orkestrai Council.',
+      'You are contributing one independent perspective to an Deep Space Council.',
       `Council: ${council.getAttribute('title')}`,
       `Objective: ${council.getAttribute('objective')}`,
       task ? `Task context:\nTitle: ${task.title}\nDescription: ${task.description || '(none)'}\nAttachments: ${task.attachments.map((item) => item.path ?? item.url ?? item.name).join(', ') || '(none)'}` : '',
@@ -291,7 +291,7 @@ export class CouncilService {
       agentNodeId: String(item.getAttribute('agent_node_id')),
       output: JSON.parse(String(item.getAttribute('output_json'))),
     }));
-    const synthesisPath = join(workspace.workingDir, '.orkestrai', 'councils', String(council.getAttribute('id')), 'leader-synthesis');
+    const synthesisPath = join(workspace.workingDir, '.deepspace', 'councils', String(council.getAttribute('id')), 'leader-synthesis');
     await mkdir(synthesisPath, { recursive: true });
     await controlCenterService.recordActivity({
       workspaceId, nodeId: leader.id, state: 'working', action: 'system:council_synthesis',
@@ -308,7 +308,7 @@ export class CouncilService {
       model: payload.model ? String(payload.model) : null,
       effort: (payload.effort as ModelEffort | undefined) ?? null,
       prompt: [
-        'You are the leader synthesizing an Orkestrai Council. Do not modify files.',
+        'You are the leader synthesizing an Deep Space Council. Do not modify files.',
         `Objective: ${council.getAttribute('objective')}`,
         `Decision criterion: ${criterionText(council)}`,
         `Perspectives: ${JSON.stringify(items)}`,

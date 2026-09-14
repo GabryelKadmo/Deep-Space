@@ -11,7 +11,7 @@ export type McpMarketEntry = {
   key: string;
   title: string;
   description: string;
-  /** curadoria = receita testada pelo Orkestrai; registry = catalogo oficial MCP. */
+  /** curadoria = receita testada pelo Deep Space; registry = catalogo oficial MCP. */
   source: 'curadoria' | 'registry';
   category: string;
   official: boolean;

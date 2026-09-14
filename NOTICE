@@ -1,0 +1,15 @@
+Deep Space
+Copyright 2026 Gabryel Kadmo
+
+This product is a fork of Orkestrai (https://github.com/beeblock/orkestrai),
+Copyright 2026 Orkestrai contributors, licensed under the Apache License,
+Version 2.0. The original license is preserved in LICENSE and applies to all
+code inherited from that project.
+
+Trademarks are not covered by the Apache License 2.0 (section 6). The Orkestrai
+name and logo remain with the original project. The visual assets still present
+under orkestrai-branding/ belong to it and must be replaced before this fork is
+distributed publicly under its own identity.
+
+Third-party software, models, and services bundled or downloaded by this
+application keep their own licenses, listed in THIRD_PARTY_NOTICES.md.

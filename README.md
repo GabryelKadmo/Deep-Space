@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="orkestrai-branding/logo.svg" alt="Orkestrai" width="360">
+  <img src="deepspace-branding/logo.svg" alt="Deep Space" width="360">
 </p>
 
 <p align="center">
@@ -10,18 +10,18 @@
   English · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.es.md">Español</a>
 </p>
 
-Orkestrai is a local-first desktop application for macOS, Windows, and Linux. It
+Deep Space is a local-first desktop application for macOS, Windows, and Linux. It
 brings Claude Code, Codex CLI, Kimi Code, OpenCode, Cursor, Antigravity, Cline,
 Devin, shells, tasks, notes,
 browsers, and Git worktrees into one persistent canvas where developers, vibe
 coders, designers, marketers, and creators can direct an AI team in real time.
 
 Download the latest installers from
-[beeblock/orkestrai](https://github.com/beeblock/orkestrai/releases/latest).
+[GabryelKadmo/Deep-Space](https://github.com/GabryelKadmo/Deep-Space/releases/latest).
 
 For desktop troubleshooting, open **View → Developer tools** and reproduce the
 problem with Console visible. **Help → Open logs folder** opens the rotating
-`orkestrai.log`, which captures renderer and internal-server failures with
+`deep-space.log`, which captures renderer and internal-server failures with
 common credentials redacted; normal agent output is not persisted.
 
 ## Highlights
@@ -29,7 +29,7 @@ common credentials redacted; normal agent output is not persisted.
 - **24/7 Core foundation:** opt in to keep the local execution Core and active
   work available in the system tray after closing every window, and optionally
   start it silently when you sign in. Settings shows live health and uptime,
-  supports a guarded restart, and keeps **Quit Orkestrai** as the explicit stop.
+  supports a guarded restart, and keeps **Quit Deep Space** as the explicit stop.
   Recurring schedules start new runs after earlier runs finish; the model does
   not need to think continuously. Local work pauses during sleep or shutdown
   and remains subject to valid logins, provider quotas, and pending approvals.
@@ -64,7 +64,7 @@ common credentials redacted; normal agent output is not persisted.
   See [Computer Control](docs/computer-control.md) for the complete workflow,
   launch identifiers, risk gates, evidence, and platform limitations.
 - **Tool Workshop:** turn repeated work into a native, versioned workspace tool
-  without editing Orkestrai source. Compose approved Gmail, Slack, Telegram,
+  without editing Deep Space source. Compose approved Gmail, Slack, Telegram,
   WhatsApp, GitHub, webhook, HTTP, deterministic transform, or confined command
   operations; validate JSON contracts and fixtures, dry-run the draft, then
   publish an immutable revision. Agents can activate bounded tools only through
@@ -90,7 +90,7 @@ common credentials redacted; normal agent output is not persisted.
   header or the New workspace dialog, without an intermediate root-level item.
 - **Persistent Portal sessions:** authentication cookies, web storage, and the
   last navigated URL survive app restarts. Login flows opened with `window.open`
-  stay in a sandboxed Orkestrai Portal window that shares the same session,
+  stay in a sandboxed Deep Space Portal window that shares the same session,
   while normal foreground or background tab links become a second Portal node
   in the same Canvas instead of escaping to the system browser.
   Every Portal has a persistent, editable name separate from its address, so
@@ -120,7 +120,7 @@ common credentials redacted; normal agent output is not persisted.
   freshest known data; Manual keeps indexing explicit and user-only, while
   Disabled stops watchers and access without deleting local history. Agents
   query that exact persisted graph
-  through typed MCP or `orkestrai graph`; explicitly approved sibling
+  through typed MCP or `deepspace graph`; explicitly approved sibling
   repositories remain separate projects, and arbitrary SQL/Cypher is never
   exposed. Its Changes view combines the current Git working tree and active
   Floor worktrees to surface affected symbols, likely tests, and shared-impact
@@ -176,14 +176,14 @@ common credentials redacted; normal agent output is not persisted.
   `@api-tests/bruno`; typed edits persist in the actual repository files while
   arbitrary parent paths stay blocked. Postman environments
   import and export independently.
-  A versioned `.orkestrai-api.json` format backs up the complete
+  A versioned `.deepspace-api.json` format backs up the complete
   native collection, including folders, runners, environments, scripts, and
   history. The same node persists in Canvas and Workbench, and
   connected agents use typed MCP/CLI tools to import, fingerprint-read/replace,
   synchronize, execute, and export complete collections without receiving stored secrets in
   plaintext. Format-native requests, folders, scripts, tests, and variables are
-  written back; Orkestrai-only runner configuration remains in the node and in
-  lossless `.orkestrai-api.json` backups. The JavaScript editor provides runtime-aware completion for
+  written back; Deep Space-only runner configuration remains in the node and in
+  lossless `.deepspace-api.json` backups. The JavaScript editor provides runtime-aware completion for
   `bru`, `req`/`res`, `test`/`expect`, and `pm`; scripted tests live beside
   structured assertions and round-trip through Bruno and Postman.
   Bruno/OpenCollection GraphQL, WebSocket, and gRPC requests
@@ -203,12 +203,12 @@ common credentials redacted; normal agent output is not persisted.
   (1080x1080), Instagram portrait (1080x1350), Stories/Reels and TikTok
   (1080x1920) PNGs, with custom dimensions also available. Because the native
   tool does not guarantee exact pixels, the prompt defines a measurable safe
-  area and Orkestrai validates the native aspect ratio before delivery. A close
+  area and Deep Space validates the native aspect ratio before delivery. A close
   match is resampled without cropping while preserving its original under
   `.masters/`; an incompatible frame is sent back to ImageGen for safe
   recomposition or outpainting instead of cutting or distorting content. Every result is
   validated independently; when the
-  node requires transparency, Orkestrai decodes the PNG and verifies real alpha
+  node requires transparency, Deep Space decodes the PNG and verifies real alpha
   pixels, then directs Codex to correct an opaque or fake-checkerboard result up
   to three times using another native `image_gen.imagegen` edit with the rejected
   image as its only reference. Python and other local pixel-processing tools are
@@ -216,7 +216,7 @@ common credentials redacted; normal agent output is not persisted.
   a visible checkerboard is baked into an opaque file and escalates the native
   cutout prompt if the first correction remains opaque. With multiple references,
   ImageGen first composes the foreground on a uniform white matte and then removes
-  that matte in a separate native edit before final alpha validation. Orkestrai never asks for or stores
+  that matte in a separate native edit before final alpha validation. Deep Space never asks for or stores
   an image API key. It validates
   the preallocated workspace destinations before outputs return as connected
   Image nodes with provenance and bounded run history,
@@ -226,7 +226,7 @@ common credentials redacted; normal agent output is not persisted.
   → Carousel chain, including reusable briefs, a sample logo, persisted outputs,
   and automatic reference wiring between stages.
   Every interactive Codex terminal receives the MCP launcher from the current
-  Orkestrai installation as a session-only override, so stale global Codex
+  Deep Space installation as a session-only override, so stale global Codex
   configuration cannot hide the image workflow tools.
 - **Integrated mobile devices:** add a persistent Mobile Device node from the
   Canvas toolbar; Workbench lists and opens that same node and session. Control
@@ -284,7 +284,7 @@ common credentials redacted; normal agent output is not persisted.
   Responsive navigation keeps every area reachable on phones and tablets, with
   a readable per-column task view and explicit return actions. Its pairing key stays
   non-extractable in the browser and the invitation secret is removed from the
-  URL before connecting. Installed-app invites open Orkestrai automatically;
+  URL before connecting. Installed-app invites open Deep Space automatically;
   guests can also paste one through **Workspace → Join remote workspace**.
   Operators can hold a traceable structured conversation whose reply is bound
   to the exact turn across every registered provider. The overview keeps the
@@ -350,9 +350,9 @@ common credentials redacted; normal agent output is not persisted.
   binding, and editable solid, linear, and radial gradient stops.
   Raster images remain reusable
   assets, while full documents export to SVG, PNG, JPEG, WebP, or PDF. A designer or leader
-  can edit the exact same revision through typed Orkestrai tools while the UI
+  can edit the exact same revision through typed Deep Space tools while the UI
   updates live. Documents, assets, thumbnails, and history stay under
-  `.orkestrai/designs` in the workspace.
+  `.deepspace/designs` in the workspace.
 - **Guided UI exploration:** start from one objective and create a linked spec,
   eight progressive Kanban tasks, and three native directions: Clarity,
   Expressive, and Efficient. Each agent first renders one desktop and one mobile
@@ -385,13 +385,13 @@ common credentials redacted; normal agent output is not persisted.
   compatible agents direct design context, while Inspect → Figma inspects
   links and imports selected pages or frames, vectors, assets, styles,
   variables, components, variants, instances, and external-library identities
-  into the same Orkestrai document. Linked
+  into the same Deep Space document. Linked
   sources compare remote and local hashes before selective synchronization, and
-  existing Code Connect mappings form a Figma node → Orkestrai layer → code
+  existing Code Connect mappings form a Figma node → Deep Space layer → code
   relationship. A bundled first-party, loopback-only plugin transfers live
-  selections, editable SVG or structural JSON, opens an Orkestrai document on a
+  selections, editable SVG or structural JSON, opens an Deep Space document on a
   new Figma page with native design resources, and sends only linked local
-  changes reviewed in Orkestrai back to the current file.
+  changes reviewed in Deep Space back to the current file.
   REST credentials stay encrypted in the operating-system vault.
 - **Design delivery and visual validation:** import HTML/Tailwind, Svelte,
   React/JSX, or Vue structure as editable native layers, then generate
@@ -428,7 +428,7 @@ common credentials redacted; normal agent output is not persisted.
   through the system application.
 - **Shared reference material:** drop, paste, or select images, PDFs, files, and
   HTTP/HTTPS links in agent prompts, task cards, notes, and composers. Files up
-  to 10 MB stay inside the workspace under `.orkestrai/attachments/`, and agents
+  to 10 MB stay inside the workspace under `.deepspace/attachments/`, and agents
   receive the complete relative path or URL.
 - **Maestro mode:** assign a leader that can propose a team, recruit agents,
   delegate complete task briefings, coordinate work, and dismiss agents when the
@@ -437,7 +437,7 @@ common credentials redacted; normal agent output is not persisted.
   agent and moves to progress only after the briefing is delivered.
 - **Ready-made teams:** start or expand a workspace with complete Product,
   Campaign and launch, Brand and design, Content and SEO, React, Next.js,
-  SvelteKit, Svelar, Laravel, and Orkestrai Contributing presets. Their agents
+  SvelteKit, Svelar, Laravel, and Deep Space Contributing presets. Their agents
   start with autonomous full access and native system/developer-level roles,
   with validated Kimi agent-file frontmatter and without long instructions
   blocking the terminal as pasted text. The lead receives and assigns the
@@ -445,17 +445,17 @@ common credentials redacted; normal agent output is not persisted.
 - **Workflows that fit the work:** name, color, and reorder up to ten board
   stages. Leads and agents discover and update the same stages automatically.
 - **Operational team views:** install specialized roles from a 12-role catalog
-  or discover reusable `.orkestrai/roles/` definitions from another selected
+  or discover reusable `.deepspace/roles/` definitions from another selected
   project folder, then inspect each task title, stage, assignee, and Git state
   across every floor. Imported roles stay bounded, validated, and confined to
   the selected project.
-- **Native agent bridge:** the bundled `orkestrai` CLI and MCP server expose
+- **Native agent bridge:** the bundled `deepspace` CLI and MCP server expose
   typed commands for messages, tasks, notes, portals, mobile devices, floors,
-  roles, and desktop notifications. Codex receives the Orkestrai and official
+  roles, and desktop notifications. Codex receives the Deep Space and official
   Figma MCP definitions as ephemeral launch overrides, so workspace
   provisioning never rewrites the user's global `~/.codex/config.toml`.
   Automatic handoffs use one serialized delivery path; on Windows and WSL,
-  Orkestrai waits for the TUI composer to settle and confirms the exact prompt
+  Deep Space waits for the TUI composer to settle and confirms the exact prompt
   in the provider transcript before reporting that the message was delivered.
   Task-scoped handoffs expire instead of reaching an agent after that task was
   completed or reassigned, and late status cannot reopen completed work.
@@ -466,7 +466,7 @@ common credentials redacted; normal agent output is not persisted.
   distribution and Linux project path. Provider discovery, sessions, resume,
   Council, recruited agents, and the bridge follow each terminal, so one team
   can combine tools installed across Windows, Ubuntu, Debian, or other distros.
-  Orkestrai validates the selected Linux environment before spawn and restores
+  Deep Space validates the selected Linux environment before spawn and restores
   only a conversation confirmed inside that distribution's own home. Maestro
   recruitment validates and starts the PTY in that same environment instead of
   leaving a hidden or non-running agent record behind. Windows packages include
@@ -511,7 +511,7 @@ common credentials redacted; normal agent output is not persisted.
   once-per-session startup command. Agent conversations never auto-run saved
   text, and the UI warns against storing credentials in plain-text commands.
 - **Project-isolated environments:** shells retain the user's operating-system
-  environment and the Orkestrai bridge without inheriting the desktop server's
+  environment and the Deep Space bridge without inheriting the desktop server's
   private configuration. Framework `.env` files stay authoritative, including
   Laravel's `APP_KEY` for encrypted application data.
 - **Operational controls:** manage local portal ports, configure recurring
@@ -548,7 +548,7 @@ authenticate only the providers you plan to use:
 - [Devin CLI](https://docs.devin.ai/cli)
 - [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli)
 
-You do not need every provider or terminal expertise. Orkestrai enables the CLIs
+You do not need every provider or terminal expertise. Deep Space enables the CLIs
 it detects, keeps their conversations separate, and lets you organize agents by
 outcome: research, design, content, marketing, product, engineering, or review.
 Open Provider Center from the canvas cable icon, `Cmd/Ctrl+2`, or the native
@@ -565,21 +565,21 @@ Requirements:
 - Git
 
 ```bash
-git clone https://github.com/beeblock/orkestrai.git
-cd orkestrai
+git clone https://github.com/GabryelKadmo/Deep-Space.git
+cd deepspace
 npm ci
 
 npm run dev            # SvelteKit at http://localhost:5173
 npm run electron:dev   # production build followed by Electron
 ```
 
-Voice works without Docker or Python. On first use, Orkestrai asks before
+Voice works without Docker or Python. On first use, Deep Space asks before
 downloading the embedded runtime and local models. An OpenAI-compatible voice
 sidecar remains available as an optional backend.
 
 ## Architecture
 
-Orkestrai is built with Svelte 5, SvelteKit, Electron, Svelar, SQLite,
+Deep Space is built with Svelte 5, SvelteKit, Electron, Svelar, SQLite,
 `node-pty`, and `@xyflow/svelte`.
 
 - `src/lib/modules/agent-room/` contains the application, domain, persistence,
@@ -589,12 +589,14 @@ Orkestrai is built with Svelte 5, SvelteKit, Electron, Svelar, SQLite,
 - `src/routes/canvas/`, `src/routes/terminal/`, and
   `src/lib/components/agent-room/canvas/` implement the two desktop workspace
   views.
-- `packages/orkestrai-cli/` provides the agent-facing CLI and MCP bridge.
-- `packages/orkestrai-collaboration-protocol/` defines the versioned encrypted
+- `packages/deepspace-cli/` provides the agent-facing CLI and MCP bridge.
+- `packages/deepspace-collaboration-protocol/` defines the versioned encrypted
   envelope for Node and browser WebCrypto clients;
-  `packages/orkestrai-relay/` is an opaque WebSocket
+  `packages/deepspace-relay/` is an opaque WebSocket
   transport that cannot decrypt workspace content. The production service is
-  available at `wss://relay.orkestrai.app/v1/connect`.
+  available at `wss://relay.deepspace.app/v1/connect` and is still the
+  default. Set `PUBLIC_RELAY_URL` to point at your own deployment — see
+  [docs/relay.md](docs/relay.md).
 - `electron/` owns the desktop lifecycle, native notifications, and updates.
 - `docs/` contains build and release documentation.
 
@@ -612,7 +614,7 @@ npm run benchmark:code-graph
 
 The code-graph benchmark is read-only against the current repository and makes
 temporary mirrors for incremental writes. To include up to four approved local
-Laravel or monorepo fixtures, set `ORKESTRAI_CODE_GRAPH_BENCH_ROOTS` to a JSON
+Laravel or monorepo fixtures, set `DEEPSPACE_CODE_GRAPH_BENCH_ROOTS` to a JSON
 array such as `[{"name":"Laravel","path":"/absolute/path"}]`. It enforces p95
 targets for search and bounded traversal plus a two-second single-file
 incremental target, and removes its temporary workspaces afterward.
@@ -630,11 +632,16 @@ problems privately as described in [SECURITY.md](SECURITY.md).
 
 Tags follow Semantic Versioning. The `Release Desktop` workflow builds all
 platforms, validates update manifests, and publishes verified artifacts as
-[GitHub Releases](https://github.com/beeblock/orkestrai/releases).
+[GitHub Releases](https://github.com/GabryelKadmo/Deep-Space/releases).
 See [docs/releases.md](docs/releases.md) for the complete process.
 
 ## License
 
-Orkestrai is licensed under the [Apache License 2.0](LICENSE). Third-party
+Deep Space is a fork of [Orkestrai](https://github.com/beeblock/orkestrai),
+Copyright 2026 Orkestrai contributors, and inherits its Apache License 2.0. See
+[NOTICE](NOTICE) for attribution and for the branding assets that still belong
+to the original project.
+
+Deep Space is licensed under the [Apache License 2.0](LICENSE). Third-party
 components and downloaded models remain subject to the licenses listed in
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

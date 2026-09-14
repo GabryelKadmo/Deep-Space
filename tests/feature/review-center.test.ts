@@ -9,9 +9,9 @@ import { reviewCenterService } from '$lib/modules/agent-room/application/service
 import { workspaceRepository } from '$lib/modules/agent-room/infrastructure/repositories/WorkspaceRepository.js';
 
 function makeRepo(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'orkestrai-review-'));
+  const dir = mkdtempSync(join(tmpdir(), 'deepspace-review-'));
   execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-  execFileSync('git', ['config', 'user.email', 'review@orkestrai.local'], { cwd: dir });
+  execFileSync('git', ['config', 'user.email', 'review@deepspace.local'], { cwd: dir });
   execFileSync('git', ['config', 'user.name', 'Review Test'], { cwd: dir });
   writeFileSync(join(dir, 'app.ts'), 'export const version = 1;\n');
   execFileSync('git', ['add', '.'], { cwd: dir });

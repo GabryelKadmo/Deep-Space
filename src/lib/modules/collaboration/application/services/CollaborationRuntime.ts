@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import { generateHandshakeNonce, generatePairingSecret } from '@orkestrai/collaboration-protocol';
+import { generateHandshakeNonce, generatePairingSecret } from '@deepspace/collaboration-protocol';
 
 export type PendingCollaborationPeer = {
   peerId: string;
@@ -17,7 +17,7 @@ export type CollaborationShareRuntime = {
 };
 
 type RuntimeState = { shares: Map<string, CollaborationShareRuntime> };
-const key = Symbol.for('orkestrai.collaborationRuntime');
+const key = Symbol.for('deepspace.collaborationRuntime');
 const globals = globalThis as typeof globalThis & { [key]?: RuntimeState };
 const state = globals[key] ??= { shares: new Map() };
 

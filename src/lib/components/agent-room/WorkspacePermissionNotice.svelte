@@ -20,7 +20,7 @@
   let busy = $state(false);
   const desktop = typeof window === 'undefined'
     ? undefined
-    : (window as unknown as { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+    : (window as unknown as { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
   const canAuthorize = desktop?.platform === 'darwin';
 
   function normalizedPath(value: string): string {

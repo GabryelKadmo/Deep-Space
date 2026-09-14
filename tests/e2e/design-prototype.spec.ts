@@ -8,7 +8,7 @@ test("builds and plays a native interactive prototype", async ({
   page,
   request,
 }) => {
-  const dir = mkdtempSync(join(tmpdir(), "orkestrai-prototype-e2e-"));
+  const dir = mkdtempSync(join(tmpdir(), "deepspace-prototype-e2e-"));
   const originalSettings = (
     await (await request.get("/api/agent-room/settings")).json()
   ).data as Record<string, string>;

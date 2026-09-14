@@ -30,7 +30,7 @@
 	// Sheet portals to <body>, outside the app's own titlebar-aware layout, so on
 	// Windows it renders under the OS-drawn min/max/close buttons unless pushed down.
 	const windowsTitlebarOffset = typeof window !== "undefined"
-		&& (window as unknown as { orkestraiDesktop?: { platform?: string } }).orkestraiDesktop?.platform === "win32";
+		&& (window as unknown as { deepspaceDesktop?: { platform?: string } }).deepspaceDesktop?.platform === "win32";
 </script>
 
 <SheetPortal {...portalProps}>

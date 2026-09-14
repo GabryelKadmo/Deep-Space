@@ -1,0 +1,4 @@
+interface:
+  display_name: "DeepSpace Release"
+  short_description: "Prepare, publish, and verify DeepSpace releases"
+  default_prompt: "Use $deepspace-release to prepare, publish, monitor, and verify a new DeepSpace desktop release."

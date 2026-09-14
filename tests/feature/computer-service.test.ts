@@ -220,8 +220,8 @@ describe('ComputerService', () => {
       name: 'Unbound login', purpose: 'Must never reach an arbitrary app', provider: 'host_vault',
       bindings: { integrations: ['computer'], operations: ['computer.type_secret'], destinations: [] },
     });
-    const state = globalThis as typeof globalThis & { __orkestraiHostVaultResolve?: (reference: string) => Promise<string | null> };
-    state.__orkestraiHostVaultResolve = async (reference) => reference === secret.ref ? 'never-persist-this-value' : null;
+    const state = globalThis as typeof globalThis & { __deepspaceHostVaultResolve?: (reference: string) => Promise<string | null> };
+    state.__deepspaceHostVaultResolve = async (reference) => reference === secret.ref ? 'never-persist-this-value' : null;
     const adapter = new FakeAdapter();
     const service = new ComputerService([adapter]);
     try {
@@ -233,7 +233,7 @@ describe('ComputerService', () => {
       const audit = await autonomyPolicyService.exportAudit(workspace.id);
       expect(JSON.stringify(audit)).not.toContain('never-persist-this-value');
     } finally {
-      delete state.__orkestraiHostVaultResolve;
+      delete state.__deepspaceHostVaultResolve;
     }
   });
 });

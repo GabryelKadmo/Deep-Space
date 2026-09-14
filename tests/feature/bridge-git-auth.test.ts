@@ -19,7 +19,7 @@ function event(token: string, agentToken: string | null, body: unknown) {
       headers: {
         'content-type': 'application/json',
         authorization: `Bearer ${token}`,
-        ...(agentToken ? { 'x-orkestrai-agent-token': agentToken } : {}),
+        ...(agentToken ? { 'x-deepspace-agent-token': agentToken } : {}),
       },
       body: JSON.stringify(body),
     }),
@@ -39,10 +39,10 @@ describe('Bridge Git terminal authentication', () => {
   });
 
   it('rejects a shared workspace token unless the live assignee PTY also authenticates', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-bridge-git-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-bridge-git-'));
     tempDirs.push(dir);
     execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-    execFileSync('git', ['config', 'user.email', 'qa@orkestrai.local'], { cwd: dir });
+    execFileSync('git', ['config', 'user.email', 'qa@deepspace.local'], { cwd: dir });
     execFileSync('git', ['config', 'user.name', 'QA'], { cwd: dir });
     writeFileSync(join(dir, 'README.md'), '# QA\n');
     execFileSync('git', ['add', '.'], { cwd: dir });
@@ -57,7 +57,7 @@ describe('Bridge Git terminal authentication', () => {
     const pty = ptySessionManager.create({
       command: '/bin/cat', cwd: dir, workspaceId: workspace.id, nodeId: agent.id,
       provider: 'codex', bridgeAgentToken: 'assigned-terminal-token',
-      env: { ORKESTRAI_AGENT_TOKEN: 'assigned-terminal-token' },
+      env: { DEEPSPACE_AGENT_TOKEN: 'assigned-terminal-token' },
     });
     sessions.push(pty.id);
     const token = await bridgeService.getOrCreateToken(workspace.id);

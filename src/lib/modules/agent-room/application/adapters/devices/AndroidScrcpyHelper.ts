@@ -21,7 +21,7 @@ import {
 } from '@yume-chan/stream-extra';
 
 const SERVER_VERSION = '3.1';
-const SERVER_DEVICE_PATH = '/data/local/tmp/orkestrai-scrcpy-server-v3.1';
+const SERVER_DEVICE_PATH = '/data/local/tmp/deepspace-scrcpy-server-v3.1';
 const STREAM_MAGIC = 'OKDV';
 const STREAM_VERSION = 1;
 
@@ -303,7 +303,7 @@ export class AndroidScrcpyHelper {
       return;
     }
     response.writeHead(200, {
-      'content-type': 'application/x-orkestrai-scrcpy',
+      'content-type': 'application/x-deepspace-scrcpy',
       'cache-control': 'no-store, no-cache, must-revalidate',
       connection: 'keep-alive',
     });

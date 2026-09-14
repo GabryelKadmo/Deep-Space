@@ -104,7 +104,7 @@ export class PcmAudioRecorder {
     try {
       await context.audioWorklet.addModule('/audio/pcm-capture-worklet.js');
       this.source = context.createMediaStreamSource(this.stream);
-      this.processor = new AudioWorkletNode(context, 'orkestrai-pcm-capture', {
+      this.processor = new AudioWorkletNode(context, 'deepspace-pcm-capture', {
         numberOfInputs: 1,
         numberOfOutputs: 1,
         outputChannelCount: [1],

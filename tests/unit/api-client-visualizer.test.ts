@@ -14,7 +14,7 @@ describe('API Client visualizer document', () => {
     expect(document).toContain("script-src 'none'");
   });
 
-  it('replaces an untrusted base and keeps relative assets away from Orkestrai', () => {
+  it('replaces an untrusted base and keeps relative assets away from Deep Space', () => {
     const document = apiClientVisualizerDocument(
       '<base href="http://127.0.0.1:4173/"><img src="/asset.png">',
       'not-a-url',

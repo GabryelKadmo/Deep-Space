@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 async function createWorkspaceIn(page: import('@playwright/test').Page, name: string) {
-  const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-polish-'));
+  const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-polish-'));
   await page.goto('/canvas');
   await page.getByRole('button', { name: 'Novo workspace' }).click();
   await page.getByPlaceholder('Nome', { exact: true }).fill(name);

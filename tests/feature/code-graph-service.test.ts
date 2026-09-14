@@ -20,8 +20,8 @@ const directories: string[] = [];
 
 function initializeGit(directory: string): void {
   execFileSync('git', ['init', '-b', 'main'], { cwd: directory });
-  execFileSync('git', ['config', 'user.email', 'tests@orkestrai.local'], { cwd: directory });
-  execFileSync('git', ['config', 'user.name', 'Orkestrai Tests'], { cwd: directory });
+  execFileSync('git', ['config', 'user.email', 'tests@deepspace.local'], { cwd: directory });
+  execFileSync('git', ['config', 'user.name', 'Deep Space Tests'], { cwd: directory });
   execFileSync('git', ['add', '.'], { cwd: directory });
   execFileSync('git', ['commit', '-m', 'initial'], { cwd: directory });
 }
@@ -34,7 +34,7 @@ describe('CodeGraphIndexService', () => {
   useSvelarTest({ refreshDatabase: true });
 
   it('indexes a workspace atomically and exposes search and bounded traversal', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-'));
     directories.push(directory);
     await mkdir(join(directory, 'src'));
     await writeFile(join(directory, 'package.json'), '{"name":"graph-test"}\n');
@@ -87,7 +87,7 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('marks an indexed project stale after a supported source file changes', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-watch-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-watch-'));
     directories.push(directory);
     await writeFile(join(directory, 'package.json'), '{"name":"watch-test"}\n');
     const sourcePath = join(directory, 'service.ts');
@@ -113,7 +113,7 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('incrementally refreshes assisted workspaces and makes freshness reads wait for the newest source', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-assisted-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-assisted-'));
     directories.push(directory);
     await writeFile(join(directory, 'package.json'), '{"name":"assisted-watch-test"}\n');
     const sourcePath = join(directory, 'service.ts');
@@ -132,7 +132,7 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('blocks indexing and reads when Code Intelligence is disabled', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-disabled-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-disabled-'));
     directories.push(directory);
     await writeFile(join(directory, 'package.json'), '{"name":"disabled-test"}\n');
     await writeFile(join(directory, 'service.ts'), 'export function hidden() {}\n');
@@ -155,7 +155,7 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('reuses parsed files and reparses only changed sources within the running app', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-incremental-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-incremental-'));
     directories.push(directory);
     await writeFile(join(directory, 'package.json'), '{"name":"incremental-test"}\n');
     const firstPath = join(directory, 'first.ts');
@@ -196,7 +196,7 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('indexes explicitly registered sibling repositories without escaping their roots', async () => {
-    const parent = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-parent-'));
+    const parent = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-parent-'));
     directories.push(parent);
     const api = join(parent, 'api');
     const web = join(parent, 'web');
@@ -221,7 +221,7 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('maps API contracts across repositories, generated clients, OpenAPI, and live API Client requests', async () => {
-    const parent = await mkdtemp(join(tmpdir(), 'orkestrai-contract-parent-'));
+    const parent = await mkdtemp(join(tmpdir(), 'deepspace-contract-parent-'));
     directories.push(parent);
     const api = join(parent, 'api');
     const web = join(parent, 'web');
@@ -296,7 +296,7 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('matches frontend requests through an indexed gateway prefix', async () => {
-    const parent = await mkdtemp(join(tmpdir(), 'orkestrai-gateway-parent-'));
+    const parent = await mkdtemp(join(tmpdir(), 'deepspace-gateway-parent-'));
     directories.push(parent);
     const api = join(parent, 'api');
     const web = join(parent, 'web');
@@ -337,7 +337,7 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('reports bounded quality evidence and safe data-flow resources', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-quality-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-quality-'));
     directories.push(directory);
     await mkdir(join(directory, 'src', 'domain'), { recursive: true });
     await mkdir(join(directory, 'src', 'infrastructure'), { recursive: true });
@@ -411,8 +411,8 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('does not misrepresent a multi-repository change set as a primary Git review', async () => {
-    const primary = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-primary-'));
-    const sibling = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-sibling-'));
+    const primary = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-primary-'));
+    const sibling = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-sibling-'));
     directories.push(primary, sibling);
     await writeFile(join(primary, 'package.json'), '{"name":"primary"}\n');
     await writeFile(join(primary, 'app.ts'), 'export function primaryApp() { return 1; }\n');
@@ -442,7 +442,7 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('maps working tree changes to affected symbols and likely tests', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-impact-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-impact-'));
     directories.push(directory);
     await mkdir(join(directory, 'src'));
     await mkdir(join(directory, 'tests'));
@@ -479,7 +479,7 @@ describe('CodeGraphIndexService', () => {
   });
 
   it('flags overlapping Floor changes as a high-confidence conflict', async () => {
-    const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-floor-impact-'));
+    const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-floor-impact-'));
     directories.push(directory);
     await mkdir(join(directory, 'src'));
     await writeFile(join(directory, 'package.json'), '{"name":"floor-impact-test"}\n');

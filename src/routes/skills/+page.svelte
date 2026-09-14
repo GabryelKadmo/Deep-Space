@@ -206,7 +206,7 @@
   });
 </script>
 <svelte:head>
-  <title>Orkestrai — {m['skills.title']()}</title>
+  <title>Deep Space — {m['skills.title']()}</title>
 </svelte:head>
 
 <main class="skills-page">

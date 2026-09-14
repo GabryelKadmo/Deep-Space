@@ -195,7 +195,7 @@ export class ManagedPortService {
   async kill(workspaceId: string, port: number, expectedPids: number[]): Promise<{ port: number; killedPids: number[] }> {
     const managed = (await this.list(workspaceId)).find((entry) => entry.port === port);
     if (!managed) throw new ManagedPortError('port_not_managed', 'Esta porta nao pertence a um Portal local deste workspace.');
-    if (managed.protected) throw new ManagedPortError('protected_process', 'O servidor do Orkestrai nao pode ser encerrado por este painel.');
+    if (managed.protected) throw new ManagedPortError('protected_process', 'O servidor do Deep Space nao pode ser encerrado por este painel.');
     if (managed.status !== 'listening' || !managed.pids.length) throw new ManagedPortError('port_offline', 'A porta ja esta livre. Atualize a lista.');
     const expected = [...new Set(expectedPids)].sort((a, b) => a - b);
     if (JSON.stringify(expected) !== JSON.stringify(managed.pids)) {

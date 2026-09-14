@@ -16,7 +16,7 @@ describe('DesignCodebaseService', () => {
   });
 
   it('scans supported sources without executing project configuration', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-design-code-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-design-code-'));
     directories.push(directory);
     const sentinel = join(directory, 'executed.txt');
     writeFileSync(join(directory, 'app.css'), ':root { --color-brand: #2244aa; }');
@@ -37,7 +37,7 @@ describe('DesignCodebaseService', () => {
   });
 
   it('returns an empty scan for a workspace without design-system sources', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-design-code-empty-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-design-code-empty-'));
     directories.push(directory);
     writeFileSync(join(directory, 'README.md'), '# Empty');
     const workspace = await workspaceRepository.createWorkspace({ name: 'Empty scan', workingDir: directory });

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { afterDatabaseReady, holdBackgroundStartup } from '$lib/modules/agent-room/infrastructure/background-startup.js';
 
 afterEach(() => {
-  delete (globalThis as Record<string, unknown>).__orkestraiDatabaseStartup;
+  delete (globalThis as Record<string, unknown>).__deepspaceDatabaseStartup;
 });
 
 describe('background database startup barrier', () => {
@@ -28,7 +28,7 @@ describe('background database startup barrier', () => {
   });
 
   it('holds before importing Svelar hooks and releases only after migration success', () => {
-    const server = readFileSync('scripts/orkestrai-server.mjs', 'utf8');
+    const server = readFileSync('scripts/deepspace-server.mjs', 'utf8');
     const hold = server.indexOf('const releaseBackgroundStartup = holdBackgroundStartup()');
     const handler = server.indexOf("await import('../build/handler.js')");
     const migrate = server.indexOf('await new Migrator().run(migrations)');

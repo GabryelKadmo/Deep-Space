@@ -80,10 +80,10 @@ describe('WSL workspace runtime', () => {
       workspaceRoot: '\\\\wsl.localhost\\Ubuntu-24.04\\home\\raoni\\app',
       hostEnv: {
         PATH: 'C:\\Windows',
-        ORKESTRAI_API_URL: 'http://127.0.0.1:4321',
-        ORKESTRAI_AGENT_TOKEN: 'terminal-token',
-        ORKESTRAI_WORKSPACE_CONFIG: '/home/raoni/app/.orkestrai/workspace.json',
-        ORKESTRAI_CLI_JS: 'C:\\Orkestrai\\orkestrai.js',
+        DEEPSPACE_API_URL: 'http://127.0.0.1:4321',
+        DEEPSPACE_AGENT_TOKEN: 'terminal-token',
+        DEEPSPACE_WORKSPACE_CONFIG: '/home/raoni/app/.deepspace/workspace.json',
+        DEEPSPACE_CLI_JS: 'C:\\Deep Space\\deepspace.js',
         CODEX_HOME: '/home/raoni/.codex-work',
       },
       forwardEnvToWsl: ['CODEX_HOME'],
@@ -98,15 +98,15 @@ describe('WSL workspace runtime', () => {
       '--exec',
       '/bin/bash',
       '-lic',
-      'export PATH="$ORKESTRAI_WORKSPACE_BIN:$PATH"; exec "$@"',
-      'orkestrai-runtime',
+      'export PATH="$DEEPSPACE_WORKSPACE_BIN:$PATH"; exec "$@"',
+      'deepspace-runtime',
       'kimi',
       '--continue',
     ]);
-    expect(launch.env.ORKESTRAI_CLI).toBe('/home/raoni/app/.orkestrai/bin/orkestrai');
-    expect(launch.env.WSLENV).toContain('ORKESTRAI_NODE_ID');
-    expect(launch.env.WSLENV.split(':')).toContain('ORKESTRAI_WORKSPACE_CONFIG');
-    expect(launch.env.WSLENV.split(':')).toContain('ORKESTRAI_AGENT_TOKEN');
+    expect(launch.env.DEEPSPACE_CLI).toBe('/home/raoni/app/.deepspace/bin/deepspace');
+    expect(launch.env.WSLENV).toContain('DEEPSPACE_NODE_ID');
+    expect(launch.env.WSLENV.split(':')).toContain('DEEPSPACE_WORKSPACE_CONFIG');
+    expect(launch.env.WSLENV.split(':')).toContain('DEEPSPACE_AGENT_TOKEN');
     expect(launch.env.WSLENV.split(':')).toContain('CODEX_HOME');
     expect(launch.env.WSLENV.split(':')).not.toContain('PATH');
   });
@@ -126,21 +126,21 @@ describe('WSL workspace runtime', () => {
     const launch = buildWslLaunch({
       runtime: { kind: 'wsl', distribution: 'Ubuntu-24.04', linuxWorkingDir: '/home/raoni/project' },
       command: 'kimi',
-      args: ['--agent-file', '\\\\wsl.localhost\\Ubuntu-24.04\\home\\raoni\\project\\.orkestrai\\roles\\qa\\AGENTS.md'],
+      args: ['--agent-file', '\\\\wsl.localhost\\Ubuntu-24.04\\home\\raoni\\project\\.deepspace\\roles\\qa\\AGENTS.md'],
       hostCwd: '\\\\wsl.localhost\\Ubuntu-24.04\\home\\raoni\\project',
       workspaceRoot: '\\\\wsl.localhost\\Ubuntu-24.04\\home\\raoni\\project',
       hostEnv: {},
     });
 
-    expect(launch.args.at(-1)).toBe('/home/raoni/project/.orkestrai/roles/qa/AGENTS.md');
+    expect(launch.args.at(-1)).toBe('/home/raoni/project/.deepspace/roles/qa/AGENTS.md');
   });
 
   it('maps a floor path to the same relative directory inside WSL', () => {
     expect(guestWorkingDirectory(
       { kind: 'wsl', distribution: 'Ubuntu-24.04', linuxWorkingDir: '/home/raoni/project' },
-      '\\\\wsl.localhost\\Ubuntu-24.04\\home\\raoni\\project\\.orkestrai\\floors\\qa',
+      '\\\\wsl.localhost\\Ubuntu-24.04\\home\\raoni\\project\\.deepspace\\floors\\qa',
       '\\\\wsl.localhost\\Ubuntu-24.04\\home\\raoni\\project',
-    )).toBe('/home/raoni/project/.orkestrai/floors/qa');
+    )).toBe('/home/raoni/project/.deepspace/floors/qa');
   });
 
   it('runs workspace Git and worktree paths inside the selected WSL distribution', () => {
@@ -150,18 +150,18 @@ describe('WSL workspace runtime', () => {
       wslDistribution: 'Ubuntu-24.04',
       wslWorkingDir: '/home/raoni/project',
     };
-    const floorPath = `${workspace.workingDir}\\.orkestrai\\floors\\review`;
+    const floorPath = `${workspace.workingDir}\\.deepspace\\floors\\review`;
     const launch = buildWorkspaceRuntimeLaunch({
       workspace,
       command: 'git',
-      args: ['worktree', 'add', '-b', 'orkestrai/review', floorPath],
+      args: ['worktree', 'add', '-b', 'deepspace/review', floorPath],
       hostEnv: { PATH: 'C:\\Windows' },
     });
 
     expect(launch.command).toBe('wsl.exe');
     expect(launch.args).toContain('Ubuntu-24.04');
     expect(launch.args).toContain('git');
-    expect(launch.args.at(-1)).toBe('/home/raoni/project/.orkestrai/floors/review');
+    expect(launch.args.at(-1)).toBe('/home/raoni/project/.deepspace/floors/review');
     expect(launch.cwd).not.toBe(workspace.workingDir);
   });
 
@@ -175,15 +175,15 @@ describe('WSL workspace runtime', () => {
     const launch = buildWorkspaceRuntimeLaunch({
       workspace,
       command: '/bin/sh',
-      args: ['-c', 'printf "%s" "$ORKESTRAI_FLOOR_NAME"'],
-      hostCwd: `${workspace.workingDir}\\.orkestrai\\floors\\qa`,
-      hostEnv: { ORKESTRAI_FLOOR_NAME: 'QA' },
-      forwardEnvToWsl: ['ORKESTRAI_FLOOR_NAME'],
+      args: ['-c', 'printf "%s" "$DEEPSPACE_FLOOR_NAME"'],
+      hostCwd: `${workspace.workingDir}\\.deepspace\\floors\\qa`,
+      hostEnv: { DEEPSPACE_FLOOR_NAME: 'QA' },
+      forwardEnvToWsl: ['DEEPSPACE_FLOOR_NAME'],
     });
 
-    expect(launch.args.slice(0, 4)).toEqual(['--distribution', 'Ubuntu-22.04', '--cd', '/srv/project/.orkestrai/floors/qa']);
+    expect(launch.args.slice(0, 4)).toEqual(['--distribution', 'Ubuntu-22.04', '--cd', '/srv/project/.deepspace/floors/qa']);
     expect(launch.args).toContain('/bin/sh');
-    expect(launch.args.at(-1)).toBe('printf "%s" "$ORKESTRAI_FLOOR_NAME"');
-    expect(launch.env.WSLENV.split(':')).toContain('ORKESTRAI_FLOOR_NAME');
+    expect(launch.args.at(-1)).toBe('printf "%s" "$DEEPSPACE_FLOOR_NAME"');
+    expect(launch.env.WSLENV.split(':')).toContain('DEEPSPACE_FLOOR_NAME');
   });
 });

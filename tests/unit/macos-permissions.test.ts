@@ -14,7 +14,7 @@ describe('signed macOS permission contract', () => {
     const result = spawnSync('bash', ['scripts/package-macos.sh', '--arm64'], {
       encoding: 'utf8',
       timeout: 5_000,
-      env: { ...process.env, ORKESTRAI_MAC_LOCAL_SIGNING_IDENTITY: 'Developer ID Application: Test', ORKESTRAI_REQUIRE_MAC_SIGNING: 'false', ORKESTRAI_MAC_ALLOW_KEYCHAIN_PROMPTS: 'false' },
+      env: { ...process.env, DEEPSPACE_MAC_LOCAL_SIGNING_IDENTITY: 'Developer ID Application: Test', DEEPSPACE_REQUIRE_MAC_SIGNING: 'false', DEEPSPACE_MAC_ALLOW_KEYCHAIN_PROMPTS: 'false' },
     });
     expect(result.status).toBe(1);
     expect(result.stderr).toContain('Obtain explicit owner approval');
@@ -51,6 +51,6 @@ describe('signed macOS permission contract', () => {
       expect(values['com.apple.security.device.camera']).toBeUndefined();
     }
     expect(readFileSync('.github/workflows/release.yml', 'utf8')).toContain('node scripts/validate-macos-permissions.mjs "$app"');
-    expect(readFileSync('scripts/package-macos.sh', 'utf8')).toContain('ORKESTRAI_MAC_LOCAL_SIGNING_IDENTITY');
+    expect(readFileSync('scripts/package-macos.sh', 'utf8')).toContain('DEEPSPACE_MAC_LOCAL_SIGNING_IDENTITY');
   });
 });

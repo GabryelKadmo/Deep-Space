@@ -144,7 +144,7 @@
 
   function applyMonacoTheme(instance: Monaco): void {
     const dark = document.documentElement.classList.contains('dark');
-    instance.editor.defineTheme('orkestrai-workbench', {
+    instance.editor.defineTheme('deepspace-workbench', {
       base: dark ? 'vs-dark' : 'vs',
       inherit: true,
       rules: [
@@ -167,7 +167,7 @@
         'minimap.background': cssColor('--app-canvas', dark ? '#151619' : '#eef0f7'),
       },
     });
-    instance.editor.setTheme('orkestrai-workbench');
+    instance.editor.setTheme('deepspace-workbench');
   }
 
   async function loadInspection(): Promise<void> {
@@ -193,7 +193,7 @@
     if (!activeBuffer) {
       const loaded = await loadText();
       previewContent = loaded.content;
-      const uri = instance.Uri.from({ scheme: 'orkestrai-file', authority: workspaceId, path: `/${relativePath}` });
+      const uri = instance.Uri.from({ scheme: 'deepspace-file', authority: workspaceId, path: `/${relativePath}` });
       const existingModel = instance.editor.getModel(uri);
       const model = existingModel ?? instance.editor.createModel(loaded.content, undefined, uri);
       activeBuffer = registerWorkbenchEditorBuffer({
@@ -214,7 +214,7 @@
 
     codeEditor = instance.editor.create(editorHost, {
       model: activeBuffer.model,
-      theme: 'orkestrai-workbench',
+      theme: 'deepspace-workbench',
       automaticLayout: true,
       readOnly: activeBuffer.truncated,
       editContext: false,
@@ -240,12 +240,12 @@
       cursorColumn = event.position.column;
       if (graphSyncTimer) clearTimeout(graphSyncTimer);
       graphSyncTimer = setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('orkestrai:editor-location', {
+        window.dispatchEvent(new CustomEvent('deepspace:editor-location', {
           detail: { workspaceId, path: relativePath, line: cursorLine, column: cursorColumn },
         }));
       }, 180);
     });
-    const revealKey = `orkestrai:file-reveal:${workspaceId}:${relativePath}`;
+    const revealKey = `deepspace:file-reveal:${workspaceId}:${relativePath}`;
     const reveal = sessionStorage.getItem(revealKey);
     if (reveal) {
       sessionStorage.removeItem(revealKey);
@@ -347,7 +347,7 @@
   }
 
   async function openExternally(): Promise<void> {
-    const desktop = (window as unknown as { orkestraiDesktop?: { openPath?: (path: string) => Promise<string> } }).orkestraiDesktop;
+    const desktop = (window as unknown as { deepspaceDesktop?: { openPath?: (path: string) => Promise<string> } }).deepspaceDesktop;
     if (desktop?.openPath && inspection?.path) {
       const result = await desktop.openPath(inspection.path);
       if (result) errorMessage = m['workbench_editor.external_error']();

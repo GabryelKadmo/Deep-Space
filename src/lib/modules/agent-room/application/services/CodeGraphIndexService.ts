@@ -59,8 +59,8 @@ type IndexState = {
 };
 
 function indexState(): IndexState {
-  const global = globalThis as typeof globalThis & { __orkestraiCodeGraphIndexState?: IndexState };
-  global.__orkestraiCodeGraphIndexState ??= {
+  const global = globalThis as typeof globalThis & { __deepspaceCodeGraphIndexState?: IndexState };
+  global.__deepspaceCodeGraphIndexState ??= {
     inFlight: new Map(),
     watchers: new Map(),
     watcherRetryAt: new Map(),
@@ -73,14 +73,14 @@ function indexState(): IndexState {
     freshnessCheckedProjects: new Set(),
   };
   // Preserve development HMR state created by an older module shape.
-  global.__orkestraiCodeGraphIndexState.parseCache ??= new Map();
-  global.__orkestraiCodeGraphIndexState.watcherRetryAt ??= new Map();
-  global.__orkestraiCodeGraphIndexState.semanticTimers ??= new Map();
-  global.__orkestraiCodeGraphIndexState.changeVersions ??= new Map();
-  global.__orkestraiCodeGraphIndexState.indexedChangeVersions ??= new Map();
-  global.__orkestraiCodeGraphIndexState.autoReindexing ??= new Map();
-  global.__orkestraiCodeGraphIndexState.freshnessCheckedProjects ??= new Set();
-  return global.__orkestraiCodeGraphIndexState;
+  global.__deepspaceCodeGraphIndexState.parseCache ??= new Map();
+  global.__deepspaceCodeGraphIndexState.watcherRetryAt ??= new Map();
+  global.__deepspaceCodeGraphIndexState.semanticTimers ??= new Map();
+  global.__deepspaceCodeGraphIndexState.changeVersions ??= new Map();
+  global.__deepspaceCodeGraphIndexState.indexedChangeVersions ??= new Map();
+  global.__deepspaceCodeGraphIndexState.autoReindexing ??= new Map();
+  global.__deepspaceCodeGraphIndexState.freshnessCheckedProjects ??= new Set();
+  return global.__deepspaceCodeGraphIndexState;
 }
 
 function hash(value: string): string {
@@ -434,7 +434,7 @@ export class CodeGraphIndexService {
         .on('unlink', changed)
         .on('error', (error) => {
           const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : 'unknown';
-          console.warn(`[orkestrai] Code graph watcher entered a 30-second backoff after filesystem error (${code}) for project ${project.id}.`);
+          console.warn(`[deepspace] Code graph watcher entered a 30-second backoff after filesystem error (${code}) for project ${project.id}.`);
           this.state.watcherRetryAt.set(project.id, Date.now() + 30_000);
           if (this.state.watchers.get(project.id)?.watcher === watcher) this.state.watchers.delete(project.id);
           void watcher.close().catch(() => undefined);
@@ -472,7 +472,7 @@ export class CodeGraphIndexService {
         if (after.builtAt !== before.builtAt || after.state !== before.state) this.broadcast(workspaceId);
       })().catch((error) => {
         const message = error instanceof Error ? error.message.slice(0, 240) : 'Unknown semantic indexing error.';
-        console.warn(`[orkestrai] Automatic semantic code index refresh failed for workspace ${workspaceId}: ${message}`);
+        console.warn(`[deepspace] Automatic semantic code index refresh failed for workspace ${workspaceId}: ${message}`);
       });
     }, 750));
   }
@@ -576,8 +576,8 @@ export class CodeGraphIndexService {
 
   private broadcast(workspaceId: string): void {
     const broadcast = (globalThis as typeof globalThis & {
-      __orkestraiBroadcast?: (payload: Record<string, unknown>) => void;
-    }).__orkestraiBroadcast;
+      __deepspaceBroadcast?: (payload: Record<string, unknown>) => void;
+    }).__deepspaceBroadcast;
     broadcast?.({ type: 'codeGraphChanged', workspaceId });
   }
 }

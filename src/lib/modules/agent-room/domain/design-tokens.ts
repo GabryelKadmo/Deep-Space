@@ -181,7 +181,7 @@ function flattenDtcg(value: unknown, path: string[] = [], result: FlatToken[] = 
   if (!value || typeof value !== 'object' || Array.isArray(value)) return result;
   const record = value as Record<string, unknown>;
   if ('$value' in record) {
-    const extension = (record.$extensions as Record<string, unknown> | undefined)?.['com.orkestrai'] as { values?: Record<string, unknown> } | undefined;
+    const extension = (record.$extensions as Record<string, unknown> | undefined)?.['com.deepspace'] as { values?: Record<string, unknown> } | undefined;
     result.push({ path: path.join('/'), declaredType: record.$type, value: record.$value, modeValues: extension?.values ?? {} });
     return result;
   }
@@ -209,7 +209,7 @@ export function importDesignTokens(text: string, filename: string, makeId: IdFac
     flat = parseCssTokens(text);
   } else {
     const parsed = JSON.parse(text) as Record<string, unknown>;
-    const extension = (parsed.$extensions as Record<string, unknown> | undefined)?.['com.orkestrai'] as { collectionName?: string; modes?: string[] } | undefined;
+    const extension = (parsed.$extensions as Record<string, unknown> | undefined)?.['com.deepspace'] as { collectionName?: string; modes?: string[] } | undefined;
     collectionName = extension?.collectionName?.trim() || collectionName;
     modeNames = extension?.modes?.filter((name) => typeof name === 'string' && name.trim()).slice(0, 16) || modeNames;
     if (!modeNames.length) modeNames = ['Default'];
@@ -287,12 +287,12 @@ export function exportDesignTokensDtcg(document: DesignDocument, collectionId: s
       $type: dtcgType(variable.type),
       $value: values[collection.modes[0].name],
       $description: variable.description || undefined,
-      $extensions: { 'com.orkestrai': { values } },
+      $extensions: { 'com.deepspace': { values } },
     });
   }
   return `${JSON.stringify({
     $schema: 'https://tr.designtokens.org/format/',
-    $extensions: { 'com.orkestrai': { collectionName: collection.name, modes: collection.modes.map((mode) => mode.name) } },
+    $extensions: { 'com.deepspace': { collectionName: collection.name, modes: collection.modes.map((mode) => mode.name) } },
     tokens,
   }, null, 2)}\n`;
 }

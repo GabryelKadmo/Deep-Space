@@ -228,11 +228,11 @@ function createManagedPortalExecutor({ WebContentsView, View, session, diagnosti
   }
 
   async function ensureSnapshot(tab) {
-    return world(tab, 'globalThis.__orkestraiControlledPortal.snapshot()');
+    return world(tab, 'globalThis.__deepspaceControlledPortal.snapshot()');
   }
 
   async function withRef(tab, ref, expression) {
-    return world(tab, `(() => { const el = globalThis.__orkestraiControlledPortal.resolve(${JSON.stringify(ref)}); ${expression} })()`);
+    return world(tab, `(() => { const el = globalThis.__deepspaceControlledPortal.resolve(${JSON.stringify(ref)}); ${expression} })()`);
   }
 
   async function waitFor(tab, args, timeoutMs) {
@@ -243,7 +243,7 @@ function createManagedPortalExecutor({ WebContentsView, View, session, diagnosti
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       if (args.urlIncludes && tab.window.webContents.getURL().includes(args.urlIncludes)) return { matched: 'url' };
-      const matched = await world(tab, `(() => ({ ref: ${args.ref ? `!!globalThis.__orkestraiControlledPortal.resolve(${JSON.stringify(args.ref)})` : 'false'}, text: ${args.text ? `globalThis.__orkestraiControlledPortal.extract({kind:'text'}).includes(${JSON.stringify(args.text)})` : 'false'} }))()`).catch(() => ({}));
+      const matched = await world(tab, `(() => ({ ref: ${args.ref ? `!!globalThis.__deepspaceControlledPortal.resolve(${JSON.stringify(args.ref)})` : 'false'}, text: ${args.text ? `globalThis.__deepspaceControlledPortal.extract({kind:'text'}).includes(${JSON.stringify(args.text)})` : 'false'} }))()`).catch(() => ({}));
       if ((args.ref && matched.ref) || (args.text && matched.text)) return { matched: args.ref ? 'ref' : 'text' };
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
@@ -280,17 +280,17 @@ function createManagedPortalExecutor({ WebContentsView, View, session, diagnosti
           break;
         }
         case 'snapshot': result = { url: publicPortalUrl(tab.window.webContents.getURL()), title: tab.window.webContents.getTitle(), elements: await ensureSnapshot(tab) }; break;
-        case 'click': result = await world(tab, `globalThis.__orkestraiControlledPortal.act(${JSON.stringify(request.args.ref)}, 'click', {})`); break;
+        case 'click': result = await world(tab, `globalThis.__deepspaceControlledPortal.act(${JSON.stringify(request.args.ref)}, 'click', {})`); break;
         case 'type': {
-          result = await world(tab, `globalThis.__orkestraiControlledPortal.act(${JSON.stringify(request.args.ref)}, 'type', ${JSON.stringify(request.args)})`);
+          result = await world(tab, `globalThis.__deepspaceControlledPortal.act(${JSON.stringify(request.args.ref)}, 'type', ${JSON.stringify(request.args)})`);
           if (request.args.submit) tab.window.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ENTER' }), tab.window.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'ENTER' });
           break;
         }
-        case 'select': result = await world(tab, `globalThis.__orkestraiControlledPortal.act(${JSON.stringify(request.args.ref)}, 'select', ${JSON.stringify(request.args)})`); break;
+        case 'select': result = await world(tab, `globalThis.__deepspaceControlledPortal.act(${JSON.stringify(request.args.ref)}, 'select', ${JSON.stringify(request.args)})`); break;
         case 'upload': {
           const marker = crypto.randomUUID();
-          await withRef(tab, request.args.ref, `if (el.type !== 'file') throw new Error('Not a file input'); el.setAttribute('data-orkestrai-upload', ${JSON.stringify(marker)});`);
-          const selector = `[data-orkestrai-upload="${marker}"]`;
+          await withRef(tab, request.args.ref, `if (el.type !== 'file') throw new Error('Not a file input'); el.setAttribute('data-deepspace-upload', ${JSON.stringify(marker)});`);
+          const selector = `[data-deepspace-upload="${marker}"]`;
           const dbg = tab.window.webContents.debugger;
           const owned = !dbg.isAttached();
           if (owned) dbg.attach('1.3');
@@ -300,7 +300,7 @@ function createManagedPortalExecutor({ WebContentsView, View, session, diagnosti
           if (!nodeId) throw new Error('Upload element reference is stale.');
           await dbg.sendCommand('DOM.setFileInputFiles', { nodeId, files: request.args.paths });
           } finally {
-            await world(tab, `document.querySelector(${JSON.stringify(selector)})?.removeAttribute('data-orkestrai-upload')`).catch(() => {});
+            await world(tab, `document.querySelector(${JSON.stringify(selector)})?.removeAttribute('data-deepspace-upload')`).catch(() => {});
             if (owned && dbg.isAttached()) dbg.detach();
           }
           result = { uploaded: request.args.paths.map((file) => path.basename(file)) };
@@ -336,7 +336,7 @@ function createManagedPortalExecutor({ WebContentsView, View, session, diagnosti
         }
         case 'wait': result = await waitFor(tab, request.args, request.timeoutMs); break;
         case 'screenshot': {
-          await world(tab, 'globalThis.__orkestraiControlledPortal.mask(true)');
+          await world(tab, 'globalThis.__deepspaceControlledPortal.mask(true)');
           try {
           // Hidden pages need capture requests to advance the compositor. Discard these
           // frames until the mask has painted; never return a pre-mask frame to an agent.
@@ -355,14 +355,14 @@ function createManagedPortalExecutor({ WebContentsView, View, session, diagnosti
           const dataUrl = image.toDataURL();
           if (dataUrl.length > 28_000_000) throw new Error('Portal screenshot exceeds the 20 MB capture limit.');
           result = { dataUrl, width: image.getSize().width, height: image.getSize().height };
-          } finally { await world(tab, 'globalThis.__orkestraiControlledPortal.mask(false)').catch(() => {}); }
+          } finally { await world(tab, 'globalThis.__deepspaceControlledPortal.mask(false)').catch(() => {}); }
           break;
         }
         case 'extract': {
-          result = await world(tab, `globalThis.__orkestraiControlledPortal.extract(${JSON.stringify(request.args)})`);
+          result = await world(tab, `globalThis.__deepspaceControlledPortal.extract(${JSON.stringify(request.args)})`);
           break;
         }
-        case 'dom': result = await world(tab, 'globalThis.__orkestraiControlledPortal.safeDom()'); break;
+        case 'dom': result = await world(tab, 'globalThis.__deepspaceControlledPortal.safeDom()'); break;
         case 'eval': throw new Error('Arbitrary scripts are disabled for managed agent control. Use typed Portal tools.');
         default: throw new Error('Unsupported managed Portal action.');
       }
@@ -400,7 +400,7 @@ function createManagedPortalExecutor({ WebContentsView, View, session, diagnosti
 
   async function inspect(request) {
     const managed = await getManaged(request); const tab = activeTab(managed);
-    return { ...state(managed), element: request.args.ref ? await world(tab, `globalThis.__orkestraiControlledPortal.inspect(${JSON.stringify(request.args.ref)})`) : null };
+    return { ...state(managed), element: request.args.ref ? await world(tab, `globalThis.__deepspaceControlledPortal.inspect(${JSON.stringify(request.args.ref)})`) : null };
   }
 
   async function userCommand(request, method, args) {

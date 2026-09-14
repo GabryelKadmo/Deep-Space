@@ -36,7 +36,7 @@ export type EnsuredAgentSession = {
 };
 
 function notifyWorkspaceChanged(workspaceId: string): void {
-  const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
   broadcast?.({ type: 'workspaceChanged', workspaceId });
 }
 
@@ -149,8 +149,8 @@ export class AgentSessionService {
       : [];
     const activeAgentSessionId = resumableAgentSessionId;
     const workspaceConfig = runtime.kind === 'wsl'
-      ? posix.join(runtime.linuxWorkingDir, '.orkestrai', 'workspace.json')
-      : join(workspace.workingDir, '.orkestrai', 'workspace.json');
+      ? posix.join(runtime.linuxWorkingDir, '.deepspace', 'workspace.json')
+      : join(workspace.workingDir, '.deepspace', 'workspace.json');
     const bridgeAgentToken = randomUUID();
     const autonomyPolicy = await autonomyPolicyService.get(workspaceId);
     const session = ptySessionManager.create({
@@ -171,13 +171,13 @@ export class AgentSessionService {
       env: {
         ...(payload.env ?? {}),
         ...profileEnv,
-        ORKESTRAI_NODE_ID: target.id,
-        ORKESTRAI_AGENT_TITLE: title,
-        ORKESTRAI_AGENT_TOKEN: bridgeAgentToken,
-        ORKESTRAI_WORKSPACE_CONFIG: workspaceConfig,
-        ORKESTRAI_POLICY_ENVELOPE: autonomyPolicyService.envelope(autonomyPolicy),
+        DEEPSPACE_NODE_ID: target.id,
+        DEEPSPACE_AGENT_TITLE: title,
+        DEEPSPACE_AGENT_TOKEN: bridgeAgentToken,
+        DEEPSPACE_WORKSPACE_CONFIG: workspaceConfig,
+        DEEPSPACE_POLICY_ENVELOPE: autonomyPolicyService.envelope(autonomyPolicy),
       },
-      forwardEnvToWsl: [...Object.keys(profileEnv), 'ORKESTRAI_POLICY_ENVELOPE'],
+      forwardEnvToWsl: [...Object.keys(profileEnv), 'DEEPSPACE_POLICY_ENVELOPE'],
       runtime,
       workspaceRoot: workspace.workingDir,
       transcriptHome: wslContext?.homeHostPath,

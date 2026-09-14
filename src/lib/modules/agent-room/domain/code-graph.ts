@@ -296,7 +296,7 @@ export type CodeGraphQualitySnapshot = {
   truncated: boolean;
 };
 
-export const CODE_GRAPH_SEMANTIC_MODEL = 'orkestrai-code-subword-v1';
+export const CODE_GRAPH_SEMANTIC_MODEL = 'deepspace-code-subword-v1';
 export const CODE_GRAPH_SEMANTIC_DIMENSIONS = 384;
 
 export type CodeGraphSemanticState = 'empty' | 'ready' | 'stale';

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { createNodeOnCanvas } from './helpers';
 
 /**
- * A CLI `orkestrai` autentica com `Authorization: Bearer <token>` e NAO envia
+ * A CLI `deepspace` autentica com `Authorization: Bearer <token>` e NAO envia
  * token no corpo — todos os endpoints da ponte precisam aceitar isso
  * (regressao: bridgeAskSchema exigia token no corpo e o ask falhava com
  * "The given data was invalid").
@@ -59,9 +59,9 @@ test.describe('ponte CLI (bridge)', () => {
     const { tmpdir } = await import('node:os');
     const { join } = await import('node:path');
     const { execFileSync } = await import('node:child_process');
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-bfloor-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-bfloor-'));
     execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-    execFileSync('git', ['config', 'user.email', 'e2e@orkestrai.local'], { cwd: dir });
+    execFileSync('git', ['config', 'user.email', 'e2e@deepspace.local'], { cwd: dir });
     execFileSync('git', ['config', 'user.name', 'E2E'], { cwd: dir });
     writeFileSync(join(dir, 'README.md'), '# x\n');
     execFileSync('git', ['add', '.'], { cwd: dir });
@@ -93,7 +93,7 @@ test.describe('ponte CLI (bridge)', () => {
       expect(floors.some((item) => item.name === 'feature-auth')).toBe(true);
 
       // commit no andar para a aterrissagem ter conteudo
-      const floorDir = join(dir, '.orkestrai', 'floors', 'feature-auth');
+      const floorDir = join(dir, '.deepspace', 'floors', 'feature-auth');
       writeFileSync(join(floorDir, 'feature.txt'), 'nova feature\n');
       execFileSync('git', ['add', '.'], { cwd: floorDir });
       execFileSync('git', ['commit', '-m', 'feature'], { cwd: floorDir });
@@ -159,10 +159,10 @@ test.describe('ponte CLI (bridge)', () => {
     });
 
     // Durante a conversa a edge fica verde/animada; depois volta ao normal.
-    await expect(page.locator('.orkestrai-edge.talking')).toHaveCount(1, { timeout: 10_000 });
+    await expect(page.locator('.deepspace-edge.talking')).toHaveCount(1, { timeout: 10_000 });
     const askResponse = await askPromise;
     expect(askResponse.status()).toBe(200);
-    await expect(page.locator('.orkestrai-edge.talking')).toHaveCount(0, { timeout: 10_000 });
+    await expect(page.locator('.deepspace-edge.talking')).toHaveCount(0, { timeout: 10_000 });
 
     await request.delete(`/api/agent-room/workspaces/${workspace.id}`);
   });

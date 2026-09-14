@@ -162,7 +162,7 @@ describe('WorkspaceService.reloadNode', () => {
   });
 
   it('preserva o ultimo diretorio valido de shell e descarta um caminho removido', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'orkestrai-shell-cwd-'));
+    const dir = await mkdtemp(join(tmpdir(), 'deepspace-shell-cwd-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'shell cwd', workingDir: '/tmp' });
     const valid = await workspaceRepository.createNode({
       workspaceId: workspace.id,
@@ -280,7 +280,7 @@ describe('WorkspaceService.reloadNode', () => {
   });
 
   it('altera o runtime de um unico terminal e preserva a sessao quando o ambiente efetivo nao muda', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'orkestrai-runtime-'));
+    const dir = await mkdtemp(join(tmpdir(), 'deepspace-runtime-'));
     try {
       const workspace = await workspaceRepository.createWorkspace({ name: 'runtime misto', workingDir: dir });
       const session = ptySessionManager.create({ command: '/bin/cat', cwd: dir });
@@ -315,7 +315,7 @@ describe('WorkspaceService.reloadNode', () => {
   });
 
   it('encerra somente o PTY afetado ao trocar de WSL para Windows nativo', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'orkestrai-runtime-'));
+    const dir = await mkdtemp(join(tmpdir(), 'deepspace-runtime-'));
     try {
       const workspace = await workspaceRepository.createWorkspace({ name: 'runtime wsl', workingDir: dir });
       const session = ptySessionManager.create({ command: '/bin/cat', cwd: dir });

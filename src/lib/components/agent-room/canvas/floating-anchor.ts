@@ -3,7 +3,7 @@ import type { Edge, Node } from '@xyflow/svelte';
 /**
  * Ancora flutuante do handle de um no: o ponto da borda (+ respiro de 4px)
  * mais proximo do centro do vizinho conectado mais perto. Compartilhada por
- * NodeShell (posiciona a bolinha do handle) e OrkestraiEdge (ponta da corda)
+ * NodeShell (posiciona a bolinha do handle) e DeepSpaceEdge (ponta da corda)
  * para que corda e bolinha coincidam sempre — mesmo com varias conexoes no
  * mesmo no (todas as cordas convergem para a unica bolinha).
  */

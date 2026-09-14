@@ -3,14 +3,14 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { useSvelarTest } from '@beeblock/svelar/testing';
-import { createInviteUri } from '@orkestrai/collaboration-protocol';
+import { createInviteUri } from '@deepspace/collaboration-protocol';
 import { workspaceRepository } from '$lib/modules/agent-room/infrastructure/repositories/WorkspaceRepository.js';
 import { taskBoardService } from '$lib/modules/agent-room/application/services/TaskBoardService.js';
 import { collaborationPolicy } from '$lib/modules/collaboration/domain/policies/CollaborationPolicy.js';
 import { collaborationRepository } from '$lib/modules/collaboration/infrastructure/repositories/CollaborationRepository.js';
 import { collaborationRuntime } from '$lib/modules/collaboration/application/services/CollaborationRuntime.js';
 import { collaborationSessionManager } from '$lib/modules/collaboration/application/services/CollaborationSessionManager.js';
-import { createRelayServer } from '../../packages/orkestrai-relay/src/server.mjs';
+import { createRelayServer } from '../../packages/deepspace-relay/src/server.mjs';
 
 async function eventually<T>(read: () => T | Promise<T>, accept: (value: T) => boolean, timeoutMs = 8_000): Promise<T> {
   const startedAt = Date.now();
@@ -39,7 +39,7 @@ describe('collaboration encrypted session', () => {
 
     const workspace = await workspaceRepository.createWorkspace({
       name: 'Remote product room',
-      workingDir: mkdtempSync(join(tmpdir(), 'orkestrai-session-')),
+      workingDir: mkdtempSync(join(tmpdir(), 'deepspace-session-')),
     });
     const share = await collaborationRepository.createShare({
       workspaceId: workspace.id,

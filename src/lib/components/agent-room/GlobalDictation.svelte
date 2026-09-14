@@ -38,7 +38,7 @@
   let audioRecorder: PcmAudioRecorder | null = null;
   let mediaStream: MediaStream | null = null;
   let recordingTarget: Editable | null = null;
-  const PLACEMENT_KEY = 'orkestrai.dictation-placement';
+  const PLACEMENT_KEY = 'deepspace.dictation-placement';
   const BUTTON_SIZE = 48;
   const EDGE_GAP = 14;
   let trigger = $state<HTMLButtonElement | null>(null);

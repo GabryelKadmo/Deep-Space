@@ -330,10 +330,10 @@
 
   async function openFile(path: string) {
     if (location.pathname === '/terminal') {
-      window.dispatchEvent(new CustomEvent('orkestrai:open-file', { detail: { workspaceId: document.workspaceId, path } }));
+      window.dispatchEvent(new CustomEvent('deepspace:open-file', { detail: { workspaceId: document.workspaceId, path } }));
       return;
     }
-    sessionStorage.setItem('orkestrai.open-file', JSON.stringify({ workspaceId: document.workspaceId, path }));
+    sessionStorage.setItem('deepspace.open-file', JSON.stringify({ workspaceId: document.workspaceId, path }));
     await goto(`/terminal?workspace=${document.workspaceId}`);
   }
 

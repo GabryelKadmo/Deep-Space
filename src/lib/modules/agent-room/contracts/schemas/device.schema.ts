@@ -62,7 +62,7 @@ export const deviceSessionSchema = z.object({
   deviceName: z.string(),
   status: deviceSessionStatusSchema,
   orientation: deviceOrientationSchema,
-  startedByOrkestrai: z.boolean(),
+  startedByDeepSpace: z.boolean(),
   attachedAt: z.string(),
   lastError: z.string().nullable(),
 });

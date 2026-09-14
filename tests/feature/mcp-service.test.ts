@@ -10,7 +10,7 @@ describe('McpService', () => {
   useSvelarTest({ refreshDatabase: true });
 
   it('adiciona, lista e remove servidores no .mcp.json (com merge)', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-mcp-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-mcp-'));
     // Usuario ja tinha um servidor configurado a mao — nao pode ser cloberado.
     writeFileSync(join(dir, '.mcp.json'), JSON.stringify({ mcpServers: { filesystem: { command: 'npx', args: ['-y', '@mcp/fs'] } } }));
     const workspace = await workspaceRepository.createWorkspace({ name: 'mcp', workingDir: dir });
@@ -28,10 +28,10 @@ describe('McpService', () => {
     expect(servers.map((server) => server.name)).toEqual(['filesystem']);
   });
 
-  it('orkestrai e figma gerenciados sao builtin; validacoes de entrada', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-mcp-builtin-'));
+  it('deepspace e figma gerenciados sao builtin; validacoes de entrada', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-mcp-builtin-'));
     writeFileSync(join(dir, '.mcp.json'), JSON.stringify({ mcpServers: {
-      orkestrai: { command: 'orkestrai', args: ['mcp'] },
+      deepspace: { command: 'deepspace', args: ['mcp'] },
       figma: { type: 'http', url: 'https://mcp.figma.com/mcp' },
     } }));
     const workspace = await workspaceRepository.createWorkspace({ name: 'builtin', workingDir: dir });

@@ -4,7 +4,7 @@
   import * as m from '$lib/paraglide/messages.js';
 
   type DesktopBridge = { runMenuCommand?: (action: string) => Promise<unknown> };
-  const desktop = (window as unknown as { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+  const desktop = (window as unknown as { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
 
   function run(action: string) {
     void desktop?.runMenuCommand?.(action);
@@ -12,7 +12,7 @@
 </script>
 
 <header class="desktop-titlebar" data-dictation-ignore>
-  <div class="brand"><img src="/brand/icon.svg" alt="" width="17" height="17" /><strong>Orkestrai</strong></div>
+  <div class="brand"><img src="/brand/icon.png" alt="" width="17" height="17" /><strong>Deep Space</strong></div>
 
   <nav aria-label={m['desktop.menu_aria']()}>
     <DropdownMenu.Root>
@@ -112,11 +112,20 @@
     font-weight: 600;
   }
 
+  /*
+   * O nav ocupa a coluna 1fr inteira, então marcá-lo como no-drag tornava todo o
+   * espaço vazio à direita dos menus não-arrastável — sobrava só a logo para mover
+   * a janela. O no-drag pertence aos botões; o vazio entre e depois deles herda o
+   * drag do header.
+   */
   nav,
   .window-controls {
     height: 100%;
     display: flex;
     align-items: center;
+  }
+
+  .window-controls {
     -webkit-app-region: no-drag;
   }
 
@@ -128,6 +137,7 @@
     background: transparent;
     color: var(--app-text-soft);
     font-size: 11px;
+    -webkit-app-region: no-drag;
   }
 
   :global(.menu-trigger:hover),

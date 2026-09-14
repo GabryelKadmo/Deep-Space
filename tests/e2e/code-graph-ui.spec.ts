@@ -62,7 +62,7 @@ function graphNodePoints(image: Buffer): Array<{ x: number; y: number }> {
 
 test.describe('code graph UI', () => {
   test('keeps graph controls actionable and readable in light and dark themes', async ({ page, request }) => {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-code-graph-ui-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-code-graph-ui-'));
     writeFileSync(join(directory, 'package.json'), '{"name":"code-graph-ui"}\n');
     writeFileSync(join(directory, 'index.ts'), 'export function greet(name: string) { return `Hello ${name}`; }\n');
 
@@ -89,7 +89,7 @@ test.describe('code graph UI', () => {
     const node = (await nodeResponse.json()).data as { id: string };
 
     try {
-      for (const appTheme of ['orkestrai-light', 'orkestrai-dark']) {
+      for (const appTheme of ['deepspace-light', 'deepspace-dark']) {
         await request.put('/api/agent-room/settings', {
           data: { ...originalSettings, appTheme, uiLanguage: 'en' },
         });
@@ -113,7 +113,7 @@ test.describe('code graph UI', () => {
         await indexButton.click();
         await expect(page.getByText('Code graph indexed.', { exact: true })).toBeVisible();
 
-        if (appTheme === 'orkestrai-light') {
+        if (appTheme === 'deepspace-light') {
           const visualization = graph.getByTestId('code-graph-visualization');
           await expect(visualization.locator('canvas.sigma-nodes')).toBeVisible();
           const before = await visualization.boundingBox();
@@ -185,7 +185,7 @@ test.describe('code graph UI', () => {
           );
           await expect(visualization).toHaveAttribute('data-focused-symbol', hoveredSymbol);
           await expect(graph.getByText(focusedSymbol.name, { exact: true }).last()).toBeVisible();
-          const cameraKey = `orkestrai:code-graph-camera:${workspace.id}:${node.id}`;
+          const cameraKey = `deepspace:code-graph-camera:${workspace.id}:${node.id}`;
           await expect.poll(() => page.evaluate((key) => sessionStorage.getItem(key), cameraKey)).not.toBeNull();
           await page.waitForTimeout(450);
 

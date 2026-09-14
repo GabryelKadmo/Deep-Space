@@ -10,7 +10,7 @@
   import { Button } from '$lib/components/ui/button';
   import * as m from '$lib/paraglide/messages.js';
 
-  const RELEASES_URL = 'https://github.com/beeblock/orkestrai/releases/latest';
+  const RELEASES_URL = 'https://github.com/GabryelKadmo/Deep-Space/releases/latest';
 
   type UpdatePayload =
     | { status: 'idle' }
@@ -38,7 +38,7 @@
   let plannedManualUpdate = $state(false);
 
   onMount(() => {
-    const desktop = (window as unknown as { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+    const desktop = (window as unknown as { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
     if (!desktop?.onUpdate) return;
     let active = true;
     const apply = (payload: UpdatePayload) => {
@@ -76,13 +76,13 @@
 
   function install() {
     dialogOpen = false;
-    const desktop = (window as unknown as { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+    const desktop = (window as unknown as { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
     void desktop?.installUpdate?.();
   }
 
   function downloadManually() {
     dialogOpen = false;
-    const desktop = (window as unknown as { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+    const desktop = (window as unknown as { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
     void desktop?.openExternal?.(RELEASES_URL);
   }
 </script>

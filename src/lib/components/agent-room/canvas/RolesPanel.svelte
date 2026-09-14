@@ -157,7 +157,7 @@
   }
 
   const desktop = typeof window !== 'undefined'
-    ? (window as unknown as { orkestraiDesktop?: { pickDirectory: () => Promise<string | null> } }).orkestraiDesktop
+    ? (window as unknown as { deepspaceDesktop?: { pickDirectory: () => Promise<string | null> } }).deepspaceDesktop
     : undefined;
 
   async function discoverFromFolder() {
@@ -191,7 +191,7 @@
 
   <p class="hint">
     {m['roles.hint_1']()}
-    <code>.orkestrai/roles/</code> {m['roles.hint_2']()}
+    <code>.deepspace/roles/</code> {m['roles.hint_2']()}
     <strong>markdown</strong> {m['roles.hint_3']()}
   </p>
 

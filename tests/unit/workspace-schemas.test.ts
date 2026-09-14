@@ -22,7 +22,7 @@ describe('workspaceSchemas — tipos de nó do canvas', () => {
       y: 20,
       width: 320,
       height: 240,
-      payload: { path: '.orkestrai/images/ref.png' },
+      payload: { path: '.deepspace/images/ref.png' },
     });
     expect(parsed.success).toBe(true);
   });
