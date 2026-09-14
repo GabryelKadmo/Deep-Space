@@ -341,7 +341,7 @@ function createSplash() {
     skipTaskbar: true,
     alwaysOnTop: true,
     transparent: true,
-    backgroundColor: '#0D0B2E',
+    backgroundColor: '#000000',
     webPreferences: { contextIsolation: true },
   });
   splashWindow.center();
@@ -819,10 +819,23 @@ async function createWindow() {
   });
   mainWindow.on('unresponsive', () => diagnostics?.write('error', 'renderer', 'Main window became unresponsive'));
 
-  mainWindow.once('ready-to-show', () => {
+  // O splash não pode depender só de 'ready-to-show': esse evento espera o primeiro paint,
+  // que o Chromium adia enquanto a janela está minimizada ou em segundo plano, e o splash
+  // ficava na tela até o usuário clicar. 'did-finish-load' não depende de paint, e o timeout
+  // cobre o caso do renderer travar antes de qualquer um dos dois.
+  let revealed = false;
+  const revealMainWindow = () => {
+    if (revealed) return;
+    revealed = true;
+    clearTimeout(revealTimer);
     closeSplash();
     mainWindow?.show();
-  });
+  };
+  const revealTimer = setTimeout(revealMainWindow, 20000);
+
+  mainWindow.once('ready-to-show', revealMainWindow);
+  mainWindow.webContents.once('did-finish-load', revealMainWindow);
+  mainWindow.once('closed', () => clearTimeout(revealTimer));
 
   await mainWindow.loadURL(`http://127.0.0.1:${port}/`);
 }
@@ -1308,14 +1321,18 @@ if (!gotLock) {
     buildApplicationMenu();
     createTray();
     const initialInvite = findCollaborationInvite(process.argv);
+    // O splash existe para cobrir a subida do servidor, então precisa vir antes dela — criado
+    // depois, ele só aparecia no intervalo entre servidor pronto e janela pronta, que é curto.
+    // Se o launch for em segundo plano (decidido só depois das preferências), ele é fechado.
+    createSplash();
     await ensureServer();
     await refreshCorePreferences();
     const loginLaunch = app.isPackaged && app.getLoginItemSettings().wasOpenedAtLogin;
     const hiddenCoreLaunch = (isBackgroundCoreLaunch(process.argv) || loginLaunch) && corePreferences.runInBackground && !initialInvite;
     if (hiddenCoreLaunch) {
+      closeSplash();
       if (process.platform === 'darwin') app.dock.hide();
     } else {
-      createSplash();
       await createWindow();
       if (initialInvite) await receiveCollaborationInvite(initialInvite);
     }
