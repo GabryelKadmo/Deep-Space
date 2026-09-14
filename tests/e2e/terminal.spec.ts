@@ -180,7 +180,7 @@ test.describe('terminais PTY', () => {
     }
   });
 
-  test('copia a selecao e cola texto com os atalhos nativos do Windows', async ({ page, request, context }) => {
+  test('copia a selecao e cola texto e imagem com o mesmo atalho', async ({ page, request, context }) => {
     const runId = Date.now();
     const marker = `ORKESTRAI_COPY_${runId}`;
     const workspaceResponse = await request.post('/api/agent-room/workspaces', {
@@ -229,6 +229,22 @@ test.describe('terminais PTY', () => {
       await page.keyboard.press('Control+V');
       await page.keyboard.press('Enter');
       await expect(terminal.locator('.terminal-container')).toContainText(pasteMarker, { timeout: 10_000 });
+
+      // Imagem no clipboard: o mesmo atalho guarda o arquivo no workspace e
+      // entrega o caminho ao terminal, sem depender do atalho de cada CLI.
+      await page.evaluate(async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 8;
+        canvas.height = 8;
+        const context = canvas.getContext('2d')!;
+        context.fillStyle = '#ff0000';
+        context.fillRect(0, 0, 8, 8);
+        const blob = await new Promise<Blob>((resolve) => canvas.toBlob((value) => resolve(value!), 'image/png'));
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      });
+      await input.focus();
+      await page.keyboard.press('Control+V');
+      await expect(terminal.locator('.terminal-container')).toContainText('.orkestrai/attachments/', { timeout: 15_000 });
     } finally {
       await request.delete(`/api/agent-room/workspaces/${workspace.id}`);
     }

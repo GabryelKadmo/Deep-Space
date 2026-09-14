@@ -500,7 +500,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'atalhos',
       title: 'Shortcuts',
-      body: `⌘P palette · ⌘K (or Ctrl+K) search documentation from any screen · ⌘2 Provider Center · ⌘⇧A next attention · ⌘⇧T organize the whole visible canvas · Cmd/Ctrl+D duplicate selected shapes · Cmd/Ctrl+C and Cmd/Ctrl+V copy and paste selected shapes · ⌘G group · ⌘⇧G ungroup · N new note · L connect selected · Alt+1…9 focus terminal · Alt+Space voice dictation · ⌘F search terminal · ⌘Z undo · Backspace delete. In Windows terminals, Ctrl+V pastes native clipboard text; when the clipboard has no text, the original CLI shortcut remains available for image paste. On Windows, the styled title bar provides File, Edit, View, Workspace, Window, and Help while preserving window controls; macOS and Linux keep their platform menus.`,
+      body: `⌘P palette · ⌘K (or Ctrl+K) search documentation from any screen · ⌘2 Provider Center · ⌘⇧A next attention · ⌘⇧T organize the whole visible canvas · Cmd/Ctrl+D duplicate selected shapes · Cmd/Ctrl+C and Cmd/Ctrl+V copy and paste selected shapes · ⌘G group · ⌘⇧G ungroup · N new note · L connect selected · Alt+1…9 focus terminal · Alt+Space voice dictation · ⌘F search terminal · ⌘Z undo · Backspace delete. In terminals, Ctrl+V (Cmd+V on macOS) pastes text and also images or files: the attachment is stored under .orkestrai/attachments/ and its path is pasted into the prompt, the same shortcut across every CLI. Ctrl+Shift+V and Shift+Insert work as aliases, and Alt+V stays free for the CLI own shortcut. On Windows, the styled title bar provides File, Edit, View, Workspace, Window, and Help while preserving window controls; macOS and Linux keep their platform menus.`,
     },
   ],
   useCases: [
@@ -920,6 +920,16 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+{
+  "date": "September 13, 2026 · 0.30.1",
+  "title": "Orkestrai 0.30.1: one paste shortcut for every terminal",
+  "summary": "Ctrl+V pastes text and images on every CLI",
+  "items": [
+    "Ctrl+V (Cmd+V on macOS) pastes clipboard text in any terminal, with Ctrl+Shift+V and Shift+Insert as aliases. xterm no longer cancels the keystroke, so the native paste reaches the terminal instead of the control character each CLI interpreted through a different shortcut.",
+    "An image or file pasted into a terminal becomes a workspace attachment under .orkestrai/attachments/ and its path is pasted into the prompt, the same contract the canvas composer already uses to hand references to agents.",
+    "Alt+V stays free for CLIs that document their own shortcut."
+  ]
+},
 {
   "date": "September 11, 2026 · 0.30.0",
   "title": "Orkestrai 0.30.0: natural-language desktop work and signed microphone access",

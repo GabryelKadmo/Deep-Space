@@ -5,6 +5,14 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.30.1 - 2026-09-13
+
+### Fixed
+
+- Terminal paste is now identical across every agent CLI. `Ctrl+V` (`Cmd+V` on macOS) pastes clipboard text, with `Ctrl+Shift+V` and `Shift+Insert` as aliases. xterm no longer cancels the keystroke, so the browser native paste reaches the terminal instead of a bare control character that each CLI interpreted on its own through a different shortcut.
+
+- Pasting an image or a file into a terminal stores it in the workspace under `.orkestrai/attachments/` and pastes the resulting path into the prompt, so every provider receives the reference the same way. `Alt+V` stays free for CLIs that document their own shortcut.
+
 ## 0.30.0 - 2026-09-11
 
 ### Added And Fixed

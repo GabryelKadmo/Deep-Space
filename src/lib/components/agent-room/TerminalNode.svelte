@@ -20,7 +20,8 @@
   import { speakText } from './voice-speech.js';
   import { voiceModelsReadyForUse } from './voice-model-status.js';
   import { terminalDictationInput } from './terminal-dictation.js';
-  import { isTerminalCopyShortcut, isWindowsTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, type TerminalCell } from './terminal-selection.js';
+  import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, type TerminalCell } from './terminal-selection.js';
+  import { clipboardPasteFiles, storePastedTerminalFiles, terminalPathTokens } from './terminal-paste.js';
   import { workingDirectoryFromOsc } from './terminal-working-directory.js';
   import { audioSignalIsEmpty } from '$lib/modules/agent-room/domain/voice-audio.js';
   import {
@@ -357,27 +358,21 @@
     }
   }
 
-  async function pasteTerminalClipboard(terminal: Terminal) {
-    const desktop = (window as typeof window & {
-      orkestraiDesktop?: {
-        pasteClipboardText?: () => Promise<boolean>;
-        platform?: string;
-      };
-    }).orkestraiDesktop;
+  /**
+   * Imagem/arquivo colado vira arquivo do workspace e o terminal recebe o
+   * caminho, que toda CLI de agente sabe ler. Evita depender do atalho
+   * proprio de cada provider para transportar o binario.
+   */
+  async function pasteFilesIntoTerminal(terminal: Terminal, files: File[]) {
+    if (!workspaceId) return;
     try {
-      if (desktop?.pasteClipboardText && await desktop.pasteClipboardText()) return;
-      if (!desktop?.pasteClipboardText) {
-        const text = await navigator.clipboard.readText();
-        if (text) {
-          terminal.paste(text);
-          return;
-        }
-      }
-    } catch {
-      // Fall through to the original Ctrl+V control character. Agent CLIs use
-      // it for image paste when the clipboard does not contain text.
+      const tokens = terminalPathTokens(await storePastedTerminalFiles(workspaceId, files));
+      if (tokens) terminal.paste(tokens);
+    } catch (error) {
+      statusMessage = error instanceof Error && error.message === 'attachment_too_large'
+        ? m['attachment.too_large']()
+        : m['attachment.error']();
     }
-    sendInput?.('\x16');
   }
 
   onMount(() => {
@@ -404,12 +399,10 @@
       }
       const desktopPlatform = (window as typeof window & { orkestraiDesktop?: { platform?: string } })
         .orkestraiDesktop?.platform;
-      if (isWindowsTerminalPasteShortcut(event, desktopPlatform ?? navigator.platform)) {
-        event.preventDefault();
-        event.stopPropagation();
-        void pasteTerminalClipboard(terminal);
-        return false;
-      }
+      // Sem preventDefault: o xterm ignora a tecla e o Chromium dispara o
+      // "paste" nativo, tratado abaixo — texto pelo proprio xterm, arquivo
+      // pelo handler de captura. E o que padroniza o atalho entre as CLIs.
+      if (isTerminalPasteShortcut(event, desktopPlatform ?? navigator.platform)) return false;
       if (event.type !== 'keydown') return true;
       if (matchesCombo(event, dictateHotkey)) return false;
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'f') return false;
@@ -474,6 +467,16 @@
     screen?.addEventListener('pointerdown', selectionPointerDown);
     screen?.addEventListener('contextmenu', copySelectionFromContextMenu);
     terminal.element?.addEventListener('mousedown', blockNativeSingleClickSelection, { capture: true });
+    // Captura antes dos handlers do proprio xterm (textarea e element): texto
+    // segue o fluxo nativo dele, arquivo/imagem viram anexo do workspace.
+    const handleTerminalPaste = (event: ClipboardEvent) => {
+      const files = clipboardPasteFiles(event.clipboardData);
+      if (!files.length || !workspaceId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      void pasteFilesIntoTerminal(terminal, files);
+    };
+    terminal.element?.addEventListener('paste', handleTerminalPaste, { capture: true });
     window.addEventListener('pointermove', selectionPointerMove);
     window.addEventListener('pointerup', selectionPointerUp);
 
@@ -760,6 +763,7 @@
       screen?.removeEventListener('pointerdown', selectionPointerDown);
       screen?.removeEventListener('contextmenu', copySelectionFromContextMenu);
       terminal.element?.removeEventListener('mousedown', blockNativeSingleClickSelection, { capture: true });
+      terminal.element?.removeEventListener('paste', handleTerminalPaste, { capture: true });
       window.removeEventListener('pointermove', selectionPointerMove);
       window.removeEventListener('pointerup', selectionPointerUp);
       window.removeEventListener('resize', refitForDisplayChange);

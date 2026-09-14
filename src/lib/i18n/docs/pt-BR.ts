@@ -504,7 +504,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'atalhos',
       title: 'Atalhos',
-      body: `⌘P paleta · ⌘K (ou Ctrl+K) buscar na documentação de qualquer tela · ⌘2 Central de Providers · ⌘⇧A próxima atenção · ⌘⇧T organizar todo o canvas visível · Cmd/Ctrl+D duplicar formas selecionadas · Cmd/Ctrl+C e Cmd/Ctrl+V copiar e colar formas selecionadas · ⌘G agrupar · ⌘⇧G desagrupar · N nova nota · L conectar selecionados · Alt+1…9 focar terminal · Alt+Espaço ditado por voz · ⌘F buscar no terminal · ⌘Z desfazer · Backspace excluir. Nos terminais do Windows, Ctrl+V cola o texto do clipboard nativo; quando não há texto, o atalho original da CLI continua disponível para colar imagem. No Windows, a barra de título estilizada oferece Arquivo, Editar, Visualizar, Workspace, Janela e Ajuda sem perder os controles da janela; macOS e Linux mantêm seus menus de plataforma.`,
+      body: `⌘P paleta · ⌘K (ou Ctrl+K) buscar na documentação de qualquer tela · ⌘2 Central de Providers · ⌘⇧A próxima atenção · ⌘⇧T organizar todo o canvas visível · Cmd/Ctrl+D duplicar formas selecionadas · Cmd/Ctrl+C e Cmd/Ctrl+V copiar e colar formas selecionadas · ⌘G agrupar · ⌘⇧G desagrupar · N nova nota · L conectar selecionados · Alt+1…9 focar terminal · Alt+Espaço ditado por voz · ⌘F buscar no terminal · ⌘Z desfazer · Backspace excluir. Nos terminais, Ctrl+V (Cmd+V no macOS) cola texto e também imagem ou arquivo: o anexo é salvo em .orkestrai/attachments/ e o caminho é colado no prompt, com o mesmo atalho em todas as CLIs. Ctrl+Shift+V e Shift+Insert funcionam como alias e Alt+V segue livre para o atalho próprio da CLI. No Windows, a barra de título estilizada oferece Arquivo, Editar, Visualizar, Workspace, Janela e Ajuda sem perder os controles da janela; macOS e Linux mantêm seus menus de plataforma.`,
     },
   ],
   useCases: [
@@ -924,6 +924,16 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+{
+  "date": "13 de setembro de 2026 · 0.30.1",
+  "title": "Orkestrai 0.30.1: um único atalho para colar em qualquer terminal",
+  "summary": "Ctrl+V cola texto e imagem em todas as CLIs",
+  "items": [
+    "Ctrl+V (Cmd+V no macOS) cola o texto do clipboard em qualquer terminal, com Ctrl+Shift+V e Shift+Insert como alias. O xterm não cancela mais a tecla, então a colagem nativa chega ao terminal em vez do caractere de controle que cada CLI interpretava com um atalho diferente.",
+    "Imagem ou arquivo colado no terminal vira anexo do workspace em .orkestrai/attachments/ e o caminho é colado no prompt, o mesmo contrato que o composer do canvas já usa para entregar referências aos agentes.",
+    "Alt+V continua livre para as CLIs que documentam esse atalho próprio."
+  ]
+},
 {
   "date": "11 de setembro de 2026 · 0.30.0",
   "title": "Orkestrai 0.30.0: trabalho no desktop por linguagem natural e acesso ao microfone",

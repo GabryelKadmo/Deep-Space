@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isTerminalCopyShortcut, isWindowsTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange } from '$lib/components/agent-room/terminal-selection.js';
+import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange } from '$lib/components/agent-room/terminal-selection.js';
 
 describe('terminal selection geometry', () => {
   it('mapeia coordenadas pelo retangulo visual escalado', () => {
@@ -36,12 +36,22 @@ describe('terminal selection geometry', () => {
     expect(isTerminalCopyShortcut({ ...event, type: 'keyup' }, true)).toBe(false);
   });
 
-  it('intercepta somente Ctrl+V simples no Windows para colar texto', () => {
+  it('usa o mesmo atalho de colagem em todos os sistemas', () => {
     const event = { type: 'keydown', key: 'v', ctrlKey: true, metaKey: false, altKey: false, shiftKey: false };
-    expect(isWindowsTerminalPasteShortcut(event, 'win32')).toBe(true);
-    expect(isWindowsTerminalPasteShortcut(event, 'Win64')).toBe(true);
-    expect(isWindowsTerminalPasteShortcut(event, 'darwin')).toBe(false);
-    expect(isWindowsTerminalPasteShortcut({ ...event, shiftKey: true }, 'win32')).toBe(false);
-    expect(isWindowsTerminalPasteShortcut({ ...event, type: 'keyup' }, 'win32')).toBe(false);
+    expect(isTerminalPasteShortcut(event, 'win32')).toBe(true);
+    expect(isTerminalPasteShortcut(event, 'Linux x86_64')).toBe(true);
+    // Ctrl+Shift+V (terminais do Linux) e Shift+Insert (X11) valem como o mesmo atalho.
+    expect(isTerminalPasteShortcut({ ...event, shiftKey: true }, 'win32')).toBe(true);
+    expect(isTerminalPasteShortcut({ type: 'keydown', key: 'Insert', ctrlKey: false, metaKey: false, altKey: false, shiftKey: true }, 'win32')).toBe(true);
+
+    // macOS cola com Cmd+V; Ctrl+V continua indo para a CLI, como no VS Code.
+    const command = { ...event, ctrlKey: false, metaKey: true };
+    expect(isTerminalPasteShortcut(command, 'MacIntel')).toBe(true);
+    expect(isTerminalPasteShortcut(event, 'darwin')).toBe(false);
+    expect(isTerminalPasteShortcut(command, 'win32')).toBe(false);
+
+    // Alt+V segue reservado para o atalho proprio das CLIs que o documentam.
+    expect(isTerminalPasteShortcut({ ...event, ctrlKey: false, altKey: true }, 'win32')).toBe(false);
+    expect(isTerminalPasteShortcut({ ...event, type: 'keyup' }, 'win32')).toBe(false);
   });
 });

@@ -51,15 +51,29 @@ export function isTerminalCopyShortcut(event: Pick<KeyboardEvent, 'type' | 'key'
     && event.key.toLowerCase() === 'c';
 }
 
-export function isWindowsTerminalPasteShortcut(
+function isMacTerminalPlatform(platform: string): boolean {
+  const value = platform.toLowerCase();
+  return value.startsWith('mac') || value === 'darwin';
+}
+
+/**
+ * Atalho unico de colagem em todos os sistemas, no lugar do atalho proprio de
+ * cada CLI (Ctrl+V, Alt+V, Shift+Insert...). Sem isso o xterm avalia a tecla,
+ * cancela o evento com preventDefault e o navegador nunca dispara o "paste"
+ * nativo: a CLI recebe so o caractere de controle e decide sozinha o que fazer,
+ * que e a origem da divergencia entre providers. Retornar false no handler do
+ * xterm mantem o paste nativo do Chromium, igual ao terminal do VS Code.
+ *
+ * Alt+V continua livre para as CLIs que ja documentam esse atalho proprio.
+ */
+export function isTerminalPasteShortcut(
   event: Pick<KeyboardEvent, 'type' | 'key' | 'ctrlKey' | 'metaKey' | 'altKey' | 'shiftKey'>,
   platform: string
 ) {
-  return platform.toLowerCase().startsWith('win')
-    && event.type === 'keydown'
-    && event.ctrlKey
-    && !event.metaKey
-    && !event.altKey
-    && !event.shiftKey
-    && event.key.toLowerCase() === 'v';
+  if (event.type !== 'keydown' || event.altKey) return false;
+  if (event.key === 'Insert') return event.shiftKey && !event.ctrlKey && !event.metaKey;
+  if (event.key.toLowerCase() !== 'v') return false;
+  return isMacTerminalPlatform(platform)
+    ? event.metaKey && !event.ctrlKey
+    : event.ctrlKey && !event.metaKey;
 }

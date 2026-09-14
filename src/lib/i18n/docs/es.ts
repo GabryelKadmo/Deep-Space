@@ -500,7 +500,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'atalhos',
       title: 'Atajos',
-      body: `⌘P paleta · ⌘K (o Ctrl+K) buscar en la documentación desde cualquier pantalla · ⌘2 Central de Providers · ⌘⇧A próxima atención · ⌘⇧T organizar todo el canvas visible · Cmd/Ctrl+D duplicar formas seleccionadas · Cmd/Ctrl+C y Cmd/Ctrl+V copiar y pegar formas seleccionadas · ⌘G agrupar · ⌘⇧G desagrupar · N nueva nota · L conectar seleccionados · Alt+1…9 enfocar terminal · Alt+Espacio dictado por voz · ⌘F buscar en la terminal · ⌘Z deshacer · Backspace eliminar. En las terminales de Windows, Ctrl+V pega el texto del portapapeles nativo; cuando no hay texto, el atajo original de la CLI sigue disponible para pegar imágenes. En Windows, la barra de título estilizada ofrece Archivo, Editar, Ver, Workspace, Ventana y Ayuda sin perder los controles de la ventana; macOS y Linux conservan sus menús de plataforma.`,
+      body: `⌘P paleta · ⌘K (o Ctrl+K) buscar en la documentación desde cualquier pantalla · ⌘2 Central de Providers · ⌘⇧A próxima atención · ⌘⇧T organizar todo el canvas visible · Cmd/Ctrl+D duplicar formas seleccionadas · Cmd/Ctrl+C y Cmd/Ctrl+V copiar y pegar formas seleccionadas · ⌘G agrupar · ⌘⇧G desagrupar · N nueva nota · L conectar seleccionados · Alt+1…9 enfocar terminal · Alt+Espacio dictado por voz · ⌘F buscar en la terminal · ⌘Z deshacer · Backspace eliminar. En las terminales, Ctrl+V (Cmd+V en macOS) pega texto y también imágenes o archivos: el adjunto se guarda en .orkestrai/attachments/ y su ruta se pega en el prompt, con el mismo atajo en todas las CLI. Ctrl+Shift+V y Shift+Insert funcionan como alias y Alt+V queda libre para el atajo propio de la CLI. En Windows, la barra de título estilizada ofrece Archivo, Editar, Ver, Workspace, Ventana y Ayuda sin perder los controles de la ventana; macOS y Linux conservan sus menús de plataforma.`,
     },
   ],
   useCases: [
@@ -920,6 +920,16 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+{
+  "date": "13 de septiembre de 2026 · 0.30.1",
+  "title": "Orkestrai 0.30.1: un solo atajo para pegar en cualquier terminal",
+  "summary": "Ctrl+V pega texto e imágenes en todas las CLI",
+  "items": [
+    "Ctrl+V (Cmd+V en macOS) pega el texto del portapapeles en cualquier terminal, con Ctrl+Shift+V y Shift+Insert como alias. xterm ya no cancela la tecla, así que el pegado nativo llega a la terminal en lugar del carácter de control que cada CLI interpretaba con un atajo distinto.",
+    "Una imagen o un archivo pegado en la terminal se guarda como adjunto del workspace en .orkestrai/attachments/ y su ruta se pega en el prompt, el mismo contrato que el composer del canvas ya usa para entregar referencias a los agentes.",
+    "Alt+V sigue libre para las CLI que documentan su propio atajo."
+  ]
+},
 {
   "date": "11 de septiembre de 2026 · 0.30.0",
   "title": "Orkestrai 0.30.0: trabajo de escritorio en lenguaje natural y acceso al micrófono",
