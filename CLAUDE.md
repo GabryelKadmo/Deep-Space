@@ -4,8 +4,9 @@
 
 - This repository is **Deep Space**, a fork of [Orkestrai](https://github.com/beeblock/orkestrai) under Apache 2.0. Attribution lives in `NOTICE`; `LICENSE` keeps the upstream copyright and must not be edited.
 - Remotes in a full working copy: `origin` is `GabryelKadmo/Deep-Space` (the product), and the fork `GabryelKadmo/orkestrai` plus `beeblock/orkestrai` exist only as mirrors for pulling upstream work. Never push product branches to the mirrors.
-- **The user-facing name is Deep Space. The agent bridge is deliberately still `deepspace`.** The `deepspace` CLI command, the `.deepspace/` workspace directory, the `DEEPSPACE_*` environment variables, the `deepspaceDesktop` preload bridge, `packages/deepspace-*` and the agent skill files keep their names, because renaming them breaks workspaces that already exist and the agent instructions cached inside them. Do not "finish the rename" unless the user asks for that migration explicitly.
-- Glued identifiers (`DeepSpaceInputs`, `DeepSpaceVersion`, `DeepSpaceEdge`) are code, not branding. Only the standalone capitalized word was renamed.
+- **Nothing is named after the upstream project any more.** The bridge was kept on the old naming for a while, on the argument that renaming breaks provisioned workspaces and the agent instructions cached inside them; that argument protects other people's installs, and with no published release there were none. The rename covered the `deepspace` CLI command, `.deepspace/`, `DEEPSPACE_*`, the `deepspaceDesktop` preload bridge, the `deepspace:` protocol and IPC channels, `packages/deepspace-*`, the `@deepspace/*` workspace scope, the theme ids and the glued identifiers. A workspace provisioned before it is repaired by `ensureProvisioned` on the next open, but the old directory is left behind rather than deleted.
+- The only remaining mentions of the upstream name are attribution and must not be touched: `NOTICE`, `LICENSE`, the READMEs, the fork note in the changelog, and links to `beeblock/orkestrai`. `GabryelKadmo/orkestrai` is a real mirror repository, not a stale name.
+- Renaming a workspace package scope needs `npm install` afterwards: the old `node_modules/@scope` symlink survives and the build fails to resolve the new one while the stale directory sits there.
 - Release artifacts must stay spaceless (`DeepSpace-*`) even though `productName` is `Deep Space`: GitHub rewrites spaces in release asset names, which breaks the match against `latest-*.yml` and silently kills auto-update. Any shell step that touches `Deep Space.app` needs quoting.
 - `deepspace-branding/` still holds the upstream logo, and the READMEs render it. Apache 2.0 does not grant trademark rights, so these assets must be replaced before any public distribution.
 - The collaboration relay defaults to the upstream public endpoint until `PUBLIC_RELAY_URL` is set; `docs/relay.md` covers deploying `packages/deepspace-relay`.
@@ -15,6 +16,8 @@
 - `npm test` reports ~97 failures that are environmental, not regressions: node-pty spawning POSIX commands (`/bin/sh`), plus a pre-existing parse error in `tests/unit/release-artifacts.test.ts`. `tests/unit/tour-engine.test.ts` also times out. Compare against a clean tree with `git stash` before blaming a change.
 - `better-sqlite3` cannot serve both runtimes at once: `npm run electron:rebuild` builds it for Electron and breaks `npm run dev`; `npm rebuild better-sqlite3` puts it back for Node. Stop any running dev server first, or the rebuild fails with `EPERM: unlink`.
 - The e2e config builds before starting its server and times out at 180s on a cold build. Build first, or point a temporary Playwright config at an already running server.
+- `playwright.config.ts` cannot run as-is on Windows: it passes the port as a POSIX prefix (`PORT=5199 node ...`), which `cmd.exe` rejects, and its module scope deletes `test-results/runtime`, which Playwright re-executes in the worker while the server still holds `database.db` open — an `EBUSY` that Linux never sees, because unlinking an open file is allowed there. Run from a throwaway config that passes the port through `env` and uses a fresh data directory per run.
+- The visual regression suite does not catch a palette change. `toHaveScreenshot` only counts a pixel as different past a colour-distance threshold and then needs more than 1% of them, so dark-on-dark edits pass untouched. It guards layout, not colour.
 - A workspace whose working directory is this repository will provision agent skill files into it (`.agents/`, `.cline/`, `.devin/`, `.mcp.json`, and an edited `AGENTS.md`). Use a scratch directory for test workspaces.
 
 ## Required Flow
@@ -35,8 +38,8 @@
 ## Git And Commits
 
 - Write every commit subject and body in English. Never use Portuguese or Spanish in commit messages.
-- Use Conventional Commits with a lowercase type and an imperative, concise subject: `type(optional-scope): summary`.
-- Prefer `feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `ci`, and `chore`; add a scope when it makes the affected area clearer.
+- Use Conventional Commits with a lowercase type and an imperative, concise subject: `type: summary`.
+- Prefer `feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `ci`, and `chore`. Never add a scope in parentheses: the subject is `feat: summary`, not `feat(area): summary`.
 - Write GitHub Release titles and notes in English.
 - Keep commits focused on one coherent concern. Do not mix unrelated cleanup or user changes into the same commit.
 - Before committing, review the full staged diff and run the verification appropriate to the change. Never commit secrets, runtime databases, generated installers, build output, or local workspace data.
@@ -97,6 +100,7 @@
 
 - macOS hardware QA must include a Developer ID + Hardened Runtime build. Validate signed microphone and Apple Events entitlements on the main app AND helpers with `node scripts/validate-macos-permissions.mjs <app>`. Ad-hoc runtime tests alone cannot validate microphone access in a release. Local signed QA uses `DEEPSPACE_MAC_LOCAL_SIGNING_IDENTITY`; it never substitutes for official notarization. Obtain explicit user consent before accessing their local signing key or setting `DEEPSPACE_MAC_ALLOW_KEYCHAIN_PROMPTS=true`. Never change Keychain access controls automatically. Stop the packaging process and its signing children immediately if the user cancels or reports repeated password prompts.
 
+- Windows resolves the taskbar icon and native notifications through the AppUserModelID, not the BrowserWindow `icon` option. `main.cjs` sets it from `build.appId`; without that call the taskbar falls back to the Electron mark, and a stale shell icon cache can hide the bug for hours.
 - `electron/main.cjs` spawns the adapter-node server (`build/index.js`) as a child process with `ELECTRON_RUN_AS_NODE=1` and loads it in a BrowserWindow.
 - After changing native deps (better-sqlite3, node-pty), run `npm run electron:rebuild` to rebuild them for the Electron ABI.
 - Dev: `npm run electron:dev` (build + launch).

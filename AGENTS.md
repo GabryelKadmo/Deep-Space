@@ -18,8 +18,8 @@
 ## Git And Commits
 
 - Write every commit subject and body in English. Never use Portuguese or Spanish in commit messages.
-- Use Conventional Commits with a lowercase type and an imperative, concise subject: `type(optional-scope): summary`.
-- Prefer `feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `ci`, and `chore`; add a scope when it makes the affected area clearer.
+- Use Conventional Commits with a lowercase type and an imperative, concise subject: `type: summary`.
+- Prefer `feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `ci`, and `chore`. Never add a scope in parentheses: the subject is `feat: summary`, not `feat(area): summary`.
 - Write GitHub Release titles and notes in English.
 - Keep commits focused on one coherent concern. Do not mix unrelated cleanup or user changes into the same commit.
 - Before committing, review the full staged diff and run the verification appropriate to the change. Never commit secrets, runtime databases, generated installers, build output, or local workspace data.
@@ -80,6 +80,7 @@
 
 - macOS hardware QA must include a Developer ID + Hardened Runtime build. Validate signed microphone and Apple Events entitlements on the main app AND helpers with `node scripts/validate-macos-permissions.mjs <app>`. Ad-hoc runtime tests alone cannot validate microphone access in a release. Local signed QA uses `DEEPSPACE_MAC_LOCAL_SIGNING_IDENTITY`; it never substitutes for official notarization. Obtain explicit user consent before accessing their local signing key or setting `DEEPSPACE_MAC_ALLOW_KEYCHAIN_PROMPTS=true`. Never change Keychain access controls automatically. Stop the packaging process and its signing children immediately if the user cancels or reports repeated password prompts.
 
+- Windows resolves the taskbar icon and native notifications through the AppUserModelID, not the BrowserWindow `icon` option. `main.cjs` sets it from `build.appId`; without that call the taskbar falls back to the Electron mark, and a stale shell icon cache can hide the bug for hours.
 - `electron/main.cjs` spawns the adapter-node server (`build/index.js`) as a child process with `ELECTRON_RUN_AS_NODE=1` and loads it in a BrowserWindow.
 - After changing native deps (better-sqlite3, node-pty), run `npm run electron:rebuild` to rebuild them for the Electron ABI.
 - Dev: `npm run electron:dev` (build + launch).
