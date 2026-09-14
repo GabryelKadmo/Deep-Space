@@ -7,35 +7,103 @@
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { height: 100%; overflow: hidden; }
+
       body {
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 18px;
-        background: radial-gradient(120% 120% at 50% 0%, #1b1464 0%, #0d0b2e 55%, #090820 100%);
+        background: #000;
         font-family: 'Sora', 'Inter', -apple-system, sans-serif;
-        color: #e5e1ff;
+        color: #eef3f6;
         user-select: none;
         -webkit-user-select: none;
         cursor: default;
       }
 
+      /* Luz vindo da superfície: um cone frio que se dissolve antes do meio da tela. */
+      .surface {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(90% 55% at 50% -12%, rgba(214, 236, 245, 0.20) 0%, rgba(150, 197, 215, 0.07) 38%, transparent 68%),
+          radial-gradient(40% 28% at 50% -6%, rgba(233, 246, 250, 0.22) 0%, transparent 72%);
+        animation: shimmer 7s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      @keyframes shimmer {
+        0%, 100% { opacity: 0.85; }
+        50% { opacity: 1; }
+      }
+
+      /* Bolhas subindo do fundo, com deriva lateral e tamanhos irregulares. */
+      .bubbles {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      /* Partículas finas, como as do site: pontos nítidos de 1 a 3px, sem anel nem contorno. */
+      .bubbles i {
+        position: absolute;
+        bottom: -8px;
+        border-radius: 50%;
+        background: rgba(244, 250, 252, 0.85);
+        animation: rise-bubble linear infinite;
+      }
+
+      .bubbles i:nth-child(1)  { left:  6%; width: 2px; height: 2px; animation-duration: 12s;   animation-delay: 0s;   }
+      .bubbles i:nth-child(2)  { left: 14%; width: 1px; height: 1px; animation-duration: 15s;   animation-delay: 2.1s; }
+      .bubbles i:nth-child(3)  { left: 23%; width: 3px; height: 3px; animation-duration: 10.5s; animation-delay: 4.3s; opacity: 0.7; }
+      .bubbles i:nth-child(4)  { left: 31%; width: 1px; height: 1px; animation-duration: 13.5s; animation-delay: 1.2s; }
+      .bubbles i:nth-child(5)  { left: 39%; width: 2px; height: 2px; animation-duration: 16s;   animation-delay: 6.4s; }
+      .bubbles i:nth-child(6)  { left: 47%; width: 1px; height: 1px; animation-duration: 11s;   animation-delay: 3.3s; }
+      .bubbles i:nth-child(7)  { left: 55%; width: 2px; height: 2px; animation-duration: 14s;   animation-delay: 8.1s; opacity: 0.6; }
+      .bubbles i:nth-child(8)  { left: 63%; width: 1px; height: 1px; animation-duration: 12.5s; animation-delay: 5.2s; }
+      .bubbles i:nth-child(9)  { left: 71%; width: 3px; height: 3px; animation-duration: 17s;   animation-delay: 0.8s; opacity: 0.65; }
+      .bubbles i:nth-child(10) { left: 79%; width: 1px; height: 1px; animation-duration: 10s;   animation-delay: 7.3s; }
+      .bubbles i:nth-child(11) { left: 87%; width: 2px; height: 2px; animation-duration: 15.5s; animation-delay: 2.7s; }
+      .bubbles i:nth-child(12) { left: 94%; width: 1px; height: 1px; animation-duration: 13s;   animation-delay: 9.2s; }
+      .bubbles i:nth-child(13) { left: 19%; width: 1px; height: 1px; animation-duration: 18s;   animation-delay: 6.9s; }
+      .bubbles i:nth-child(14) { left: 43%; width: 1px; height: 1px; animation-duration: 14.5s; animation-delay: 11s;  }
+      .bubbles i:nth-child(15) { left: 67%; width: 1px; height: 1px; animation-duration: 16.5s; animation-delay: 4.8s; }
+      .bubbles i:nth-child(16) { left: 84%; width: 2px; height: 2px; animation-duration: 12s;   animation-delay: 10.4s; opacity: 0.55; }
+
+      @keyframes rise-bubble {
+        0%   { transform: translate(0, 0);            opacity: 0; }
+        15%  {                                        opacity: 1; }
+        50%  { transform: translate(5px, -180px);     opacity: 0.8; }
+        85%  {                                        opacity: 0.4; }
+        100% { transform: translate(-3px, -360px);    opacity: 0; }
+      }
+
+      .content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+
       .logo {
         width: 92px;
         height: 92px;
-        animation: logo-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both, logo-breathe 3.2s ease-in-out 900ms infinite;
-        filter: drop-shadow(0 0 18px rgba(124, 77, 255, 0.45));
+        border-radius: 22px;
+        animation: logo-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both, logo-breathe 4s ease-in-out 900ms infinite;
       }
 
       @keyframes logo-enter {
-        from { opacity: 0; transform: scale(0.6) rotate(-24deg); }
-        to { opacity: 1; transform: scale(1) rotate(0deg); }
+        from { opacity: 0; transform: scale(0.82) translateY(8px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
       }
 
       @keyframes logo-breathe {
-        0%, 100% { transform: scale(1); filter: drop-shadow(0 0 14px rgba(124, 77, 255, 0.35)); }
-        50% { transform: scale(1.045); filter: drop-shadow(0 0 26px rgba(124, 77, 255, 0.6)); }
+        0%, 100% { filter: drop-shadow(0 6px 22px rgba(196, 228, 240, 0.10)); }
+        50% { filter: drop-shadow(0 6px 30px rgba(214, 240, 250, 0.22)); }
       }
 
       .wordmark {
@@ -48,7 +116,7 @@
       .tagline {
         font-family: 'Inter', sans-serif;
         font-size: 12px;
-        color: rgba(229, 225, 255, 0.55);
+        color: rgba(238, 243, 246, 0.5);
         letter-spacing: 0.04em;
         animation: rise 650ms cubic-bezier(0.22, 1, 0.36, 1) 450ms both;
       }
@@ -64,11 +132,11 @@
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: #7c4dff;
+        background: #eef4f7;
         animation: dot 1.1s ease-in-out infinite;
       }
-      .loader span:nth-child(2) { animation-delay: 0.15s; background: #00bfff; }
-      .loader span:nth-child(3) { animation-delay: 0.3s; background: #ffc857; }
+      .loader span:nth-child(2) { animation-delay: 0.15s; }
+      .loader span:nth-child(3) { animation-delay: 0.3s; }
 
       @keyframes dot {
         0%, 100% { opacity: 0.25; transform: translateY(0); }
@@ -81,14 +149,22 @@
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .logo, .wordmark, .tagline, .loader, .loader span { animation: none !important; }
+        .logo, .wordmark, .tagline, .loader, .loader span, .surface { animation: none !important; }
+        .bubbles { display: none; }
       }
     </style>
   </head>
   <body>
-    <img class="logo" src="./resources/icon.svg" alt="" width="92" height="92" />
-    <div class="wordmark">Deep Space</div>
-    <div class="tagline">Orchestrate everything. Achieve anything.</div>
-    <div class="loader" aria-label="Loading..."><span></span><span></span><span></span></div>
+    <div class="surface"></div>
+    <div class="bubbles" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="content">
+      <img class="logo" src="./resources/icon.png" alt="" width="92" height="92" />
+      <div class="wordmark">Deep Space</div>
+      <div class="tagline">Múltiplos agentes. Um só espaço.</div>
+      <div class="loader" aria-label="Loading..."><span></span><span></span><span></span></div>
+    </div>
   </body>
 </html>
