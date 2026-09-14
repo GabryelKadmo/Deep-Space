@@ -8,7 +8,7 @@ describe('default locale', () => {
 
     expect(project.baseLocale).toBe('en');
     expect(splash).toContain('<html lang="en">');
-    expect(splash).toContain('Orchestrate everything. Achieve anything.');
+    expect(splash).toContain('Many agents. One space.');
     expect(splash).toContain('aria-label="Loading..."');
     expect(splash).not.toMatch(/Orquestre|Carregando/);
   });
