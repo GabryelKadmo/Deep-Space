@@ -15,7 +15,7 @@ pt-BR, English, and Spanish translations.
 
 - The collaboration relay endpoint moved behind `PUBLIC_RELAY_URL` (`src/lib/modules/collaboration/relay.ts`), read by both the sharing dialog and the Remote page. It still falls back to the upstream public relay until a private deployment is configured; `docs/relay.md` documents the deploy.
 
-- The agent bridge keeps its current surface on purpose: the `orkestrai` CLI command, the `.orkestrai/` workspace directory, `ORKESTRAI_*` environment variables, and the agent skill files are unchanged, because renaming them breaks existing workspaces and cached agent instructions.
+- The agent bridge keeps its current surface on purpose: the `deepspace` CLI command, the `.deepspace/` workspace directory, `DEEPSPACE_*` environment variables, and the agent skill files are unchanged, because renaming them breaks existing workspaces and cached agent instructions.
 
 ## 0.30.1 - 2026-09-13
 
@@ -23,7 +23,7 @@ pt-BR, English, and Spanish translations.
 
 - Terminal paste is now identical across every agent CLI. `Ctrl+V` (`Cmd+V` on macOS) pastes clipboard text, with `Ctrl+Shift+V` and `Shift+Insert` as aliases. xterm no longer cancels the keystroke, so the browser native paste reaches the terminal instead of a bare control character that each CLI interpreted on its own through a different shortcut.
 
-- Pasting an image or a file into a terminal stores it in the workspace under `.orkestrai/attachments/` and pastes the resulting path into the prompt, so every provider receives the reference the same way. `Alt+V` stays free for CLIs that document their own shortcut.
+- Pasting an image or a file into a terminal stores it in the workspace under `.deepspace/attachments/` and pastes the resulting path into the prompt, so every provider receives the reference the same way. `Alt+V` stays free for CLIs that document their own shortcut.
 
 ## 0.30.0 - 2026-09-11
 
@@ -526,7 +526,7 @@ pt-BR, English, and Spanish translations.
   outgoing, import, call, instantiation, inheritance, and implementation views
   in the same Canvas and Workbench artifact.
 - Agents use that exact persisted graph through typed `code_graph_*` MCP tools
-  or `orkestrai graph` commands. Multi-repository workspaces remain confined to
+  or `deepspace graph` commands. Multi-repository workspaces remain confined to
   explicitly approved roots, no arbitrary SQL or Cypher is exposed, and the
   storage contract can adopt a benchmark-qualified Memgraph adapter later.
 - A guided Code Intelligence use case adds the node, indexes approved
@@ -535,7 +535,7 @@ pt-BR, English, and Spanish translations.
   active Floor, maps changed files to directly and transitively affected
   symbols, recommends likely tests, and highlights cross-Floor conflicts before
   work is reviewed or landed. The same evidence is available through
-  `code_graph_changes` and `orkestrai graph changes`.
+  `code_graph_changes` and `deepspace graph changes`.
 - Each change scope can create a traceable Kanban task with bounded file,
   symbol, test, and conflict evidence. Primary working-tree changes can also
   create a Review Center review tied to the current Git revision; typed
@@ -547,14 +547,14 @@ pt-BR, English, and Spanish translations.
   cross-project route conflicts, handlers, and validation schemas without
   persisting credentials or exposing request hosts and query values. Agents use
   the same bounded map through `code_graph_contracts` or
-  `orkestrai graph contracts`.
+  `deepspace graph contracts`.
 - The Quality view surfaces bounded, confidence-scored evidence for structural
   duplication, import cycles, high coupling, inferred layer violations,
   oversized code, security-sensitive execution, and possible dead code. It
   also maps static environment, file, network-path, database-table, and IPC
   flows without persisting secret values, payloads, hosts, query strings, or
   source bodies. Agents use the same analysis through `code_graph_quality` or
-  `orkestrai graph quality`.
+  `deepspace graph quality`.
 - The local semantic index searches symbols by intent across names, qualified
   names, paths, signatures, bounded documentation, and graph neighbors. In
   Assisted mode it follows settled structural revisions automatically, reuses
@@ -664,7 +664,7 @@ pt-BR, English, and Spanish translations.
   main repository and approved aliases explicitly, Change impact explains its
   Git and Floor scope, and the semantic-search control guides users to build its
   index instead of appearing inert.
-- A restored MCP or CLI session that lacks `ORKESTRAI_NODE_ID` can report its
+- A restored MCP or CLI session that lacks `DEEPSPACE_NODE_ID` can report its
   Control Center state when it supplies a task assigned to a real agent in the
   same workspace. Calls without either verified identity source remain denied.
 
@@ -787,7 +787,7 @@ pt-BR, English, and Spanish translations.
 - Roles can now be discovered from any folder, not only the workspace's own
   working directory: a new "Discover from another folder..." button next to
   the existing repository discovery opens a native folder picker and imports
-  any `role.json` found under `.orkestrai/roles/` there, so a role built in
+  any `role.json` found under `.deepspace/roles/` there, so a role built in
   one project can be reused from an unrelated one without copying files by
   hand.
 - Imported role files are bounded and validated before persistence, stay inside
@@ -879,7 +879,7 @@ pt-BR, English, and Spanish translations.
 - Workspace creation remains compatible with callers that omit the new optional
   additional-repository list, treating it as empty instead of interrupting
   provisioning.
-- `orkestrai list` now applies the terminal's automatic agent identity and
+- `deepspace list` now applies the terminal's automatic agent identity and
   inventories every workspace Portal with an explicit connection state. Portal
   names are visible and editable in the Canvas, automation accepts a unique
   name or node id, repeated URLs reuse the existing node, and creating an
@@ -1103,7 +1103,7 @@ pt-BR, English, and Spanish translations.
   runners with independent request selection and order, environment, iterations,
   delay, and stop-on-failure behavior; script variables chain into every next
   request in the run.
-- Added versioned `.orkestrai-api.json` import/export for lossless native
+- Added versioned `.deepspace-api.json` import/export for lossless native
   collection backups, including folders, runners, environments, scripts, and
   history. Bruno collections now export through Bruno's official serializer,
   including `collection.bru`, environments, requests, and folder metadata.
@@ -1481,7 +1481,7 @@ pt-BR, English, and Spanish translations.
 - Added a single workspace attachment pipeline for files up to 10 MB and
   HTTP/HTTPS links, with upload, paste, and drag-and-drop support across agent
   prompts, tasks, notes, and composers. Files are stored under
-  `.orkestrai/attachments/` and complete references are delivered to agents.
+  `.deepspace/attachments/` and complete references are delivered to agents.
 - Added a compact provider usage footer to the Workbench with every reported
   5-hour, weekly, or monthly quota window and severity-matched percentages.
 - Added a lazy-loaded Monaco editor to Workbench files with persistent models,
@@ -1528,7 +1528,7 @@ pt-BR, English, and Spanish translations.
   bundled scrcpy 3.1 server with hardware-accelerated WebCodecs decoding and
   supports touch, swipe, pinch, rotation, Back, Home, Recents, text input, APK
   installation, package/activity launch, screenshots, bounded logcat output,
-  UIAutomator trees, and runtime permissions. Matching `orkestrai device` CLI
+  UIAutomator trees, and runtime permissions. Matching `deepspace device` CLI
   and MCP tools use the same workspace session. Deep Space owns at most one
   session per workspace and stops only helpers and emulators it started.
 
@@ -1552,7 +1552,7 @@ pt-BR, English, and Spanish translations.
   `EPERM`/`EACCES` errors with a recovery panel that can reauthorize the exact
   project folder and retry without restarting the app.
 - Workspace sharing now defaults to the production
-  `wss://relay.orkestrai.app/v1/connect` endpoint. The containerized relay
+  `wss://relay.deepspace.app/v1/connect` endpoint. The containerized relay
   accepts the installed app's dynamic loopback origins and the official website
   and Remote PWA origins, while rejecting unrelated browser origins. The web
   companion reconnects with bounded exponential backoff when its host is away.
@@ -1584,7 +1584,7 @@ pt-BR, English, and Spanish translations.
   updates from confirmed PTY, task, and bridge events. Informational events stay
   in Control Center; native notifications are reserved for attention and
   completion transitions.
-- Made `orkestrai ask` and its MCP tool return the persistent message id and
+- Made `deepspace ask` and its MCP tool return the persistent message id and
   succeed only after the response is confirmed and recorded.
 
 ### Fixed
@@ -1609,7 +1609,7 @@ pt-BR, English, and Spanish translations.
   and PDF workers run off the UI thread instead of being blocked after packaging.
 - Made note attachment removal delete the inserted Markdown reference and the
   workspace file together instead of hiding only the attachment chip and
-  leaving orphaned content under `.orkestrai/attachments/`.
+  leaving orphaned content under `.deepspace/attachments/`.
 - Docked the pinned voice orb in a dedicated Workbench header slot so it no
   longer covers tabs or contextual actions; unpinned placement remains freely
   movable and keeps the user's saved canvas position.
@@ -1708,9 +1708,9 @@ pt-BR, English, and Spanish translations.
 
 ### Changed
 
-- Made `orkestrai ask` preserve unquoted multi-word messages and require an
+- Made `deepspace ask` preserve unquoted multi-word messages and require an
   explicitly confirmed provider reply before agents may report a consultation.
-- Made `orkestrai task done` hand completion back to the workspace leader
+- Made `deepspace task done` hand completion back to the workspace leader
   automatically without colliding with a human draft in the leader terminal.
 
 ### Fixed
@@ -1760,7 +1760,7 @@ pt-BR, English, and Spanish translations.
 
 - Added a persistent Usage canvas node for Claude, Codex, and Kimi quotas with
   configurable source provider, fallback provider, and routing threshold.
-- Added `orkestrai usage` to the native CLI and MCP bridge so leaders inspect
+- Added `deepspace usage` to the native CLI and MCP bridge so leaders inspect
   the same quota snapshot and recommendation before assigning new work.
 - Added three dark application themes, one light theme, and a semantic token
   editor with live preview, duplication, validated JSON import, and export.
@@ -1800,7 +1800,7 @@ pt-BR, English, and Spanish translations.
 - Added read-only discovery of concurrent Devin sessions by real workspace
   directory and clean agent replies from Devin's ATIF transcripts.
 - Added Deep Space skill and MCP bridge provisioning for Devin through
-  `.devin/skills/orkestrai` and `.devin/mcp_config.json`.
+  `.devin/skills/deepspace` and `.devin/mcp_config.json`.
 - Added a localized Devin use case and guided onboarding tour in Brazilian
   Portuguese, English, and Spanish.
 
@@ -2087,7 +2087,7 @@ orchestrator with:
 
 - a persistent multi-agent canvas, PTY sessions, Maestro orchestration, Git
   floors, task boards, notes, portals, flows, routines, roles, and presets;
-- the native `orkestrai` CLI and MCP bridge for Claude Code, Codex, Kimi Code,
+- the native `deepspace` CLI and MCP bridge for Claude Code, Codex, Kimi Code,
   and OpenCode;
 - complete pt-BR, English, and Spanish UI, documentation, onboarding, and tours;
 - local multilingual dictation and speech, provider Usage monitoring, managed

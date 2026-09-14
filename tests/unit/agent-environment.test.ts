@@ -4,20 +4,20 @@ import { sanitizeAgentEnvironment } from '$lib/modules/agent-room/infrastructure
 describe('agent environment isolation', () => {
   it('removes Deep Space server configuration without hiding the user environment or bridge', () => {
     const env = sanitizeAgentEnvironment({
-      APP_KEY: 'base64:orkestrai-key',
+      APP_KEY: 'base64:deepspace-key',
       INTERNAL_SECRET: 'server-secret',
-      APP_URL: 'http://orkestrai.internal',
+      APP_URL: 'http://deepspace.internal',
       DB_DRIVER: 'sqlite',
       RESEND_API_KEY: 'server-mail-token',
       HOST: '127.0.0.1',
       PORT: '4173',
       ORIGIN: 'http://127.0.0.1:4173',
       ELECTRON_RUN_AS_NODE: '1',
-      ORKESTRAI_DATA_DIR: '/tmp/orkestrai',
-      ORKESTRAI_PRIVATE_ENV_KEYS: 'APP_URL,DB_DRIVER,RESEND_API_KEY,ORKESTRAI_API_URL',
-      ORKESTRAI_API_URL: 'http://127.0.0.1:4173',
-      ORKESTRAI_CLI: '/tmp/bin/orkestrai',
-      ORKESTRAI_CLI_CONSOLE_RUNTIME: 'C:\\Program Files\\Deep Space\\resources\\orkestrai-cli-runtime\\node.exe',
+      DEEPSPACE_DATA_DIR: '/tmp/deepspace',
+      DEEPSPACE_PRIVATE_ENV_KEYS: 'APP_URL,DB_DRIVER,RESEND_API_KEY,DEEPSPACE_API_URL',
+      DEEPSPACE_API_URL: 'http://127.0.0.1:4173',
+      DEEPSPACE_CLI: '/tmp/bin/deepspace',
+      DEEPSPACE_CLI_CONSOLE_RUNTIME: 'C:\\Program Files\\Deep Space\\resources\\deepspace-cli-runtime\\node.exe',
       PATH: '/usr/local/bin:/usr/bin',
       HOME: '/Users/developer',
       SSH_AUTH_SOCK: '/tmp/ssh-agent.sock',
@@ -33,12 +33,12 @@ describe('agent environment isolation', () => {
     expect(env).not.toHaveProperty('PORT');
     expect(env).not.toHaveProperty('ORIGIN');
     expect(env).not.toHaveProperty('ELECTRON_RUN_AS_NODE');
-    expect(env).not.toHaveProperty('ORKESTRAI_DATA_DIR');
-    expect(env).not.toHaveProperty('ORKESTRAI_PRIVATE_ENV_KEYS');
+    expect(env).not.toHaveProperty('DEEPSPACE_DATA_DIR');
+    expect(env).not.toHaveProperty('DEEPSPACE_PRIVATE_ENV_KEYS');
     expect(env).toMatchObject({
-      ORKESTRAI_API_URL: 'http://127.0.0.1:4173',
-      ORKESTRAI_CLI: '/tmp/bin/orkestrai',
-      ORKESTRAI_CLI_CONSOLE_RUNTIME: 'C:\\Program Files\\Deep Space\\resources\\orkestrai-cli-runtime\\node.exe',
+      DEEPSPACE_API_URL: 'http://127.0.0.1:4173',
+      DEEPSPACE_CLI: '/tmp/bin/deepspace',
+      DEEPSPACE_CLI_CONSOLE_RUNTIME: 'C:\\Program Files\\Deep Space\\resources\\deepspace-cli-runtime\\node.exe',
       PATH: '/usr/local/bin:/usr/bin',
       HOME: '/Users/developer',
       SSH_AUTH_SOCK: '/tmp/ssh-agent.sock',
@@ -48,7 +48,7 @@ describe('agent environment isolation', () => {
 
   it('allows a terminal-specific variable to opt back in explicitly', () => {
     const env = {
-      ...sanitizeAgentEnvironment({ APP_KEY: 'orkestrai-key', PATH: '/usr/bin' }),
+      ...sanitizeAgentEnvironment({ APP_KEY: 'deepspace-key', PATH: '/usr/bin' }),
       APP_KEY: 'laravel-project-key',
     };
 

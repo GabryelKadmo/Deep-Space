@@ -9,7 +9,7 @@ import { CreateWorkspaceDto } from '$lib/modules/agent-room/application/dto/Work
 import { workspaceRepository } from '$lib/modules/agent-room/infrastructure/repositories/WorkspaceRepository.js';
 
 async function makeWorkspace(name: string) {
-  const dir = mkdtempSync(join(tmpdir(), 'orkestrai-workspace-group-'));
+  const dir = mkdtempSync(join(tmpdir(), 'deepspace-workspace-group-'));
   return workspaceRepository.createWorkspace({ name, workingDir: dir });
 }
 
@@ -78,7 +78,7 @@ describe('WorkspaceGroupService', () => {
 
   it('creates a workspace directly in its validated destination group', async () => {
     const group = await workspaceGroupService.create({ name: 'Client work' });
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-workspace-direct-group-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-workspace-direct-group-'));
 
     const workspace = await workspaceService.create(new CreateWorkspaceDto(
       'Grouped project', dir, null, null, 'native', null, null, false, {}, [], group.id,
@@ -89,7 +89,7 @@ describe('WorkspaceGroupService', () => {
   });
 
   it('rejects an unknown destination before persisting the workspace', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-workspace-invalid-group-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-workspace-invalid-group-'));
     const before = await workspaceRepository.listWorkspaces();
 
     await expect(workspaceService.create(new CreateWorkspaceDto(

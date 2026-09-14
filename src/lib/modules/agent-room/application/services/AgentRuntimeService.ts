@@ -35,9 +35,9 @@ function config(payload: TerminalNodePayload): UpdateAgentRuntimeInput {
 function broadcast(workspaceId: string): void {
   const send = (
     globalThis as {
-      __orkestraiBroadcast?: (payload: Record<string, unknown>) => void;
+      __deepspaceBroadcast?: (payload: Record<string, unknown>) => void;
     }
-  ).__orkestraiBroadcast;
+  ).__deepspaceBroadcast;
   send?.({ type: 'workspaceChanged', workspaceId });
 }
 
@@ -232,6 +232,6 @@ export class AgentRuntimeService {
 }
 
 const globalRef = globalThis as unknown as {
-  __orkestraiAgentRuntimeService?: AgentRuntimeService;
+  __deepspaceAgentRuntimeService?: AgentRuntimeService;
 };
-export const agentRuntimeService = (globalRef.__orkestraiAgentRuntimeService ??= new AgentRuntimeService());
+export const agentRuntimeService = (globalRef.__deepspaceAgentRuntimeService ??= new AgentRuntimeService());

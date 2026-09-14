@@ -8,7 +8,7 @@ test.describe('terminais PTY', () => {
     test.skip(process.platform === 'win32', 'A prova de autoexec usa sintaxe POSIX; PowerShell e WSL são cobertos no domínio');
     const runId = Date.now();
     const workspaceName = `E2E comandos salvos ${runId}`;
-    const counterFile = `/tmp/orkestrai-command-auto-${runId}`;
+    const counterFile = `/tmp/deepspace-command-auto-${runId}`;
     const settingsResponse = await request.get('/api/agent-room/settings');
     const originalSettings = (await settingsResponse.json()).data as Record<string, string>;
     const workspaceResponse = await request.post('/api/agent-room/workspaces', {
@@ -43,7 +43,7 @@ test.describe('terminais PTY', () => {
       await expect(dialog).toBeVisible();
       await dialog.getByLabel('Nome', { exact: true }).fill('Preparar ambiente');
       await dialog.getByLabel('Comando', { exact: true }).fill(
-        `n=$(cat ${counterFile} 2>/dev/null || echo 0); n=$((n+1)); echo $n > ${counterFile}; echo ORKESTRAI_AUTO_COUNT_$n`,
+        `n=$(cat ${counterFile} 2>/dev/null || echo 0); n=$((n+1)); echo $n > ${counterFile}; echo DEEPSPACE_AUTO_COUNT_$n`,
       );
       await dialog.getByRole('switch', { name: 'Executar ao retomar' }).click();
       await dialog.getByRole('button', { name: 'Salvar comando' }).click();
@@ -55,7 +55,7 @@ test.describe('terminais PTY', () => {
       }).toEqual({
         id: expect.any(String),
         name: 'Preparar ambiente',
-        command: expect.stringContaining('ORKESTRAI_AUTO_COUNT_'),
+        command: expect.stringContaining('DEEPSPACE_AUTO_COUNT_'),
         runOnResume: true,
       });
 
@@ -75,11 +75,11 @@ test.describe('terminais PTY', () => {
       await expect(terminal.locator('.terminal-container')).toContainText(`GLOBAL_COMMAND_${runId}`, { timeout: 10_000 });
 
       await page.reload();
-      await expect(terminal.locator('.terminal-container')).toContainText('ORKESTRAI_AUTO_COUNT_1', { timeout: 15_000 });
+      await expect(terminal.locator('.terminal-container')).toContainText('DEEPSPACE_AUTO_COUNT_1', { timeout: 15_000 });
       await page.reload();
       await expect(terminal.locator('.xterm-helper-textarea')).toBeAttached({ timeout: 15_000 });
       await page.waitForTimeout(1_000);
-      await expect(terminal.locator('.terminal-container')).not.toContainText('ORKESTRAI_AUTO_COUNT_2');
+      await expect(terminal.locator('.terminal-container')).not.toContainText('DEEPSPACE_AUTO_COUNT_2');
     } finally {
       rmSync(counterFile, { force: true });
       await request.put('/api/agent-room/settings', {
@@ -182,7 +182,7 @@ test.describe('terminais PTY', () => {
 
   test('copia a selecao e cola texto e imagem com o mesmo atalho', async ({ page, request, context }) => {
     const runId = Date.now();
-    const marker = `ORKESTRAI_COPY_${runId}`;
+    const marker = `DEEPSPACE_COPY_${runId}`;
     const workspaceResponse = await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E terminal copy ${runId}`, workingDir: process.platform === 'win32' ? process.cwd() : '/tmp' },
     });
@@ -223,7 +223,7 @@ test.describe('terminais PTY', () => {
       await output.click({ button: 'right', force: true });
       await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain(marker);
 
-      const pasteMarker = `ORKESTRAI_PASTE_${runId}`;
+      const pasteMarker = `DEEPSPACE_PASTE_${runId}`;
       await page.evaluate((text) => navigator.clipboard.writeText(text), `echo ${pasteMarker}`);
       await input.focus();
       await page.keyboard.press('Control+V');
@@ -244,7 +244,7 @@ test.describe('terminais PTY', () => {
       });
       await input.focus();
       await page.keyboard.press('Control+V');
-      await expect(terminal.locator('.terminal-container')).toContainText('.orkestrai/attachments/', { timeout: 15_000 });
+      await expect(terminal.locator('.terminal-container')).toContainText('.deepspace/attachments/', { timeout: 15_000 });
     } finally {
       await request.delete(`/api/agent-room/workspaces/${workspace.id}`);
     }
@@ -404,7 +404,7 @@ test.describe('terminais PTY', () => {
 
       const fallbackHandled = await page.evaluate(() => {
         const detail = { handled: false };
-        window.dispatchEvent(new CustomEvent('orkestrai:text-dictation-fallback', { detail }));
+        window.dispatchEvent(new CustomEvent('deepspace:text-dictation-fallback', { detail }));
         return detail.handled;
       });
       expect(fallbackHandled).toBe(true);

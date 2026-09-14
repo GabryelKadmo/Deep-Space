@@ -18,7 +18,7 @@
     description: string | null;
     agents: number;
     builtin: boolean;
-    category: 'product' | 'frontend' | 'backend' | 'creative' | 'growth' | 'orkestrai' | 'custom';
+    category: 'product' | 'frontend' | 'backend' | 'creative' | 'growth' | 'deepspace' | 'custom';
     version: string;
     updatedAt: string;
   };
@@ -61,7 +61,7 @@
     if (value === 'backend') return m['preset.category_backend']();
     if (value === 'creative') return m['preset.category_creative']();
     if (value === 'growth') return m['preset.category_growth']();
-    if (value === 'orkestrai') return m['preset.category_orkestrai']();
+    if (value === 'deepspace') return m['preset.category_deepspace']();
     if (value === 'custom') return m['preset.category_custom']();
     return m['preset.category_all']();
   }
@@ -98,7 +98,7 @@
       const bundle = await api<unknown>(`/api/agent-room/presets/${preset.id}/export?locale=${encodeURIComponent(localeState.current)}`);
       const url = URL.createObjectURL(new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' }));
       const anchor = document.createElement('a');
-      anchor.href = url; anchor.download = `${preset.name.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLocaleLowerCase()}-${preset.version}.orkestrai-team-pack.json`; anchor.click();
+      anchor.href = url; anchor.download = `${preset.name.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLocaleLowerCase()}-${preset.version}.deepspace-team-pack.json`; anchor.click();
       URL.revokeObjectURL(url);
     } catch { errorMessage = m['team_pack.export_error'](); }
   }
@@ -169,7 +169,7 @@
         <Select.Item value="backend">{m['preset.category_backend']()}</Select.Item>
         <Select.Item value="creative">{m['preset.category_creative']()}</Select.Item>
         <Select.Item value="growth">{m['preset.category_growth']()}</Select.Item>
-        <Select.Item value="orkestrai">{m['preset.category_orkestrai']()}</Select.Item>
+        <Select.Item value="deepspace">{m['preset.category_deepspace']()}</Select.Item>
         <Select.Item value="custom">{m['preset.category_custom']()}</Select.Item>
       </Select.Content>
     </Select.Root>

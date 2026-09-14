@@ -63,7 +63,7 @@ describe('SkillMarketService', () => {
   });
 
   it('install grava em .claude/skills e .agents/skills, exclui do git e lista', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-skills-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-skills-'));
     mkdirSync(join(dir, '.git', 'info'), { recursive: true });
     writeFileSync(join(dir, '.git', 'info', 'exclude'), '# base\n');
     const workspace = await workspaceRepository.createWorkspace({ name: 'skills', workingDir: dir });
@@ -90,14 +90,14 @@ describe('SkillMarketService', () => {
   });
 
   it('install rejeita source malformado', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-skills-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-skills-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'skills', workingDir: dir });
     const service = new SkillMarketService(fakeFetch({}));
     await expect(service.install(workspace.id, { source: 'sem-barra-dupla', skillId: 'x' })).rejects.toThrow('Source invalido');
   });
 
   it('install rejeita traversal remoto antes de substituir uma skill existente', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-skills-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-skills-'));
     const existing = join(dir, '.claude', 'skills', 'web-design-guidelines', 'SKILL.md');
     mkdirSync(join(existing, '..'), { recursive: true });
     writeFileSync(existing, '# existing');

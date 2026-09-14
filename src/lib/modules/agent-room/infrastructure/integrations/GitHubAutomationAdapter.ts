@@ -75,7 +75,7 @@ export class GitHubAutomationAdapter {
         accept: 'application/vnd.github+json',
         authorization: `Bearer ${token}`,
         'x-github-api-version': '2022-11-28',
-        'user-agent': 'orkestrai-automation',
+        'user-agent': 'deepspace-automation',
       },
       signal: AbortSignal.timeout(15_000),
     });

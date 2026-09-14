@@ -23,7 +23,7 @@
   const capabilities: AutonomyCapability[] = ['agent', 'browser', 'computer', 'filesystem', 'git', 'integration', 'network', 'notification', 'task', 'tool'];
   const risks: AutonomyRisk[] = ['outside_boundary', 'secret_export', 'bulk_destructive', 'force_push', 'production_deploy', 'purchase', 'external_publication', 'account_permission', 'irreversible'];
   const requirements: GateRequirement[] = ['preapproved', 'user', 'reviewer', 'council'];
-  const desktop = typeof window === 'undefined' ? undefined : (window as typeof window & { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+  const desktop = typeof window === 'undefined' ? undefined : (window as typeof window & { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
   const messages = m as unknown as Record<string, (input?: Record<string, number | string>) => string>;
 
   let tab = $state('access');

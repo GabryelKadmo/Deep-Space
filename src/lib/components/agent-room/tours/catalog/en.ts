@@ -84,8 +84,8 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'routine',
         title: 'The duty routine',
-        body: 'I\'ll create the routine: every 5 minutes the watcher gets "check the board (orkestrai task list); assign what has no owner; recruit if someone is missing".',
-        action: { kind: 'createRoutine', targetTitle: 'Vigia', prompt: 'Check the board with: orkestrai task list. Assign whatever has no owner. If an agent is missing, recruit (orkestrai recruit).', intervalMinutes: 5 },
+        body: 'I\'ll create the routine: every 5 minutes the watcher gets "check the board (deepspace task list); assign what has no owner; recruit if someone is missing".',
+        action: { kind: 'createRoutine', targetTitle: 'Vigia', prompt: 'Check the board with: deepspace task list. Assign whatever has no owner. If an agent is missing, recruit (deepspace recruit).', intervalMinutes: 5 },
         check: { kind: 'routineExists' },
       },
       {
@@ -304,7 +304,7 @@ export const TOURS_EN: Tour[] = [
         id: 'routine',
         title: 'The sweep routine',
         body: 'I\'ll create the routine: every 2 minutes it lists ./inbox, describes/classifies what\'s new, moves it to ./inbox/done and logs it on the board.',
-        action: { kind: 'createRoutine', targetTitle: 'Processor', prompt: 'List ./inbox; for each new file, describe and classify it; move it to ./inbox/done and log it on the board with orkestrai task add.', intervalMinutes: 2 },
+        action: { kind: 'createRoutine', targetTitle: 'Processor', prompt: 'List ./inbox; for each new file, describe and classify it; move it to ./inbox/done and log it on the board with deepspace task add.', intervalMinutes: 2 },
         check: { kind: 'routineExists' },
       },
       {
@@ -344,7 +344,7 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'flow',
         title: 'The review flow',
-        body: 'Tell Claude Dev: "implement X and ask Codex Reviewer for a review (orkestrai ask)". It implements, Codex critiques, the verdict comes back on the same rope.',
+        body: 'Tell Claude Dev: "implement X and ask Codex Reviewer for a review (deepspace ask)". It implements, Codex critiques, the verdict comes back on the same rope.',
       },
     ],
   },
@@ -371,7 +371,7 @@ export const TOURS_EN: Tour[] = [
         id: 'routine',
         title: 'The hourly patrol',
         body: 'I\'ll create the routine: every 60 minutes it runs the tests; on failure, it opens a task for the team and notifies you on the desktop.',
-        action: { kind: 'createRoutine', targetTitle: 'Sentinel', prompt: 'Run the project tests. On failure, open a task for the team (orkestrai task add) and notify the user (orkestrai notify).', intervalMinutes: 60 },
+        action: { kind: 'createRoutine', targetTitle: 'Sentinel', prompt: 'Run the project tests. On failure, open a task for the team (deepspace task add) and notify the user (deepspace notify).', intervalMinutes: 60 },
         check: { kind: 'routineExists' },
       },
       {
@@ -420,7 +420,7 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'choose-folder',
         title: 'Choose the source project',
-        body: 'Select "Discover from another folder..." and choose the project whose .orkestrai/roles directory contains the specialist instructions.',
+        body: 'Select "Discover from another folder..." and choose the project whose .deepspace/roles directory contains the specialist instructions.',
       },
       {
         id: 'review-import',
@@ -570,7 +570,7 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'document',
         title: 'Create a native design document',
-        body: 'I create an Interface Design node on the same Canvas as the team. Its structured document stays inside .orkestrai/designs in your workspace.',
+        body: 'I create an Interface Design node on the same Canvas as the team. Its structured document stays inside .deepspace/designs in your workspace.',
         action: { kind: 'createDesign', title: 'Interface Design' },
         check: { kind: 'nodeExists', nodeType: 'design', titleIncludes: 'Interface Design' },
       },
@@ -729,7 +729,7 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'server',
         title: 'Start your dev server',
-        body: 'In the project terminal, start the app on the same port as the Portal. You can use `orkestrai port 4173` to pick a free port before starting the server.',
+        body: 'In the project terminal, start the app on the same port as the Portal. You can use `deepspace port 4173` to pick a free port before starting the server.',
       },
       {
         id: 'panel',
@@ -914,7 +914,7 @@ export const TOURS_EN: Tour[] = [
     ],
   },
   {
-    id: 'orkestrai-consensus-team',
+    id: 'deepspace-consensus-team',
     icon: 'LayoutTemplate',
     title: 'Contribute to Deep Space through consensus',
     tagline: 'Claude, Codex, and Kimi agree on the plan before execution.',
@@ -1059,7 +1059,7 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'leader-checks',
         title: 'The leader checks before delegating',
-        body: 'The skill teaches the leader to call orkestrai usage before distributing new work. It recommends a healthy fallback without silently moving tasks or conversations already in progress.',
+        body: 'The skill teaches the leader to call deepspace usage before distributing new work. It recommends a healthy fallback without silently moving tasks or conversations already in progress.',
       },
     ],
   },
@@ -1189,7 +1189,7 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'deliver-complete-context',
         title: 'Deliver the complete brief',
-        body: 'Connect the note to the leader or assign the task. The agent receives the title, description, and references with relative paths under .orkestrai/attachments, without relying on pasted text or conversation memory.',
+        body: 'Connect the note to the leader or assign the task. The agent receives the title, description, and references with relative paths under .deepspace/attachments, without relying on pasted text or conversation memory.',
       },
     ],
   },
@@ -1236,7 +1236,7 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'verify-delivery',
         title: 'Verify communications',
-        body: 'The inbox projects queued, sent, delivered, acknowledged, replied, and failed transitions into one canonical message envelope. Replays are idempotent and a successful orkestrai ask always ends with a confirmed reply.',
+        body: 'The inbox projects queued, sent, delivered, acknowledged, replied, and failed transitions into one canonical message envelope. Replays are idempotent and a successful deepspace ask always ends with a confirmed reply.',
       },
       {
         id: 'switch-without-waking',
@@ -1471,12 +1471,12 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'inspect-mobile-flow',
         title: 'Inspect the flow',
-        body: 'Open Device tools to type text, install an iOS build or APK from a workspace path, launch a bundle id or Android package/activity, inspect or change permissions, read bounded logs and accessibility data, and save a screenshot under .orkestrai/devices/screenshots.',
+        body: 'Open Device tools to type text, install an iOS build or APK from a workspace path, launch a bundle id or Android package/activity, inspect or change permissions, read bounded logs and accessibility data, and save a screenshot under .deepspace/devices/screenshots.',
       },
       {
         id: 'delegate-mobile-check',
         title: 'Delegate with evidence',
-        body: 'Ask an agent to use orkestrai device or the matching MCP tools. Its taps, swipes, screenshots, logs, and accessibility inspection target this workspace session. Stop the session when finished; Deep Space also cleans up idle helpers it started.',
+        body: 'Ask an agent to use deepspace device or the matching MCP tools. Its taps, swipes, screenshots, logs, and accessibility inspection target this workspace session. Stop the session when finished; Deep Space also cleans up idle helpers it started.',
       },
     ],
   },
@@ -1790,7 +1790,7 @@ export const TOURS_EN: Tour[] = [
         title: 'Apply a brand to the character',
         body: 'I generate a sample XYZ logo PNG, create the second stage, and automatically connect the first approved master, the logo, both briefs, and the same Codex.',
         action: [
-          { kind: 'createSampleImage', title: 'XYZ Sample Logo', path: '.orkestrai/tours/xyz-sample-logo.png', label: 'XYZ', background: '#7C4DFF', foreground: '#FFFFFF', position: { x: 1140, y: 920 } },
+          { kind: 'createSampleImage', title: 'XYZ Sample Logo', path: '.deepspace/tours/xyz-sample-logo.png', label: 'XYZ', background: '#7C4DFF', foreground: '#FFFFFF', position: { x: 1140, y: 920 } },
           { kind: 'createImageWorkflow', title: '02 — Branded Character', position: { x: 1600, y: 60 }, prompt: 'Use the first reference as the character exact identity and the second as the exact XYZ brand logo. Create two full-body promotional poses with the logo applied naturally and legibly to the outfit. Preserve the face, antennae, anatomy, outfit, palette, and style.', count: 2, transparentBackground: true, outputDirectory: 'generated/images/xyz-branded', filePrefix: 'atomic-ant-xyz' },
           { kind: 'connect', fromTitle: 'XYZ Creative Director', toTitle: '02 — Branded Character' },
           { kind: 'connect', fromTitle: 'XYZ Character Brief', toTitle: '02 — Branded Character' },

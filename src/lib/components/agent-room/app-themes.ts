@@ -34,7 +34,7 @@ export type AppTheme = {
 
 export type CustomAppTheme = Omit<AppTheme, 'builtin'>;
 
-export const DEFAULT_APP_THEME_ID = 'orkestrai-dark';
+export const DEFAULT_APP_THEME_ID = 'deepspace-dark';
 export const APP_THEME_SETTING = 'appTheme';
 export const CUSTOM_APP_THEMES_SETTING = 'customAppThemes';
 
@@ -78,7 +78,7 @@ export const BUILTIN_APP_THEMES: AppTheme[] = [
     },
   },
   {
-    id: 'orkestrai-light',
+    id: 'deepspace-light',
     name: 'Deep Space Light',
     dark: false,
     builtin: true,
@@ -254,7 +254,7 @@ export function appThemeCssVariables(theme: AppTheme): Record<string, string> {
  * sabermos o tema. Sem esse cache as rotas com SSR piscam o tema padrao.
  * Se mudar o formato, suba a versao aqui E no script do app.html.
  */
-export const APP_THEME_CACHE_KEY = 'orkestrai.theme.v2';
+export const APP_THEME_CACHE_KEY = 'deepspace.theme.v2';
 
 export function applyAppTheme(settings: Record<string, string>, root?: HTMLElement): AppTheme {
   const theme = resolveAppTheme(settings);

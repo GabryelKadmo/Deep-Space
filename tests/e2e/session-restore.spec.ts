@@ -6,7 +6,7 @@ import { join } from 'node:path';
 
 test.describe('restauracao de sessao', () => {
   test('terminal com sessao morta respawna ao recarregar', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-respawn-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-respawn-'));
     const workspaceName = `E2E respawn ${Date.now()}`;
 
     await page.goto('/canvas');

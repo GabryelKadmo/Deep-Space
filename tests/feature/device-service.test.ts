@@ -39,13 +39,13 @@ class FakeIosAdapter implements DeviceAdapter {
     return {
       public: {
         workspaceId, platform: this.platform, deviceId: this.runtimeDeviceId ?? device.id, deviceName: device.name,
-        status: 'streaming', orientation: 'portrait', startedByOrkestrai: true,
+        status: 'streaming', orientation: 'portrait', startedByDeepSpace: true,
         attachedAt: new Date().toISOString(), lastError: null,
       },
       streamUrl: 'http://127.0.0.1:1/stream.mjpeg',
       helperBaseUrl: 'http://127.0.0.1:1',
       controlUrl: null,
-      helperStartedByOrkestrai: true,
+      helperStartedByDeepSpace: true,
       restartDeviceId: device.id,
       touchedAt: Date.now(),
     };
@@ -73,7 +73,7 @@ describe('DeviceService', () => {
   });
 
   it('keeps one traceable device session per workspace and stops owned runtimes', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-device-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-device-'));
     directories.push(directory);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Device test', workingDir: directory });
     const adapter = new FakeIosAdapter();
@@ -81,7 +81,7 @@ describe('DeviceService', () => {
     services.push(service);
 
     const started = await service.execute(workspace.id, { command: 'start', platform: 'ios', deviceId: adapter.device.id });
-    expect(started.snapshot.session).toMatchObject({ deviceName: 'Test iPhone', status: 'streaming', startedByOrkestrai: true });
+    expect(started.snapshot.session).toMatchObject({ deviceName: 'Test iPhone', status: 'streaming', startedByDeepSpace: true });
 
     const tree = await service.execute(workspace.id, { command: 'tree' });
     expect(tree.result).toEqual({ kind: 'tree', tree: [{ label: 'Login' }], truncated: false });
@@ -92,7 +92,7 @@ describe('DeviceService', () => {
   });
 
   it('confines install artifacts to the workspace after resolving paths', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-device-path-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-device-path-'));
     directories.push(directory);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Device paths', workingDir: directory });
     const adapter = new FakeIosAdapter();
@@ -109,7 +109,7 @@ describe('DeviceService', () => {
   });
 
   it('requires explicit confirmation before attaching a physical Android device', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-device-physical-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-device-physical-'));
     directories.push(directory);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Physical device', workingDir: directory });
     const adapter = new FakeIosAdapter('android', true);
@@ -127,7 +127,7 @@ describe('DeviceService', () => {
   });
 
   it('restarts an emulator through its stable source id instead of its temporary runtime serial', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-device-restart-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-device-restart-'));
     directories.push(directory);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Restart device', workingDir: directory });
     const adapter = new FakeIosAdapter('android', false, 'emulator-5554');

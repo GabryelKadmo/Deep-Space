@@ -64,7 +64,7 @@ export class McpService {
       args: Array.isArray(def.args) ? def.args.map(String) : [],
       env: (def.env ?? {}) as Record<string, string>,
       url: typeof def.url === 'string' ? def.url : undefined,
-      builtin: name === 'orkestrai' || name === 'figma',
+      builtin: name === 'deepspace' || name === 'figma',
     }));
   }
 
@@ -81,7 +81,7 @@ export class McpService {
     const name = input.name.trim();
     if (!name) throw new Error('Informe o nome do servidor.');
     if (!/^[a-z0-9-_]+$/i.test(name)) throw new Error('Nome so com letras, numeros, - e _.');
-    if (name === 'orkestrai' || name === 'figma')
+    if (name === 'deepspace' || name === 'figma')
       throw new Error(`O nome "${name}" e reservado para o servidor do Deep Space.`);
     const workspace = await this.getWorkspace(workspaceId);
     const config = await this.readConfig(workspaceId);
@@ -106,7 +106,7 @@ export class McpService {
     }
     // .mcp.json so e lido por Claude/Kimi — propaga para os outros formatos
     // nativos (Cursor, Cline, Devin, Antigravity, OpenCode) igual a ponte faz
-    // para o servidor "orkestrai". Valida todos os arquivos antes de gravar a
+    // para o servidor "deepspace". Valida todos os arquivos antes de gravar a
     // fonte primaria para nao mascarar configuracoes invalidas dos providers.
     await fanOutMcpServer(workspace.workingDir, name, {
       command,
@@ -119,7 +119,7 @@ export class McpService {
   }
 
   async remove(workspaceId: string, name: string): Promise<McpServerDef[]> {
-    if (name === 'orkestrai' || name === 'figma') throw new Error(`Servidor "${name}" e gerenciado pelo Deep Space.`);
+    if (name === 'deepspace' || name === 'figma') throw new Error(`Servidor "${name}" e gerenciado pelo Deep Space.`);
     const workspace = await this.getWorkspace(workspaceId);
     const config = await this.readConfig(workspaceId);
     if (!(name in config.mcpServers)) throw new Error(`Servidor "${name}" nao encontrado.`);

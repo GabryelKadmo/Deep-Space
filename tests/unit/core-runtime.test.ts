@@ -9,10 +9,10 @@ afterEach(() => {
 
 describe('CoreRuntimeService', () => {
   it('requires the exact internal token and never returns it', () => {
-    process.env.ORKESTRAI_CORE_TOKEN = 'core-secret-token';
-    process.env.ORKESTRAI_CORE_ID = 'core-id';
-    process.env.ORKESTRAI_CORE_STARTED_AT = '2026-09-09T10:00:00.000Z';
-    process.env.ORKESTRAI_CORE_VERSION = '0.29.0';
+    process.env.DEEPSPACE_CORE_TOKEN = 'core-secret-token';
+    process.env.DEEPSPACE_CORE_ID = 'core-id';
+    process.env.DEEPSPACE_CORE_STARTED_AT = '2026-09-09T10:00:00.000Z';
+    process.env.DEEPSPACE_CORE_VERSION = '0.29.0';
 
     expect(coreRuntimeService.authorized(null)).toBe(false);
     expect(coreRuntimeService.authorized('wrong')).toBe(false);

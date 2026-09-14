@@ -1,8 +1,8 @@
 const path = require('node:path');
 
 const BACKGROUND_ENTRYPOINTS = new Set([
-  'orkestrai.js',
-  'orkestrai-server.mjs',
+  'deepspace.js',
+  'deepspace-server.mjs',
 ]);
 
 function normalizedBasename(value) {

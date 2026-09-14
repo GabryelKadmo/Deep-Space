@@ -120,7 +120,7 @@ describe('ManagedPortService', () => {
 
     const protectedService = new ManagedPortService({
       repository: repo,
-      runCommand: vi.fn(async () => 'p900\ncorkestrai\nn*:4173\n'),
+      runCommand: vi.fn(async () => 'p900\ncdeepspace\nn*:4173\n'),
       currentPid: 900,
       parentPid: 899,
     });

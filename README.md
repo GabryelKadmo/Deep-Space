@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="orkestrai-branding/logo.svg" alt="Deep Space" width="360">
+  <img src="deepspace-branding/logo.svg" alt="Deep Space" width="360">
 </p>
 
 <p align="center">
@@ -120,7 +120,7 @@ common credentials redacted; normal agent output is not persisted.
   freshest known data; Manual keeps indexing explicit and user-only, while
   Disabled stops watchers and access without deleting local history. Agents
   query that exact persisted graph
-  through typed MCP or `orkestrai graph`; explicitly approved sibling
+  through typed MCP or `deepspace graph`; explicitly approved sibling
   repositories remain separate projects, and arbitrary SQL/Cypher is never
   exposed. Its Changes view combines the current Git working tree and active
   Floor worktrees to surface affected symbols, likely tests, and shared-impact
@@ -176,14 +176,14 @@ common credentials redacted; normal agent output is not persisted.
   `@api-tests/bruno`; typed edits persist in the actual repository files while
   arbitrary parent paths stay blocked. Postman environments
   import and export independently.
-  A versioned `.orkestrai-api.json` format backs up the complete
+  A versioned `.deepspace-api.json` format backs up the complete
   native collection, including folders, runners, environments, scripts, and
   history. The same node persists in Canvas and Workbench, and
   connected agents use typed MCP/CLI tools to import, fingerprint-read/replace,
   synchronize, execute, and export complete collections without receiving stored secrets in
   plaintext. Format-native requests, folders, scripts, tests, and variables are
   written back; Deep Space-only runner configuration remains in the node and in
-  lossless `.orkestrai-api.json` backups. The JavaScript editor provides runtime-aware completion for
+  lossless `.deepspace-api.json` backups. The JavaScript editor provides runtime-aware completion for
   `bru`, `req`/`res`, `test`/`expect`, and `pm`; scripted tests live beside
   structured assertions and round-trip through Bruno and Postman.
   Bruno/OpenCollection GraphQL, WebSocket, and gRPC requests
@@ -352,7 +352,7 @@ common credentials redacted; normal agent output is not persisted.
   assets, while full documents export to SVG, PNG, JPEG, WebP, or PDF. A designer or leader
   can edit the exact same revision through typed Deep Space tools while the UI
   updates live. Documents, assets, thumbnails, and history stay under
-  `.orkestrai/designs` in the workspace.
+  `.deepspace/designs` in the workspace.
 - **Guided UI exploration:** start from one objective and create a linked spec,
   eight progressive Kanban tasks, and three native directions: Clarity,
   Expressive, and Efficient. Each agent first renders one desktop and one mobile
@@ -428,7 +428,7 @@ common credentials redacted; normal agent output is not persisted.
   through the system application.
 - **Shared reference material:** drop, paste, or select images, PDFs, files, and
   HTTP/HTTPS links in agent prompts, task cards, notes, and composers. Files up
-  to 10 MB stay inside the workspace under `.orkestrai/attachments/`, and agents
+  to 10 MB stay inside the workspace under `.deepspace/attachments/`, and agents
   receive the complete relative path or URL.
 - **Maestro mode:** assign a leader that can propose a team, recruit agents,
   delegate complete task briefings, coordinate work, and dismiss agents when the
@@ -445,11 +445,11 @@ common credentials redacted; normal agent output is not persisted.
 - **Workflows that fit the work:** name, color, and reorder up to ten board
   stages. Leads and agents discover and update the same stages automatically.
 - **Operational team views:** install specialized roles from a 12-role catalog
-  or discover reusable `.orkestrai/roles/` definitions from another selected
+  or discover reusable `.deepspace/roles/` definitions from another selected
   project folder, then inspect each task title, stage, assignee, and Git state
   across every floor. Imported roles stay bounded, validated, and confined to
   the selected project.
-- **Native agent bridge:** the bundled `orkestrai` CLI and MCP server expose
+- **Native agent bridge:** the bundled `deepspace` CLI and MCP server expose
   typed commands for messages, tasks, notes, portals, mobile devices, floors,
   roles, and desktop notifications. Codex receives the Deep Space and official
   Figma MCP definitions as ephemeral launch overrides, so workspace
@@ -566,7 +566,7 @@ Requirements:
 
 ```bash
 git clone https://github.com/GabryelKadmo/Deep-Space.git
-cd orkestrai
+cd deepspace
 npm ci
 
 npm run dev            # SvelteKit at http://localhost:5173
@@ -589,12 +589,12 @@ Deep Space is built with Svelte 5, SvelteKit, Electron, Svelar, SQLite,
 - `src/routes/canvas/`, `src/routes/terminal/`, and
   `src/lib/components/agent-room/canvas/` implement the two desktop workspace
   views.
-- `packages/orkestrai-cli/` provides the agent-facing CLI and MCP bridge.
-- `packages/orkestrai-collaboration-protocol/` defines the versioned encrypted
+- `packages/deepspace-cli/` provides the agent-facing CLI and MCP bridge.
+- `packages/deepspace-collaboration-protocol/` defines the versioned encrypted
   envelope for Node and browser WebCrypto clients;
-  `packages/orkestrai-relay/` is an opaque WebSocket
+  `packages/deepspace-relay/` is an opaque WebSocket
   transport that cannot decrypt workspace content. The production service is
-  available at `wss://relay.orkestrai.app/v1/connect` and is still the
+  available at `wss://relay.deepspace.app/v1/connect` and is still the
   default. Set `PUBLIC_RELAY_URL` to point at your own deployment — see
   [docs/relay.md](docs/relay.md).
 - `electron/` owns the desktop lifecycle, native notifications, and updates.
@@ -614,7 +614,7 @@ npm run benchmark:code-graph
 
 The code-graph benchmark is read-only against the current repository and makes
 temporary mirrors for incremental writes. To include up to four approved local
-Laravel or monorepo fixtures, set `ORKESTRAI_CODE_GRAPH_BENCH_ROOTS` to a JSON
+Laravel or monorepo fixtures, set `DEEPSPACE_CODE_GRAPH_BENCH_ROOTS` to a JSON
 array such as `[{"name":"Laravel","path":"/absolute/path"}]`. It enforces p95
 targets for search and bounded traversal plus a two-second single-file
 incremental target, and removes its temporary workspaces afterward.

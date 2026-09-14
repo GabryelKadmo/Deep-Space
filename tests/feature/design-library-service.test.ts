@@ -21,8 +21,8 @@ describe('DesignLibraryService', () => {
   });
 
   it('publishes, authorizes, imports, and synchronizes linked components', async () => {
-    const sourceDirectory = mkdtempSync(join(tmpdir(), 'orkestrai-design-library-source-'));
-    const targetDirectory = mkdtempSync(join(tmpdir(), 'orkestrai-design-library-target-'));
+    const sourceDirectory = mkdtempSync(join(tmpdir(), 'deepspace-design-library-source-'));
+    const targetDirectory = mkdtempSync(join(tmpdir(), 'deepspace-design-library-target-'));
     directories.push(sourceDirectory, targetDirectory);
     const sourceWorkspace = await workspaceRepository.createWorkspace({ name: 'Source', workingDir: sourceDirectory });
     const targetWorkspace = await workspaceRepository.createWorkspace({ name: 'Target', workingDir: targetDirectory });

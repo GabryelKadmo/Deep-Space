@@ -25,12 +25,12 @@ describe('computer native boundary', () => {
     expect(windows[1].title).toBe('');
   });
   it('does not inherit arbitrary application environment secrets', async () => {
-    process.env.ORKESTRAI_TEST_SECRET = 'must-not-reach-native-process';
+    process.env.DEEPSPACE_TEST_SECRET = 'must-not-reach-native-process';
     try {
-      const result = await runNative(process.execPath, ['-e', 'process.stdout.write(process.env.ORKESTRAI_TEST_SECRET || "absent")']);
+      const result = await runNative(process.execPath, ['-e', 'process.stdout.write(process.env.DEEPSPACE_TEST_SECRET || "absent")']);
       expect(result.stdout).toBe('absent');
     } finally {
-      delete process.env.ORKESTRAI_TEST_SECRET;
+      delete process.env.DEEPSPACE_TEST_SECRET;
     }
   });
 

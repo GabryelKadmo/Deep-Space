@@ -80,7 +80,7 @@
   let leaderMessage = $state("");
   const desktop = typeof window === 'undefined'
     ? undefined
-    : (window as typeof window & { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+    : (window as typeof window & { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
   const desktopAvailable = Boolean(desktop) || import.meta.env.DEV;
   const snapshot = $derived(remoteState.snapshot);
 
@@ -358,7 +358,7 @@
             bind:value={inviteUri}
             autocomplete="off"
             spellcheck="false"
-            placeholder="orkestrai://join/..."
+            placeholder="deepspace://join/..."
           /></label
         >
         <div class="grid gap-4 sm:grid-cols-2">

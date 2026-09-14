@@ -21,7 +21,7 @@ describe('builtin team catalogs', () => {
       expect(preset.data.nodes.some((node) => node.type === 'tasks')).toBe(true);
     }
     expect(new Set(pt.map((preset) => preset.category))).toEqual(
-      new Set(['product', 'frontend', 'backend', 'creative', 'growth', 'orkestrai'])
+      new Set(['product', 'frontend', 'backend', 'creative', 'growth', 'deepspace'])
     );
 
     const ptCampaign = pt.find((preset) => preset.id === 'builtin:campaign-launch')!;
@@ -32,7 +32,7 @@ describe('builtin team catalogs', () => {
     expect(esCampaign.data.skills[0].content).toContain('Lee el briefing compartido');
     expect(ptCampaign.data.taskColumns.map((column) => column.name)).toEqual(['Briefing', 'Planejado', 'Produção', 'Aprovação', 'Publicado']);
 
-    const contributing = pt.find((preset) => preset.id === 'builtin:orkestrai-contributing')!;
+    const contributing = pt.find((preset) => preset.id === 'builtin:deepspace-contributing')!;
     expect(contributing.data.nodes.filter((node) => node.type === 'terminal')).toHaveLength(6);
     expect(contributing.data.nodes.some((node) => node.type === 'flow')).toBe(true);
     expect(contributing.data.taskColumns).toHaveLength(6);

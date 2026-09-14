@@ -200,7 +200,7 @@
       data.payload.command ?? '',
     );
     if (!input) return;
-    const marker = `orkestrai.terminal-autoexec:${id}:${terminalCommandFingerprint(input)}`;
+    const marker = `deepspace.terminal-autoexec:${id}:${terminalCommandFingerprint(input)}`;
     try {
       if (sessionStorage.getItem(marker)) return;
       sessionStorage.setItem(marker, '1');
@@ -373,7 +373,7 @@
    * nem mencao @ so quer o espaco de volta. Fica em localStorage para nao gerar
    * escrita no banco a cada clique, e por no porque cada agente tem um uso.
    */
-  const composerKey = `orkestrai.composer.${id}`;
+  const composerKey = `deepspace.composer.${id}`;
   let composerOpen = $state(readComposerOpen());
 
   function readComposerOpen(): boolean {
@@ -561,8 +561,8 @@
   // agente ativo no mesmo diretorio.
   const agentEnv = $derived({
     ...((data.payload as TerminalNodePayload).env ?? {}),
-    ORKESTRAI_NODE_ID: id,
-    ORKESTRAI_AGENT_TITLE: data.title,
+    DEEPSPACE_NODE_ID: id,
+    DEEPSPACE_AGENT_TITLE: data.title,
   });
   const respawnRequest = $derived.by(() => {
     const payload = data.payload as TerminalNodePayload & { agentSessionId?: string };

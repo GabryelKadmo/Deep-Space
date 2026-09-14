@@ -4,7 +4,7 @@
   import * as m from '$lib/paraglide/messages.js';
 
   type DesktopBridge = { runMenuCommand?: (action: string) => Promise<unknown> };
-  const desktop = (window as unknown as { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+  const desktop = (window as unknown as { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
 
   function run(action: string) {
     void desktop?.runMenuCommand?.(action);

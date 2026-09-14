@@ -95,7 +95,7 @@ describe('McpMarketService', () => {
   });
 
   it('install exige env obrigatorio e grava remoto como type http', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-mcp-market-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-mcp-market-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'market', workingDir: dir });
     const service = new McpMarketService(fakeRegistryFetch as typeof fetch);
 

@@ -16,7 +16,7 @@ function fakeFetch(routes: Record<string, unknown>) {
 }
 
 function homeWith(files: Record<string, string>): string {
-  const home = mkdtempSync(join(tmpdir(), 'orkestrai-usage-'));
+  const home = mkdtempSync(join(tmpdir(), 'deepspace-usage-'));
   for (const [path, contents] of Object.entries(files)) {
     const full = join(home, path);
     mkdirSync(join(full, '..'), { recursive: true });

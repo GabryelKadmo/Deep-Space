@@ -151,7 +151,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          ORKESTRAI_REQUIRE_MAC_SIGNING: 'true'
+          DEEPSPACE_REQUIRE_MAC_SIGNING: 'true'
         run: |
           if [[ "$BUILD_ONLY" == "true" ]]; then
             scripts/package-macos.sh --arm64
@@ -311,8 +311,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rpm -qlp "release/DeepSpace-${{ needs.validate.outputs.version }}.x86_64.rpm" > "$RUNNER_TEMP/orkestrai-rpm-files.txt"
-          if grep -Eq '^/usr/lib/\.build-id(/|$)' "$RUNNER_TEMP/orkestrai-rpm-files.txt"; then
+          rpm -qlp "release/DeepSpace-${{ needs.validate.outputs.version }}.x86_64.rpm" > "$RUNNER_TEMP/deepspace-rpm-files.txt"
+          if grep -Eq '^/usr/lib/\.build-id(/|$)' "$RUNNER_TEMP/deepspace-rpm-files.txt"; then
             echo '::error::RPM contains shared build-id paths that can conflict with other Electron applications.'
             exit 1
           fi

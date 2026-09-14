@@ -118,7 +118,7 @@
     const next = customThemes().filter((theme) => theme.id !== activeCustomTheme.id);
     updateSettings({
       [CUSTOM_APP_THEMES_SETTING]: serializeCustomAppThemes(next),
-      [APP_THEME_SETTING]: 'orkestrai-dark',
+      [APP_THEME_SETTING]: 'deepspace-dark',
     });
   }
 
@@ -127,7 +127,7 @@
     const url = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `${activeTheme.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'orkestrai-theme'}.json`;
+    anchor.download = `${activeTheme.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'deepspace-theme'}.json`;
     anchor.click();
     URL.revokeObjectURL(url);
   }

@@ -12,6 +12,6 @@ describe('API Client code completions', () => {
   it('keeps Postman completion scoped to pm and exposes native compatibility aliases', () => {
     expect(apiClientCompletionOptions('postman', 'pm').map((entry) => entry.label)).toEqual(expect.arrayContaining(['test', 'expect', 'sendRequest', 'collectionVariables', 'execution']));
     expect(apiClientCompletionOptions('postman', 'bru')).toEqual([]);
-    expect(apiClientCompletionOptions('orkestrai', null).map((entry) => entry.label)).toEqual(expect.arrayContaining(['bru', 'pm', 'test', 'expect']));
+    expect(apiClientCompletionOptions('deepspace', null).map((entry) => entry.label)).toEqual(expect.arrayContaining(['bru', 'pm', 'test', 'expect']));
   });
 });

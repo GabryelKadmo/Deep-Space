@@ -28,7 +28,7 @@ test.describe('Council', () => {
 
     try {
       await request.put('/api/agent-room/settings', {
-        data: { ...originalSettings, appTheme: 'orkestrai-dark', uiLanguage: 'en' },
+        data: { ...originalSettings, appTheme: 'deepspace-dark', uiLanguage: 'en' },
       });
       await page.route(`**/api/agent-room/workspaces/${workspace.id}/councils`, (route) => route.fulfill({
         json: { data: { councils: [], agents, tasks: [task], usage: [] } },

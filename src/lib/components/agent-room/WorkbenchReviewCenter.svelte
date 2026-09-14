@@ -138,7 +138,7 @@
 
   function applyMonacoTheme(instance: Monaco): void {
     const dark = document.documentElement.classList.contains('dark');
-    instance.editor.defineTheme('orkestrai-review', {
+    instance.editor.defineTheme('deepspace-review', {
       base: dark ? 'vs-dark' : 'vs',
       inherit: true,
       rules: [],
@@ -153,7 +153,7 @@
         'diffEditor.removedLineBackground': `${cssColor('--app-danger', '#e05b69')}12`,
       },
     });
-    instance.editor.setTheme('orkestrai-review');
+    instance.editor.setTheme('deepspace-review');
   }
 
   async function mountDiffEditor(): Promise<void> {
@@ -162,7 +162,7 @@
     monaco = await import('monaco-editor');
     applyMonacoTheme(monaco);
     diffEditor = monaco.editor.createDiffEditor(diffHost, {
-      theme: 'orkestrai-review',
+      theme: 'deepspace-review',
       automaticLayout: true,
       readOnly: true,
       editContext: false,
@@ -215,8 +215,8 @@
       disposeDiffModels();
       if (!result.binary) {
         const suffix = `${result.staged ? 'staged' : 'working'}-${encodeURIComponent(result.path)}`;
-        const original = monaco.editor.createModel(result.original, result.language, monaco.Uri.parse(`orkestrai-review://original/${suffix}`));
-        const modified = monaco.editor.createModel(result.modified, result.language, monaco.Uri.parse(`orkestrai-review://modified/${suffix}`));
+        const original = monaco.editor.createModel(result.original, result.language, monaco.Uri.parse(`deepspace-review://original/${suffix}`));
+        const modified = monaco.editor.createModel(result.modified, result.language, monaco.Uri.parse(`deepspace-review://modified/${suffix}`));
         diffEditor.setModel({ original, modified });
       }
     } catch (error) {

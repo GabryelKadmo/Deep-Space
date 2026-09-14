@@ -84,8 +84,8 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'routine',
         title: 'La rutina de guardia',
-        body: 'Creo la rutina: cada 5 minutos el vigía recibe "revisa el tablero (orkestrai task list); asigna lo que no tenga dueño; si falta agente, recluta".',
-        action: { kind: 'createRoutine', targetTitle: 'Vigia', prompt: 'Revisa el tablero con: orkestrai task list. Asigna lo que no tenga dueño. Si falta agente, recluta (orkestrai recruit).', intervalMinutes: 5 },
+        body: 'Creo la rutina: cada 5 minutos el vigía recibe "revisa el tablero (deepspace task list); asigna lo que no tenga dueño; si falta agente, recluta".',
+        action: { kind: 'createRoutine', targetTitle: 'Vigia', prompt: 'Revisa el tablero con: deepspace task list. Asigna lo que no tenga dueño. Si falta agente, recluta (deepspace recruit).', intervalMinutes: 5 },
         check: { kind: 'routineExists' },
       },
       {
@@ -304,7 +304,7 @@ export const TOURS_ES: Tour[] = [
         id: 'routine',
         title: 'La rutina de barrido',
         body: 'Creo la rutina: cada 2 minutos lista ./inbox, describe/clasifica lo nuevo, lo mueve a ./inbox/done y lo registra en el tablero.',
-        action: { kind: 'createRoutine', targetTitle: 'Procesador', prompt: 'Lista ./inbox; para cada archivo nuevo, descríbelo y clasifícalo; muévelo a ./inbox/done y regístralo en el tablero con orkestrai task add.', intervalMinutes: 2 },
+        action: { kind: 'createRoutine', targetTitle: 'Procesador', prompt: 'Lista ./inbox; para cada archivo nuevo, descríbelo y clasifícalo; muévelo a ./inbox/done y regístralo en el tablero con deepspace task add.', intervalMinutes: 2 },
         check: { kind: 'routineExists' },
       },
       {
@@ -344,7 +344,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'flow',
         title: 'El flujo de revisión',
-        body: 'Dile a Claude Dev: "implementa X y pide revisión a Codex Reviewer (orkestrai ask)". Implementa, Codex critica, el veredicto vuelve por la misma cuerda.',
+        body: 'Dile a Claude Dev: "implementa X y pide revisión a Codex Reviewer (deepspace ask)". Implementa, Codex critica, el veredicto vuelve por la misma cuerda.',
       },
     ],
   },
@@ -371,7 +371,7 @@ export const TOURS_ES: Tour[] = [
         id: 'routine',
         title: 'La ronda de cada hora',
         body: 'Creo la rutina: cada 60 minutos corre las pruebas; si fallan, abre tarea para el equipo y te notifica en el escritorio.',
-        action: { kind: 'createRoutine', targetTitle: 'Centinela', prompt: 'Corre las pruebas del proyecto. Si fallan, abre una tarea para el equipo (orkestrai task add) y notifica al usuario (orkestrai notify).', intervalMinutes: 60 },
+        action: { kind: 'createRoutine', targetTitle: 'Centinela', prompt: 'Corre las pruebas del proyecto. Si fallan, abre una tarea para el equipo (deepspace task add) y notifica al usuario (deepspace notify).', intervalMinutes: 60 },
         check: { kind: 'routineExists' },
       },
       {
@@ -420,7 +420,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'choose-folder',
         title: 'Elige el proyecto de origen',
-        body: 'Selecciona "Descubrir en otra carpeta..." y elige el proyecto cuyo directorio .orkestrai/roles contiene las instrucciones especialistas.',
+        body: 'Selecciona "Descubrir en otra carpeta..." y elige el proyecto cuyo directorio .deepspace/roles contiene las instrucciones especialistas.',
       },
       {
         id: 'review-import',
@@ -570,7 +570,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'document',
         title: 'Crea un documento de diseño nativo',
-        body: 'Creo un nodo Diseño de Interfaz en el mismo Canvas del equipo. El documento estructurado queda dentro de .orkestrai/designs en tu workspace.',
+        body: 'Creo un nodo Diseño de Interfaz en el mismo Canvas del equipo. El documento estructurado queda dentro de .deepspace/designs en tu workspace.',
         action: { kind: 'createDesign', title: 'Diseño de Interfaz' },
         check: { kind: 'nodeExists', nodeType: 'design', titleIncludes: 'Diseño de Interfaz' },
       },
@@ -729,7 +729,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'server',
         title: 'Inicia tu dev server',
-        body: 'En la terminal del proyecto, inicia la app en el mismo puerto del Portal. Puedes usar `orkestrai port 4173` para elegir un puerto libre antes de iniciar el servidor.',
+        body: 'En la terminal del proyecto, inicia la app en el mismo puerto del Portal. Puedes usar `deepspace port 4173` para elegir un puerto libre antes de iniciar el servidor.',
       },
       {
         id: 'panel',
@@ -914,7 +914,7 @@ export const TOURS_ES: Tour[] = [
     ],
   },
   {
-    id: 'orkestrai-consensus-team',
+    id: 'deepspace-consensus-team',
     icon: 'LayoutTemplate',
     title: 'Contribuir a Deep Space con consenso',
     tagline: 'Claude, Codex y Kimi acuerdan el plan antes de la ejecución.',
@@ -1059,7 +1059,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'leader-checks',
         title: 'El líder consulta antes de delegar',
-        body: 'La skill enseña al líder a llamar orkestrai usage antes de distribuir trabajo nuevo. Recomienda un fallback saludable sin mover silenciosamente tareas o conversaciones que ya están en curso.',
+        body: 'La skill enseña al líder a llamar deepspace usage antes de distribuir trabajo nuevo. Recomienda un fallback saludable sin mover silenciosamente tareas o conversaciones que ya están en curso.',
       },
     ],
   },
@@ -1189,7 +1189,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'deliver-complete-context',
         title: 'Entrega el briefing completo',
-        body: 'Conecta la nota al líder o asigna la tarea. El agente recibe título, descripción y referencias con paths relativos bajo .orkestrai/attachments, sin depender de texto pegado ni de la memoria de la conversación.',
+        body: 'Conecta la nota al líder o asigna la tarea. El agente recibe título, descripción y referencias con paths relativos bajo .deepspace/attachments, sin depender de texto pegado ni de la memoria de la conversación.',
       },
     ],
   },
@@ -1236,7 +1236,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'verify-delivery',
         title: 'Verifica las comunicaciones',
-        body: 'La bandeja proyecta las transiciones en cola, enviado, entregado, recibido, respondido y falló en un sobre canónico. Los replays son idempotentes y un orkestrai ask exitoso siempre termina con respuesta confirmada.',
+        body: 'La bandeja proyecta las transiciones en cola, enviado, entregado, recibido, respondido y falló en un sobre canónico. Los replays son idempotentes y un deepspace ask exitoso siempre termina con respuesta confirmada.',
       },
       {
         id: 'switch-without-waking',
@@ -1471,12 +1471,12 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'inspect-mobile-flow',
         title: 'Inspecciona el flujo',
-        body: 'Abre Herramientas del dispositivo para escribir texto, instalar un build iOS o APK desde un path del workspace, abrir un bundle id o package/activity Android, inspeccionar o cambiar permisos, leer logs y datos de accesibilidad limitados y guardar una captura en .orkestrai/devices/screenshots.',
+        body: 'Abre Herramientas del dispositivo para escribir texto, instalar un build iOS o APK desde un path del workspace, abrir un bundle id o package/activity Android, inspeccionar o cambiar permisos, leer logs y datos de accesibilidad limitados y guardar una captura en .deepspace/devices/screenshots.',
       },
       {
         id: 'delegate-mobile-check',
         title: 'Delega con evidencias',
-        body: 'Pide a un agente que use orkestrai device o las tools MCP equivalentes. Sus toques, swipes, capturas, logs e inspección de accesibilidad usan la sesión de este workspace. Detén la sesión al terminar; Deep Space también limpia los helpers inactivos iniciados por él.',
+        body: 'Pide a un agente que use deepspace device o las tools MCP equivalentes. Sus toques, swipes, capturas, logs e inspección de accesibilidad usan la sesión de este workspace. Detén la sesión al terminar; Deep Space también limpia los helpers inactivos iniciados por él.',
       },
     ],
   },
@@ -1790,7 +1790,7 @@ export const TOURS_ES: Tour[] = [
         title: 'Aplica una marca al personaje',
         body: 'Genero un logo PNG de prueba de la marca XYZ, creo la segunda etapa y conecto automáticamente el primer master aprobado, el logo, los dos briefs y el mismo Codex.',
         action: [
-          { kind: 'createSampleImage', title: 'Logo de Prueba XYZ', path: '.orkestrai/tours/xyz-sample-logo.png', label: 'XYZ', background: '#7C4DFF', foreground: '#FFFFFF', position: { x: 1140, y: 920 } },
+          { kind: 'createSampleImage', title: 'Logo de Prueba XYZ', path: '.deepspace/tours/xyz-sample-logo.png', label: 'XYZ', background: '#7C4DFF', foreground: '#FFFFFF', position: { x: 1140, y: 920 } },
           { kind: 'createImageWorkflow', title: '02 — Personaje con Marca', position: { x: 1600, y: 60 }, prompt: 'Usa la primera referencia como identidad exacta del personaje y la segunda como logo exacto de la marca XYZ. Crea dos poses promocionales de cuerpo entero con el logo aplicado de forma natural y legible en la ropa. Preserva rostro, antenas, anatomía, ropa, paleta y estilo.', count: 2, transparentBackground: true, outputDirectory: 'generated/images/xyz-branded', filePrefix: 'atomic-ant-xyz' },
           { kind: 'connect', fromTitle: 'Director Creativo XYZ', toTitle: '02 — Personaje con Marca' },
           { kind: 'connect', fromTitle: 'Brief del Personaje XYZ', toTitle: '02 — Personaje con Marca' },

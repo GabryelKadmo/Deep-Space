@@ -12,7 +12,7 @@ test.describe('Design editor shell', () => {
         accessibilityWarnings.push(message.text());
       }
     });
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-shell-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-shell-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design shell ${Date.now()}`, workingDir: dir },
@@ -86,7 +86,7 @@ test.describe('Design editor shell', () => {
   });
 
   test('manages pages and hierarchical layers from the file panel', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-file-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-file-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design file ${Date.now()}`, workingDir: dir },
@@ -165,7 +165,7 @@ test.describe('Design editor shell', () => {
   });
 
   test('reveals precision controls and tidies a multi-layer selection', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-precision-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-precision-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design precision ${Date.now()}`, workingDir: dir },
@@ -230,7 +230,7 @@ test.describe('Design editor shell', () => {
   });
 
   test('edits responsive layout, color, and typography from the contextual inspector', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-inspector-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-inspector-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design inspector ${Date.now()}`, workingDir: dir },
@@ -333,7 +333,7 @@ test.describe('Design editor shell', () => {
   });
 
   test('connects prototypes on canvas and keeps inspect, agents, and quality contextual', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-prototype-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-prototype-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design prototype ${Date.now()}`, workingDir: dir },

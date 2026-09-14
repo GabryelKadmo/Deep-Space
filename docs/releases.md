@@ -6,8 +6,8 @@ atualização ficam em `GabryelKadmo/Deep-Space`. O repositório público legado
 que ainda consultam o feed antigo.
 
 Agentes responsáveis por uma release devem usar a skill
-`.agents/skills/orkestrai-release` (espelhada para Claude em
-`.claude/skills/orkestrai-release`). Ela cobre preflight, publicação, recuperação
+`.agents/skills/deepspace-release` (espelhada para Claude em
+`.claude/skills/deepspace-release`). Ela cobre preflight, publicação, recuperação
 de falhas e auditoria do feed público.
 
 ## Credenciais
@@ -92,7 +92,7 @@ cadastre:
 - `APPLE_TEAM_ID`.
 
 O fallback ad-hoc existe somente para builds locais. O workflow oficial define
-`ORKESTRAI_REQUIRE_MAC_SIGNING=true` e falha imediatamente se qualquer um dos
+`DEEPSPACE_REQUIRE_MAC_SIGNING=true` e falha imediatamente se qualquer um dos
 cinco secrets estiver ausente. Com as credenciais presentes, o electron-builder
 assina com Developer ID Application, habilita Hardened Runtime, envia o app ao
 serviço de notarização da Apple e anexa o ticket ao bundle.
@@ -111,7 +111,7 @@ explícita ao proprietário antes de iniciar. O macOS pode pedir a senha várias
 vezes porque o bundle contém muitos binários; cancelar um pedido não cancela
 o empacotamento inteiro. Nunca altere permissões do Keychain automaticamente.
 Somente após essa autorização, use
-`ORKESTRAI_MAC_ALLOW_KEYCHAIN_PROMPTS=true ORKESTRAI_MAC_LOCAL_SIGNING_IDENTITY="Developer ID Application: ..." npm run package:mac -- --arm64`.
+`DEEPSPACE_MAC_ALLOW_KEYCHAIN_PROMPTS=true DEEPSPACE_MAC_LOCAL_SIGNING_IDENTITY="Developer ID Application: ..." npm run package:mac -- --arm64`.
 Sem a autorização explícita, o wrapper recusa esse modo antes de assinar.
 O build local padrão continua ad-hoc, sem consultar uma identidade do Keychain.
 Esse modo habilita Hardened Runtime, não publica e não declara notarização.

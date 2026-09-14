@@ -46,7 +46,7 @@ function slug(value: string): string {
 }
 
 function notifyWorkspaceChanged(workspaceId: string) {
-  const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
   broadcast?.({ type: 'workspaceChanged', workspaceId });
 }
 
@@ -177,7 +177,7 @@ export class BoardColumnService {
     const column = (await this.list(workspaceId)).find(
       (item) => item.key.toLocaleLowerCase() === target || item.name?.toLocaleLowerCase() === target
     );
-    if (!column) throw new Error(`Coluna desconhecida: ${value}. Consulte com orkestrai task columns.`);
+    if (!column) throw new Error(`Coluna desconhecida: ${value}. Consulte com deepspace task columns.`);
     return column.key;
   }
 

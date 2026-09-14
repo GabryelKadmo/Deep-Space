@@ -36,7 +36,7 @@ describe('WorkspaceSearchService', () => {
                 id: '00000000-0000-4000-8000-000000000087',
                 kind: 'file',
                 name: 'launch-research.pdf',
-                path: '.orkestrai/attachments/launch-research.pdf',
+                path: '.deepspace/attachments/launch-research.pdf',
                 url: null,
                 mimeType: 'application/pdf',
                 size: 1_024,
@@ -58,7 +58,7 @@ describe('WorkspaceSearchService', () => {
   });
 
   it('indexes design components, tokens, and Figma links as artifacts of the same document', async () => {
-    const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-design-search-'));
+    const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-design-search-'));
     tempDirectories.push(workingDir);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Design search', workingDir });
     const node = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'design', title: 'Checkout system', payload: {} });

@@ -869,8 +869,8 @@ function prepareExecutionDirectory(input: {
     throw new Error('Modo paralelo exige um projeto Git selecionado.');
   }
 
-  const branch = `orkestrai/${input.task.id.slice(0, 8)}-${input.member.id.slice(0, 8)}`;
-  const worktreePath = resolve(projectsRoot, '.orkestrai-worktrees', `${input.task.id}-${input.member.id}`);
+  const branch = `deepspace/${input.task.id.slice(0, 8)}-${input.member.id.slice(0, 8)}`;
+  const worktreePath = resolve(projectsRoot, '.deepspace-worktrees', `${input.task.id}-${input.member.id}`);
   if (existsSync(worktreePath)) rmSync(worktreePath, { recursive: true, force: true });
   const add = spawnSync('git', ['-C', projectPath, 'worktree', 'add', '-B', branch, worktreePath, 'HEAD'], {
     encoding: 'utf8',

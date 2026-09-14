@@ -226,7 +226,7 @@ export class ImageWorkflowError extends Error {
 }
 
 function broadcast(workspaceId: string, nodeId: string): void {
-  const send = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const send = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
   send?.({ type: 'workspaceChanged', workspaceId, nodeId });
 }
 
@@ -1087,7 +1087,7 @@ export class ImageWorkflowService {
         outputPreset: payload.outputPreset ?? 'auto',
         targetWidth: payload.targetWidth ?? null,
         targetHeight: payload.targetHeight ?? null,
-        outputDirectory: payload.outputDirectory ?? 'generated/images', filePrefix: payload.filePrefix ?? 'orkestrai-image',
+        outputDirectory: payload.outputDirectory ?? 'generated/images', filePrefix: payload.filePrefix ?? 'deepspace-image',
       },
       status: payload.status ?? 'idle',
       contexts: orderedNodes(

@@ -9,9 +9,9 @@ import { autonomyPolicyService, AutonomyGatePendingError } from '$lib/modules/ag
 import { managedPortalCommandSchema } from '$lib/modules/agent-room/contracts/schemas/managed-portal.schema.js';
 
 const roots: string[] = [];
-const runtime = globalThis as typeof globalThis & { __orkestraiExecutePortal?: (request: any) => Promise<any> };
+const runtime = globalThis as typeof globalThis & { __deepspaceExecutePortal?: (request: any) => Promise<any> };
 async function fixture() {
-  const root = await mkdtemp(join(tmpdir(), 'orkestrai-portal-security-')); roots.push(root);
+  const root = await mkdtemp(join(tmpdir(), 'deepspace-portal-security-')); roots.push(root);
   const workspace = await workspaceRepository.createWorkspace({ name:'Portal security', workingDir:root });
   const agent = await workspaceRepository.createNode({ workspaceId:workspace.id, type:'terminal', title:'QA' });
   const portal = await workspaceRepository.createNode({ workspaceId:workspace.id, type:'portal', title:'QA browser',
@@ -22,7 +22,7 @@ async function fixture() {
   const execute = vi.fn(async (request) => request.inspect
     ? {ok:true,result:{url:'https://example.test/',element:request.args.ref ? {name:'Send report',tag:'button',protected:false}:null}}
     : {ok:true,result:{action:request.action}});
-  runtime.__orkestraiExecutePortal = execute;
+  runtime.__deepspaceExecutePortal = execute;
   const command = (action:string, args = {}) => managedPortalCommandSchema.parse({nodeId:portal.id,action,args});
   const context = {actorType:'agent' as const,actorId:agent.id};
   return {workspace,portal,agent,execute,command,context};
@@ -30,7 +30,7 @@ async function fixture() {
 
 describe('authenticated Portal control', () => {
   useSvelarTest({refreshDatabase:true});
-  afterEach(async () => { delete runtime.__orkestraiExecutePortal; for (const root of roots.splice(0)) await rm(root,{recursive:true,force:true}); });
+  afterEach(async () => { delete runtime.__deepspaceExecutePortal; for (const root of roots.splice(0)) await rm(root,{recursive:true,force:true}); });
 
   it('denies ungranted agents before inspecting or mutating the page', async () => {
     const f=await fixture();
@@ -55,7 +55,7 @@ describe('authenticated Portal control', () => {
     expect(f.execute.mock.calls.every(([request])=>request.inspect)).toBe(true);
     const [gate] = await autonomyPolicyService.listGates(f.workspace.id);
     await autonomyPolicyService.resolveGate(f.workspace.id,gate.id,'approved','owner');
-    runtime.__orkestraiExecutePortal = async (request) => {
+    runtime.__deepspaceExecutePortal = async (request) => {
       const response = await f.execute(request);
       return request.inspect ? { ...response, result: { ...response.result, webContentsId: 99, visible: true, tabs: [{ id: 'remounted' }] } } : response;
     };
@@ -65,9 +65,9 @@ describe('authenticated Portal control', () => {
 
   it('rejects sensitive targets and revocation between inspection and execution', async () => {
     const f=await fixture();
-    runtime.__orkestraiExecutePortal = async () => ({ok:true,result:{element:{protected:true}}});
+    runtime.__deepspaceExecutePortal = async () => ({ok:true,result:{element:{protected:true}}});
     await expect(managedPortalService.execute(f.workspace.id,f.command('type',{ref:'e1',text:'not-a-secret'}),f.context)).rejects.toThrow(/Protected/);
-    runtime.__orkestraiExecutePortal = async () => {
+    runtime.__deepspaceExecutePortal = async () => {
       await workspaceRepository.updateNode(f.portal.id,{payload:{...f.portal.payload,portalAgentIds:[]} as never});
       return {ok:true,result:{url:'https://example.test/'}};
     };
@@ -76,7 +76,7 @@ describe('authenticated Portal control', () => {
 
   it('records native execution errors as failures rather than successful audit events', async () => {
     const f=await fixture();
-    runtime.__orkestraiExecutePortal=async(request)=>request.inspect?{ok:true,result:{url:'https://example.test/'}}:{ok:false,error:'Portal reference is stale.'};
+    runtime.__deepspaceExecutePortal=async(request)=>request.inspect?{ok:true,result:{url:'https://example.test/'}}:{ok:false,error:'Portal reference is stale.'};
     await expect(managedPortalService.execute(f.workspace.id,f.command('snapshot'),f.context)).rejects.toThrow(/stale/);
     const events=await autonomyPolicyService.listAudit(f.workspace.id);
     expect(events.filter((event)=>event.capability==='browser' && event.eventType==='completed')).toHaveLength(0);
@@ -85,7 +85,7 @@ describe('authenticated Portal control', () => {
 
   it.skipIf(process.platform==='win32')('rejects a download ancestor symlink before creating directories outside the workspace', async () => {
     const f=await fixture();
-    const outside=await mkdtemp(join(tmpdir(),'orkestrai-outside-'));roots.push(outside);
+    const outside=await mkdtemp(join(tmpdir(),'deepspace-outside-'));roots.push(outside);
     await symlink(outside,join(f.workspace.workingDir,'escape'));
     await expect(preparePortalDirectory(f.workspace.workingDir,'escape/new-directory')).rejects.toThrow(/inside the workspace/);
     await expect(stat(join(outside,'new-directory'))).rejects.toMatchObject({code:'ENOENT'});

@@ -64,7 +64,7 @@ describe('PtySessionManager', () => {
       nodeId: 'node-1',
       provider: 'codex',
       bridgeAgentToken: 'private-terminal-token',
-      env: { ORKESTRAI_AGENT_TOKEN: 'private-terminal-token' },
+      env: { DEEPSPACE_AGENT_TOKEN: 'private-terminal-token' },
     });
 
     expect(manager.resolveBridgeAgent('workspace-1', 'private-terminal-token')).toBe('node-1');
@@ -200,7 +200,7 @@ describe('PtySessionManager', () => {
     manager.kill(session.id);
     expect(attentionStates).toContain(true);
     expect(attentionStates.at(-1)).toBe(false);
-    expect(logSpy).not.toHaveBeenCalledWith(expect.stringContaining('[orkestrai:attention]'));
+    expect(logSpy).not.toHaveBeenCalledWith(expect.stringContaining('[deepspace:attention]'));
     logSpy.mockRestore();
   });
 

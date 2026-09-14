@@ -43,7 +43,7 @@ function capture() {
 }
 
 async function createFeedbackScenario(name: string) {
-  const dir = mkdtempSync(join(tmpdir(), 'orkestrai-portal-design-'));
+  const dir = mkdtempSync(join(tmpdir(), 'deepspace-portal-design-'));
   tempDirs.push(dir);
   const workspace = await workspaceRepository.createWorkspace({ name, workingDir: dir });
   const portal = await workspaceRepository.createNode({
@@ -71,7 +71,7 @@ describe('PortalDesignFeedbackService', () => {
   });
 
   it('persists a cropped capture and redacted context on the selected task', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-portal-design-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-portal-design-'));
     tempDirs.push(dir);
     const workspace = await workspaceRepository.createWorkspace({ name: 'design', workingDir: dir });
     const portal = await workspaceRepository.createNode({
@@ -184,7 +184,7 @@ describe('PortalDesignFeedbackService', () => {
       capture: selected,
       screenshot: {
         id: '00000000-0000-4000-8000-000000000003', kind: 'file', name: 'capture.jpg',
-        path: '.orkestrai/attachments/capture.jpg', url: null, mimeType: 'image/jpeg', size: 100,
+        path: '.deepspace/attachments/capture.jpg', url: null, mimeType: 'image/jpeg', size: 100,
       },
       instruction: 'Fix this.',
       destination: { kind: 'agent', nodeId: '00000000-0000-4000-8000-000000000004' },
@@ -197,7 +197,7 @@ describe('PortalDesignFeedbackService', () => {
   });
 
   it('rejects a file named as PNG when its bytes are not a PNG', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-portal-design-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-portal-design-'));
     tempDirs.push(dir);
     const workspace = await workspaceRepository.createWorkspace({ name: 'invalid capture', workingDir: dir });
     const portal = await workspaceRepository.createNode({
@@ -243,7 +243,7 @@ describe('PortalDesignFeedbackService', () => {
         id: '00000000-0000-4000-8000-000000000004',
         kind: 'file',
         name: 'capture.png',
-        path: '.orkestrai/attachments/capture.png',
+        path: '.deepspace/attachments/capture.png',
         url: null,
         mimeType: 'image/png',
         size: 100,

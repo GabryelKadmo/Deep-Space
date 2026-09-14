@@ -105,7 +105,7 @@ function configurePortalContents(contents) {
   configuredPortalContents.add(contents);
   contents.setWindowOpenHandler(({ url }) => {
     if (isAllowedPortalUrl(url) && url !== 'about:blank') {
-      mainWindow?.webContents.send('orkestrai:portal-open-request', {
+      mainWindow?.webContents.send('deepspace:portal-open-request', {
         sourceWebContentsId: contents.id,
         url,
       });
@@ -123,7 +123,7 @@ function parseCollaborationInvite(candidate) {
   if (typeof candidate !== 'string' || candidate.length > 1000) return null;
   try {
     const url = new URL(candidate);
-    if (url.protocol !== 'orkestrai:' || url.hostname !== 'join' || url.username || url.password || url.port || url.search) return null;
+    if (url.protocol !== 'deepspace:' || url.hostname !== 'join' || url.username || url.password || url.port || url.search) return null;
     if (!/^\/[a-zA-Z0-9_-]{8,128}$/.test(url.pathname) || !/^#[a-zA-Z0-9_-]{43}$/.test(url.hash)) return null;
     return url.toString();
   } catch {
@@ -153,15 +153,15 @@ async function receiveCollaborationInvite(candidate) {
   if (!mainWindow.webContents.getURL().startsWith(remoteUrl)) {
     await mainWindow.loadURL(remoteUrl);
   }
-  mainWindow.webContents.send('orkestrai:collaboration-invite');
+  mainWindow.webContents.send('deepspace:collaboration-invite');
   return true;
 }
 
 function registerCollaborationProtocol() {
   if (process.defaultApp && process.argv[1]) {
-    app.setAsDefaultProtocolClient('orkestrai', process.execPath, [path.resolve(process.argv[1])]);
+    app.setAsDefaultProtocolClient('deepspace', process.execPath, [path.resolve(process.argv[1])]);
   } else {
-    app.setAsDefaultProtocolClient('orkestrai');
+    app.setAsDefaultProtocolClient('deepspace');
   }
 }
 
@@ -255,13 +255,13 @@ function systemLocale() {
 
 function sendMenuAction(action) {
   if (!mainWindow) {
-    createWindow().then(() => mainWindow?.webContents.send('orkestrai:menu-action', action)).catch((error) => console.error(error));
+    createWindow().then(() => mainWindow?.webContents.send('deepspace:menu-action', action)).catch((error) => console.error(error));
     return;
   }
   if (mainWindow.isMinimized()) mainWindow.restore();
   mainWindow.show();
   mainWindow.focus();
-  mainWindow.webContents.send('orkestrai:menu-action', action);
+  mainWindow.webContents.send('deepspace:menu-action', action);
 }
 
 function buildApplicationMenu() {
@@ -387,7 +387,7 @@ function loadDotEnv(filePath) {
 
 function privateChildEnvKeys(dotEnv) {
   return [...new Set([
-    ...(process.env.ORKESTRAI_PRIVATE_ENV_KEYS ?? '').split(',').filter(Boolean),
+    ...(process.env.DEEPSPACE_PRIVATE_ENV_KEYS ?? '').split(',').filter(Boolean),
     ...Object.keys(dotEnv),
     'APP_KEY',
     'INTERNAL_SECRET',
@@ -397,12 +397,12 @@ function privateChildEnvKeys(dotEnv) {
     'ORIGIN',
     'BODY_SIZE_LIMIT',
     'DB_PATH',
-    'ORKESTRAI_DATA_DIR',
-    'ORKESTRAI_PTY_MODULE',
-    'ORKESTRAI_CORE_ID',
-    'ORKESTRAI_CORE_TOKEN',
-    'ORKESTRAI_CORE_STARTED_AT',
-    'ORKESTRAI_CORE_VERSION',
+    'DEEPSPACE_DATA_DIR',
+    'DEEPSPACE_PTY_MODULE',
+    'DEEPSPACE_CORE_ID',
+    'DEEPSPACE_CORE_TOKEN',
+    'DEEPSPACE_CORE_STARTED_AT',
+    'DEEPSPACE_CORE_VERSION',
   ])].join(',');
 }
 
@@ -462,7 +462,7 @@ async function readCoreHealth() {
   if (!url) return null;
   try {
     const response = await fetch(url, {
-      headers: { 'x-orkestrai-core-token': coreToken },
+      headers: { 'x-deepspace-core-token': coreToken },
       signal: AbortSignal.timeout(2_000),
     });
     if (!response.ok) return null;
@@ -528,17 +528,17 @@ function ensureNativePty(userDataDir) {
     }
     return dest;
   } catch (error) {
-    console.warn('[orkestrai] falha ao extrair node-pty para userData:', error?.message ?? error);
+    console.warn('[deepspace] falha ao extrair node-pty para userData:', error?.message ?? error);
     return null;
   }
 }
 
 async function startServer(port) {
-  const serverEntry = path.join(runtimeRoot, 'scripts', 'orkestrai-server.mjs');
+  const serverEntry = path.join(runtimeRoot, 'scripts', 'deepspace-server.mjs');
   const dotEnv = app.isPackaged ? {} : loadDotEnv(path.join(appRoot, '.env'));
   const ptyModuleDir = ensureNativePty(app.getPath('userData'));
   const bundledCliRuntime = process.platform === 'win32'
-    ? path.join(process.resourcesPath, 'orkestrai-cli-runtime', 'node.exe')
+    ? path.join(process.resourcesPath, 'deepspace-cli-runtime', 'node.exe')
     : null;
   const privateEnvKeys = privateChildEnvKeys(dotEnv);
   coreStartedAt = new Date().toISOString();
@@ -552,20 +552,20 @@ async function startServer(port) {
       HOST: '127.0.0.1',
       PORT: String(port),
       // A porta e livre (muda a cada execução): configs da ponte gravados em
-      // workspaces precisam da URL atual (ver também ~/.orkestrai/runtime.json).
-      ORKESTRAI_API_URL: `http://127.0.0.1:${port}`,
-      ORKESTRAI_CORE_ID: coreId,
-      ORKESTRAI_CORE_TOKEN: coreToken,
-      ORKESTRAI_CORE_STARTED_AT: coreStartedAt,
-      ORKESTRAI_CORE_VERSION: app.getVersion(),
-      ORKESTRAI_PRIVATE_ENV_KEYS: privateEnvKeys,
+      // workspaces precisam da URL atual (ver também ~/.deepspace/runtime.json).
+      DEEPSPACE_API_URL: `http://127.0.0.1:${port}`,
+      DEEPSPACE_CORE_ID: coreId,
+      DEEPSPACE_CORE_TOKEN: coreToken,
+      DEEPSPACE_CORE_STARTED_AT: coreStartedAt,
+      DEEPSPACE_CORE_VERSION: app.getVersion(),
+      DEEPSPACE_PRIVATE_ENV_KEYS: privateEnvKeys,
       ...(bundledCliRuntime && fs.existsSync(bundledCliRuntime)
-        ? { ORKESTRAI_CLI_CONSOLE_RUNTIME: bundledCliRuntime }
+        ? { DEEPSPACE_CLI_CONSOLE_RUNTIME: bundledCliRuntime }
         : {}),
-      ...(ptyModuleDir ? { ORKESTRAI_PTY_MODULE: ptyModuleDir } : {}),
+      ...(ptyModuleDir ? { DEEPSPACE_PTY_MODULE: ptyModuleDir } : {}),
       // Em Electron, o banco e os dados ficam na pasta do usuário em producao;
       // em dev, usa a pasta do projeto como sempre.
-      ...(app.isPackaged ? { ORKESTRAI_DATA_DIR: app.getPath('userData') } : {}),
+      ...(app.isPackaged ? { DEEPSPACE_DATA_DIR: app.getPath('userData') } : {}),
     },
     stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
   });
@@ -573,32 +573,32 @@ async function startServer(port) {
   const requestingServer = serverProcess;
   serverProcess.on('message', (message) => {
     if (!message?.requestId) return;
-    if (message.type === 'orkestrai:portal:execute' || message.type === 'orkestrai:portal:inspect') {
-      const operation = message.type === 'orkestrai:portal:inspect'
+    if (message.type === 'deepspace:portal:execute' || message.type === 'deepspace:portal:inspect') {
+      const operation = message.type === 'deepspace:portal:inspect'
         ? managedPortalExecutor.inspect(message).then((result) => ({ ok: true, result }))
         : managedPortalExecutor.execute(message);
       void operation.then((result) => {
-        requestingServer?.send?.({ type: 'orkestrai:portal:result', requestId: message.requestId, result });
+        requestingServer?.send?.({ type: 'deepspace:portal:result', requestId: message.requestId, result });
       }).catch((error) => {
         requestingServer?.send?.({
-          type: 'orkestrai:portal:result', requestId: message.requestId,
+          type: 'deepspace:portal:result', requestId: message.requestId,
           result: { ok: false, error: 'Portal page or element is unavailable. Take another snapshot.' },
         });
       });
       return;
     }
-    if (!['orkestrai:secret:get', 'orkestrai:secret:set', 'orkestrai:secret:delete'].includes(message.type)) return;
+    if (!['deepspace:secret:get', 'deepspace:secret:set', 'deepspace:secret:delete'].includes(message.type)) return;
     try {
-      if (message.type === 'orkestrai:secret:set') saveAutomationSecret(message.key, message.value);
-      if (message.type === 'orkestrai:secret:delete') deleteAutomationSecret(message.key);
+      if (message.type === 'deepspace:secret:set') saveAutomationSecret(message.key, message.value);
+      if (message.type === 'deepspace:secret:delete') deleteAutomationSecret(message.key);
       requestingServer?.send?.({
-        type: 'orkestrai:secret:result',
+        type: 'deepspace:secret:result',
         requestId: message.requestId,
-        value: message.type === 'orkestrai:secret:get' ? readAutomationSecret(message.key) : null,
+        value: message.type === 'deepspace:secret:get' ? readAutomationSecret(message.key) : null,
       });
     } catch (error) {
       requestingServer?.send?.({
-        type: 'orkestrai:secret:result',
+        type: 'deepspace:secret:result',
         requestId: message.requestId,
         error: error?.message ?? String(error),
       });
@@ -609,7 +609,7 @@ async function startServer(port) {
     const text = String(chunk);
     process.stdout.write(`[server] ${text}`);
     for (const line of text.split(/\r?\n/)) {
-      const structuredMatch = line.match(/\[orkestrai:notify\] (\{.+\})/);
+      const structuredMatch = line.match(/\[deepspace:notify\] (\{.+\})/);
       if (structuredMatch) {
         try {
           const payload = JSON.parse(structuredMatch[1]);
@@ -619,7 +619,7 @@ async function startServer(port) {
           // cai no formato legado abaixo
         }
       }
-      const notifyMatch = line.match(/\[orkestrai:notify\] \[(.+?)\] (.+)/);
+      const notifyMatch = line.match(/\[deepspace:notify\] \[(.+?)\] (.+)/);
       if (notifyMatch) {
         showNativeNotification(`Deep Space — ${notifyMatch[1]}`, notifyMatch[2]);
       }
@@ -645,7 +645,7 @@ async function startServer(port) {
   await waitForServer(
     `http://127.0.0.1:${port}/api/agent-room/core/health`,
     30_000,
-    { 'x-orkestrai-core-token': coreToken },
+    { 'x-deepspace-core-token': coreToken },
   );
   return port;
 }
@@ -851,7 +851,7 @@ async function createWindow() {
   await mainWindow.loadURL(`http://127.0.0.1:${port}/`);
 }
 
-ipcMain.handle('orkestrai:pick-directory', async () => {
+ipcMain.handle('deepspace:pick-directory', async () => {
   if (!mainWindow) return null;
   const result = await dialog.showOpenDialog(mainWindow, {
     title: MENU_COPY[menuLocale].pickDirectory,
@@ -860,7 +860,7 @@ ipcMain.handle('orkestrai:pick-directory', async () => {
   return result.canceled ? null : (result.filePaths[0] ?? null);
 });
 
-ipcMain.handle('orkestrai:pick-api-collection', async (_event, kind) => {
+ipcMain.handle('deepspace:pick-api-collection', async (_event, kind) => {
   if (!mainWindow) return null;
   const isPostman = kind === 'postman';
   const isNative = kind === 'native';
@@ -896,7 +896,7 @@ ipcMain.handle('orkestrai:pick-api-collection', async (_event, kind) => {
   return result.canceled ? null : (result.filePaths[0] ?? null);
 });
 
-ipcMain.handle('orkestrai:pick-api-export-directory', async () => {
+ipcMain.handle('deepspace:pick-api-export-directory', async () => {
   if (!mainWindow) return null;
   const result = await dialog.showOpenDialog(mainWindow, {
     title: MENU_COPY[menuLocale].exportApiCollection,
@@ -914,7 +914,7 @@ function spawnApiApp(command, args, waitForExit = false) {
   });
 }
 
-ipcMain.handle('orkestrai:open-api-collection', async (_event, kind, sourcePath) => {
+ipcMain.handle('deepspace:open-api-collection', async (_event, kind, sourcePath) => {
   if (!['bruno', 'postman'].includes(kind) || typeof sourcePath !== 'string' || !sourcePath || !fs.existsSync(sourcePath)) return false;
   const appName = kind === 'bruno' ? 'Bruno' : 'Postman';
   if (process.platform === 'darwin') return spawnApiApp('/usr/bin/open', ['-a', appName, sourcePath], true);
@@ -943,7 +943,7 @@ if (app.isPackaged) {
     autoUpdater = require('electron-updater').autoUpdater;
   } catch (error) {
     autoUpdater = null;
-    console.error('[orkestrai] updater indisponivel no pacote:', error?.message ?? error);
+    console.error('[deepspace] updater indisponivel no pacote:', error?.message ?? error);
   }
 }
 
@@ -954,7 +954,7 @@ const MAC_LATEST_RELEASE_API = 'https://api.github.com/repos/GabryelKadmo/Deep-S
 
 function sendUpdate(payload) {
   latestUpdateState = payload;
-  mainWindow?.webContents.send('orkestrai:update', payload);
+  mainWindow?.webContents.send('deepspace:update', payload);
 }
 
 function updateErrorPayload(error) {
@@ -1038,18 +1038,18 @@ function setupAutoUpdater() {
   setInterval(() => void checkForUpdates(), 6 * 60 * 60 * 1000).unref();
 }
 
-ipcMain.handle('orkestrai:update-check', async () => {
+ipcMain.handle('deepspace:update-check', async () => {
   return checkForUpdates();
 });
 
-ipcMain.handle('orkestrai:update-state', () => latestUpdateState);
+ipcMain.handle('deepspace:update-state', () => latestUpdateState);
 
-ipcMain.handle('orkestrai:update-install', () => {
+ipcMain.handle('deepspace:update-install', () => {
   // Install silently and relaunch after the verified update replaces this build.
   if (automaticUpdateInstallSupported) autoUpdater?.quitAndInstall(true, true);
 });
 
-ipcMain.handle('orkestrai:app-version', () => app.getVersion());
+ipcMain.handle('deepspace:app-version', () => app.getVersion());
 
 async function portalSurfaceRequest(event, input) {
   if (!mainWindow || event.sender !== mainWindow.webContents || event.senderFrame !== mainWindow.webContents.mainFrame) throw new Error('Portal surface requires the trusted app window.');
@@ -1066,11 +1066,11 @@ async function portalSurfaceRequest(event, input) {
     initialUrl: payload.url || 'about:blank', initialTabs: payload.portalTabs, initialActiveTabId: payload.portalActiveTabId,
     profile: { profileId: payload.portalProfileId || 'default', profileScope: payload.portalProfileScope || 'workspace',
       allowedHosts: Array.isArray(payload.portalAllowedHosts) ? payload.portalAllowedHosts : [],
-      downloadDirectory: payload.portalDownloadDirectory || '.orkestrai/downloads',
+      downloadDirectory: payload.portalDownloadDirectory || '.deepspace/downloads',
       paused: payload.portalPaused === true, allowBackground: payload.portalAllowBackground === true } };
 }
 
-ipcMain.handle('orkestrai:portal-surface', async (event, input) => {
+ipcMain.handle('deepspace:portal-surface', async (event, input) => {
   if (['attach', 'detach'].includes(input?.method) && (typeof input.lease !== 'string' || !/^[0-9a-f-]{36}$/i.test(input.lease))) throw new Error('Invalid Portal surface lease.');
   const request = await portalSurfaceRequest(event, input);
   if (input.method === 'attach') return managedPortalExecutor.surface(request, mainWindow, input.lease);
@@ -1080,7 +1080,7 @@ ipcMain.handle('orkestrai:portal-surface', async (event, input) => {
   return managedPortalExecutor.userCommand(request, input.method, input.args || {});
 });
 
-ipcMain.on('orkestrai:portal-layout', (event, input) => {
+ipcMain.on('deepspace:portal-layout', (event, input) => {
   if (!mainWindow || event.sender !== mainWindow.webContents || event.senderFrame !== mainWindow.webContents.mainFrame) return;
   const geometry = input?.geometry;
   if (!geometry || typeof geometry.visible !== 'boolean' || !Number.isFinite(geometry.zoom) || geometry.zoom < 0.1 || geometry.zoom > 5) return;
@@ -1091,16 +1091,16 @@ ipcMain.on('orkestrai:portal-layout', (event, input) => {
   managedPortalExecutor?.setGeometry(input.workspaceId, input.nodeId, geometry, input.lease);
 });
 
-ipcMain.handle('orkestrai:automation-secret-status', (_event, key) => {
+ipcMain.handle('deepspace:automation-secret-status', (_event, key) => {
   if (!validAutomationSecretKey(key)) throw new Error('Invalid automation secret key.');
   return { available: safeStorage.isEncryptionAvailable(), stored: Boolean(readAutomationSecret(key)) };
 });
 
-ipcMain.handle('orkestrai:automation-secret-save', (_event, key, value) => saveAutomationSecret(key, value));
+ipcMain.handle('deepspace:automation-secret-save', (_event, key, value) => saveAutomationSecret(key, value));
 
-ipcMain.handle('orkestrai:automation-secret-delete', (_event, key) => deleteAutomationSecret(key));
+ipcMain.handle('deepspace:automation-secret-delete', (_event, key) => deleteAutomationSecret(key));
 
-ipcMain.handle('orkestrai:oauth-google-connect', async (_event, input) => {
+ipcMain.handle('deepspace:oauth-google-connect', async (_event, input) => {
   if (!input || typeof input !== 'object' || !validAutomationSecretKey(input.storageKey)) {
     throw new Error('Invalid OAuth credential destination.');
   }
@@ -1113,17 +1113,17 @@ ipcMain.handle('orkestrai:oauth-google-connect', async (_event, input) => {
   });
 });
 
-ipcMain.handle('orkestrai:figma-plugin-folder', async () => {
-  const pluginPath = path.join(app.getAppPath(), 'packages', 'orkestrai-figma-plugin');
+ipcMain.handle('deepspace:figma-plugin-folder', async () => {
+  const pluginPath = path.join(app.getAppPath(), 'packages', 'deepspace-figma-plugin');
   return shell.openPath(pluginPath);
 });
 
-ipcMain.handle('orkestrai:open-external', (_event, url) => {
+ipcMain.handle('deepspace:open-external', (_event, url) => {
   // Só https — nunca abre esquema arbitrario vindo do renderer.
   if (typeof url === 'string' && url.startsWith('https://')) shell.openExternal(url);
 });
 
-ipcMain.handle('orkestrai:open-path', async (_event, candidate) => {
+ipcMain.handle('deepspace:open-path', async (_event, candidate) => {
   if (typeof candidate !== 'string' || !path.isAbsolute(candidate)) return 'invalid_path';
   try {
     if (!fs.statSync(candidate).isFile()) return 'not_a_file';
@@ -1133,19 +1133,19 @@ ipcMain.handle('orkestrai:open-path', async (_event, candidate) => {
   return shell.openPath(candidate);
 });
 
-ipcMain.handle('orkestrai:clipboard-write', (_event, value) => {
+ipcMain.handle('deepspace:clipboard-write', (_event, value) => {
   if (typeof value !== 'string' || value.length > 5_000_000) return false;
   clipboard.writeText(value);
   return true;
 });
 
-ipcMain.handle('orkestrai:collaboration-invite-consume', () => {
+ipcMain.handle('deepspace:collaboration-invite-consume', () => {
   const invite = pendingCollaborationInvite;
   pendingCollaborationInvite = null;
   return invite;
 });
 
-ipcMain.handle('orkestrai:menu-locale', (_event, locale) => {
+ipcMain.handle('deepspace:menu-locale', (_event, locale) => {
   menuLocale = normalizeMenuLocale(locale);
   buildApplicationMenu();
   rebuildTrayMenu();
@@ -1157,7 +1157,7 @@ const RENDERER_MENU_ACTIONS = new Set([
   'settings', 'command-palette', 'docs', 'changelog',
 ]);
 
-ipcMain.handle('orkestrai:menu-command', (_event, action) => {
+ipcMain.handle('deepspace:menu-command', (_event, action) => {
   if (typeof action !== 'string' || !mainWindow) return false;
   if (RENDERER_MENU_ACTIONS.has(action)) {
     sendMenuAction(action);
@@ -1183,7 +1183,7 @@ ipcMain.handle('orkestrai:menu-command', (_event, action) => {
   return true;
 });
 
-ipcMain.handle('orkestrai:titlebar-theme', (_event, theme) => {
+ipcMain.handle('deepspace:titlebar-theme', (_event, theme) => {
   if (process.platform !== 'win32' || !mainWindow || !theme || typeof theme !== 'object') return false;
   const color = String(theme.background ?? '');
   const symbolColor = String(theme.foreground ?? '');
@@ -1192,18 +1192,18 @@ ipcMain.handle('orkestrai:titlebar-theme', (_event, theme) => {
   return true;
 });
 
-ipcMain.handle('orkestrai:core-status', async (event) => {
+ipcMain.handle('deepspace:core-status', async (event) => {
   if (!mainWindow || event.sender !== mainWindow.webContents) return null;
   return coreDesktopStatus();
 });
 
-ipcMain.handle('orkestrai:core-configure', async (event, preferences) => {
+ipcMain.handle('deepspace:core-configure', async (event, preferences) => {
   if (!mainWindow || event.sender !== mainWindow.webContents || !preferences || typeof preferences !== 'object') return null;
   applyCorePreferences(preferences);
   return coreDesktopStatus();
 });
 
-ipcMain.handle('orkestrai:core-restart', async (event) => {
+ipcMain.handle('deepspace:core-restart', async (event) => {
   if (!mainWindow || event.sender !== mainWindow.webContents) return null;
   return restartCore();
 });
@@ -1324,9 +1324,9 @@ if (!gotLock) {
     });
     configurePortalSession();
     managedPortalExecutor = createManagedPortalExecutor({ WebContentsView, View, session, diagnostics,
-      onOpenRequest: (request) => mainWindow?.webContents.send('orkestrai:portal-open-request', request),
+      onOpenRequest: (request) => mainWindow?.webContents.send('deepspace:portal-open-request', request),
       onState: (workspaceId, nodeId, state) => {
-        if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('orkestrai:portal-state', { workspaceId, nodeId, state });
+        if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('deepspace:portal-state', { workspaceId, nodeId, state });
       },
     });
     buildApplicationMenu();

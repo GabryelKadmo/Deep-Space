@@ -9,7 +9,7 @@ import { taskBoardService } from './TaskBoardService.js';
 import { ptySessionManager } from '../../infrastructure/pty/PtySessionManager.js';
 
 function broadcast(workspaceId: string): void {
-  const send = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const send = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
   send?.({ type: 'workspaceChanged', workspaceId });
 }
 

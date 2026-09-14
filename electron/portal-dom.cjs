@@ -1,6 +1,6 @@
 // Runs in an isolated world: page scripts cannot replace the reference registry.
 function portalDomRuntime() {
-  const key = '__orkestraiControlledPortal';
+  const key = '__deepspaceControlledPortal';
   if (globalThis[key]) return;
   let sequence = 0;
   const refs = new Map();
@@ -106,5 +106,5 @@ function portalDomRuntime() {
 }
 
 const INIT_SCRIPT = `(${portalDomRuntime.toString()})()`;
-const SNAPSHOT_SCRIPT = `${INIT_SCRIPT}; globalThis.__orkestraiControlledPortal.snapshot()`;
+const SNAPSHOT_SCRIPT = `${INIT_SCRIPT}; globalThis.__deepspaceControlledPortal.snapshot()`;
 module.exports = { INIT_SCRIPT, SNAPSHOT_SCRIPT };

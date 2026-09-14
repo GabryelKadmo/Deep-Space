@@ -19,7 +19,7 @@ const MAX_SCREENSHOT_DATA_URL = 10 * 1024 * 1024 * 1.38;
 
 export function portalInspectorSource(): string {
   return String.raw`(() => {
-    const KEY = '__orkestraiPortalInspector';
+    const KEY = '__deepspacePortalInspector';
     if (window[KEY] && typeof window[KEY].cancel === 'function') window[KEY].cancel();
 
     return new Promise((resolve) => {
@@ -101,13 +101,13 @@ export function portalInspectorSource(): string {
       };
 
       const overlay = document.createElement('div');
-      overlay.setAttribute('data-orkestrai-inspector', 'overlay');
+      overlay.setAttribute('data-deepspace-inspector', 'overlay');
       Object.assign(overlay.style, {
         position: 'fixed', pointerEvents: 'none', zIndex: '2147483646', border: '2px solid #7c3aed',
         background: 'rgba(124,58,237,.10)', borderRadius: '3px', boxSizing: 'border-box', display: 'none'
       });
       const badge = document.createElement('div');
-      badge.setAttribute('data-orkestrai-inspector', 'badge');
+      badge.setAttribute('data-deepspace-inspector', 'badge');
       Object.assign(badge.style, {
         position: 'fixed', pointerEvents: 'none', zIndex: '2147483647', maxWidth: 'min(420px,90vw)',
         padding: '4px 7px', borderRadius: '4px', color: '#fff', background: '#5b21b6',
@@ -155,13 +155,13 @@ export function portalInspectorSource(): string {
       };
       const onPointerOver = (event) => {
         const target = event.target instanceof Element ? event.target : null;
-        if (!target || target.closest('[data-orkestrai-inspector]')) return;
+        if (!target || target.closest('[data-deepspace-inspector]')) return;
         current = target;
         scheduleHighlight();
       };
       const onClick = (event) => {
         const target = event.target instanceof Element ? event.target : current;
-        if (!target || target.closest('[data-orkestrai-inspector]')) return;
+        if (!target || target.closest('[data-deepspace-inspector]')) return;
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
@@ -214,7 +214,7 @@ export async function beginPortalInspection(webview: PortalWebviewElement): Prom
 }
 
 export async function cancelPortalInspection(webview: PortalWebviewElement): Promise<void> {
-  await webview.executeJavaScript("window.__orkestraiPortalInspector?.cancel?.()").catch(() => undefined);
+  await webview.executeJavaScript("window.__deepspacePortalInspector?.cancel?.()").catch(() => undefined);
 }
 
 export async function portalSelectionExists(webview: PortalWebviewElement, selector: string): Promise<boolean> {

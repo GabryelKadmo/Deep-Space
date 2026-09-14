@@ -32,7 +32,7 @@ describe('AutonomyPolicyService', () => {
   });
 
   it('validates policy, gate, and vault HTTP bodies alongside the Svelar route parameters', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-autonomy-http-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-autonomy-http-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'HTTP acceptance', workingDir: root });
     const current = await autonomyPolicyService.get(workspace.id);
     const controller = new AutonomyPolicyController();
@@ -53,7 +53,7 @@ describe('AutonomyPolicyService', () => {
   });
 
   it('keeps ordinary development inside a standing grant unattended', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-autonomy-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-autonomy-'));
     const file = join(root, 'README.md');
     await writeFile(file, 'ready');
     const workspace = await workspaceRepository.createWorkspace({ name: 'Autonomy', workingDir: root });
@@ -80,7 +80,7 @@ describe('AutonomyPolicyService', () => {
   });
 
   it('keeps emergency stop fail-closed even if the policy switch is disabled afterwards', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-halted-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-halted-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Emergency stop', workingDir: root });
     await autonomyPolicyService.emergencyStop(workspace.id);
     const current = await autonomyPolicyService.get(workspace.id);
@@ -92,7 +92,7 @@ describe('AutonomyPolicyService', () => {
   });
 
   it('never shares an approval between different actors or run steps', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-gate-identity-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-gate-identity-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Approval identity', workingDir: root });
     const current = await autonomyPolicyService.get(workspace.id);
     await autonomyPolicyService.update(workspace.id, { enabled:true, mode:'bounded', policy:current.policy });
@@ -105,8 +105,8 @@ describe('AutonomyPolicyService', () => {
   });
 
   it('gates a boundary crossing once and resumes the matching operation after approval', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-autonomy-root-'));
-    const outside = await mkdtemp(join(tmpdir(), 'orkestrai-autonomy-outside-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-autonomy-root-'));
+    const outside = await mkdtemp(join(tmpdir(), 'deepspace-autonomy-outside-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Gates', workingDir: root });
     const current = await autonomyPolicyService.get(workspace.id);
     await autonomyPolicyService.update(workspace.id, { enabled: true, mode: 'bounded', policy: current.policy });
@@ -133,7 +133,7 @@ describe('AutonomyPolicyService', () => {
   });
 
   it('redacts credentials and detects an altered audit chain', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-autonomy-audit-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-autonomy-audit-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Audit', workingDir: root });
     await autonomyPolicyService.recordObservedEffect({
       workspaceId: workspace.id,
@@ -155,7 +155,7 @@ describe('AutonomyPolicyService', () => {
   });
 
   it('defers background work during quiet hours but never blocks a manual run', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-autonomy-quiet-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-autonomy-quiet-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Quiet hours', workingDir: root });
     const current = await autonomyPolicyService.get(workspace.id);
     await autonomyPolicyService.update(workspace.id, {
@@ -175,7 +175,7 @@ describe('AutonomyPolicyService', () => {
   });
 
   it('resolves a bound SecretRef only inside the trusted executor and exports redacted audit evidence', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-autonomy-secret-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-autonomy-secret-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Vault', workingDir: root });
     const ref = await secretRefService.create(workspace.id, {
       name: 'Slack reports',
@@ -183,8 +183,8 @@ describe('AutonomyPolicyService', () => {
       provider: 'host_vault',
       bindings: { integrations: ['slack'], operations: ['message.send'], destinations: ['hooks.slack.com'] },
     });
-    const state = globalThis as typeof globalThis & { __orkestraiHostVaultResolve?: (reference: string) => Promise<string | null> };
-    state.__orkestraiHostVaultResolve = async (reference) => reference === ref.ref ? 'raw-secret-value' : null;
+    const state = globalThis as typeof globalThis & { __deepspaceHostVaultResolve?: (reference: string) => Promise<string | null> };
+    state.__deepspaceHostVaultResolve = async (reference) => reference === ref.ref ? 'raw-secret-value' : null;
 
     await expect(secretRefService.resolve(workspace.id, ref.ref, {
       integration: 'gmail', operation: 'message.send', destination: 'hooks.slack.com',
@@ -199,11 +199,11 @@ describe('AutonomyPolicyService', () => {
     const exported = await autonomyPolicyService.exportAudit(workspace.id);
     expect(exported.integrity).toMatchObject({ valid: true });
     expect(JSON.stringify(exported)).not.toContain('raw-secret-value');
-    delete state.__orkestraiHostVaultResolve;
+    delete state.__deepspaceHostVaultResolve;
   });
 
   it('fails closed when persisted SecretRef bindings are malformed', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-autonomy-invalid-secret-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-autonomy-invalid-secret-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Invalid vault binding', workingDir: root });
     const ref = await secretRefService.create(workspace.id, {
       name: 'Damaged credential',

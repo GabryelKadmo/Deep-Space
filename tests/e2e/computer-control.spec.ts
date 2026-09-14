@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 
 test('Computer remains usable in Canvas and Workbench, with honest permissions and live agent evidence', async ({ page, request }) => {
   test.setTimeout(60_000);
-  const dir = mkdtempSync(join(tmpdir(), 'orkestrai-computer-ui-'));
+  const dir = mkdtempSync(join(tmpdir(), 'deepspace-computer-ui-'));
   const settings = (await (await request.get('/api/agent-room/settings')).json()).data;
   const created = await request.post('/api/agent-room/workspaces', { data: { name: `Computer QA ${Date.now()}`, workingDir: dir } });
   expect(created.ok()).toBe(true);
@@ -38,7 +38,7 @@ test('Computer remains usable in Canvas and Workbench, with honest permissions a
     await route.fulfill({ json: { data: { nodeId: node.id, config, snapshot: state, lastEvidence: evidence } } });
   });
   try {
-    for (const [theme, path] of [['orkestrai-light', '/terminal'], ['orkestrai-dark', '/canvas']]) {
+    for (const [theme, path] of [['deepspace-light', '/terminal'], ['deepspace-dark', '/canvas']]) {
       await request.put('/api/agent-room/settings', { data: { ...settings, uiLanguage: 'en', appTheme: theme } });
       await page.setViewportSize({ width: 1440, height: 1000 });
       await page.goto(`${path}?workspace=${workspace.id}&node=${node.id}`);
@@ -57,7 +57,7 @@ test('Computer remains usable in Canvas and Workbench, with honest permissions a
       await panel.getByRole('button', { name: 'Open or focus application Calculator', exact: true }).click();
       expect(commands.at(-1)).toEqual({ command: 'launch', applicationId: 'com.apple.calculator' });
       windowTitle = '1387 - verified result';
-      evidence = '.orkestrai/computer/evidence/11111111-1111-4111-8111-111111111111.png';
+      evidence = '.deepspace/computer/evidence/11111111-1111-4111-8111-111111111111.png';
       await expect(panel.getByRole('button', { name: /Calculator.*1387/ })).toBeVisible({ timeout: 15_000 });
       await expect(panel.locator('img')).toBeVisible();
       await expect.poll(() => panel.locator('img').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
@@ -95,7 +95,7 @@ test('Computer remains usable in Canvas and Workbench, with honest permissions a
 });
 
 test('Computer recovers from failed initial loads and keeps its content during refresh', async ({ page, request }) => {
-  const dir = mkdtempSync(join(tmpdir(), 'orkestrai-computer-recovery-'));
+  const dir = mkdtempSync(join(tmpdir(), 'deepspace-computer-recovery-'));
   const settings = (await (await request.get('/api/agent-room/settings')).json()).data;
   const workspace = (await (await request.post('/api/agent-room/workspaces', { data: { name: `Computer recovery ${Date.now()}`, workingDir: dir } })).json()).data;
   const root = `/api/agent-room/workspaces/${workspace.id}`;

@@ -455,7 +455,7 @@
   }
 
   function persistSelection(layout = selectedLayout) {
-    if (selectedWorkspaceId) localStorage.setItem('orkestrai.activeWorkspaceId', selectedWorkspaceId);
+    if (selectedWorkspaceId) localStorage.setItem('deepspace.activeWorkspaceId', selectedWorkspaceId);
     const params = new URLSearchParams();
     if (selectedWorkspaceId) params.set('workspace', selectedWorkspaceId);
     if (selectedNodeId) params.set('node', selectedNodeId);
@@ -525,7 +525,7 @@
   }
 
   function handlePaneDragOver(event: DragEvent, paneId: WorkbenchPaneId): void {
-    if (!event.dataTransfer?.types.includes('application/x-orkestrai-workbench-node')) return;
+    if (!event.dataTransfer?.types.includes('application/x-deepspace-workbench-node')) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
     dropTargetPaneId = paneId;
@@ -533,7 +533,7 @@
 
   function handlePaneDrop(event: DragEvent, paneId: WorkbenchPaneId): void {
     event.preventDefault();
-    const nodeId = event.dataTransfer?.getData('application/x-orkestrai-workbench-node');
+    const nodeId = event.dataTransfer?.getData('application/x-deepspace-workbench-node');
     dropTargetPaneId = null;
     if (nodeId) moveOpenNode(paneId, nodeId);
   }
@@ -819,18 +819,18 @@
     window.addEventListener(LEADER_DICTATION_STATE, handleDictationState);
     window.addEventListener(TEXT_DICTATION_FALLBACK, handleFallback);
     window.addEventListener(WORKBENCH_OPEN_REQUEST, handleWorkbenchOpen);
-    window.addEventListener('orkestrai:open-council', handleCouncilOpen);
-    window.addEventListener('orkestrai:open-sharing', handleSharingOpen);
-    window.addEventListener('orkestrai:open-file', handleWorkbenchFileOpen);
+    window.addEventListener('deepspace:open-council', handleCouncilOpen);
+    window.addEventListener('deepspace:open-sharing', handleSharingOpen);
+    window.addEventListener('deepspace:open-file', handleWorkbenchFileOpen);
     return () => {
       window.removeEventListener(WORKBENCH_EDITOR_STATE_EVENT, handleEditorState);
       window.removeEventListener('beforeunload', guardDirtyBuffers);
       window.removeEventListener(LEADER_DICTATION_STATE, handleDictationState);
       window.removeEventListener(TEXT_DICTATION_FALLBACK, handleFallback);
       window.removeEventListener(WORKBENCH_OPEN_REQUEST, handleWorkbenchOpen);
-      window.removeEventListener('orkestrai:open-council', handleCouncilOpen);
-      window.removeEventListener('orkestrai:open-sharing', handleSharingOpen);
-      window.removeEventListener('orkestrai:open-file', handleWorkbenchFileOpen);
+      window.removeEventListener('deepspace:open-council', handleCouncilOpen);
+      window.removeEventListener('deepspace:open-sharing', handleSharingOpen);
+      window.removeEventListener('deepspace:open-file', handleWorkbenchFileOpen);
     };
   });
 
@@ -887,12 +887,12 @@
         const params = new URLSearchParams(location.search);
         let pendingFile: { workspaceId?: string; path?: string } | null = null;
         try {
-          pendingFile = JSON.parse(sessionStorage.getItem('orkestrai.open-file') ?? 'null');
+          pendingFile = JSON.parse(sessionStorage.getItem('deepspace.open-file') ?? 'null');
         } catch {
           pendingFile = null;
         }
         const explicitWorkspace = params.get('workspace') || pendingFile?.workspaceId || null;
-        const rememberedWorkspace = localStorage.getItem('orkestrai.activeWorkspaceId');
+        const rememberedWorkspace = localStorage.getItem('deepspace.activeWorkspaceId');
         const initialWorkspace = workspaceList.find((workspace) => workspace.id === explicitWorkspace)
           ?? workspaceList.find((workspace) => workspace.id === rememberedWorkspace && !workspace.suspendedAt)
           ?? workspaceList.find((workspace) => !workspace.suspendedAt)
@@ -932,7 +932,7 @@
           }
           if (pendingFile?.workspaceId === initialWorkspace.id && pendingFile.path) {
             layout = openWorkbenchNode(layout, workbenchFileItemId(pendingFile.path));
-            sessionStorage.removeItem('orkestrai.open-file');
+            sessionStorage.removeItem('deepspace.open-file');
           }
           applyWorkbenchLayout(initialWorkspace.id, layout);
           persistSelection();
@@ -1093,7 +1093,7 @@
   {:else if selectedWorkspace}
     <Resizable.PaneGroup
       direction={node.direction}
-      autoSaveId={`orkestrai.workbench.panes.v2.${selectedWorkspace.id}.${node.id}`}
+      autoSaveId={`deepspace.workbench.panes.v2.${selectedWorkspace.id}.${node.id}`}
       class="min-h-0 min-w-0"
     >
       {#each node.children as child, index (child.id)}

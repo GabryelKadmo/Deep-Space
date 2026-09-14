@@ -347,8 +347,8 @@
     const selection = terminal.getSelection();
     if (!selection) return false;
     const desktop = (window as typeof window & {
-      orkestraiDesktop?: { writeClipboardText?: (value: string) => Promise<boolean> };
-    }).orkestraiDesktop;
+      deepspaceDesktop?: { writeClipboardText?: (value: string) => Promise<boolean> };
+    }).deepspaceDesktop;
     try {
       if (desktop?.writeClipboardText) return await desktop.writeClipboardText(selection);
       await navigator.clipboard.writeText(selection);
@@ -397,8 +397,8 @@
         void copyTerminalSelection(terminal);
         return false;
       }
-      const desktopPlatform = (window as typeof window & { orkestraiDesktop?: { platform?: string } })
-        .orkestraiDesktop?.platform;
+      const desktopPlatform = (window as typeof window & { deepspaceDesktop?: { platform?: string } })
+        .deepspaceDesktop?.platform;
       // Sem preventDefault: o xterm ignora a tecla e o Chromium dispara o
       // "paste" nativo, tratado abaixo — texto pelo proprio xterm, arquivo
       // pelo handler de captura. E o que padroniza o atalho entre as CLIs.
@@ -680,7 +680,7 @@
           }
           break;
         case 'say':
-          // orkestrai say: TTS sob demanda no desktop (falha silenciosa sem modelo).
+          // deepspace say: TTS sob demanda no desktop (falha silenciosa sem modelo).
           if ((!workspaceId || message.workspaceId === workspaceId) && typeof message.text === 'string' && message.text.trim()) {
             speakText(String(message.text), appSettingsStore.values.audioOutputDeviceId).catch(() => {});
           }

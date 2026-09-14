@@ -34,7 +34,7 @@
     for (const byte of bytes) binary += String.fromCharCode(byte);
     const base64 = btoa(binary);
     const ext = (blob.type.split('/').at(-1) ?? 'png').replace('jpeg', 'jpg');
-    const path = `.orkestrai/images/${crypto.randomUUID()}.${ext}`;
+    const path = `.deepspace/images/${crypto.randomUUID()}.${ext}`;
     const response = await fetch(`/api/agent-room/workspaces/${data.workspaceId}/fs/write-binary`, {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },

@@ -48,10 +48,10 @@ describe('Design tokens import, export and audit', () => {
   it('importa DTCG moderno, aliases, modos e CSS variables', () => {
     idCounter = 100;
     const dtcg = importDesignTokens(JSON.stringify({
-      $extensions: { 'com.orkestrai': { collectionName: 'Theme', modes: ['Light', 'Dark'] } },
+      $extensions: { 'com.deepspace': { collectionName: 'Theme', modes: ['Light', 'Dark'] } },
       tokens: {
         color: {
-          brand: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.4, 0.8], alpha: 1 }, $extensions: { 'com.orkestrai': { values: { Dark: '#88aaff' } } } },
+          brand: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.4, 0.8], alpha: 1 }, $extensions: { 'com.deepspace': { values: { Dark: '#88aaff' } } } },
           action: { $type: 'color', $value: '{color.brand}' },
         },
       },
@@ -72,7 +72,7 @@ describe('Design tokens import, export and audit', () => {
     const dtcg = exportDesignTokensDtcg(current, collectionId);
     const css = exportDesignTokensCss(current, collectionId);
     const tailwind = exportDesignTokensTailwind(current, collectionId);
-    expect(dtcg).toContain('com.orkestrai');
+    expect(dtcg).toContain('com.deepspace');
     expect(css).toContain('--color-background: #ffffff;');
     expect(tailwind).toContain('borderRadius');
   });

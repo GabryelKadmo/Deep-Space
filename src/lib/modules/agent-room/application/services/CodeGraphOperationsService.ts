@@ -386,7 +386,7 @@ export class CodeGraphOperationsService {
       const paths = pathCandidates(agent.lastActionData.paths);
       const task = agent.currentTask ? tasks.find((item) => item.id === agent.currentTask?.id) : null;
       const description = task?.description ?? '';
-      const marker = description.match(/<!--\s*orkestrai:code-graph-symbols=([0-9a-f,\s-]+)\s*-->/i)?.[1];
+      const marker = description.match(/<!--\s*deepspace:code-graph-symbols=([0-9a-f,\s-]+)\s*-->/i)?.[1];
       if (marker) symbols.push(...marker.split(',').map((id) => id.trim()).filter((id) => /^[0-9a-f-]{36}$/i.test(id)));
       for (const match of description.matchAll(/(?:^|[\s`(])([\w@./-]+\.(?:[cm]?[jt]sx?|svelte|php|json|ya?ml))(?::\d+)?/gmi)) {
         if (match[1]) paths.push(match[1].replace(/^\.\//, ''));

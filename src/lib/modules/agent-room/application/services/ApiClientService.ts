@@ -23,7 +23,7 @@ import { workspacePathService } from './WorkspacePathService.js';
 
 const IMPORT_LIMIT = 500;
 const HTTP_METHODS = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']);
-const REDACTED_SECRET = '__ORKESTRAI_REDACTED__';
+const REDACTED_SECRET = '__DEEPSPACE_REDACTED__';
 const SECRET_NAME = /(?:authorization|api[_-]?key|access[_-]?token|refresh[_-]?token|client[_-]?secret|password|passwd|secret|token)/i;
 
 type ImportedCollection = {
@@ -67,7 +67,7 @@ function agentCollection(payload: ApiClientNodePayload): AgentApiClientCollectio
     environments: payload.environments ?? {},
     globalVariables: payload.globalVariables ?? {},
     runtimeVariables: payload.runtimeVariables ?? {},
-    scriptDialect: payload.scriptDialect ?? 'orkestrai',
+    scriptDialect: payload.scriptDialect ?? 'deepspace',
     activeEnvironment: payload.activeEnvironment ?? null,
     collectionPreRequestScript: payload.collectionPreRequestScript ?? '',
     collectionPostResponseScript: payload.collectionPostResponseScript ?? '',
@@ -1130,7 +1130,7 @@ export class ApiClientService {
     // Round-trip metadata stays outside request transport, but Bruno's official
     // runtime still receives its declared folder/request variables and tests.
     let request = requestDefaults({ ...dto.input.request, sourceData: null });
-    const dialect = dto.input.scriptDialect ?? payload.scriptDialect ?? (payload.sourceKind === 'postman' ? 'postman' : payload.sourceKind === 'bruno' || payload.sourceKind === 'openCollection' ? 'bruno' : 'orkestrai');
+    const dialect = dto.input.scriptDialect ?? payload.scriptDialect ?? (payload.sourceKind === 'postman' ? 'postman' : payload.sourceKind === 'bruno' || payload.sourceKind === 'openCollection' ? 'bruno' : 'deepspace');
     const sourceRequest = requestDefaults(persistedRequest);
     const folderVariables = dialect === 'bruno' ? brunoFolderVariables(payload.folders ?? [], sourceRequest) : {};
     const requestVariables = dialect === 'bruno' ? brunoRequestVariables(sourceRequest) : {};
@@ -1145,7 +1145,7 @@ export class ApiClientService {
       runtime: dto.input.runtimeVariables ?? payload.runtimeVariables ?? {},
       iteration: dto.input.iterationData ?? {},
     });
-    let variables = dialect === 'orkestrai'
+    let variables = dialect === 'deepspace'
       ? { ...dto.input.variables }
       : dialect === 'bruno'
         ? brunoEffectiveVariables(scopes, folderVariables, requestVariables)
@@ -1155,7 +1155,7 @@ export class ApiClientService {
     const visualizations: ApiClientScriptVisualization[] = [];
     const flow: ApiClientScriptFlow = { nextRequest: undefined, skipRequest: false, stopExecution: false };
     let network = apiClientNetworkSchema.parse(payload.network ?? {});
-    const secrets = dialect === 'orkestrai' ? {} : await apiVaultSecrets(workspaceId, dto.input.nodeId, payload.vaultKeys ?? []);
+    const secrets = dialect === 'deepspace' ? {} : await apiVaultSecrets(workspaceId, dto.input.nodeId, payload.vaultKeys ?? []);
     const collectionRequests = (payload.requests ?? [])
       .filter((candidate) => candidate.url?.trim())
       .map((candidate) => requestDefaults({ ...candidate, sourceData: null }));
@@ -1300,7 +1300,7 @@ export class ApiClientService {
         if (!script?.trim()) continue;
         finalResult = (await runScript(script, stage, finalResult) ?? finalResult) as typeof finalResult;
       }
-      if (dialect === 'orkestrai' && request.testScript.trim()) {
+      if (dialect === 'deepspace' && request.testScript.trim()) {
         finalResult = (await runScript(request.testScript, 'requestPostResponse', finalResult) ?? finalResult) as typeof finalResult;
       }
       if (dialect === 'bruno') {
@@ -1595,7 +1595,7 @@ export class ApiClientService {
       collectionPostResponseScript: '',
       sourceCollection: structuredClone(document),
       compatibilityWarnings: imported.warnings,
-      scriptDialect: 'orkestrai',
+      scriptDialect: 'deepspace',
       globalVariables: {},
     };
   }
@@ -1616,7 +1616,7 @@ export class ApiClientService {
       collectionPostResponseScript: payload.collectionPostResponseScript ?? '',
       sourceCollection: payload.sourceCollection ?? null,
       compatibilityWarnings: payload.compatibilityWarnings ?? [],
-      scriptDialect: payload.scriptDialect ?? 'orkestrai',
+      scriptDialect: payload.scriptDialect ?? 'deepspace',
       globalVariables: payload.globalVariables ?? {},
       nativePayload: { ...payload, requests, variables, environments, formatVersion: 1 },
     };

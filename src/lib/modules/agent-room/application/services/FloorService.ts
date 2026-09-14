@@ -44,12 +44,12 @@ function slugify(text: string): string {
 
 /**
  * Andares via git worktree: cada andar e um checkout isolado do repo do
- * workspace em `.orkestrai/floors/<slug>` com sua propria branch.
+ * workspace em `.deepspace/floors/<slug>` com sua propria branch.
  * Aterrissagem = merge da branch do andar de volta no checkout principal.
  */
 /** Avisa o canvas para recarregar o workspace (via broadcast WS global). */
 function notifyWorkspaceChanged(workspaceId: string) {
-  const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
   broadcast?.({ type: 'workspaceChanged', workspaceId });
 }
 
@@ -78,14 +78,14 @@ export class FloorService {
     } catch {
       throw new Error('O diretorio do workspace nao e um repositorio git.');
     }
-    // Os worktrees vivem em .orkestrai/floors dentro do repo; exclui localmente
+    // Os worktrees vivem em .deepspace/floors dentro do repo; exclui localmente
     // (info/exclude) para o andar nao sujar o status do checkout principal.
     try {
       const { appendFileSync, existsSync, readFileSync } = await import('node:fs');
       const excludePath = resolve(workspace.workingDir, '.git', 'info', 'exclude');
       const current = existsSync(excludePath) ? readFileSync(excludePath, 'utf8') : '';
-      if (!current.includes('.orkestrai')) {
-        appendFileSync(excludePath, '\n.orkestrai/\n');
+      if (!current.includes('.deepspace')) {
+        appendFileSync(excludePath, '\n.deepspace/\n');
       }
     } catch {
       // exclude e conveniencia; nao bloqueia
@@ -119,10 +119,10 @@ export class FloorService {
 
     const name = input.name.trim();
     if (!name) throw new Error('Informe o nome do andar.');
-    const branch = input.branch?.trim() || `orkestrai/${slugify(name)}`;
+    const branch = input.branch?.trim() || `deepspace/${slugify(name)}`;
     const floorPath = workspace.runtimeKind === 'wsl'
-      ? win32.resolve(workspace.workingDir, '.orkestrai', 'floors', slugify(name))
-      : resolve(workspace.workingDir, '.orkestrai', 'floors', slugify(name));
+      ? win32.resolve(workspace.workingDir, '.deepspace', 'floors', slugify(name))
+      : resolve(workspace.workingDir, '.deepspace', 'floors', slugify(name));
 
     if (existsSync(floorPath)) throw new Error(`Ja existe um andar em ${floorPath}.`);
 
@@ -276,18 +276,18 @@ export class FloorService {
     return { removed: true };
   }
 
-  /** Executa comandos de hook no diretorio do andar com as variaveis $ORKESTRAI_*. */
+  /** Executa comandos de hook no diretorio do andar com as variaveis $DEEPSPACE_*. */
   async runHooks(floor: Floor, workspace: Workspace, commands: HookCommand[]): Promise<Array<{ command: string; ok: boolean; output: string }>> {
     const runtime = workspaceExecutionRuntime(workspace);
     const env = {
       ...agentEnv(),
-      ORKESTRAI_FLOOR_NAME: floor.name,
-      ORKESTRAI_BRANCH_NAME: floor.branch,
-      ORKESTRAI_FLOOR_PATH: runtime.kind === 'wsl'
+      DEEPSPACE_FLOOR_NAME: floor.name,
+      DEEPSPACE_BRANCH_NAME: floor.branch,
+      DEEPSPACE_FLOOR_PATH: runtime.kind === 'wsl'
         ? guestWorkingDirectory(runtime, floor.path, workspace.workingDir)
         : floor.path,
-      ORKESTRAI_ROOT_PATH: runtime.kind === 'wsl' ? runtime.linuxWorkingDir : workspace.workingDir,
-      ORKESTRAI_PROJECT_NAME: workspace.name,
+      DEEPSPACE_ROOT_PATH: runtime.kind === 'wsl' ? runtime.linuxWorkingDir : workspace.workingDir,
+      DEEPSPACE_PROJECT_NAME: workspace.name,
     };
     const results = [];
     for (const { command } of commands) {
@@ -304,10 +304,10 @@ export class FloorService {
           hostCwd: floor.path,
           hostEnv: env,
           forwardEnvToWsl: [
-            'ORKESTRAI_FLOOR_NAME',
-            'ORKESTRAI_BRANCH_NAME',
-            'ORKESTRAI_FLOOR_PATH',
-            'ORKESTRAI_PROJECT_NAME',
+            'DEEPSPACE_FLOOR_NAME',
+            'DEEPSPACE_BRANCH_NAME',
+            'DEEPSPACE_FLOOR_PATH',
+            'DEEPSPACE_PROJECT_NAME',
           ],
         });
         const { stdout, stderr } = await execFileAsync(launch.command, launch.args, {

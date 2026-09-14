@@ -4,10 +4,10 @@ import { CollaborationDevice } from './domain/models/CollaborationDevice.js';
 import { CollaborationShare } from './domain/models/CollaborationShare.js';
 
 const lifecycle = globalThis as typeof globalThis & {
-  __orkestraiDeleteCollaborationWorkspace?: (workspaceId: string) => Promise<void>;
+  __deepspaceDeleteCollaborationWorkspace?: (workspaceId: string) => Promise<void>;
 };
 
-lifecycle.__orkestraiDeleteCollaborationWorkspace = async (workspaceId) => {
+lifecycle.__deepspaceDeleteCollaborationWorkspace = async (workspaceId) => {
   const shares = await CollaborationShare.query().where('workspace_id', workspaceId).pluck('id');
   for (const shareId of shares) {
     await CollaborationCommand.query().where('share_id', shareId).delete();

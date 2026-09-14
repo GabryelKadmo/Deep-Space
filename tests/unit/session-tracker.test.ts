@@ -21,7 +21,7 @@ afterEach(() => {
 });
 
 function isolatedTracker() {
-  const home = mkdtempSync(join(tmpdir(), 'orkestrai-session-tracker-'));
+  const home = mkdtempSync(join(tmpdir(), 'deepspace-session-tracker-'));
   temporaryHomes.push(home);
   return { home, tracker: new AgentSessionTracker(home) };
 }
@@ -214,7 +214,7 @@ describe('AgentSessionTracker', () => {
   });
 
   it('rastreia a sessao do Claude na home isolada de uma distribuicao WSL', () => {
-    const home = mkdtempSync(join(tmpdir(), 'orkestrai-wsl-home-'));
+    const home = mkdtempSync(join(tmpdir(), 'deepspace-wsl-home-'));
     temporaryHomes.push(home);
     const tracker = new AgentSessionTracker(home, (cwd) => posix.normalize(cwd));
     const linuxCwd = '/home/raoni/projects/app';

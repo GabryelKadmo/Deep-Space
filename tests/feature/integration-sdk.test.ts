@@ -25,14 +25,14 @@ describe('Integration SDK', () => {
   });
 
   it('resolves a token only inside the adapter and deduplicates external delivery', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-integration-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-integration-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Integration', workingDir: root });
     const secret = await secretRefService.create(workspace.id, {
       name: 'Slack bot', purpose: 'Reports', provider: 'host_vault',
       bindings: { integrations: ['slack'], operations: ['slack.send_message'], destinations: ['slack.com'] },
     });
-    const state = globalThis as typeof globalThis & { __orkestraiHostVaultResolve?: (reference: string) => Promise<string | null> };
-    state.__orkestraiHostVaultResolve = async (reference) => reference === secret.ref ? 'unit-test-secret' : null;
+    const state = globalThis as typeof globalThis & { __deepspaceHostVaultResolve?: (reference: string) => Promise<string | null> };
+    state.__deepspaceHostVaultResolve = async (reference) => reference === secret.ref ? 'unit-test-secret' : null;
     const integrationId = uuidv7();
     const now = new Date();
     await AgentAutomationIntegration.create({
@@ -62,6 +62,6 @@ describe('Integration SDK', () => {
     expect(JSON.stringify(audit)).not.toContain('private report body');
     expect(JSON.stringify(audit)).not.toContain('unit-test-secret');
     expect(await autonomyPolicyService.verifyAudit(workspace.id)).toMatchObject({ valid: true });
-    delete state.__orkestraiHostVaultResolve;
+    delete state.__deepspaceHostVaultResolve;
   });
 });

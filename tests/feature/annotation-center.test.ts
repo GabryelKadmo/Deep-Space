@@ -16,9 +16,9 @@ describe('AnnotationCenterService', () => {
   useSvelarTest({ refreshDatabase: true });
 
   it('projects code comments with source revision and stale state', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-annotations-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-annotations-'));
     execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-    execFileSync('git', ['config', 'user.email', 'annotations@orkestrai.local'], { cwd: dir });
+    execFileSync('git', ['config', 'user.email', 'annotations@deepspace.local'], { cwd: dir });
     execFileSync('git', ['config', 'user.name', 'Annotation Test'], { cwd: dir });
     writeFileSync(join(dir, 'app.ts'), 'export const value = 1;\n');
     execFileSync('git', ['add', '.'], { cwd: dir });
@@ -38,7 +38,7 @@ describe('AnnotationCenterService', () => {
   });
 
   it('projects native Design threads without duplicating their state', async () => {
-    const workspace = await workspaceRepository.createWorkspace({ name: 'Design annotations', workingDir: mkdtempSync(join(tmpdir(), 'orkestrai-design-annotations-')) });
+    const workspace = await workspaceRepository.createWorkspace({ name: 'Design annotations', workingDir: mkdtempSync(join(tmpdir(), 'deepspace-design-annotations-')) });
     const node = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'design', title: 'Checkout', payload: {} });
     const document = await designDocumentService.get(workspace.id, node.id);
     const commentId = uuidv7();

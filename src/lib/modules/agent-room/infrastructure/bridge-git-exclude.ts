@@ -1,9 +1,9 @@
 const GENERATED_BRIDGE_ENTRIES = [
-  '.orkestrai/',
-  '.claude/skills/orkestrai/',
-  '.cline/skills/orkestrai/',
-  '.devin/skills/orkestrai/',
-  '.agents/skills/orkestrai/',
+  '.deepspace/',
+  '.claude/skills/deepspace/',
+  '.cline/skills/deepspace/',
+  '.devin/skills/deepspace/',
+  '.agents/skills/deepspace/',
 ] as const;
 
 const LEGACY_USER_OWNED_ENTRIES = [
@@ -20,7 +20,7 @@ const LEGACY_USER_OWNED_ENTRIES = [
  * Removes only the exact contiguous block written by old Deep Space releases.
  * Independently maintained user excludes with the same names stay untouched.
  */
-export function updateOrkestraiGitExclude(current: string): string {
+export function updateDeepSpaceGitExclude(current: string): string {
   const eol = current.includes('\r\n') ? '\r\n' : '\n';
   const oldBlock = [...GENERATED_BRIDGE_ENTRIES, ...LEGACY_USER_OWNED_ENTRIES].join(eol);
   let next = current.replace(oldBlock, GENERATED_BRIDGE_ENTRIES.join(eol));

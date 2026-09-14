@@ -22,7 +22,7 @@ Requirements:
 
 ```bash
 git clone https://github.com/GabryelKadmo/Deep-Space.git
-cd orkestrai
+cd deepspace
 npm ci
 npm run dev
 ```

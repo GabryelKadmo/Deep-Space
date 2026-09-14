@@ -22,7 +22,7 @@ type PendingAuthorization = {
 };
 
 const AUTHORIZATION_TTL_MS = 10 * 60_000;
-const pendingKey = Symbol.for('orkestrai.api-client.oauth.pending');
+const pendingKey = Symbol.for('deepspace.api-client.oauth.pending');
 const root = globalThis as typeof globalThis & { [pendingKey]?: Map<string, PendingAuthorization> };
 const pending = root[pendingKey] ??= new Map<string, PendingAuthorization>();
 

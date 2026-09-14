@@ -10,7 +10,7 @@ Três arquivos alterados no working tree (não commitados):
 
 | Arquivo | Mudança | Escopo |
 |---|---|---|
-| `scripts/orkestrai-server.mjs` | `pathToFileURL()` no `import()` das migrations | **Runtime, cross-platform** (conserta Windows, no-op no Mac) |
+| `scripts/deepspace-server.mjs` | `pathToFileURL()` no `import()` das migrations | **Runtime, cross-platform** (conserta Windows, no-op no Mac) |
 | `package.json` | `electron:rebuild` `-w`→`-o` **+** exclusões de `node_modules` no `build.files` | rebuild = Windows; exclusões = **todas as plataformas** |
 | `docs/build-windows.md` | comandos corrigidos + notas | doc do Windows |
 | `.../infrastructure/agent-path.ts` **(novo)** + `PtySessionManager.ts` + `application/agents.ts` + `application/adapters/{Claude,Codex,Kimi,OpenCode}Adapter.ts` | resolve CLI de agente no Windows (PATH do registro + PATHEXT/.cmd), num módulo compartilhado por canvas/PTY, Maestro e detecção | **Runtime, Windows** (no-op no Mac/Linux) |
@@ -26,7 +26,7 @@ Três arquivos alterados no working tree (não commitados):
 **Sintoma:** no Windows o app abria a splash e fechava após ~30s. No Mac funcionava
 perfeitamente.
 
-**Causa:** em `scripts/orkestrai-server.mjs`, as migrations eram carregadas com
+**Causa:** em `scripts/deepspace-server.mjs`, as migrations eram carregadas com
 `await import(resolve(migrationsDir, file))`. O `resolve()` devolve um caminho
 **absoluto** e, no Windows, isso vira `C:\...\0001.ts` — o loader ESM do Node
 interpreta o `C:` como *scheme de URL* e lança
@@ -91,7 +91,7 @@ pequenos, não os pesos de runtime.
 1. `npx electron-builder --mac dmg` — deve completar normal.
 2. Abra o app: a janela deve renderizar o canvas (**"Deep Space — Canvas"**) e o
    servidor interno deve subir sem erro (`database.db` criado em
-   `~/Library/Application Support/orkestrai/`).
+   `~/Library/Application Support/deepspace/`).
 3. Se **qualquer** recurso quebrar por módulo faltando, olhe o stderr do processo
    servidor; se apontar um dos pacotes excluídos, **remova a linha
    `!node_modules/<pacote>` correspondente** (nesse caso ele é runtime no seu
@@ -268,5 +268,5 @@ Reforçado o `bridgeSkillContent()` (distribuído pros workspaces via
   servidor sobe, `database.db` criado, sem `MODULE_NOT_FOUND`.
 
 (No Windows a máquina foi atualizada para Node 24.18 — irrelevante pro Mac, mas o
-`orkestrai-server.mjs` exige Node 24+ para o type stripping dos `.ts`, o que o
+`deepspace-server.mjs` exige Node 24+ para o type stripping dos `.ts`, o que o
 Electron 42 já satisfaz: ele embute Node 24.18.)

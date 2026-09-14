@@ -22,7 +22,7 @@
     "build": "node --max-old-space-size=8192 node_modules/vite/bin/vite.js build",
     "preview": "vite preview",
     "postinstall": "patch-package && node scripts/ensure-node-pty-helper.mjs",
-    "start": "node scripts/orkestrai-server.mjs",
+    "start": "node scripts/deepspace-server.mjs",
     "migrate": "npx svelar migrate",
     "migrate:agent-room-data": "node scripts/import-agent-room-sqlite.mjs",
     "migrate:rollback": "npx svelar migrate --rollback",
@@ -30,7 +30,7 @@
     "seed": "npx svelar seed:run",
     "dev:worker": "node scripts/svelar-dev-runtime.mjs queue:work --queue=default",
     "dev:scheduler": "node scripts/svelar-dev-runtime.mjs schedule:run",
-    "relay:dev": "node packages/orkestrai-relay/src/server.mjs",
+    "relay:dev": "node packages/deepspace-relay/src/server.mjs",
     "test:prepare": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide --silent && svelte-kit sync",
     "test": "npm run test:prepare && vitest run",
     "test:watch": "npm run test:prepare && vitest",
@@ -193,7 +193,7 @@
       {
         "name": "Deep Space Collaboration",
         "schemes": [
-          "orkestrai"
+          "deepspace"
         ]
       }
     ],
@@ -206,8 +206,8 @@
     "files": [
       "build/**",
       "electron/**",
-      "scripts/orkestrai-server.mjs",
-      "scripts/install-orkestrai-shim.mjs",
+      "scripts/deepspace-server.mjs",
+      "scripts/install-deepspace-shim.mjs",
       "src/lib/database/migrations/**",
       "src/lib/modules/agent-room/infrastructure/pty/**",
       "src/lib/modules/agent-room/infrastructure/voice/**",
@@ -216,8 +216,8 @@
       "src/lib/modules/agent-room/infrastructure/codex-mcp-config.ts",
       "src/lib/modules/agent-room/infrastructure/WslRuntime.ts",
       "src/lib/modules/agent-room/domain/runtime.ts",
-      "packages/orkestrai-cli/**",
-      "packages/orkestrai-figma-plugin/**",
+      "packages/deepspace-cli/**",
+      "packages/deepspace-figma-plugin/**",
       "LICENSE",
       "THIRD_PARTY_NOTICES.md",
       "package.json",

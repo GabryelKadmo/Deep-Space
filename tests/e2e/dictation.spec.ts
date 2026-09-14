@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.describe('ditado por voz', () => {
   test('deixa os controles de posição visíveis e acessíveis pelo badge', async ({ page }) => {
-    await page.addInitScript(() => localStorage.removeItem('orkestrai.dictation-placement'));
+    await page.addInitScript(() => localStorage.removeItem('deepspace.dictation-placement'));
     await page.goto('/canvas');
 
     const orb = page.locator('.dictation-trigger');

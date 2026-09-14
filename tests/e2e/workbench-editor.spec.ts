@@ -24,7 +24,7 @@ test.describe('Workbench editor', () => {
     page.on('console', (message) => {
       if (message.type() === 'warning') consoleWarnings.push(message.text());
     });
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-workbench-editor-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-workbench-editor-'));
     const sourcePath = join(dir, 'sample.ts');
     writeFileSync(sourcePath, 'export const phase = 3;\n');
     const settingsResponse = await request.get('/api/agent-room/settings');
@@ -96,7 +96,7 @@ test.describe('Workbench editor', () => {
 
   test('previews Markdown, images, and PDFs inside the Workbench', async ({ page, request }) => {
     test.setTimeout(90_000);
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-workbench-preview-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-workbench-preview-'));
     const markdownPath = join(dir, 'brief.md');
     const imagePath = join(dir, 'preview.png');
     const pdfPath = join(dir, 'preview.pdf');

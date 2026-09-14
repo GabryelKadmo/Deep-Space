@@ -27,7 +27,7 @@ describe('app themes', () => {
       expect(Object.keys(theme.tokens).sort()).toEqual([...APP_THEME_TOKEN_KEYS].sort());
       expect(Object.values(theme.tokens).every((color) => /^#[0-9a-f]{6}$/i.test(color))).toBe(true);
     }
-    expect(resolveAppTheme({ appTheme: 'orkestrai-light' }).dark).toBe(false);
+    expect(resolveAppTheme({ appTheme: 'deepspace-light' }).dark).toBe(false);
   });
 
   it('ignora tema importado incompleto ou com valores que poderiam injetar CSS', () => {
@@ -44,7 +44,7 @@ describe('app themes', () => {
   });
 
   it('mantem o texto e os estados do tema claro com contraste acessivel', () => {
-    const light = resolveAppTheme({ appTheme: 'orkestrai-light' }).tokens;
+    const light = resolveAppTheme({ appTheme: 'deepspace-light' }).tokens;
     for (const background of [light.page, light.canvas, light.sidebar, light.surface, light.surfaceRaised, light.surfaceSubtle]) {
       expect(contrast(light.text, background)).toBeGreaterThanOrEqual(7);
       expect(contrast(light.textSoft, background)).toBeGreaterThanOrEqual(4.5);
@@ -57,7 +57,7 @@ describe('app themes', () => {
   });
 
   it('mantem a hierarquia principal do tema padrao com contraste acessivel', () => {
-    const dark = resolveAppTheme({ appTheme: 'orkestrai-dark' }).tokens;
+    const dark = resolveAppTheme({ appTheme: 'deepspace-dark' }).tokens;
     for (const background of [dark.page, dark.canvas, dark.sidebar, dark.surface, dark.surfaceRaised, dark.surfaceSubtle]) {
       expect(contrast(dark.text, background)).toBeGreaterThanOrEqual(7);
       expect(contrast(dark.textSoft, background)).toBeGreaterThanOrEqual(4.5);

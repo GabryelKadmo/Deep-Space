@@ -34,7 +34,7 @@
   import ApiClientCanvasNode from '$lib/components/agent-room/canvas/ApiClientCanvasNode.svelte';
   import LoopCanvasNode from '$lib/components/agent-room/canvas/LoopCanvasNode.svelte';
   import GroupCanvasNode from '$lib/components/agent-room/canvas/GroupCanvasNode.svelte';
-  import OrkestraiEdge from '$lib/components/agent-room/canvas/OrkestraiEdge.svelte';
+  import DeepSpaceEdge from '$lib/components/agent-room/canvas/DeepSpaceEdge.svelte';
   import ShapeCanvasNode, { type ShapeStyle } from '$lib/components/agent-room/canvas/ShapeCanvasNode.svelte';
   import {
     SHAPE_CLIPBOARD_TYPE,
@@ -856,34 +856,34 @@
       const detail = (event as CustomEvent<{ workspaceId?: string; path?: string }>).detail;
       if (detail?.workspaceId && detail.path) void openFileFromSearch(detail.workspaceId, detail.path);
     };
-    window.addEventListener('orkestrai:menu-action', listener);
-    window.addEventListener('orkestrai:open-council', openCouncilListener);
-    window.addEventListener('orkestrai:open-sharing', openSharingListener);
-    window.addEventListener('orkestrai:open-design-exploration', openDesignExplorationListener);
-    window.addEventListener('orkestrai:open-file', openFileListener);
-    const pending = sessionStorage.getItem('orkestrai.menu-action');
+    window.addEventListener('deepspace:menu-action', listener);
+    window.addEventListener('deepspace:open-council', openCouncilListener);
+    window.addEventListener('deepspace:open-sharing', openSharingListener);
+    window.addEventListener('deepspace:open-design-exploration', openDesignExplorationListener);
+    window.addEventListener('deepspace:open-file', openFileListener);
+    const pending = sessionStorage.getItem('deepspace.menu-action');
     if (pending) {
-      sessionStorage.removeItem('orkestrai.menu-action');
+      sessionStorage.removeItem('deepspace.menu-action');
       requestAnimationFrame(() => handleDesktopMenuAction(pending));
     }
     return () => {
-      window.removeEventListener('orkestrai:menu-action', listener);
-      window.removeEventListener('orkestrai:open-council', openCouncilListener);
-      window.removeEventListener('orkestrai:open-sharing', openSharingListener);
-      window.removeEventListener('orkestrai:open-design-exploration', openDesignExplorationListener);
-      window.removeEventListener('orkestrai:open-file', openFileListener);
+      window.removeEventListener('deepspace:menu-action', listener);
+      window.removeEventListener('deepspace:open-council', openCouncilListener);
+      window.removeEventListener('deepspace:open-sharing', openSharingListener);
+      window.removeEventListener('deepspace:open-design-exploration', openDesignExplorationListener);
+      window.removeEventListener('deepspace:open-file', openFileListener);
     };
   });
 
   async function openFileFromSearch(workspaceId: string, path: string) {
-    sessionStorage.setItem('orkestrai.open-file', JSON.stringify({ workspaceId, path }));
+    sessionStorage.setItem('deepspace.open-file', JSON.stringify({ workspaceId, path }));
     await goto(`/terminal?workspace=${workspaceId}`);
   }
 
   async function openPendingSearchFile() {
-    const raw = sessionStorage.getItem('orkestrai.open-file');
+    const raw = sessionStorage.getItem('deepspace.open-file');
     if (!raw) return;
-    sessionStorage.removeItem('orkestrai.open-file');
+    sessionStorage.removeItem('deepspace.open-file');
     try {
       const detail = JSON.parse(raw) as { workspaceId?: string; path?: string };
       if (detail.workspaceId && detail.path) await openFileFromSearch(detail.workspaceId, detail.path);
@@ -1070,7 +1070,7 @@
         workspaces = workspaceList;
         writeWorkspaceListCache(workspaceList);
         const explicitWorkspaceId = params.get('workspace');
-        const rememberedWorkspaceId = localStorage.getItem('orkestrai.activeWorkspaceId');
+        const rememberedWorkspaceId = localStorage.getItem('deepspace.activeWorkspaceId');
         const requestedWorkspace = workspaceList.find((workspace) => workspace.id === explicitWorkspaceId)
           ?? workspaceList.find((workspace) => workspace.id === rememberedWorkspaceId && !workspace.suspendedAt)
           ?? workspaceList.find((workspace) => !workspace.suspendedAt);
@@ -1120,12 +1120,12 @@
       try {
         const forced = params.has('onboarding');
         if (forced) {
-          sessionStorage.setItem('orkestrai.onboarding', '1');
+          sessionStorage.setItem('deepspace.onboarding', '1');
           params.delete('onboarding');
         }
-        if (forced || sessionStorage.getItem('orkestrai.onboarding') === '1') {
+        if (forced || sessionStorage.getItem('deepspace.onboarding') === '1') {
           showOnboarding = true;
-        } else if (!workspaceList.length && !localStorage.getItem('orkestrai.onboarded')) {
+        } else if (!workspaceList.length && !localStorage.getItem('deepspace.onboarded')) {
           showOnboarding = true;
         }
         if (!forced && requestedTourId && workspaceList.length) params.delete('tour');
@@ -1248,7 +1248,7 @@
     const template = provider?.tui?.exactResumeArgs;
     if (!template) return undefined;
     return (agentSessionId: string) =>
-      template.map((arg) => arg.replace('__ORKESTRAI_SESSION_ID__', agentSessionId));
+      template.map((arg) => arg.replace('__DEEPSPACE_SESSION_ID__', agentSessionId));
   }
 
   function freshSessionArgsFor(node: CanvasNode): string[] | null {
@@ -1321,7 +1321,7 @@
     edges = edges.filter((edge) => edge.id !== edgeId);
   }
 
-  const edgeTypes = { orkestrai: OrkestraiEdge };
+  const edgeTypes = { deepspace: DeepSpaceEdge };
 
   function toFlowEdge(edge: CanvasEdge): Edge {
     return {
@@ -1329,7 +1329,7 @@
       source: edge.sourceNodeId,
       target: edge.targetNodeId,
       // Sempre a corda verlet — o estilo "circuit" (linhas retas) foi removido.
-      type: 'orkestrai',
+      type: 'deepspace',
       zIndex: 10,
       data: {
         onRemove: removeConnection,
@@ -1378,7 +1378,7 @@
       activeWorkspace = workspace;
       workspaces = workspaces.map((item) => item.id === workspace.id ? workspace : item);
       writeWorkspaceListCache(workspaces);
-      localStorage.setItem('orkestrai.activeWorkspaceId', workspace.id);
+      localStorage.setItem('deepspace.activeWorkspaceId', workspace.id);
       if (changingWorkspace) {
         leaderDictationState = 'idle';
         leaderDictationNodeId = null;
@@ -1442,7 +1442,7 @@
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `${activeWorkspace.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.orkestrai.json`;
+    anchor.download = `${activeWorkspace.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.deepspace.json`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -1503,7 +1503,7 @@
       nodes = [];
       edges = [];
       floors = [];
-      localStorage.removeItem('orkestrai.activeWorkspaceId');
+      localStorage.removeItem('deepspace.activeWorkspaceId');
       history.replaceState(null, '', '/canvas');
       const count = result?.killedSessions ?? 0;
       unloadMessage = count > 0
@@ -1585,7 +1585,7 @@
         await selectWorkspace(nextWorkspace.id);
         history.replaceState(null, '', `/canvas?workspace=${encodeURIComponent(nextWorkspace.id)}`);
       } else {
-        localStorage.removeItem('orkestrai.activeWorkspaceId');
+        localStorage.removeItem('deepspace.activeWorkspaceId');
         history.replaceState(null, '', '/canvas');
       }
     }
@@ -1676,7 +1676,7 @@
 
   async function openEditor(path: string) {
     if (!activeWorkspace) return;
-    sessionStorage.setItem('orkestrai.open-file', JSON.stringify({ workspaceId: activeWorkspace.id, path }));
+    sessionStorage.setItem('deepspace.open-file', JSON.stringify({ workspaceId: activeWorkspace.id, path }));
     await goto(`/terminal?workspace=${activeWorkspace.id}`);
   }
 
@@ -1711,7 +1711,7 @@
       body: JSON.stringify({
         type: 'portal', title: m['canvas.default_portal'](), ...position,
         ...nodeSize(rect, 360, 260, 720, 520), floorId: visibleFloorId,
-        payload: { portalProfileId: 'default', portalProfileScope: 'workspace', portalAllowedHosts: [], portalDownloadDirectory: '.orkestrai/downloads', portalAllowScripts: false },
+        payload: { portalProfileId: 'default', portalProfileScope: 'workspace', portalAllowedHosts: [], portalDownloadDirectory: '.deepspace/downloads', portalAllowScripts: false },
       }),
     });
     nodes = [...nodes, toFlowNode(node)];
@@ -1754,7 +1754,7 @@
           portalProfileId: 'default',
           portalProfileScope: 'workspace',
           portalAllowedHosts: [parsed.hostname.toLowerCase()],
-          portalDownloadDirectory: '.orkestrai/downloads',
+          portalDownloadDirectory: '.deepspace/downloads',
           portalAllowScripts: false,
         },
         floorId: visibleFloorId,
@@ -1971,7 +1971,7 @@
           count: 1,
           transparentBackground: false,
           outputDirectory: 'generated/images',
-          filePrefix: 'orkestrai-image',
+          filePrefix: 'deepspace-image',
           status: 'idle',
           history: [],
         },
@@ -2512,7 +2512,7 @@
     edges = [
       ...edges.filter(
         (item) =>
-          !(item.source === connection.source && item.target === connection.target && item.type !== 'orkestrai' && item.type !== 'smoothstep')
+          !(item.source === connection.source && item.target === connection.target && item.type !== 'deepspace' && item.type !== 'smoothstep')
       ),
       toFlowEdge(edge),
     ];
@@ -2523,8 +2523,8 @@
   // some no reload. Esta guarda remove qualquer edge que nao seja a nossa
   // corda, nao importa quando ela apareca.
   $effect(() => {
-    if (edges.some((edge) => edge.type !== 'orkestrai')) {
-      edges = edges.filter((edge) => edge.type === 'orkestrai');
+    if (edges.some((edge) => edge.type !== 'deepspace')) {
+      edges = edges.filter((edge) => edge.type === 'deepspace');
     }
   });
 
@@ -3121,8 +3121,8 @@
         showOnboarding = false;
         requestedTourId = null;
         try {
-          sessionStorage.removeItem('orkestrai.onboarding');
-          sessionStorage.removeItem('orkestrai.onboarding-step');
+          sessionStorage.removeItem('deepspace.onboarding');
+          sessionStorage.removeItem('deepspace.onboarding-step');
           const params = new URLSearchParams(location.search);
           params.delete('tour');
           const query = params.toString();

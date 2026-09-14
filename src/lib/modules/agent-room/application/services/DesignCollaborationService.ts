@@ -41,7 +41,7 @@ type PresenceEntry = {
 };
 
 type CollaborationState = { documents: Map<string, Map<string, PresenceEntry>> };
-const stateKey = Symbol.for('orkestrai.designCollaboration');
+const stateKey = Symbol.for('deepspace.designCollaboration');
 const globals = globalThis as typeof globalThis & { [stateKey]?: CollaborationState };
 const state = globals[stateKey] ??= { documents: new Map() };
 

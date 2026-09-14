@@ -87,7 +87,7 @@ describe('agent adapter registry', () => {
     const role = {
       name: 'Revisor',
       prompt: 'Revise riscos e testes antes de aprovar.',
-      instructionFile: '/tmp/.orkestrai/roles/revisor/AGENTS.md',
+      instructionFile: '/tmp/.deepspace/roles/revisor/AGENTS.md',
     };
 
     const claude = materializeInteractiveAgentCommand({ provider: 'claude', args: [] }, role).payload;

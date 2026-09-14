@@ -39,7 +39,7 @@
   function startTabDrag(event: DragEvent, nodeId: string): void {
     if (!event.dataTransfer) return;
     event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('application/x-orkestrai-workbench-node', nodeId);
+    event.dataTransfer.setData('application/x-deepspace-workbench-node', nodeId);
     event.dataTransfer.setData('text/plain', nodeId);
   }
 </script>

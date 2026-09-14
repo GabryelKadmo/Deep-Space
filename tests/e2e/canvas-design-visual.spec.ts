@@ -15,7 +15,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const THEMES = ['orkestrai-dark', 'orkestrai-light'];
+const THEMES = ['deepspace-dark', 'deepspace-light'];
 const VIEWPORTS = [
   { width: 1280, height: 720 },
   { width: 1440, height: 900 },
@@ -26,7 +26,7 @@ const MAX_DIFF_PIXEL_RATIO = process.env.CI ? 0.03 : 0.01;
 
 test.describe('Canvas and design visual baseline', () => {
   test('canvas matches the supported viewport and theme matrix', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-canvas-visual-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-canvas-visual-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E canvas visual ${Date.now()}`, workingDir: dir },
@@ -117,7 +117,7 @@ test.describe('Canvas and design visual baseline', () => {
   });
 
   test('design editor matches the supported viewport and theme matrix', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-visual-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-visual-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design visual ${Date.now()}`, workingDir: dir },
@@ -145,7 +145,7 @@ test.describe('Canvas and design visual baseline', () => {
     // calculado para o primeiro em vez de refazer o fit.
     await page.addInitScript(() => {
       try {
-        const stale = Object.keys(localStorage).filter((key) => key.startsWith('orkestrai.design.editor.'));
+        const stale = Object.keys(localStorage).filter((key) => key.startsWith('deepspace.design.editor.'));
         for (const key of stale) localStorage.removeItem(key);
       } catch {
         // Storage indisponivel: o editor ja cai no fit padrao.

@@ -47,7 +47,7 @@
 
   const desktop = typeof window === 'undefined'
     ? undefined
-    : (window as typeof window & { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+    : (window as typeof window & { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
   const secretKey = $derived(`automation:figma:${document.workspaceId}`);
   const pendingChanges = $derived(preview?.changes.filter((change) => change.state !== 'unchanged') ?? []);
 

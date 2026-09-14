@@ -600,14 +600,14 @@ export class AgentSessionTracker {
 }
 
 const trackerGlobal = globalThis as typeof globalThis & {
-  __orkestraiAgentSessionTracker?: AgentSessionTracker;
-  __orkestraiRuntimeSessionTrackers?: Map<string, AgentSessionTracker>;
+  __deepspaceAgentSessionTracker?: AgentSessionTracker;
+  __deepspaceRuntimeSessionTrackers?: Map<string, AgentSessionTracker>;
 };
 
-export const agentSessionTracker = trackerGlobal.__orkestraiAgentSessionTracker ??= new AgentSessionTracker();
+export const agentSessionTracker = trackerGlobal.__deepspaceAgentSessionTracker ??= new AgentSessionTracker();
 
 export function agentSessionTrackerForRuntime(key: string, homeDir: string, normalizeCwd: (cwd: string) => string): AgentSessionTracker {
-  const trackers = trackerGlobal.__orkestraiRuntimeSessionTrackers ??= new Map();
+  const trackers = trackerGlobal.__deepspaceRuntimeSessionTrackers ??= new Map();
   const existing = trackers.get(key);
   if (existing) return existing;
   const tracker = new AgentSessionTracker(homeDir, normalizeCwd);

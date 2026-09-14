@@ -181,10 +181,10 @@ export class IosSimulatorAdapter implements DeviceAdapter {
   }
 
   async start(workspaceId: string, device: DeviceDescriptor): Promise<DeviceRuntimeSession> {
-    const startedByOrkestrai = device.state !== 'booted';
-    let helperStartedByOrkestrai = false;
+    const startedByDeepSpace = device.state !== 'booted';
+    let helperStartedByDeepSpace = false;
     try {
-      if (startedByOrkestrai) {
+      if (startedByDeepSpace) {
         await this.runSimctl(['boot', device.id]).catch((error) => {
           const message = error instanceof Error ? error.message : String(error);
           if (!/current state: Booted|Unable to boot device in current state: Booted/i.test(message)) throw error;
@@ -196,7 +196,7 @@ export class IosSimulatorAdapter implements DeviceAdapter {
         const port = await freeLoopbackPort();
         const raw = await this.runCli(['--detach', '--quiet', '--codec', 'mjpeg', '--port', String(port), device.id], 60_000);
         state = JSON.parse(raw) as ServeSimState;
-        helperStartedByOrkestrai = true;
+        helperStartedByDeepSpace = true;
       }
       if (!state.streamUrl || !state.url) throw new Error('The simulator stream helper did not return its loopback endpoints.');
       const runtime: DeviceRuntimeSession = {
@@ -207,14 +207,14 @@ export class IosSimulatorAdapter implements DeviceAdapter {
           deviceName: device.name,
           status: 'starting',
           orientation: 'portrait',
-          startedByOrkestrai,
+          startedByDeepSpace,
           attachedAt: new Date().toISOString(),
           lastError: null,
         },
         streamUrl: state.streamUrl,
         helperBaseUrl: state.streamUrl.replace(/\/stream\.mjpeg(?:\?.*)?$/, ''),
         controlUrl: state.wsUrl ?? null,
-        helperStartedByOrkestrai,
+        helperStartedByDeepSpace,
         touchedAt: Date.now(),
       };
       for (let attempt = 0; attempt < 40; attempt += 1) {
@@ -226,17 +226,17 @@ export class IosSimulatorAdapter implements DeviceAdapter {
       }
       throw new Error('The simulator booted, but its local stream did not become ready.');
     } catch (error) {
-      if (helperStartedByOrkestrai) await this.runCli(['--kill', device.id]).catch(() => undefined);
-      if (startedByOrkestrai) await this.runSimctl(['shutdown', device.id]).catch(() => undefined);
+      if (helperStartedByDeepSpace) await this.runCli(['--kill', device.id]).catch(() => undefined);
+      if (startedByDeepSpace) await this.runSimctl(['shutdown', device.id]).catch(() => undefined);
       throw error;
     }
   }
 
   async stop(session: DeviceRuntimeSession): Promise<void> {
-    if (session.helperStartedByOrkestrai) {
+    if (session.helperStartedByDeepSpace) {
       await this.runCli(['--kill', session.public.deviceId], 20_000).catch(() => undefined);
     }
-    if (session.public.startedByOrkestrai) {
+    if (session.public.startedByDeepSpace) {
       await this.runSimctl(['shutdown', session.public.deviceId], 30_000).catch(() => undefined);
     }
   }

@@ -216,7 +216,7 @@ function generalPreset(locale: PresetLocale, key: string, category: 'creative' |
   return {
     id: `builtin:${key}`, key, name: copy.name, icon, description: copy.description, category,
     data: {
-      format: 'orkestrai-preset', version: 2, createdAt: '2026-08-09T00:00:00.000Z',
+      format: 'deepspace-preset', version: 2, createdAt: '2026-08-09T00:00:00.000Z',
       workspace: { name: copy.name, icon, instructions: copy.instructions, syncAgentInstructionFiles: true, hooks: {} },
       nodes,
       edges: [1, 2, 3, 4, 5, 6].map((targetIndex) => ({ sourceIndex: 0, targetIndex, style: 'cord' as const })),
@@ -359,15 +359,15 @@ function contributingPreset(locale: PresetLocale): BuiltinPresetRecipe {
     },
   ];
   const skills = [
-    ...skillPair(locale, 'orkestrai-contributing', copy.name, copy.instructions),
+    ...skillPair(locale, 'deepspace-contributing', copy.name, copy.instructions),
     ...skillPair(locale, 'svelar-conventions', 'Svelar', copy.architectureBody),
     ...skillPair(locale, 'release-discipline', 'Deep Space release', copy.agents[5].prompt),
   ];
   return {
-    id: 'builtin:orkestrai-contributing', key: 'orkestrai-contributing', name: copy.name, icon: 'wrench',
-    description: copy.description, category: 'orkestrai',
+    id: 'builtin:deepspace-contributing', key: 'deepspace-contributing', name: copy.name, icon: 'wrench',
+    description: copy.description, category: 'deepspace',
     data: {
-      format: 'orkestrai-preset', version: 2, createdAt: '2026-08-09T00:00:00.000Z',
+      format: 'deepspace-preset', version: 2, createdAt: '2026-08-09T00:00:00.000Z',
       workspace: { name: copy.name, icon: 'wrench', instructions: copy.instructions, syncAgentInstructionFiles: true, hooks: {} },
       nodes,
       edges: [

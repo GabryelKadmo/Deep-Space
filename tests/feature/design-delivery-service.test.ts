@@ -19,7 +19,7 @@ describe('DesignDeliveryService', () => {
   });
 
   async function setup() {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-design-delivery-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-design-delivery-'));
     directories.push(directory);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Delivery', workingDir: directory });
     const node = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'design', title: 'Checkout', payload: {} });
@@ -67,12 +67,12 @@ describe('DesignDeliveryService', () => {
     const base = { framework: 'html' as const, elementIds: [frameId], componentName: 'Checkout' };
 
     await expect(designDeliveryService.preview(workspace.id, node.id, { ...base, outputPath: '../escape.html' })).rejects.toThrow('inside the workspace');
-    await expect(designDeliveryService.preview(workspace.id, node.id, { ...base, outputPath: '.orkestrai/escape.html' })).rejects.toThrow('cannot be written');
+    await expect(designDeliveryService.preview(workspace.id, node.id, { ...base, outputPath: '.deepspace/escape.html' })).rejects.toThrow('cannot be written');
   });
 
   it('rejects output directories that resolve through a symlink outside the workspace', async () => {
     const { directory, workspace, node, frameId } = await setup();
-    const outside = mkdtempSync(join(tmpdir(), 'orkestrai-design-outside-'));
+    const outside = mkdtempSync(join(tmpdir(), 'deepspace-design-outside-'));
     directories.push(outside);
     const { symlinkSync } = await import('node:fs');
     symlinkSync(outside, join(directory, 'linked-output'));

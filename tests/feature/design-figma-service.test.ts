@@ -15,7 +15,7 @@ describe('DesignFigmaService plugin import', () => {
   useSvelarTest({ refreshDatabase: true });
 
   it('persists a linked native component and keeps a Figma instance native', async () => {
-    const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-figma-design-'));
+    const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-figma-design-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Figma import', workingDir });
     const node = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'design', title: 'Checkout', payload: {} });
     const initial = await (await import('$lib/modules/agent-room/application/services/DesignDocumentService.js')).designDocumentService.get(workspace.id, node.id);
@@ -53,7 +53,7 @@ describe('DesignFigmaService plugin import', () => {
   });
 
   it('persists image fills sent with a live plugin selection as native assets', async () => {
-    const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-figma-image-'));
+    const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-figma-image-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Figma image', workingDir });
     const node = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'design', title: 'Campaign', payload: {} });
     const initial = await designDocumentService.get(workspace.id, node.id);
@@ -91,7 +91,7 @@ describe('DesignFigmaService plugin import', () => {
   });
 
   it('creates newly discovered remote descendants in parent-first order', async () => {
-    const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-figma-sync-'));
+    const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-figma-sync-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Figma sync', workingDir });
     const node = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'design', title: 'Dashboard', payload: {} });
     const initial = await designDocumentService.get(workspace.id, node.id);
@@ -127,7 +127,7 @@ describe('DesignFigmaService plugin import', () => {
   });
 
   it('queues reviewed local changes for a selective plugin push and acknowledges them', async () => {
-    const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-figma-push-'));
+    const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-figma-push-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'Figma push', workingDir });
     const node = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'design', title: 'Profile', payload: {} });
     const initial = await designDocumentService.get(workspace.id, node.id);

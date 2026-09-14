@@ -45,7 +45,7 @@ function manifestEntry(directory: string, filename: string) {
 }
 
 function fixture() {
-  const directory = mkdtempSync(path.join(tmpdir(), 'orkestrai-release-'));
+  const directory = mkdtempSync(path.join(tmpdir(), 'deepspace-release-'));
   temporaryDirectories.push(directory);
   for (const filename of requiredAssets) writeFileSync(path.join(directory, filename), `fixture:${filename}`);
 
@@ -87,7 +87,7 @@ describe('release artifact validation', () => {
       expect(workflow.jobs[name].if).toBe("github.event_name != 'workflow_dispatch' || !inputs.build_only");
     }
     const script = workflow.jobs.validate.steps.find((step: { id?: string }) => step.id === 'release').run;
-    const directory = mkdtempSync(path.join(tmpdir(), 'orkestrai-release-source-'));
+    const directory = mkdtempSync(path.join(tmpdir(), 'deepspace-release-source-'));
     temporaryDirectories.push(directory);
     const output = path.join(directory, 'output.txt');
     const version = JSON.parse(readFileSync('package.json', 'utf8')).version;
@@ -176,15 +176,15 @@ describe('packaged updater', () => {
     const packageJson = JSON.parse(readFileSync(path.resolve('package.json'), 'utf8'));
     const afterPack = readFileSync(path.resolve('scripts/after-pack.mjs'), 'utf8');
     const main = readFileSync(path.resolve('electron/main.cjs'), 'utf8');
-    const shim = readFileSync(path.resolve('scripts/install-orkestrai-shim.mjs'), 'utf8');
+    const shim = readFileSync(path.resolve('scripts/install-deepspace-shim.mjs'), 'utf8');
     expect(packageJson.build?.afterPack).toBe('scripts/after-pack.mjs');
     expect(packageJson.devDependencies?.['@electron-internal/extract-zip']).toBeTruthy();
     expect(afterPack).toContain("const NODE_VERSION = 'v24.12.0'");
     expect(afterPack).toContain("const WINDOWS_NODE_SHA256 = '9c125f61ae947b52e779095830f9cac267846a043ef7192183c84016aaad2812'");
-    expect(afterPack).toContain("join(context.appOutDir, 'resources', 'orkestrai-cli-runtime', 'node.exe')");
-    expect(main).toContain("path.join(process.resourcesPath, 'orkestrai-cli-runtime', 'node.exe')");
+    expect(afterPack).toContain("join(context.appOutDir, 'resources', 'deepspace-cli-runtime', 'node.exe')");
+    expect(main).toContain("path.join(process.resourcesPath, 'deepspace-cli-runtime', 'node.exe')");
     expect(shim).toContain('const launcherRuntime = configuredConsoleRuntime');
-    expect(shim).toContain('ORKESTRAI_CLI_RUNTIME = launcherRuntime');
+    expect(shim).toContain('DEEPSPACE_CLI_RUNTIME = launcherRuntime');
   });
 
   it('requires trusted signing for releases while preserving the local ad-hoc fallback', () => {
@@ -194,17 +194,17 @@ describe('packaged updater', () => {
     const nodePtyPatch = readFileSync(path.resolve('patches/node-pty+1.1.0.patch'), 'utf8');
     const workflow = readFileSync(path.resolve('.github/workflows/release.yml'), 'utf8');
     const ciWorkflow = readFileSync(path.resolve('.github/workflows/ci.yml'), 'utf8');
-    const preflight = readFileSync(path.resolve('.agents/skills/orkestrai-release/scripts/preflight.sh'), 'utf8');
+    const preflight = readFileSync(path.resolve('.agents/skills/deepspace-release/scripts/preflight.sh'), 'utf8');
     expect(packageJson.build?.mac?.notarize).toBe(true);
     expect(packageScript).toContain('-c.mac.identity=-');
     expect(packageScript).toContain('-c.mac.hardenedRuntime=false');
     expect(packageScript).toContain('-c.mac.notarize=false');
-    expect(packageScript).toContain('ORKESTRAI_REQUIRE_MAC_SIGNING');
-    expect(packageScript).toContain('ORKESTRAI_MAC_OPEN_FILE_LIMIT');
+    expect(packageScript).toContain('DEEPSPACE_REQUIRE_MAC_SIGNING');
+    expect(packageScript).toContain('DEEPSPACE_MAC_OPEN_FILE_LIMIT');
     expect(packageScript).toContain('[[ -L "$ROOT_DIR/node_modules"');
     expect(packageScript).toContain('npm ci');
-    expect(packageScript).toContain('ORKESTRAI_MAC_STAGED=true');
-    expect(packageScript).toContain('ORKESTRAI_MAC_OPEN_FILE_LIMIT:-unlimited');
+    expect(packageScript).toContain('DEEPSPACE_MAC_STAGED=true');
+    expect(packageScript).toContain('DEEPSPACE_MAC_OPEN_FILE_LIMIT:-unlimited');
     expect(packageScript).toContain('ulimit -n "$requested_open_file_limit"');
     expect(packageScript).toContain('macOS open-file limit: %s');
     expect(packageJson.scripts?.postinstall).toBe('patch-package && node scripts/ensure-node-pty-helper.mjs');
@@ -214,7 +214,7 @@ describe('packaged updater', () => {
     expect(signerPatch).toContain('releaseBinaryFileCheck();');
     expect(nodePtyPatch).toContain('error.message.includes("AttachConsole failed")');
     expect(nodePtyPatch).toContain('consoleProcessList = [shellPid];');
-    expect(workflow).toContain("ORKESTRAI_REQUIRE_MAC_SIGNING: 'true'");
+    expect(workflow).toContain("DEEPSPACE_REQUIRE_MAC_SIGNING: 'true'");
     expect(workflow).toContain('scripts/package-macos.sh --arm64 --x64');
     expect(workflow).toContain('codesign --verify --deep --strict');
     expect(workflow).toContain('Authority=Developer ID Application:');

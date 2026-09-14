@@ -182,7 +182,7 @@ h4 {
  * Casa em CSS do tema claro. `applyAppTheme` liga a classe `light` junto com o
  * `dark`; o bootstrap do app.html faz o mesmo. Sem isto, um tema claro so
  * existia como style inline pos-hidratacao.
- * Mantenha em sincronia com o tema `orkestrai-light` em app-themes.ts.
+ * Mantenha em sincronia com o tema `deepspace-light` em app-themes.ts.
  */
 :root.light {
   --app-page: #f5f6f7;

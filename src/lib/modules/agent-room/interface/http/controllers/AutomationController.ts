@@ -136,7 +136,7 @@ export class AutomationController extends Controller {
       if (!automation || automation.workspaceId !== event.params.id || automation.triggerType !== 'webhook') {
         return this.json({ error: 'Webhook automation not found.' }, 404);
       }
-      const supplied = event.request.headers.get('x-orkestrai-webhook-secret')
+      const supplied = event.request.headers.get('x-deepspace-webhook-secret')
         ?? event.request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
         ?? '';
       const expected = String(automation.triggerConfig.secretHash ?? '');
@@ -147,7 +147,7 @@ export class AutomationController extends Controller {
         return this.json({ error: 'Invalid webhook credential.' }, 401);
       }
       const data = await event.request.json().catch(() => ({}));
-      const key = `webhook:${event.request.headers.get('x-orkestrai-delivery') ?? randomUUID()}`;
+      const key = `webhook:${event.request.headers.get('x-deepspace-delivery') ?? randomUUID()}`;
       const dispatched = await routineService.dispatchEvent(new AutomationTriggerReceived(
         automation.workspaceId, 'webhook', 'received', key, { automationId: automation.id, payload: data },
       ));

@@ -17,9 +17,9 @@ const SEVERITY_ORDER = { error: 0, warning: 1, info: 2 } as const;
 type QualityCache = Map<string, CodeGraphQualitySnapshot>;
 
 function qualityCache(): QualityCache {
-  const global = globalThis as typeof globalThis & { __orkestraiCodeGraphQualityCache?: QualityCache };
-  global.__orkestraiCodeGraphQualityCache ??= new Map();
-  return global.__orkestraiCodeGraphQualityCache;
+  const global = globalThis as typeof globalThis & { __deepspaceCodeGraphQualityCache?: QualityCache };
+  global.__deepspaceCodeGraphQualityCache ??= new Map();
+  return global.__deepspaceCodeGraphQualityCache;
 }
 
 function hash(value: string): string {

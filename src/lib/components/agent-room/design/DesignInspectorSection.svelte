@@ -25,7 +25,7 @@
   function storedOpen(): boolean {
     if (typeof localStorage === 'undefined') return defaultOpen;
     try {
-      const saved = localStorage.getItem(`orkestrai:design-inspector:${id}`);
+      const saved = localStorage.getItem(`deepspace:design-inspector:${id}`);
       return saved === null ? defaultOpen : saved === '1';
     } catch {
       return defaultOpen;
@@ -40,7 +40,7 @@
   });
 
   $effect(() => {
-    if (restored) localStorage.setItem(`orkestrai:design-inspector:${id}`, open ? '1' : '0');
+    if (restored) localStorage.setItem(`deepspace:design-inspector:${id}`, open ? '1' : '0');
   });
 </script>
 

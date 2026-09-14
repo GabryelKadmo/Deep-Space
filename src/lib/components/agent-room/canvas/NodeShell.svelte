@@ -77,7 +77,7 @@
 
   // Handle flutuante: a bolinha desliza pela borda do no ate o ponto mais
   // proximo do vizinho conectado mais perto — a mesma matematica da ancora
-  // da corda (OrkestraiEdge), entao a ponta da corda sempre toca a bolinha.
+  // da corda (DeepSpaceEdge), entao a ponta da corda sempre toca a bolinha.
   const floatingAnchor = $derived.by(() => {
     const absolute = floatingAnchorFor(id, nodesStore.current, edgesStore.current);
     if (!absolute) return null;

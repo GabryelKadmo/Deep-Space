@@ -1,5 +1,5 @@
-export const LEADER_DICTATION_COMMAND = 'orkestrai:leader-dictation';
-export const LEADER_DICTATION_STATE = 'orkestrai:leader-dictation-state';
+export const LEADER_DICTATION_COMMAND = 'deepspace:leader-dictation';
+export const LEADER_DICTATION_STATE = 'deepspace:leader-dictation-state';
 
 export type LeaderDictationStatus = 'idle' | 'recording' | 'transcribing';
 

@@ -10,13 +10,13 @@ describe('Electron launch intent', () => {
   it('recognizes packaged CLI and server child invocations on every path style', () => {
     expect(isBackgroundRuntimeInvocation([
       'C:\\Program Files\\Deep Space\\Deep Space.exe',
-      'C:\\Program Files\\Deep Space\\resources\\app\\packages\\orkestrai-cli\\bin\\orkestrai.js',
+      'C:\\Program Files\\Deep Space\\resources\\app\\packages\\deepspace-cli\\bin\\deepspace.js',
       'task',
       'list',
     ])).toBe(true);
     expect(isBackgroundRuntimeInvocation([
       '/Applications/Deep Space.app/Contents/MacOS/Deep Space',
-      '/Applications/Deep Space.app/Contents/Resources/app/scripts/orkestrai-server.mjs',
+      '/Applications/Deep Space.app/Contents/Resources/app/scripts/deepspace-server.mjs',
     ])).toBe(true);
   });
 
@@ -24,7 +24,7 @@ describe('Electron launch intent', () => {
     expect(isBackgroundRuntimeInvocation(['C:\\Program Files\\Deep Space\\Deep Space.exe'])).toBe(false);
     expect(isBackgroundRuntimeInvocation([
       'C:\\Program Files\\Deep Space\\Deep Space.exe',
-      'orkestrai://join/invite-token#abcdefghijklmnopqrstuvwxyzABCDEFGH1234567',
+      'deepspace://join/invite-token#abcdefghijklmnopqrstuvwxyzABCDEFGH1234567',
     ])).toBe(false);
   });
 });

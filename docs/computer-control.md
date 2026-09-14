@@ -98,9 +98,9 @@ does not grant Computer access.
 Equivalent CLI:
 
 ```sh
-orkestrai computer prepare --task "$TASK_ID" --idempotency calculator-task:prepare
-orkestrai computer inspect --json
-orkestrai computer launch com.apple.calculator --task "$TASK_ID" --idempotency calculator-task:launch
+deepspace computer prepare --task "$TASK_ID" --idempotency calculator-task:prepare
+deepspace computer inspect --json
+deepspace computer launch com.apple.calculator --task "$TASK_ID" --idempotency calculator-task:launch
 ```
 
 `computer_focus`, `computer_type`, `computer_type_secret`,
@@ -144,7 +144,7 @@ Native process output is suppressed during secret delivery, including errors
 that might echo input. Linux refuses this operation rather than silently using
 an insecure channel.
 
-Screenshots live under `.orkestrai/computer/evidence` with bounded retention;
+Screenshots live under `.deepspace/computer/evidence` with bounded retention;
 paths escaping the workspace through symlinks are rejected. The node refreshes
 state and captures while visible. Saved screenshots are **read-only evidence**,
 not a stale click map. Native captures can include visible private content:

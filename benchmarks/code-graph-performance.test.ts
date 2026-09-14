@@ -35,10 +35,10 @@ async function sample(work: () => Promise<unknown>, iterations = 12): Promise<Sa
 }
 
 function configuredRoots(): BenchmarkRoot[] {
-  const input = process.env.ORKESTRAI_CODE_GRAPH_BENCH_ROOTS;
+  const input = process.env.DEEPSPACE_CODE_GRAPH_BENCH_ROOTS;
   if (!input) return [];
   const parsed = JSON.parse(input) as unknown;
-  if (!Array.isArray(parsed)) throw new Error('ORKESTRAI_CODE_GRAPH_BENCH_ROOTS must be a JSON array.');
+  if (!Array.isArray(parsed)) throw new Error('DEEPSPACE_CODE_GRAPH_BENCH_ROOTS must be a JSON array.');
   return parsed.slice(0, 4).map((entry, index) => {
     if (!entry || typeof entry !== 'object') throw new Error(`Benchmark root ${index + 1} is invalid.`);
     const candidate = entry as Record<string, unknown>;
@@ -50,7 +50,7 @@ function configuredRoots(): BenchmarkRoot[] {
 }
 
 async function createSyntheticRepository(fileCount = 600): Promise<string> {
-  const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-benchmark-'));
+  const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-benchmark-'));
   temporaryDirectories.push(directory);
   await mkdir(join(directory, 'src'));
   await writeFile(join(directory, 'package.json'), '{"name":"code-graph-benchmark"}\n');
@@ -69,7 +69,7 @@ async function createSyntheticRepository(fileCount = 600): Promise<string> {
 
 async function createRepositoryMirror(sourceRoot: string): Promise<{ directory: string; changedPath: string; fileCount: number }> {
   const scan = await codeGraphFileScanner.scan(sourceRoot);
-  const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-mirror-'));
+  const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-mirror-'));
   temporaryDirectories.push(directory);
   await writeFile(join(directory, 'package.json'), '{"name":"code-graph-mirror"}\n');
   await Promise.all(scan.files.map(async (file) => {

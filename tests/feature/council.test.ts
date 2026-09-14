@@ -60,7 +60,7 @@ describe('Council', () => {
   });
 
   it('persists completed and failed perspectives as a partial, traceable council', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-council-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-council-'));
     tempDirs.push(dir);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Council test', workingDir: dir });
     const leader = await workspaceRepository.createNode({
@@ -87,11 +87,11 @@ describe('Council', () => {
     const council = await councilRepository.create(workspace.id, CreateCouncilDto.from(input));
     const perspectives = await councilRepository.perspectives(String(council.getAttribute('id')));
     await councilRepository.beginPerspective(String(perspectives[0].getAttribute('id')), {
-      provider: 'claude', model: null, floorId: null, artifactPath: '.orkestrai/councils/a', usageSnapshot: null,
+      provider: 'claude', model: null, floorId: null, artifactPath: '.deepspace/councils/a', usageSnapshot: null,
     });
     await councilRepository.completePerspective(String(perspectives[0].getAttribute('id')), output, JSON.stringify(output));
     await councilRepository.beginPerspective(String(perspectives[1].getAttribute('id')), {
-      provider: 'codex', model: 'gpt-5.5', floorId: null, artifactPath: '.orkestrai/councils/b', usageSnapshot: null,
+      provider: 'codex', model: 'gpt-5.5', floorId: null, artifactPath: '.deepspace/councils/b', usageSnapshot: null,
     });
     await councilRepository.failPerspective(String(perspectives[1].getAttribute('id')), 'Provider unavailable.');
     await councilRepository.finish(String(council.getAttribute('id')), 'partial', 2, null);

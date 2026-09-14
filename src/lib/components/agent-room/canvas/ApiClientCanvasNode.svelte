@@ -93,7 +93,7 @@
   let environments = $state<Record<string, Record<string, string>>>({});
   let globalVariables = $state<Record<string, string>>({});
   let runtimeVariables = $state<Record<string, string>>({});
-  let scriptDialect = $state<'orkestrai' | 'postman' | 'bruno'>('orkestrai');
+  let scriptDialect = $state<'deepspace' | 'postman' | 'bruno'>('deepspace');
   let vaultKeys = $state<string[]>([]);
   let variableEditorScope = $state<'collection' | 'environment' | 'globals' | 'runtime' | 'vault'>('collection');
   let vaultName = $state('');
@@ -133,7 +133,7 @@
   const treeRows = $derived(apiClientTreeRows(folders, requests, collapsedFolderIds));
   const desktop = typeof window === 'undefined'
     ? undefined
-    : (window as typeof window & { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+    : (window as typeof window & { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
 
   $effect(() => {
     const payload = data.payload;
@@ -182,7 +182,7 @@
     environments = $state.snapshot(payload.environments ?? {});
     globalVariables = $state.snapshot(payload.globalVariables ?? {});
     runtimeVariables = $state.snapshot(payload.runtimeVariables ?? {});
-    scriptDialect = payload.scriptDialect ?? (payload.sourceKind === 'postman' ? 'postman' : payload.sourceKind === 'bruno' || payload.sourceKind === 'openCollection' ? 'bruno' : 'orkestrai');
+    scriptDialect = payload.scriptDialect ?? (payload.sourceKind === 'postman' ? 'postman' : payload.sourceKind === 'bruno' || payload.sourceKind === 'openCollection' ? 'bruno' : 'deepspace');
     vaultKeys = $state.snapshot(payload.vaultKeys ?? []);
     activeEnvironment = payload.activeEnvironment && payload.environments?.[payload.activeEnvironment]
       ? payload.activeEnvironment
@@ -250,7 +250,7 @@
     environments = $state.snapshot(payload.environments ?? {});
     globalVariables = $state.snapshot(payload.globalVariables ?? {});
     runtimeVariables = $state.snapshot(payload.runtimeVariables ?? {});
-    scriptDialect = payload.scriptDialect ?? 'orkestrai';
+    scriptDialect = payload.scriptDialect ?? 'deepspace';
     vaultKeys = $state.snapshot(payload.vaultKeys ?? []);
     activeEnvironment = payload.activeEnvironment ?? null;
     collectionPreRequestScript = payload.collectionPreRequestScript ?? '';
@@ -261,7 +261,7 @@
     data.onPayloadChange?.(id, $state.snapshot(payload) as Record<string, unknown>);
   }
 
-  async function synchronize(action: 'status' | 'pull' | 'push', resolution?: 'orkestrai' | 'filesystem', automatic = false) {
+  async function synchronize(action: 'status' | 'pull' | 'push', resolution?: 'deepspace' | 'filesystem', automatic = false) {
     if (syncing || !data.payload.sourcePath) return;
     syncing = true;
     try {
@@ -278,12 +278,12 @@
         syncStatus = value;
         if (automatic && value.linked) {
           let nextAction: 'pull' | 'push' | null = null;
-          let nextResolution: 'orkestrai' | 'filesystem' | undefined;
+          let nextResolution: 'deepspace' | 'filesystem' | undefined;
           if (value.sourceChanged && value.localChanged) {
             if (sync.conflictPolicy === 'filesystem') { nextAction = 'pull'; nextResolution = 'filesystem'; }
-            else if (sync.conflictPolicy === 'orkestrai' && value.writable) { nextAction = 'push'; nextResolution = 'orkestrai'; }
+            else if (sync.conflictPolicy === 'deepspace' && value.writable) { nextAction = 'push'; nextResolution = 'deepspace'; }
           } else if (value.sourceChanged) { nextAction = 'pull'; nextResolution = 'filesystem'; }
-          else if (value.localChanged && value.writable) { nextAction = 'push'; nextResolution = 'orkestrai'; }
+          else if (value.localChanged && value.writable) { nextAction = 'push'; nextResolution = 'deepspace'; }
           if (nextAction) {
             syncing = false;
             await synchronize(nextAction, nextResolution, true);
@@ -798,7 +798,7 @@
   function scriptRuntimeHint(): string {
     if (scriptDialect === 'postman') return m['api_client.script_hint_postman']();
     if (scriptDialect === 'bruno') return m['api_client.script_hint_bruno']();
-    return m['api_client.script_hint_orkestrai']();
+    return m['api_client.script_hint_deepspace']();
   }
 
   function executionErrorMessage(payload: ApiClientErrorPayload): string {
@@ -1092,7 +1092,7 @@
 
   function exportNative() {
     const nativeCollection = {
-      schema: 'https://orkestrai.app/schemas/api-client/v1',
+      schema: 'https://deepspace.app/schemas/api-client/v1',
       version: 1,
       name: data.title,
       exportedAt: new Date().toISOString(),
@@ -1101,7 +1101,7 @@
     const url = URL.createObjectURL(new Blob([JSON.stringify(nativeCollection, null, 2)], { type: 'application/json' }));
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `${data.title.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'collection'}.orkestrai-api.json`;
+    anchor.download = `${data.title.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'collection'}.deepspace-api.json`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -1177,7 +1177,7 @@
       environments = $state.snapshot(imported.environments ?? {});
       globalVariables = $state.snapshot(imported.globalVariables ?? {});
       runtimeVariables = $state.snapshot(imported.runtimeVariables ?? {});
-      scriptDialect = imported.scriptDialect ?? (imported.sourceKind === 'postman' ? 'postman' : imported.sourceKind === 'bruno' || imported.sourceKind === 'openCollection' ? 'bruno' : 'orkestrai');
+      scriptDialect = imported.scriptDialect ?? (imported.sourceKind === 'postman' ? 'postman' : imported.sourceKind === 'bruno' || imported.sourceKind === 'openCollection' ? 'bruno' : 'deepspace');
       vaultKeys = $state.snapshot(imported.vaultKeys ?? []);
       activeEnvironment = imported.activeEnvironment ?? null;
       history = $state.snapshot(imported.history ?? []);
@@ -1768,7 +1768,7 @@
             <div class="mb-2 flex flex-wrap items-center gap-1 border-b border-[var(--app-border)] pb-2">
               <button aria-pressed={scriptScope === 'request'} class={`rounded border px-2 py-1 text-ui-xs transition-colors ${scriptScope === 'request' ? 'border-[var(--app-accent)]/35 bg-[var(--app-accent-soft)] font-medium text-[var(--app-accent)]' : 'border-transparent text-[var(--app-text-muted)] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)]'}`} onclick={() => (scriptScope = 'request')}>{m['api_client.request_scripts']()}</button>
               <button aria-pressed={scriptScope === 'collection'} class={`rounded border px-2 py-1 text-ui-xs transition-colors ${scriptScope === 'collection' ? 'border-[var(--app-accent)]/35 bg-[var(--app-accent-soft)] font-medium text-[var(--app-accent)]' : 'border-transparent text-[var(--app-text-muted)] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)]'}`} onclick={() => (scriptScope = 'collection')}>{m['api_client.collection_scripts']()}</button>
-              <label class="ml-auto flex items-center gap-2 text-ui-xs text-[var(--app-text-muted)]"><span>{m['api_client.script_runtime']()}</span><NativeSelect.Root class="w-32" size="sm" value={scriptDialect} onchange={(event: Event) => { scriptDialect = inputValue(event) as typeof scriptDialect; persist(); }}><NativeSelect.Option value="orkestrai">Deep Space</NativeSelect.Option><NativeSelect.Option value="postman">Postman</NativeSelect.Option><NativeSelect.Option value="bruno">Bruno</NativeSelect.Option></NativeSelect.Root></label>
+              <label class="ml-auto flex items-center gap-2 text-ui-xs text-[var(--app-text-muted)]"><span>{m['api_client.script_runtime']()}</span><NativeSelect.Root class="w-32" size="sm" value={scriptDialect} onchange={(event: Event) => { scriptDialect = inputValue(event) as typeof scriptDialect; persist(); }}><NativeSelect.Option value="deepspace">Deep Space</NativeSelect.Option><NativeSelect.Option value="postman">Postman</NativeSelect.Option><NativeSelect.Option value="bruno">Bruno</NativeSelect.Option></NativeSelect.Root></label>
             </div>
             <div class="grid h-full min-h-[260px] grid-cols-2 auto-rows-fr gap-2 max-[720px]:grid-cols-1">
               {#if scriptScope === 'request'}
@@ -1854,10 +1854,10 @@
                   </div>
                 {/if}
                 <label class="flex items-center justify-between gap-4 border-b border-[var(--app-border)] pb-3"><span><strong class="block text-ui-sm">{m['api_client.sync_watch']()}</strong><span class="block text-ui-xs text-[var(--app-text-muted)]">{m['api_client.sync_watch_hint']()}</span></span><Switch checked={sync.mode === 'watch'} onCheckedChange={(checked: boolean) => { sync = { ...sync, mode: checked ? 'watch' : 'manual' }; persist(); }} /></label>
-                <label class="grid grid-cols-[minmax(0,1fr)_180px] items-center gap-3"><span><strong class="block text-ui-sm">{m['api_client.sync_conflict_policy']()}</strong><span class="block text-ui-xs text-[var(--app-text-muted)]">{m['api_client.sync_conflict_policy_hint']()}</span></span><NativeSelect.Root size="sm" value={sync.conflictPolicy} onchange={(event: Event) => { sync = { ...sync, conflictPolicy: inputValue(event) as typeof sync.conflictPolicy }; persist(); }}><NativeSelect.Option value="ask">{m['api_client.sync_ask']()}</NativeSelect.Option><NativeSelect.Option value="orkestrai">{m['api_client.sync_prefer_orkestrai']()}</NativeSelect.Option><NativeSelect.Option value="filesystem">{m['api_client.sync_prefer_files']()}</NativeSelect.Option></NativeSelect.Root></label>
+                <label class="grid grid-cols-[minmax(0,1fr)_180px] items-center gap-3"><span><strong class="block text-ui-sm">{m['api_client.sync_conflict_policy']()}</strong><span class="block text-ui-xs text-[var(--app-text-muted)]">{m['api_client.sync_conflict_policy_hint']()}</span></span><NativeSelect.Root size="sm" value={sync.conflictPolicy} onchange={(event: Event) => { sync = { ...sync, conflictPolicy: inputValue(event) as typeof sync.conflictPolicy }; persist(); }}><NativeSelect.Option value="ask">{m['api_client.sync_ask']()}</NativeSelect.Option><NativeSelect.Option value="deepspace">{m['api_client.sync_prefer_deepspace']()}</NativeSelect.Option><NativeSelect.Option value="filesystem">{m['api_client.sync_prefer_files']()}</NativeSelect.Option></NativeSelect.Root></label>
                 <div class="flex flex-wrap items-center gap-2 border-t border-[var(--app-border)] pt-3">
                   <Button size="sm" variant="outline" class="h-8 text-ui-xs" disabled={syncing} onclick={() => void synchronize('pull', syncStatus?.conflict ? 'filesystem' : undefined)}><ArrowDownToLine size={12} />{syncStatus?.conflict ? m['api_client.sync_use_files']() : m['api_client.sync_pull']()}</Button>
-                  <Button size="sm" class="h-8 text-ui-xs" disabled={syncing || syncStatus?.writable === false} onclick={() => void synchronize('push', syncStatus?.sourceChanged ? 'orkestrai' : undefined)}><ArrowUpFromLine size={12} />{syncStatus?.conflict ? m['api_client.sync_use_orkestrai']() : m['api_client.sync_push']()}</Button>
+                  <Button size="sm" class="h-8 text-ui-xs" disabled={syncing || syncStatus?.writable === false} onclick={() => void synchronize('push', syncStatus?.sourceChanged ? 'deepspace' : undefined)}><ArrowUpFromLine size={12} />{syncStatus?.conflict ? m['api_client.sync_use_deepspace']() : m['api_client.sync_push']()}</Button>
                   <Button size="icon-sm" variant="ghost" class="ml-auto size-8" disabled={syncing} aria-label={m['api_client.sync_check']()} title={m['api_client.sync_check']()} onclick={() => void synchronize('status')}><RefreshCw size={13} /></Button>
                 </div>
                 {#if sync.lastSyncedAt}<p class="text-ui-xs text-[var(--app-text-muted)]">{m['api_client.sync_last']({ date: new Date(sync.lastSyncedAt).toLocaleString() })}</p>{/if}

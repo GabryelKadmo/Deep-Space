@@ -38,7 +38,7 @@ export class NativeNotificationService {
     const body = [subject ? `“${subject}”` : '', input.message.trim(), workspace.name]
       .filter(Boolean)
       .join(' · ');
-    console.log(`[orkestrai:notify] ${JSON.stringify({ kind, title, body })}`);
+    console.log(`[deepspace:notify] ${JSON.stringify({ kind, title, body })}`);
     return { notified: true };
   }
 }

@@ -10,7 +10,7 @@ import { designDocumentService } from '$lib/modules/agent-room/application/servi
 import { designCollaborationService } from '$lib/modules/agent-room/application/services/DesignCollaborationService.js';
 import { huddleService } from '$lib/modules/agent-room/application/services/HuddleService.js';
 import type { CollaborationScope, SharedCanvasNodeDto, SharedWorkspaceDto } from '../../domain/types.js';
-import { MAX_PLAINTEXT_BYTES } from '@orkestrai/collaboration-protocol';
+import { MAX_PLAINTEXT_BYTES } from '@deepspace/collaboration-protocol';
 import { collaborationRepository } from '../../infrastructure/repositories/CollaborationRepository.js';
 import { assertSharedProjectionSafe, sanitizeSharedText } from '../projections/sanitize-shared-data.js';
 

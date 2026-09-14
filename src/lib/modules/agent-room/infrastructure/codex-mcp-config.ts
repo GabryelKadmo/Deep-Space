@@ -40,7 +40,7 @@ export function repairLegacyCodexMcpConfig(current: string): { content: string; 
     // Continue only with the exact legacy corruption signature below.
   }
 
-  const range = sectionRange(current, 'mcp_servers.orkestrai');
+  const range = sectionRange(current, 'mcp_servers.deepspace');
   if (!range) return { content: current, repaired: false };
   const body = current.slice(range.bodyStart, range.bodyEnd);
   const orphanedArgs = /^[ \t]*((?:"(?:[^"\\]|\\.)*"|'[^']*'))[ \t]*,[ \t]*\r?\n[ \t]*["']mcp["'][ \t]*,?[ \t]*\r?\n[ \t]*\][ \t]*\r?$/gm;
@@ -54,15 +54,15 @@ export function repairLegacyCodexMcpConfig(current: string): { content: string; 
         return whole;
       }
     }
-    if (!/orkestrai(?:\.js)?$/i.test(path.replace(/\\\\/g, '/'))) return whole;
+    if (!/deepspace(?:\.js)?$/i.test(path.replace(/\\\\/g, '/'))) return whole;
     matchedOwnedTail = true;
     return '';
   });
   if (!matchedOwnedTail) return { content: current, repaired: false };
 
   let candidate = `${current.slice(0, range.bodyStart)}${repairedBody}${current.slice(range.bodyEnd)}`;
-  if (sectionRange(candidate, 'mcp_servers.orkestrai.env')) {
-    const main = sectionRange(candidate, 'mcp_servers.orkestrai');
+  if (sectionRange(candidate, 'mcp_servers.deepspace.env')) {
+    const main = sectionRange(candidate, 'mcp_servers.deepspace');
     if (main) {
       const mainBody = candidate.slice(main.bodyStart, main.bodyEnd);
       const cleaned = mainBody.replace(
@@ -85,11 +85,11 @@ export function repairLegacyCodexMcpConfig(current: string): { content: string; 
 export function codexMcpOverrideArgs(launch: CodexMcpLaunch): string[] {
   const args = launch.args.map((value) => JSON.stringify(value)).join(', ');
   return [
-    '-c', `mcp_servers.orkestrai.command=${JSON.stringify(launch.command)}`,
-    '-c', `mcp_servers.orkestrai.args=[${args}]`,
-    '-c', 'mcp_servers.orkestrai.env_vars=["ORKESTRAI_NODE_ID", "ORKESTRAI_AGENT_TITLE", "ORKESTRAI_AGENT_TOKEN", "ORKESTRAI_WORKSPACE_CONFIG", "ORKESTRAI_API_URL", "ORKESTRAI_RUNTIME_FILE"]',
+    '-c', `mcp_servers.deepspace.command=${JSON.stringify(launch.command)}`,
+    '-c', `mcp_servers.deepspace.args=[${args}]`,
+    '-c', 'mcp_servers.deepspace.env_vars=["DEEPSPACE_NODE_ID", "DEEPSPACE_AGENT_TITLE", "DEEPSPACE_AGENT_TOKEN", "DEEPSPACE_WORKSPACE_CONFIG", "DEEPSPACE_API_URL", "DEEPSPACE_RUNTIME_FILE"]',
     ...(launch.electronRuntime
-      ? ['-c', 'mcp_servers.orkestrai.env={ ELECTRON_RUN_AS_NODE = "1" }']
+      ? ['-c', 'mcp_servers.deepspace.env={ ELECTRON_RUN_AS_NODE = "1" }']
       : []),
     '-c', `mcp_servers.figma.url=${JSON.stringify(FIGMA_MCP_URL)}`,
   ];
@@ -126,17 +126,17 @@ export function codexMcpLaunchForRuntime(
 ): CodexMcpLaunch {
   if (runtime.kind === 'wsl') {
     return {
-      command: posix.join(runtime.linuxWorkingDir, '.orkestrai', 'bin', 'orkestrai'),
+      command: posix.join(runtime.linuxWorkingDir, '.deepspace', 'bin', 'deepspace'),
       args: ['mcp'],
       electronRuntime: false,
     };
   }
   return {
-    command: env.ORKESTRAI_CLI_RUNTIME ?? process.execPath,
+    command: env.DEEPSPACE_CLI_RUNTIME ?? process.execPath,
     args: [
-      env.ORKESTRAI_CLI_JS ?? resolve(workingDirectory, 'packages', 'orkestrai-cli', 'bin', 'orkestrai.js'),
+      env.DEEPSPACE_CLI_JS ?? resolve(workingDirectory, 'packages', 'deepspace-cli', 'bin', 'deepspace.js'),
       'mcp',
     ],
-    electronRuntime: env.ORKESTRAI_CLI_RUNTIME_IS_ELECTRON === '1' || Boolean(process.versions.electron),
+    electronRuntime: env.DEEPSPACE_CLI_RUNTIME_IS_ELECTRON === '1' || Boolean(process.versions.electron),
   };
 }

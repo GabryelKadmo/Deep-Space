@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const apiClientMethodSchema = z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']);
 export const apiClientProtocolSchema = z.enum(['http', 'graphql', 'websocket', 'grpc']);
-export const apiClientScriptDialectSchema = z.enum(['orkestrai', 'postman', 'bruno']);
+export const apiClientScriptDialectSchema = z.enum(['deepspace', 'postman', 'bruno']);
 
 export const apiClientKeyValueSchema = z.object({
   id: z.string().trim().min(1).max(100),
@@ -180,7 +180,7 @@ export const apiClientNetworkSchema = z.object({
 
 export const apiClientSyncSchema = z.object({
   mode: z.enum(['manual', 'watch']).default('manual'),
-  conflictPolicy: z.enum(['ask', 'orkestrai', 'filesystem']).default('ask'),
+  conflictPolicy: z.enum(['ask', 'deepspace', 'filesystem']).default('ask'),
   lastSyncedAt: z.string().max(100).nullable().default(null),
   sourceFingerprint: z.string().max(200).nullable().default(null),
   localFingerprint: z.string().max(200).nullable().default(null),
@@ -201,7 +201,7 @@ export const apiClientNativePayloadSchema = z.object({
   environments: z.record(z.string(), z.record(z.string(), z.string().max(100_000))).default({}),
   globalVariables: z.record(z.string(), z.string().max(100_000)).default({}),
   runtimeVariables: z.record(z.string(), z.string().max(100_000)).default({}),
-  scriptDialect: apiClientScriptDialectSchema.default('orkestrai'),
+  scriptDialect: apiClientScriptDialectSchema.default('deepspace'),
   vaultKeys: z.array(z.string().trim().min(1).max(500)).max(500).default([]),
   activeEnvironment: z.string().max(500).nullable().default(null),
   history: z.array(apiClientHistoryEntrySchema).max(50).default([]),
@@ -216,7 +216,7 @@ export const apiClientNativePayloadSchema = z.object({
 }).strict();
 
 export const apiClientNativeCollectionSchema = z.object({
-  schema: z.literal('https://orkestrai.app/schemas/api-client/v1'),
+  schema: z.literal('https://deepspace.app/schemas/api-client/v1'),
   version: z.literal(1),
   name: z.string().trim().min(1).max(500),
   exportedAt: z.string().max(100).optional(),
@@ -275,7 +275,7 @@ export const agentApiClientCollectionSchema = z.object({
   environments: z.record(z.string(), z.record(z.string(), z.string().max(100_000))).default({}),
   globalVariables: z.record(z.string(), z.string().max(100_000)).default({}),
   runtimeVariables: z.record(z.string(), z.string().max(100_000)).default({}),
-  scriptDialect: apiClientScriptDialectSchema.default('orkestrai'),
+  scriptDialect: apiClientScriptDialectSchema.default('deepspace'),
   activeEnvironment: z.string().max(500).nullable().default(null),
   collectionPreRequestScript: z.string().max(100_000).default(''),
   collectionPostResponseScript: z.string().max(100_000).default(''),
@@ -308,13 +308,13 @@ export const importAgentApiClientSchema = z.object({
 export const syncAgentApiClientSchema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('status'), nodeId: z.string().trim().min(1).max(200).optional(), from: z.string().trim().min(1).max(200) }).strict(),
   z.object({ action: z.literal('pull'), nodeId: z.string().trim().min(1).max(200).optional(), resolution: z.enum(['filesystem']).optional(), from: z.string().trim().min(1).max(200) }).strict(),
-  z.object({ action: z.literal('push'), nodeId: z.string().trim().min(1).max(200).optional(), resolution: z.enum(['orkestrai']).optional(), from: z.string().trim().min(1).max(200) }).strict(),
+  z.object({ action: z.literal('push'), nodeId: z.string().trim().min(1).max(200).optional(), resolution: z.enum(['deepspace']).optional(), from: z.string().trim().min(1).max(200) }).strict(),
 ]);
 
 export const exportAgentApiClientSchema = z.object({
   nodeId: z.string().trim().min(1).max(200).optional(),
   kind: z.enum(['bruno', 'postman']),
-  path: z.string().trim().min(1).max(4_000).default('.orkestrai/exports'),
+  path: z.string().trim().min(1).max(4_000).default('.deepspace/exports'),
   from: z.string().trim().min(1).max(200),
 }).strict();
 
@@ -344,7 +344,7 @@ export const apiClientOAuthSchema = z.discriminatedUnion('action', [
 export const apiClientSyncRequestSchema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('status'), nodeId: z.string().trim().min(1) }).strict(),
   z.object({ action: z.literal('pull'), nodeId: z.string().trim().min(1) }).strict(),
-  z.object({ action: z.literal('push'), nodeId: z.string().trim().min(1), payload: apiClientNativePayloadSchema, resolution: z.enum(['orkestrai', 'filesystem']).optional() }).strict(),
+  z.object({ action: z.literal('push'), nodeId: z.string().trim().min(1), payload: apiClientNativePayloadSchema, resolution: z.enum(['deepspace', 'filesystem']).optional() }).strict(),
 ]);
 
 export type ApiClientRequestInput = z.infer<typeof apiClientRequestSchema>;

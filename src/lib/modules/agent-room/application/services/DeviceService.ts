@@ -15,14 +15,14 @@ import type { DeviceAdapter, DeviceRuntimeSession } from '../adapters/devices/ty
 const IDLE_TIMEOUT_MS = 15 * 60_000;
 
 type DeviceGlobal = typeof globalThis & {
-  __orkestraiDeviceService?: DeviceService;
-  __orkestraiShutdownDevices?: () => Promise<void>;
-  __orkestraiStopWorkspaceDevice?: (workspaceId: string) => Promise<void>;
-  __orkestraiBroadcast?: (payload: Record<string, unknown>) => void;
+  __deepspaceDeviceService?: DeviceService;
+  __deepspaceShutdownDevices?: () => Promise<void>;
+  __deepspaceStopWorkspaceDevice?: (workspaceId: string) => Promise<void>;
+  __deepspaceBroadcast?: (payload: Record<string, unknown>) => void;
 };
 
 function broadcast(workspaceId: string): void {
-  (globalThis as DeviceGlobal).__orkestraiBroadcast?.({ type: 'deviceChanged', workspaceId });
+  (globalThis as DeviceGlobal).__deepspaceBroadcast?.({ type: 'deviceChanged', workspaceId });
 }
 
 export class DeviceService {
@@ -34,8 +34,8 @@ export class DeviceService {
     this.adapters = new Map(adapters.map((adapter) => [adapter.platform, adapter]));
     this.cleanupTimer = setInterval(() => void this.stopIdleSessions(), 60_000);
     this.cleanupTimer.unref?.();
-    (globalThis as DeviceGlobal).__orkestraiShutdownDevices = () => this.stopAll();
-    (globalThis as DeviceGlobal).__orkestraiStopWorkspaceDevice = (workspaceId) => this.stop(workspaceId);
+    (globalThis as DeviceGlobal).__deepspaceShutdownDevices = () => this.stopAll();
+    (globalThis as DeviceGlobal).__deepspaceStopWorkspaceDevice = (workspaceId) => this.stop(workspaceId);
   }
 
   async snapshot(workspaceId: string, touch = true): Promise<DeviceSnapshot> {
@@ -72,7 +72,7 @@ export class DeviceService {
         : input;
       result = await adapter.command(session, command, {
         workspaceRoot: workspace.workingDir,
-        screenshotDirectory: join(workspace.workingDir, '.orkestrai', 'devices', 'screenshots'),
+        screenshotDirectory: join(workspace.workingDir, '.deepspace', 'devices', 'screenshots'),
       });
       broadcast(workspaceId);
     }
@@ -181,4 +181,4 @@ export class DeviceService {
 }
 
 const deviceGlobal = globalThis as DeviceGlobal;
-export const deviceService = (deviceGlobal.__orkestraiDeviceService ??= new DeviceService());
+export const deviceService = (deviceGlobal.__deepspaceDeviceService ??= new DeviceService());

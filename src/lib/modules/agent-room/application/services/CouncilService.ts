@@ -30,7 +30,7 @@ import { usageService } from './UsageService.js';
 const execFileAsync = promisify(execFile);
 
 function broadcast(workspaceId: string, councilId: string): void {
-  const send = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const send = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
   send?.({ type: 'councilChanged', workspaceId, councilId });
 }
 
@@ -171,7 +171,7 @@ export class CouncilService {
       } else {
         artifactPath ??= join(
           workspace.workingDir,
-          '.orkestrai',
+          '.deepspace',
           'councils',
           String(council.getAttribute('id')),
           String(perspective.getAttribute('id')),
@@ -291,7 +291,7 @@ export class CouncilService {
       agentNodeId: String(item.getAttribute('agent_node_id')),
       output: JSON.parse(String(item.getAttribute('output_json'))),
     }));
-    const synthesisPath = join(workspace.workingDir, '.orkestrai', 'councils', String(council.getAttribute('id')), 'leader-synthesis');
+    const synthesisPath = join(workspace.workingDir, '.deepspace', 'councils', String(council.getAttribute('id')), 'leader-synthesis');
     await mkdir(synthesisPath, { recursive: true });
     await controlCenterService.recordActivity({
       workspaceId, nodeId: leader.id, state: 'working', action: 'system:council_synthesis',

@@ -6,7 +6,7 @@ import { join } from 'node:path';
 
 test.describe('Native Design Mode', () => {
   test('audits quality, confirms templates, and keeps an automatic backup', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-quality-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-quality-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design quality ${Date.now()}`, workingDir: dir },
@@ -70,7 +70,7 @@ test.describe('Native Design Mode', () => {
   });
 
   test('draws freely and keeps layer deletion isolated from Canvas', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspaceResponse = await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E native design ${Date.now()}`, workingDir: dir },
@@ -133,7 +133,7 @@ test.describe('Native Design Mode', () => {
 
   test('combines vectors, draws paths, imports assets, exports, and caches its preview', async ({ page, request }) => {
     test.setTimeout(90_000);
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-phase2-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-phase2-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design phase 2 ${Date.now()}`, workingDir: dir },
@@ -336,7 +336,7 @@ test.describe('Native Design Mode', () => {
 
   test('pastes SVG as editable vectors and supports color-wide edits and grouping', async ({ page, request, context }) => {
     test.setTimeout(90_000);
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-svg-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-svg-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E SVG vectors ${Date.now()}`, workingDir: dir },
@@ -433,7 +433,7 @@ test.describe('Native Design Mode', () => {
   });
 
   test('manages variable modes and binds tokens through the visible editor UI', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-variables-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-variables-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design variables ${Date.now()}`, workingDir: dir },
@@ -506,7 +506,7 @@ test.describe('Native Design Mode', () => {
   });
 
   test('keeps multi-frame work sharp, framed, and free from nested label noise', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-legibility-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-legibility-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design legibility ${Date.now()}`, workingDir: dir },
@@ -569,7 +569,7 @@ test.describe('Native Design Mode', () => {
 
   test('builds reusable components, token presets, code links, and a local library through the visible UI', async ({ page, request }) => {
     test.setTimeout(90_000);
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-system-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-system-e2e-'));
     writeFileSync(join(dir, 'app.css'), ':root { --color-brand: #3366ee; --space-control: 12px; }');
     writeFileSync(join(dir, 'Button.svelte'), '<script lang="ts">let { label, disabled = false } = $props<{ label: string; disabled?: boolean }>();</script><button {disabled}>{label}</button>');
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;

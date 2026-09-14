@@ -136,22 +136,22 @@ type DesignDeliveryStage = 'review' | 'expand' | 'implement' | 'validate';
 
 function designDeliveryStage(task: AgentBoardTask): { explorationId: string; stage: DesignDeliveryStage } | null {
   const description = String(task.getAttribute('description') ?? '');
-  const review = description.match(/orkestrai:design-review=([a-z0-9-]+)/i);
+  const review = description.match(/deepspace:design-review=([a-z0-9-]+)/i);
   if (review) return { explorationId: review[1], stage: 'review' };
-  const delivery = description.match(/orkestrai:design-stage=(expand|implement|validate);exploration=([a-z0-9-]+)/i);
+  const delivery = description.match(/deepspace:design-stage=(expand|implement|validate);exploration=([a-z0-9-]+)/i);
   return delivery ? { explorationId: delivery[2], stage: delivery[1] as DesignDeliveryStage } : null;
 }
 
 function designNodeIdFromTask(task: AgentBoardTask): string | null {
   const description = String(task.getAttribute('description') ?? '');
-  return description.match(/<!--\s*orkestrai:design-node=([0-9a-f-]{36})\s*-->/i)?.[1]
+  return description.match(/<!--\s*deepspace:design-node=([0-9a-f-]{36})\s*-->/i)?.[1]
     ?? description.match(/\bnodeId\b\s*[:=]?\s*`?([0-9a-f-]{36})/i)?.[1]
     ?? null;
 }
 
 function designStageFromTask(task: AgentBoardTask): { stage: 'expand' | 'implement' | 'validate'; explorationId: string } | null {
   const description = String(task.getAttribute('description') ?? '');
-  const match = description.match(/<!--\s*orkestrai:design-stage=(expand|implement|validate);exploration=([0-9a-f-]{36})\s*-->/i);
+  const match = description.match(/<!--\s*deepspace:design-stage=(expand|implement|validate);exploration=([0-9a-f-]{36})\s*-->/i);
   return match ? { stage: match[1].toLowerCase() as 'expand' | 'implement' | 'validate', explorationId: match[2] } : null;
 }
 
@@ -162,7 +162,7 @@ function designStageFromTask(task: AgentBoardTask): { stage: 'expand' | 'impleme
  */
 /** Avisa o canvas para recarregar o workspace (via broadcast WS global). */
 function notifyWorkspaceChanged(workspaceId: string) {
-  const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
   broadcast?.({ type: 'workspaceChanged', workspaceId });
 }
 
@@ -661,8 +661,8 @@ export class TaskBoardService {
     if (!session || session.exited) return;
     const task = await this.requireTask(workspaceId, taskId);
     const hint = assigned
-      ? `O usuário atribuiu direto para um agente — acompanhe com: orkestrai task list`
-      : `SEM responsável. Distribua: orkestrai task assign ${taskId} "<Agente>" (ou coordene como achar melhor)`;
+      ? `O usuário atribuiu direto para um agente — acompanhe com: deepspace task list`
+      : `SEM responsável. Distribua: deepspace task assign ${taskId} "<Agente>" (ou coordene como achar melhor)`;
     await agentTerminalDeliveryService.deliver({
       workspaceId,
       nodeId: leader.id,
@@ -696,7 +696,7 @@ export class TaskBoardService {
     if (!group) return;
     const leader = nodes.find((node) => node.type === 'terminal' && Boolean((node.payload as { maestro?: boolean }).maestro));
     if (!leader) return;
-    const marker = `orkestrai:design-stage=${nextStage};exploration=${current.explorationId}`;
+    const marker = `deepspace:design-stage=${nextStage};exploration=${current.explorationId}`;
     const next = (await AgentBoardTask.query()
       .where('workspace_id', workspaceId)
       .where('status', 'todo')
@@ -760,7 +760,7 @@ export class TaskBoardService {
     const content =
       `[tarefa concluida no quadro #${task.id.slice(0, 8)}] Titulo: ${task.title}. Concluida por: ${author}. ` +
       'Verifique o resultado e o quadro agora; se estiver correto, integre o andar quando houver e distribua o proximo trabalho. ' +
-      'Use orkestrai task list e orkestrai ask para qualquer confirmacao necessaria.';
+      'Use deepspace task list e deepspace ask para qualquer confirmacao necessaria.';
     const messageId = uuidv7();
     const expiresAt = Date.now() + 30_000;
     const isStillRelevant = async () => {
@@ -850,7 +850,7 @@ export class TaskBoardService {
 
   /**
    * Re-despacho: injeta o prompt da tarefa de novo no terminal do agente
-   * atribuido (orkestrai run <taskId>) — útil para re-tentar ou re-briefar.
+   * atribuido (deepspace run <taskId>) — útil para re-tentar ou re-briefar.
    */
   async redispatch(workspaceId: string, taskId: string): Promise<{ dispatched: boolean }> {
     const task = await this.requireTask(workspaceId, taskId);
@@ -891,7 +891,7 @@ export class TaskBoardService {
         `The previous state was ${input.previousState}: ${input.previousAction ?? '(no details)'}.`,
         'The session and environment are available again. Recheck the former blocker now. If it no longer exists, report working with the same taskId and resume execution through validation and completion. You own this delivery: do not return executable install, test, review, or cleanup steps to the user. Reconcile any provider-native goal or plan that remained blocked with the Deep Space Control Center and Kanban state.',
         await taskBrief(task),
-        `Only after the delivery is genuinely validated, finish it with: orkestrai task done ${input.taskId}`,
+        `Only after the delivery is genuinely validated, finish it with: deepspace task done ${input.taskId}`,
       ].join('\n');
       await agentTerminalDeliveryService.deliver({
         workspaceId: input.workspaceId,
@@ -979,7 +979,7 @@ export class TaskBoardService {
     }
     // A entrega espera o composer estabilizar e, em ConPTY/WSL, confirma no
     // transcript que o provider realmente iniciou o turno.
-    const prompt = `[nova tarefa do quadro #${taskId.slice(0, 8)}]\n${await taskBrief(task)}\nQuando terminar, marque com: orkestrai task done ${taskId}`;
+    const prompt = `[nova tarefa do quadro #${taskId.slice(0, 8)}]\n${await taskBrief(task)}\nQuando terminar, marque com: deepspace task done ${taskId}`;
     const activeSessionId = sessionId;
     if (!activeSessionId) throw new Error(`O agente "${node.title ?? node.id}" não possui uma sessão PTY para receber a tarefa.`);
     await agentTerminalDeliveryService.deliver({
@@ -1012,12 +1012,12 @@ export class TaskBoardService {
 export const taskBoardService = new TaskBoardService();
 
 const recoveryLifecycle = globalThis as unknown as {
-  __orkestraiRecoverBlockedTask?: (input: Parameters<TaskBoardService['recoverBlockedTask']>[0]) => void;
-  __orkestraiPendingTaskRecoveries?: Array<Parameters<TaskBoardService['recoverBlockedTask']>[0]>;
+  __deepspaceRecoverBlockedTask?: (input: Parameters<TaskBoardService['recoverBlockedTask']>[0]) => void;
+  __deepspacePendingTaskRecoveries?: Array<Parameters<TaskBoardService['recoverBlockedTask']>[0]>;
 };
-recoveryLifecycle.__orkestraiRecoverBlockedTask = (input) => {
+recoveryLifecycle.__deepspaceRecoverBlockedTask = (input) => {
   void taskBoardService.recoverBlockedTask(input);
 };
-for (const pending of recoveryLifecycle.__orkestraiPendingTaskRecoveries?.splice(0) ?? []) {
-  recoveryLifecycle.__orkestraiRecoverBlockedTask(pending);
+for (const pending of recoveryLifecycle.__deepspacePendingTaskRecoveries?.splice(0) ?? []) {
+  recoveryLifecycle.__deepspaceRecoverBlockedTask(pending);
 }

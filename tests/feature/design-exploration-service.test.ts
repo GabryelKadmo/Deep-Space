@@ -50,8 +50,8 @@ describe('DesignExplorationService', () => {
     ]);
     expect(tasks).toHaveLength(8);
     expect(tasks.every((task) => task.noteId === result.note.id)).toBe(true);
-    expect(tasks.filter((task) => task.title.startsWith('2')).every((task) => task.description?.includes('orkestrai:design-node='))).toBe(true);
-    expect(tasks.find((task) => task.title.startsWith('3.'))?.description).toContain('orkestrai:design-review=');
+    expect(tasks.filter((task) => task.title.startsWith('2')).every((task) => task.description?.includes('deepspace:design-node='))).toBe(true);
+    expect(tasks.find((task) => task.title.startsWith('3.'))?.description).toContain('deepspace:design-review=');
     expect(String((result.note.payload as { content?: string }).content)).toContain('Required output for every direction');
     expect(result.edges.some((edge) => edge.sourceNodeId === result.note.id && edge.targetNodeId === terminal.id)).toBe(true);
     expect((result.group.payload as { workflowKind?: string }).workflowKind).toBe('design-exploration');

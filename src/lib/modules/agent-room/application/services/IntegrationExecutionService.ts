@@ -177,7 +177,7 @@ export class IntegrationExecutionService {
       if (integration.type === 'webhook') return { endpoint: String(integration.config.url), configured: true };
       if (integration.type === 'github') {
         const token = await this.secret(integration, 'integration:probe', 'api.github.com');
-        const response = await this.http.request('https://api.github.com/user', { headers: { accept: 'application/vnd.github+json', authorization: `Bearer ${token}`, 'x-github-api-version': '2022-11-28', 'user-agent': 'orkestrai-integration' } });
+        const response = await this.http.request('https://api.github.com/user', { headers: { accept: 'application/vnd.github+json', authorization: `Bearer ${token}`, 'x-github-api-version': '2022-11-28', 'user-agent': 'deepspace-integration' } });
         if (!response.ok) throw safeError(response.status, 'GitHub', response.json);
         return { account: String(record(response.json).login ?? '').slice(0, 120) };
       }
@@ -235,7 +235,7 @@ export class IntegrationExecutionService {
     const owner = encodeURIComponent(String(integration.config.owner ?? ''));
     const repo = encodeURIComponent(String(integration.config.repo ?? ''));
     const response = await this.http.request(`https://api.github.com/repos/${owner}/${repo}/pulls?state=all&sort=updated&direction=desc&per_page=1`, {
-      headers: { accept: 'application/vnd.github+json', authorization: `Bearer ${token}`, 'x-github-api-version': '2022-11-28', 'user-agent': 'orkestrai-integration' },
+      headers: { accept: 'application/vnd.github+json', authorization: `Bearer ${token}`, 'x-github-api-version': '2022-11-28', 'user-agent': 'deepspace-integration' },
     });
     if (!response.ok) throw safeError(response.status, 'GitHub', response.json);
     const pull = Array.isArray(response.json) ? record(response.json[0]) : {};
@@ -411,8 +411,8 @@ export class IntegrationExecutionService {
       headers.push('Content-Type: text/plain; charset="UTF-8"', 'Content-Transfer-Encoding: base64');
       return base64Url(headers.join('\r\n') + '\r\n\r\n' + Buffer.from(text, 'utf8').toString('base64'));
     }
-    const mixed = `orkestrai_${uuidv7().replace(/-/g, '')}`;
-    const alternative = `orkestrai_alt_${uuidv7().replace(/-/g, '')}`;
+    const mixed = `deepspace_${uuidv7().replace(/-/g, '')}`;
+    const alternative = `deepspace_alt_${uuidv7().replace(/-/g, '')}`;
     headers.push(`Content-Type: multipart/mixed; boundary="${mixed}"`);
     const parts = [headers.join('\r\n'), '', `--${mixed}`];
     if (html) {

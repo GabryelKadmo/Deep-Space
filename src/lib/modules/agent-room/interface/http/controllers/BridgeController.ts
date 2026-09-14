@@ -79,7 +79,7 @@ import { agentWorkspaceToolService, toolExecutionService } from '$lib/modules/ag
 import { createWorkspaceToolSchema, executeWorkspaceToolSchema, updateWorkspaceToolSchema } from '$lib/modules/agent-room/contracts/schemas/agent-workspace-tool.schema.js';
 
 /**
- * Endpoints consumidos pela CLI `orkestrai` (autenticacao por token de
+ * Endpoints consumidos pela CLI `deepspace` (autenticacao por token de
  * workspace, sem CSRF — ver hooks.server.ts csrfExcludePaths).
  */
 export class BridgeController extends Controller {
@@ -165,7 +165,7 @@ export class BridgeController extends Controller {
       const actor = await this.resolveAgentActor(workspace.id, input.from);
       const authenticatedActor = ptySessionManager.resolveBridgeAgent(
         workspace.id,
-        String(event.request.headers.get('x-orkestrai-agent-token') ?? ''),
+        String(event.request.headers.get('x-deepspace-agent-token') ?? ''),
       );
       if (!authenticatedActor || authenticatedActor !== actor) {
         throw new Error('Integration actions require the active terminal identity of the assigned agent.');
@@ -218,7 +218,7 @@ export class BridgeController extends Controller {
       }).strict().parse(await event.request.json());
       const workspace = await bridgeService.resolveWorkspaceByToken(this.requireToken(event));
       const actor = await this.resolveAgentActor(workspace.id, body.from);
-      const authenticatedActor = ptySessionManager.resolveBridgeAgent(workspace.id, String(event.request.headers.get('x-orkestrai-agent-token') ?? ''));
+      const authenticatedActor = ptySessionManager.resolveBridgeAgent(workspace.id, String(event.request.headers.get('x-deepspace-agent-token') ?? ''));
       if (!authenticatedActor || authenticatedActor !== actor) throw new Error('Tool actions require the active terminal identity of the assigned agent.');
       const task = (await taskBoardService.list(workspace.id)).find((candidate) => candidate.id === body.taskId);
       if (!task || task.assigneeNodeId !== actor || task.status === 'done') throw new Error('Tool actions require an active task assigned to this agent.');
@@ -279,7 +279,7 @@ export class BridgeController extends Controller {
       const actor = await this.resolveAgentActor(workspace.id, body.from);
       const authenticatedActor = ptySessionManager.resolveBridgeAgent(
         workspace.id,
-        String(event.request.headers.get('x-orkestrai-agent-token') ?? ''),
+        String(event.request.headers.get('x-deepspace-agent-token') ?? ''),
       );
       if (!authenticatedActor || authenticatedActor !== actor) {
         throw new Error('Git mutations require the active terminal identity of the assigned agent.');
@@ -950,7 +950,7 @@ export class BridgeController extends Controller {
       const workspace = await bridgeService.resolveWorkspaceByToken(this.requireToken(event));
       const authenticatedActor = ptySessionManager.resolveBridgeAgent(
         workspace.id,
-        String(event.request.headers.get('x-orkestrai-agent-token') ?? ''),
+        String(event.request.headers.get('x-deepspace-agent-token') ?? ''),
       );
       if (!authenticatedActor) throw new Error('Computer inspection requires an active Deep Space terminal identity.');
       const [computer, secretRefs] = await Promise.all([computerService.snapshotForAgent(workspace.id), secretRefService.list(workspace.id)]);
@@ -976,7 +976,7 @@ export class BridgeController extends Controller {
       const actor = await this.resolveAgentActor(workspace.id, request.from);
       const authenticatedActor = ptySessionManager.resolveBridgeAgent(
         workspace.id,
-        String(event.request.headers.get('x-orkestrai-agent-token') ?? ''),
+        String(event.request.headers.get('x-deepspace-agent-token') ?? ''),
       );
       if (!authenticatedActor || authenticatedActor !== actor) {
         throw new Error('Computer actions require the active terminal identity of the assigned agent.');
@@ -1453,7 +1453,7 @@ export class BridgeController extends Controller {
       const input = managedPortalCommandSchema.parse(await event.request.json());
       const workspace = await bridgeService.resolveWorkspaceByToken(this.tokenFrom(event, input.token));
       const portal = await bridgeService.resolvePortal(workspace.id, input.nodeId);
-      const actor = ptySessionManager.resolveBridgeAgent(workspace.id, String(event.request.headers.get('x-orkestrai-agent-token') ?? ''));
+      const actor = ptySessionManager.resolveBridgeAgent(workspace.id, String(event.request.headers.get('x-deepspace-agent-token') ?? ''));
       if (!actor) throw new Error('Portal control requires an authenticated active agent terminal.');
       const readOnly = ['snapshot', 'extract', 'screenshot', 'dom', 'wait'].includes(input.action) || (input.action === 'tabs' && input.args.operation === 'list');
       if (!readOnly) {
@@ -1561,7 +1561,7 @@ export class BridgeController extends Controller {
       const input = bridgeBoardTaskSchema.parse(await event.request.json());
       const workspace = await bridgeService.resolveWorkspaceByToken(this.tokenFrom(event, input.token));
       const assigneeNodeId = await this.assigneeNodeId(workspace.id, input.assignee);
-      const caller = ptySessionManager.resolveBridgeAgent(workspace.id, String(event.request.headers.get('x-orkestrai-agent-token') ?? ''));
+      const caller = ptySessionManager.resolveBridgeAgent(workspace.id, String(event.request.headers.get('x-deepspace-agent-token') ?? ''));
       const task = await taskBoardService.create(workspace.id, {
         title: input.title,
         description: input.description ?? null,
@@ -1609,7 +1609,7 @@ export class BridgeController extends Controller {
     }
   }
 
-  // -- FS via bridge (orkestrai fs) --------------------------------------------
+  // -- FS via bridge (deepspace fs) --------------------------------------------
 
   async fsRead(event: any) {
     try {
@@ -1642,7 +1642,7 @@ export class BridgeController extends Controller {
     }
   }
 
-  /** Re-despacha a tarefa para o agente atribuido (orkestrai run <taskId>). */
+  /** Re-despacha a tarefa para o agente atribuido (deepspace run <taskId>). */
   async taskDispatch(event: any) {
     try {
       const workspace = await bridgeService.resolveWorkspaceByToken(this.requireToken(event));
@@ -1652,14 +1652,14 @@ export class BridgeController extends Controller {
     }
   }
 
-  /** TTS sob demanda (orkestrai say): fala no desktop via broadcast do canvas. */
+  /** TTS sob demanda (deepspace say): fala no desktop via broadcast do canvas. */
   async say(event: any) {
     try {
       const workspace = await bridgeService.resolveWorkspaceByToken(this.requireToken(event));
       const body = await event.request.json();
       const text = String(body.text ?? '').trim().slice(0, 500);
       if (!text) throw new Error('Informe o texto.');
-      const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+      const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
       broadcast?.({ type: 'say', workspaceId: workspace.id, text });
       return this.json({ data: { said: true } });
     } catch (error) {

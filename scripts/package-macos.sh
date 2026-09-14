@@ -4,21 +4,21 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-if [[ -n "${ORKESTRAI_MAC_LOCAL_SIGNING_IDENTITY:-}" && "${ORKESTRAI_REQUIRE_MAC_SIGNING:-false}" != "true" && "${ORKESTRAI_MAC_ALLOW_KEYCHAIN_PROMPTS:-false}" != "true" ]]; then
-  printf 'ERROR: Local certificate signing can prompt repeatedly for Keychain access. Obtain explicit owner approval before setting ORKESTRAI_MAC_ALLOW_KEYCHAIN_PROMPTS=true, or unset ORKESTRAI_MAC_LOCAL_SIGNING_IDENTITY for an ad-hoc local build.\n' >&2
+if [[ -n "${DEEPSPACE_MAC_LOCAL_SIGNING_IDENTITY:-}" && "${DEEPSPACE_REQUIRE_MAC_SIGNING:-false}" != "true" && "${DEEPSPACE_MAC_ALLOW_KEYCHAIN_PROMPTS:-false}" != "true" ]]; then
+  printf 'ERROR: Local certificate signing can prompt repeatedly for Keychain access. Obtain explicit owner approval before setting DEEPSPACE_MAC_ALLOW_KEYCHAIN_PROMPTS=true, or unset DEEPSPACE_MAC_LOCAL_SIGNING_IDENTITY for an ad-hoc local build.\n' >&2
   exit 1
 fi
 
 # electron-builder cannot reliably collect transitive production dependencies
 # when the project-level node_modules is a symlink to another checkout. Package
 # from a clean temporary install in that case so local test builds match CI.
-if [[ -L "$ROOT_DIR/node_modules" && "${ORKESTRAI_MAC_STAGED:-false}" != "true" ]]; then
+if [[ -L "$ROOT_DIR/node_modules" && "${DEEPSPACE_MAC_STAGED:-false}" != "true" ]]; then
   if [[ ! -d "$ROOT_DIR/build" ]]; then
     printf 'ERROR: Run npm run build before packaging macOS.\n' >&2
     exit 1
   fi
 
-  stage_dir="$(mktemp -d "${TMPDIR:-/tmp}/orkestrai-macos-package.XXXXXX")"
+  stage_dir="$(mktemp -d "${TMPDIR:-/tmp}/deepspace-macos-package.XXXXXX")"
   cleanup_stage() {
     rm -rf "$stage_dir"
   }
@@ -32,7 +32,7 @@ if [[ -L "$ROOT_DIR/node_modules" && "${ORKESTRAI_MAC_STAGED:-false}" != "true" 
   (
     cd "$stage_dir"
     npm ci
-    ORKESTRAI_MAC_STAGED=true bash scripts/package-macos.sh "$@"
+    DEEPSPACE_MAC_STAGED=true bash scripts/package-macos.sh "$@"
   )
 
   mkdir -p "$ROOT_DIR/release"
@@ -52,10 +52,10 @@ required_signing_env=(
 # Signing traverses the unpacked application concurrently. The macOS runner's
 # default soft limit is too low once production dependencies exceed a few
 # thousand files.
-requested_open_file_limit="${ORKESTRAI_MAC_OPEN_FILE_LIMIT:-unlimited}"
+requested_open_file_limit="${DEEPSPACE_MAC_OPEN_FILE_LIMIT:-unlimited}"
 hard_open_file_limit="$(ulimit -Hn)"
 if [[ "$requested_open_file_limit" != "unlimited" && ! "$requested_open_file_limit" =~ ^[0-9]+$ ]]; then
-  printf 'ERROR: ORKESTRAI_MAC_OPEN_FILE_LIMIT must be a positive integer or unlimited.\n' >&2
+  printf 'ERROR: DEEPSPACE_MAC_OPEN_FILE_LIMIT must be a positive integer or unlimited.\n' >&2
   exit 1
 fi
 if [[ "$hard_open_file_limit" =~ ^[0-9]+$ ]] && \
@@ -68,7 +68,7 @@ if ! ulimit -n "$requested_open_file_limit"; then
 fi
 printf 'macOS open-file limit: %s\n' "$(ulimit -Sn)"
 
-if [[ "${ORKESTRAI_REQUIRE_MAC_SIGNING:-false}" == "true" ]]; then
+if [[ "${DEEPSPACE_REQUIRE_MAC_SIGNING:-false}" == "true" ]]; then
   for variable in "${required_signing_env[@]}"; do
     if [[ -z "${!variable:-}" ]]; then
       printf 'ERROR: %s is required for an official macOS release.\n' "$variable" >&2
@@ -77,12 +77,12 @@ if [[ "${ORKESTRAI_REQUIRE_MAC_SIGNING:-false}" == "true" ]]; then
   done
 fi
 
-if [[ -n "${ORKESTRAI_MAC_LOCAL_SIGNING_IDENTITY:-}" && "${ORKESTRAI_REQUIRE_MAC_SIGNING:-false}" != "true" ]]; then
+if [[ -n "${DEEPSPACE_MAC_LOCAL_SIGNING_IDENTITY:-}" && "${DEEPSPACE_REQUIRE_MAC_SIGNING:-false}" != "true" ]]; then
   # Local hardware QA must exercise Hardened Runtime, not only the ad-hoc path.
   # This mode never publishes and does not claim Apple notarization.
   unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
   export CSC_IDENTITY_AUTO_DISCOVERY=true
-  local_signing_identity="${ORKESTRAI_MAC_LOCAL_SIGNING_IDENTITY#Developer ID Application: }"
+  local_signing_identity="${DEEPSPACE_MAC_LOCAL_SIGNING_IDENTITY#Developer ID Application: }"
   npx electron-builder "${builder_args[@]}" -c.mac.identity="$local_signing_identity" -c.mac.hardenedRuntime=true -c.mac.notarize=false
   if [[ -f release/latest-mac.yml ]]; then
     node scripts/set-mac-update-policy.mjs release/latest-mac.yml

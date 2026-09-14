@@ -13,7 +13,7 @@ function normalize(value: string): string {
 }
 
 function broadcast(workspaceId: string): void {
-  const send = (globalThis as { __orkestraiBroadcast?: (frame: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const send = (globalThis as { __deepspaceBroadcast?: (frame: Record<string, unknown>) => void }).__deepspaceBroadcast;
   send?.({ type: 'memoryChanged', workspaceId });
 }
 

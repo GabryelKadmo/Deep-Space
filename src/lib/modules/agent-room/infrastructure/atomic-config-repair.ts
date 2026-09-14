@@ -5,7 +5,7 @@ import { dirname } from 'node:path';
 type RepairResult = { content: string; repaired: boolean };
 
 const globalRepairState = globalThis as typeof globalThis & {
-  __orkestraiConfigRepairQueue?: Promise<unknown>;
+  __deepspaceConfigRepairQueue?: Promise<unknown>;
 };
 
 async function readOptional(path: string): Promise<string | null> {
@@ -18,7 +18,7 @@ async function readOptional(path: string): Promise<string | null> {
 }
 
 async function acquireLock(path: string): Promise<() => Promise<void>> {
-  const lockPath = `${path}.orkestrai-lock`;
+  const lockPath = `${path}.deepspace-lock`;
   const deadline = Date.now() + 5_000;
   while (true) {
     try {
@@ -50,7 +50,7 @@ async function performRepair(path: string, repair: (current: string) => RepairRe
 
   await mkdir(dirname(path), { recursive: true });
   const releaseLock = await acquireLock(path);
-  const tempPath = `${path}.orkestrai-${process.pid}-${Date.now()}.tmp`;
+  const tempPath = `${path}.deepspace-${process.pid}-${Date.now()}.tmp`;
   try {
     const lockedCurrent = await readFile(path, 'utf8');
     const lockedResult = repair(lockedCurrent);
@@ -63,7 +63,7 @@ async function performRepair(path: string, repair: (current: string) => RepairRe
     } finally {
       await handle.close();
     }
-    await copyFile(path, `${path}.before-orkestrai-repair`, constants.COPYFILE_EXCL).catch((error) => {
+    await copyFile(path, `${path}.before-deepspace-repair`, constants.COPYFILE_EXCL).catch((error) => {
       if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
     });
     await rename(tempPath, path);
@@ -79,8 +79,8 @@ export function repairConfigFileAtomically(
   path: string,
   repair: (current: string) => RepairResult,
 ): Promise<boolean> {
-  const previous = globalRepairState.__orkestraiConfigRepairQueue ?? Promise.resolve();
+  const previous = globalRepairState.__deepspaceConfigRepairQueue ?? Promise.resolve();
   const next = previous.catch(() => undefined).then(() => performRepair(path, repair));
-  globalRepairState.__orkestraiConfigRepairQueue = next;
+  globalRepairState.__deepspaceConfigRepairQueue = next;
   return next;
 }

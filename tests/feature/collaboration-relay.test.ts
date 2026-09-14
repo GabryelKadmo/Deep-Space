@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import WebSocket from 'ws';
-import { COLLABORATION_PROTOCOL } from '@orkestrai/collaboration-protocol';
-import { createRelayServer } from '../../packages/orkestrai-relay/src/server.mjs';
+import { COLLABORATION_PROTOCOL } from '@deepspace/collaboration-protocol';
+import { createRelayServer } from '../../packages/deepspace-relay/src/server.mjs';
 
 let relay: ReturnType<typeof createRelayServer> | null = null;
 
@@ -69,7 +69,7 @@ describe('opaque collaboration relay', () => {
   });
 
   it('accepts the installed app loopback origin and configured web origins', async () => {
-    relay = createRelayServer({ allowedOrigins: 'https://orkestrai.app' });
+    relay = createRelayServer({ allowedOrigins: 'https://deepspace.app' });
     const address = await relay.listen(0, '127.0.0.1');
     if (!address || typeof address === 'string') throw new Error('Relay address was not assigned.');
     const base = `ws://127.0.0.1:${address.port}/v1/connect?share=share_relay_test&peer=`;
@@ -85,7 +85,7 @@ describe('opaque collaboration relay', () => {
 
     await new Promise<void>((resolve) => desktop.once('close', () => resolve()));
     const web = new WebSocket(`${base}host_device_02&role=host`, COLLABORATION_PROTOCOL, {
-      origin: 'https://orkestrai.app',
+      origin: 'https://deepspace.app',
     });
     await new Promise<void>((resolve, reject) => {
       web.once('open', resolve);

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PassThrough } from 'node:stream';
-import { MCP_TOOLS, runMcpServer } from '../../packages/orkestrai-cli/src/mcp.js';
+import { MCP_TOOLS, runMcpServer } from '../../packages/deepspace-cli/src/mcp.js';
 import {
   bridgeAskSchema,
   bridgeDesignApplySchema,
@@ -216,7 +216,7 @@ const TOOL_ARGS: Record<string, Record<string, unknown>> = {
   api_client_sync_status: { nodeId: 'n1' },
   api_client_pull: { nodeId: 'n1' },
   api_client_push: { nodeId: 'n1' },
-  api_client_export: { nodeId: 'n1', kind: 'postman', path: '.orkestrai/exports' },
+  api_client_export: { nodeId: 'n1', kind: 'postman', path: '.deepspace/exports' },
   api_client_run_runner: { nodeId: 'n1', runnerId: 'runner1', variables: { tenant: 'alpha' }, maxExecutions: 20 },
   image_workflow_read: { nodeId: 'n1' },
   image_workflow_create: { title: 'Campaign images', prompt: 'Create ten carousel visuals.', count: 10, outputPreset: 'instagram-portrait' },
@@ -619,7 +619,7 @@ describe('contrato MCP x bridge (todas as tools)', () => {
       input.end();
       await done.catch(() => {});
       const text = response.result?.content?.[0]?.text ?? '';
-      expect(text, `${tool}: deveria explicar a identidade ausente`).toMatch(/identidade|ORKESTRAI_NODE_ID/i);
+      expect(text, `${tool}: deveria explicar a identidade ausente`).toMatch(/identidade|DEEPSPACE_NODE_ID/i);
     }
   });
 });

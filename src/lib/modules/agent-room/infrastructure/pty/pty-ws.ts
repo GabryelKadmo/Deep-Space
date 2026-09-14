@@ -3,7 +3,7 @@
  *
  * Arquivo deliberadamente autocontido (só depende de PtySessionManager e ws)
  * para ser importado tanto pelo vite (dev) quanto pelo servidor de producao
- * (scripts/orkestrai-server.mjs, rodado com type stripping do Node 24+).
+ * (scripts/deepspace-server.mjs, rodado com type stripping do Node 24+).
  *
  * Protocolo (frames JSON texto):
  *   C->S {type:'create', command, args?, cwd, cols?, rows?, env?, profileId?}
@@ -52,13 +52,13 @@ export function isPtyWsPath(pathname: string): boolean {
 // (ex.: edge "talking"). Vai em globalThis porque o bundle SSR e a camada
 // type-stripped carregam copias separadas deste módulo no mesmo processo.
 const wsGlobal = globalThis as unknown as {
-  __orkestraiWsClients?: Set<WebSocket>;
-  __orkestraiBroadcast?: (payload: Record<string, unknown>) => void;
-  __orkestraiResolveProviderProfileEnv?: (profileId: string, providerId: string, options?: { runtimeHome?: string }) => Promise<Record<string, string>>;
-  __orkestraiCanStartWorkspaceSession?: (workspaceId: string) => Promise<boolean>;
+  __deepspaceWsClients?: Set<WebSocket>;
+  __deepspaceBroadcast?: (payload: Record<string, unknown>) => void;
+  __deepspaceResolveProviderProfileEnv?: (profileId: string, providerId: string, options?: { runtimeHome?: string }) => Promise<Record<string, string>>;
+  __deepspaceCanStartWorkspaceSession?: (workspaceId: string) => Promise<boolean>;
 };
-const allSockets = (wsGlobal.__orkestraiWsClients ??= new Set<WebSocket>());
-wsGlobal.__orkestraiBroadcast = (payload) => {
+const allSockets = (wsGlobal.__deepspaceWsClients ??= new Set<WebSocket>());
+wsGlobal.__deepspaceBroadcast = (payload) => {
   const frame = JSON.stringify(payload);
   for (const client of allSockets) {
     if (client.readyState === client.OPEN) client.send(frame);
@@ -138,8 +138,8 @@ export function handlePtyConnection(socket: WebSocket): void {
           if (typeof message.command !== 'string' || !message.command.trim()) {
             throw new Error('Informe o comando da sessão PTY.');
           }
-          if (message.workspaceId && wsGlobal.__orkestraiCanStartWorkspaceSession) {
-            const canStart = await wsGlobal.__orkestraiCanStartWorkspaceSession(message.workspaceId);
+          if (message.workspaceId && wsGlobal.__deepspaceCanStartWorkspaceSession) {
+            const canStart = await wsGlobal.__deepspaceCanStartWorkspaceSession(message.workspaceId);
             if (!canStart) {
               send({
                 type: 'error',
@@ -220,7 +220,7 @@ export function handlePtyConnection(socket: WebSocket): void {
           let profileEnv: Record<string, string> = {};
           if (message.profileId) {
             if (!message.provider) throw new Error('A provider is required when launching a profile.');
-            const resolveProfileEnv = wsGlobal.__orkestraiResolveProviderProfileEnv;
+            const resolveProfileEnv = wsGlobal.__deepspaceResolveProviderProfileEnv;
             if (!resolveProfileEnv) throw new Error('Provider profile resolution is unavailable.');
             profileEnv = await resolveProfileEnv(message.profileId, message.provider, {
               runtimeHome: wslContext?.linuxHomePath,
@@ -235,7 +235,7 @@ export function handlePtyConnection(socket: WebSocket): void {
             ? randomUUID()
             : null;
           const freshSessionArgs = freshSessionId
-            ? message.freshSessionArgs!.map((arg) => String(arg).replace('__ORKESTRAI_SESSION_ID__', freshSessionId))
+            ? message.freshSessionArgs!.map((arg) => String(arg).replace('__DEEPSPACE_SESSION_ID__', freshSessionId))
             : [];
           if (freshSessionId) tracker.claim(freshSessionId);
           const bridgeAgentToken = message.provider && message.workspaceId && message.nodeId ? randomUUID() : null;
@@ -254,7 +254,7 @@ export function handlePtyConnection(socket: WebSocket): void {
             env: {
               ...(message.env ?? {}),
               ...profileEnv,
-              ...(bridgeAgentToken ? { ORKESTRAI_AGENT_TOKEN: bridgeAgentToken } : {}),
+              ...(bridgeAgentToken ? { DEEPSPACE_AGENT_TOKEN: bridgeAgentToken } : {}),
             },
             forwardEnvToWsl: Object.keys(profileEnv),
             label: typeof message.label === 'string' ? message.label : null,
@@ -275,7 +275,7 @@ export function handlePtyConnection(socket: WebSocket): void {
 
           // Encerramento normal pode ser unload/reload solicitado pelo usuário
           // e não deve gerar ruído. Só uma saída anormal vira notificação; para
-          // conclusões e pedidos de atenção, o agente usa `orkestrai notify`.
+          // conclusões e pedidos de atenção, o agente usa `deepspace notify`.
           const label = typeof message.label === 'string' && message.label.trim() ? message.label.trim() : null;
           if (label) {
             const workspaceName = typeof message.workspace === 'string' && message.workspace.trim() ? message.workspace.trim() : 'Deep Space';
@@ -284,7 +284,7 @@ export function handlePtyConnection(socket: WebSocket): void {
               () => {},
               (exitCode) => {
                 if (exitCode !== 0) {
-                  console.log(`[orkestrai:notify] [${workspaceName}] ${label} encerrou com erro (código ${exitCode}).`);
+                  console.log(`[deepspace:notify] [${workspaceName}] ${label} encerrou com erro (código ${exitCode}).`);
                 }
               }
             );
@@ -298,7 +298,7 @@ export function handlePtyConnection(socket: WebSocket): void {
               ptySessionManager.bindAgentSession(session.id, agentSessionId);
               // Broadcast global: o socket criador pode já ter sido fechado
               // (o no remonta em modo attach ao receber o sessionId).
-              wsGlobal.__orkestraiBroadcast?.({
+              wsGlobal.__deepspaceBroadcast?.({
                 type: 'agentSession',
                 workspaceId: typeof message.workspaceId === 'string' ? message.workspaceId : null,
                 sessionId: session.id,

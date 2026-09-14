@@ -6,16 +6,16 @@ decrypt, read, or persist workspace content, but every shared session passes
 through whichever relay the app is pointed at.
 
 Deep Space still defaults to the upstream public relay,
-`wss://relay.orkestrai.app/v1/connect`. Deploy your own before you ship sharing
+`wss://relay.deepspace.app/v1/connect`. Deploy your own before you ship sharing
 to users.
 
 ## Deploy
 
-The server lives in `packages/orkestrai-relay/` and ships with a Dockerfile and
+The server lives in `packages/deepspace-relay/` and ships with a Dockerfile and
 a production compose file.
 
 ```bash
-cd packages/orkestrai-relay
+cd packages/deepspace-relay
 docker compose -f docker-compose.prod.yml up -d
 ```
 
@@ -34,8 +34,8 @@ PUBLIC_RELAY_URL=wss://relay.example.com/v1/connect
 default when it is unset. Both the sharing dialog and the Remote page use that
 single constant, so there is nothing else to change.
 
-For the invite links the host generates, `ORKESTRAI_REMOTE_URL` controls the web
-address guests open (default `https://remote.orkestrai.app`). Set it to your own
+For the invite links the host generates, `DEEPSPACE_REMOTE_URL` controls the web
+address guests open (default `https://remote.deepspace.app`). Set it to your own
 deployment of the Remote page if you host one.
 
 ## Origin allowlist

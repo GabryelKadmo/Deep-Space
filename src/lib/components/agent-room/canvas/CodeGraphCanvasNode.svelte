@@ -211,7 +211,7 @@
       direction,
       depth,
     };
-    sessionStorage.setItem(`orkestrai:code-graph-state:${data.workspaceId}:${id}`, JSON.stringify(state));
+    sessionStorage.setItem(`deepspace:code-graph-state:${data.workspaceId}:${id}`, JSON.stringify(state));
   });
 
   async function api<T>(path: string, init?: RequestInit): Promise<T> {
@@ -529,7 +529,7 @@
     if (cameraState) sigma.getCamera().setState(cameraState);
     sigma.getCamera().on('updated', (state: CameraState) => {
       cameraState = state;
-      sessionStorage.setItem(`orkestrai:code-graph-camera:${data.workspaceId}:${id}`, JSON.stringify(state));
+      sessionStorage.setItem(`deepspace:code-graph-camera:${data.workspaceId}:${id}`, JSON.stringify(state));
     });
     renderer = sigma as GraphRenderer;
     if (focusedSymbolId) focusGraphSymbol(renderer, focusedSymbolId, focusStrength);
@@ -778,7 +778,7 @@
       toast.success(m['code_graph.context_sent']({ title: result.artifact.title }));
       contextOpen = false;
       if (result.artifact.type === 'council') {
-        window.dispatchEvent(new CustomEvent('orkestrai:open-council', {
+        window.dispatchEvent(new CustomEvent('deepspace:open-council', {
           detail: { workspaceId: data.workspaceId, councilId: result.artifact.id },
         }));
       }
@@ -1166,11 +1166,11 @@
     if (!selectedSymbol?.path) return;
     const root = selectedSymbol.projectRelativePath;
     const path = !root || root === '.' ? selectedSymbol.path : `${root}/${selectedSymbol.path}`;
-    sessionStorage.setItem(`orkestrai:file-reveal:${data.workspaceId}:${path}`, JSON.stringify({
+    sessionStorage.setItem(`deepspace:file-reveal:${data.workspaceId}:${path}`, JSON.stringify({
       line: selectedSymbol.startLine ?? 1,
       column: Math.max(1, (selectedSymbol.startColumn ?? 0) + 1),
     }));
-    window.dispatchEvent(new CustomEvent('orkestrai:open-file', {
+    window.dispatchEvent(new CustomEvent('deepspace:open-file', {
       detail: { workspaceId: data.workspaceId, path, direction: 'horizontal' },
     }));
   }
@@ -1179,7 +1179,7 @@
     const project = snapshot?.projects.find((candidate) => candidate.id === file.projectId);
     const root = project?.relativePath;
     const path = !root || root === '.' ? file.path : `${root}/${file.path}`;
-    window.dispatchEvent(new CustomEvent('orkestrai:open-file', {
+    window.dispatchEvent(new CustomEvent('deepspace:open-file', {
       detail: { workspaceId: data.workspaceId, path },
     }));
   }
@@ -1206,11 +1206,11 @@
     const flowViewport = graphHost.closest('.svelte-flow__viewport');
     const graphScaleObserver = new MutationObserver(synchronizeGraphViewport);
     if (flowViewport) graphScaleObserver.observe(flowViewport, { attributes: true, attributeFilter: ['style'] });
-    const storedCamera = sessionStorage.getItem(`orkestrai:code-graph-camera:${data.workspaceId}:${id}`);
+    const storedCamera = sessionStorage.getItem(`deepspace:code-graph-camera:${data.workspaceId}:${id}`);
     if (storedCamera) {
       try { cameraState = JSON.parse(storedCamera) as CameraState; } catch { /* ignore invalid session state */ }
     }
-    const storedState = sessionStorage.getItem(`orkestrai:code-graph-state:${data.workspaceId}:${id}`);
+    const storedState = sessionStorage.getItem(`deepspace:code-graph-state:${data.workspaceId}:${id}`);
     if (storedState) {
       try {
         const state = JSON.parse(storedState) as Partial<CodeGraphSessionState>;
@@ -1224,7 +1224,7 @@
           restoredViewMode = state.viewMode!;
         }
       } catch {
-        sessionStorage.removeItem(`orkestrai:code-graph-state:${data.workspaceId}:${id}`);
+        sessionStorage.removeItem(`deepspace:code-graph-state:${data.workspaceId}:${id}`);
       }
     }
     sessionStateReady = true;
@@ -1240,7 +1240,7 @@
         if (symbol && selectedSymbol?.id !== symbol.id) await openSymbol(symbol.id);
       }, 180);
     };
-    window.addEventListener('orkestrai:editor-location', handleEditorLocation);
+    window.addEventListener('deepspace:editor-location', handleEditorLocation);
     const connect = () => {
       if (destroyed) return;
       const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
@@ -1272,7 +1272,7 @@
       if (graphResizeFrame !== null) cancelAnimationFrame(graphResizeFrame);
       graphResizeObserver.disconnect();
       graphScaleObserver.disconnect();
-      window.removeEventListener('orkestrai:editor-location', handleEditorLocation);
+      window.removeEventListener('deepspace:editor-location', handleEditorLocation);
       socket?.close();
       renderSequence += 1;
       renderer?.kill();

@@ -96,13 +96,13 @@ describe('TaskBoardService', () => {
     const task = await taskBoardService.create(workspace.id, {
       title: 'Implementar login',
       description: 'Usar OAuth e cobrir o fluxo de erro.',
-      images: ['.orkestrai/images/login.png'],
+      images: ['.deepspace/images/login.png'],
       attachments: [
         {
           id: '00000000-0000-4000-8000-000000000001',
           kind: 'file',
           name: 'brief.md',
-          path: '.orkestrai/attachments/brief.md',
+          path: '.deepspace/attachments/brief.md',
           url: null,
           mimeType: 'text/markdown',
           size: 42,
@@ -125,10 +125,10 @@ describe('TaskBoardService', () => {
     detach();
     expect(scrollback).toContain('Implementar login');
     expect(scrollback).toContain('Usar OAuth e cobrir o fluxo de erro.');
-    expect(scrollback).toContain('.orkestrai/images/login.png');
-    expect(scrollback).toContain('.orkestrai/attachments/brief.md');
+    expect(scrollback).toContain('.deepspace/images/login.png');
+    expect(scrollback).toContain('.deepspace/attachments/brief.md');
     expect(scrollback).toContain('https://example.com/reference');
-    expect(scrollback).toContain('orkestrai task done');
+    expect(scrollback).toContain('deepspace task done');
     ptySessionManager.kill(session.id);
   });
 
@@ -349,29 +349,29 @@ describe('TaskBoardService', () => {
   it('anexa e remove imagens de referencia (capa = primeira)', async () => {
     const { workspace, session } = await createWorkspaceWithTerminal();
     const task = await taskBoardService.create(workspace.id, { title: 'Tela de login' });
-    let updated = await taskBoardService.attachImage(workspace.id, task.id, '.orkestrai/images/a.png');
-    expect(updated.images).toEqual(['.orkestrai/images/a.png']);
-    expect(updated.imagePath).toBe('.orkestrai/images/a.png');
+    let updated = await taskBoardService.attachImage(workspace.id, task.id, '.deepspace/images/a.png');
+    expect(updated.images).toEqual(['.deepspace/images/a.png']);
+    expect(updated.imagePath).toBe('.deepspace/images/a.png');
 
-    updated = await taskBoardService.attachImage(workspace.id, task.id, '.orkestrai/images/b.png');
-    expect(updated.images).toEqual(['.orkestrai/images/a.png', '.orkestrai/images/b.png']);
-    expect(updated.imagePath).toBe('.orkestrai/images/a.png');
+    updated = await taskBoardService.attachImage(workspace.id, task.id, '.deepspace/images/b.png');
+    expect(updated.images).toEqual(['.deepspace/images/a.png', '.deepspace/images/b.png']);
+    expect(updated.imagePath).toBe('.deepspace/images/a.png');
 
     // Duplicada nao entra de novo
-    await expect(taskBoardService.attachImage(workspace.id, task.id, '.orkestrai/images/a.png')).rejects.toThrow('anexada');
+    await expect(taskBoardService.attachImage(workspace.id, task.id, '.deepspace/images/a.png')).rejects.toThrow('anexada');
 
-    updated = await taskBoardService.detachImage(workspace.id, task.id, '.orkestrai/images/a.png');
-    expect(updated.images).toEqual(['.orkestrai/images/b.png']);
-    expect(updated.imagePath).toBe('.orkestrai/images/b.png');
+    updated = await taskBoardService.detachImage(workspace.id, task.id, '.deepspace/images/a.png');
+    expect(updated.images).toEqual(['.deepspace/images/b.png']);
+    expect(updated.imagePath).toBe('.deepspace/images/b.png');
 
-    updated = await taskBoardService.detachImage(workspace.id, task.id, '.orkestrai/images/b.png');
+    updated = await taskBoardService.detachImage(workspace.id, task.id, '.deepspace/images/b.png');
     expect(updated.images).toEqual([]);
     expect(updated.imagePath).toBeNull();
 
     // Listagem inclui as imagens
-    await taskBoardService.attachImage(workspace.id, task.id, '.orkestrai/images/ref.png');
+    await taskBoardService.attachImage(workspace.id, task.id, '.deepspace/images/ref.png');
     const listed = await taskBoardService.list(workspace.id);
-    expect(listed[0].images).toEqual(['.orkestrai/images/ref.png']);
+    expect(listed[0].images).toEqual(['.deepspace/images/ref.png']);
     ptySessionManager.kill(session.id);
   });
 
@@ -402,7 +402,7 @@ describe('TaskBoardService', () => {
     await taskBoardService.create(workspace.id, {
       title: 'Refinar hero',
       description: 'Seguir a hierarquia descrita no briefing.',
-      images: ['.orkestrai/images/hero-a.png', '.orkestrai/images/hero-b.png'],
+      images: ['.deepspace/images/hero-a.png', '.deepspace/images/hero-b.png'],
       createdBy: 'user',
     });
     await new Promise((resolve) => setTimeout(resolve, 400));
@@ -410,8 +410,8 @@ describe('TaskBoardService', () => {
     expect(attached.scrollback).toContain('nova tarefa no quadro');
     expect(attached.scrollback).toContain('Refinar hero');
     expect(attached.scrollback).toContain('Seguir a hierarquia descrita no briefing.');
-    expect(attached.scrollback).toContain('.orkestrai/images/hero-a.png');
-    expect(attached.scrollback).toContain('.orkestrai/images/hero-b.png');
+    expect(attached.scrollback).toContain('.deepspace/images/hero-a.png');
+    expect(attached.scrollback).toContain('.deepspace/images/hero-b.png');
     expect(attached.scrollback).toContain('task assign');
     attached.detach();
 

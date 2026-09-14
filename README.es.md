@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="orkestrai-branding/logo.svg" alt="Deep Space" width="360">
+  <img src="deepspace-branding/logo.svg" alt="Deep Space" width="360">
 </p>
 
 <p align="center">
@@ -85,7 +85,7 @@ normal de los agentes no se guarda.
   Busca símbolos, rutas, firmas y docblocks y explora imports, llamadas,
   instancias, herencia e implementaciones entrantes y salientes en el mismo nodo
   de Canvas y Workbench. Los agentes consultan ese grafo persistido mediante MCP
-  tipado o `orkestrai graph`; los repositorios hermanos autorizados siguen como
+  tipado o `deepspace graph`; los repositorios hermanos autorizados siguen como
   proyectos separados y nunca se exponen SQL ni Cypher arbitrarios.
 - **Cliente de API nativo:** crea y ejecuta solicitudes HTTP/REST, GraphQL,
   WebSocket y gRPC junto al equipo, con autenticación Bearer/Basic/clave API u
@@ -95,7 +95,7 @@ normal de los agentes no se guarda.
   cookies, flujo de colección, visualizaciones, bibliotecas incluidas, Chai y APIs legadas permanecen
   disponibles, mientras el vault cifra valores con el sistema operativo. Los
   runners aceptan datos JSON por iteración. Importa y exporta Bruno,
-  OpenCollection, Postman, OpenAPI y la copia `.orkestrai-api.json` sin pérdidas.
+  OpenCollection, Postman, OpenAPI y la copia `.deepspace-api.json` sin pérdidas.
   El mismo nodo persiste en Canvas y Workbench y los agentes conectados ejecutan
   solicitudes por tools MCP sin recibir credenciales. Package Library, datasets
   y otros servicios en la nube de Postman siguen dependiendo del backend
@@ -169,7 +169,7 @@ normal de los agentes no se guarda.
   código del proyecto. Diseñador y líder editan la misma revisión mediante tools
   tipadas mientras la UI se actualiza en vivo. Componentes y tokens están en la
   búsqueda; documentos, assets, miniaturas e historial quedan en
-  `.orkestrai/designs` dentro del workspace.
+  `.deepspace/designs` dentro del workspace.
 - **Interoperabilidad oficial con Figma:** el MCP oficial administrado ofrece
   contexto de diseño a los agentes compatibles, mientras la pestaña Figma
   nativa inspecciona enlaces e importa páginas o frames, vectores, assets,
@@ -204,7 +204,7 @@ normal de los agentes no se guarda.
 - **Material de referencia compartido:** suelta, pega o selecciona imágenes,
   PDFs, archivos y enlaces HTTP/HTTPS en prompts de agentes, tarjetas, notas y
   composers. Los archivos de hasta 10 MB quedan en el workspace bajo
-  `.orkestrai/attachments/`, y el agente recibe el path relativo o URL completo.
+  `.deepspace/attachments/`, y el agente recibe el path relativo o URL completo.
 - **Modo Maestro:** asigna un líder que puede proponer un equipo, reclutar
   agentes, delegar briefings completos, coordinar el trabajo y retirar agentes
   cuando ya no sean necesarios.
@@ -219,10 +219,10 @@ normal de los agentes no se guarda.
   etapas del tablero. Líder y agentes descubren y actualizan el mismo proceso.
 - **Vistas operativas del equipo:** instala funciones especializadas desde un
   catálogo de 12 roles o descubre definiciones reutilizables en
-  `.orkestrai/roles/` desde otra carpeta de proyecto seleccionada, y consulta
+  `.deepspace/roles/` desde otra carpeta de proyecto seleccionada, y consulta
   título, etapa, responsable y estado Git de cada piso. Los roles importados
   tienen límites, se validan y quedan confinados al proyecto elegido.
-- **Puente nativo para agentes:** la CLI `orkestrai` y el servidor MCP incluidos
+- **Puente nativo para agentes:** la CLI `deepspace` y el servidor MCP incluidos
   exponen comandos tipados para mensajes, tareas, notas, portales, dispositivos
   móviles, pisos, roles y notificaciones de escritorio. Codex recibe las
   definiciones MCP de Deep Space y del Figma oficial como parámetros temporales
@@ -302,7 +302,7 @@ Requisitos:
 
 ```bash
 git clone https://github.com/GabryelKadmo/Deep-Space.git
-cd orkestrai
+cd deepspace
 npm ci
 
 npm run dev            # SvelteKit en http://localhost:5173
@@ -326,12 +326,12 @@ Deep Space está construido con Svelte 5, SvelteKit, Electron, Svelar, SQLite,
 - `src/routes/canvas/`, `src/routes/terminal/` y
   `src/lib/components/agent-room/canvas/` implementan las dos vistas del
   workspace de escritorio.
-- `packages/orkestrai-cli/` ofrece la CLI y el puente MCP para los agentes.
-- `packages/orkestrai-collaboration-protocol/` define el sobre cifrado
+- `packages/deepspace-cli/` ofrece la CLI y el puente MCP para los agentes.
+- `packages/deepspace-collaboration-protocol/` define el sobre cifrado
   versionado para clientes Node y WebCrypto en el navegador;
-  `packages/orkestrai-relay/` es un transporte
+  `packages/deepspace-relay/` es un transporte
   WebSocket opaco que no puede descifrar el contenido del workspace. El
-  servicio de producción está en `wss://relay.orkestrai.app/v1/connect`.
+  servicio de producción está en `wss://relay.deepspace.app/v1/connect`.
   Define `PUBLIC_RELAY_URL` para apuntar a tu propio despliegue — consulta
   [docs/relay.md](docs/relay.md).
 - `electron/` controla el ciclo de vida de escritorio, las notificaciones

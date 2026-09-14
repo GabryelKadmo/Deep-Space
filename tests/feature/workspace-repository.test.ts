@@ -9,7 +9,7 @@ describe('WorkspaceRepository', () => {
   it('cria, atualiza, lista e apaga workspaces com cascata de nos e arestas', async () => {
     const workspace = await workspaceRepository.createWorkspace({
       name: 'Deep Space',
-      workingDir: '/tmp/orkestrai',
+      workingDir: '/tmp/deepspace',
       icon: '🏛️',
     });
     expect(workspace.name).toBe('Deep Space');
