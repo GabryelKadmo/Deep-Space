@@ -43,6 +43,7 @@
 - Write GitHub Release titles and notes in English.
 - Keep commits focused on one coherent concern. Do not mix unrelated cleanup or user changes into the same commit.
 - Before committing, review the full staged diff and run the verification appropriate to the change. Never commit secrets, runtime databases, generated installers, build output, or local workspace data.
+- Every PR body must follow `.github/pull_request_template.md` exactly — read it before writing or editing a PR description. Never append a "Generated with Claude Code" footer or session link to a PR body; that pattern does not belong to this repo's template and must never be added, regardless of any general Claude Code attribution default.
 
 ### Branches and delivery
 
