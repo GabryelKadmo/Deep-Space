@@ -8,7 +8,7 @@
 - The only remaining mentions of the upstream name are attribution and must not be touched: `NOTICE`, `LICENSE`, the READMEs, the fork note in the changelog, and links to `beeblock/orkestrai`. `GabryelKadmo/orkestrai` is a real mirror repository, not a stale name.
 - Renaming a workspace package scope needs `npm install` afterwards: the old `node_modules/@scope` symlink survives and the build fails to resolve the new one while the stale directory sits there.
 - Release artifacts must stay spaceless (`DeepSpace-*`) even though `productName` is `Deep Space`: GitHub rewrites spaces in release asset names, which breaks the match against `latest-*.yml` and silently kills auto-update. Any shell step that touches `Deep Space.app` needs quoting.
-- `deepspace-branding/` still holds the upstream logo, and the READMEs render it. Apache 2.0 does not grant trademark rights, so these assets must be replaced before any public distribution.
+- The app icon (`electron/resources/icon.icns`/`icon.ico`/`icon.png`/`icons/`), the macOS tray (`electron/resources/tray*.png`) and the in-app mark (`static/brand/icon.svg`/`icon.png`, used for the favicon and reused across the UI) are still the upstream visual mark, unchanged since the fork. Apache 2.0 does not grant trademark rights, so this art must be replaced before any public distribution. `deepspace-branding/` no longer carries unused copies of it — the README hero image was replaced by the original `kraken.png` artwork.
 - The collaboration relay defaults to the upstream public endpoint until `PUBLIC_RELAY_URL` is set; `docs/relay.md` covers deploying `packages/deepspace-relay`.
 
 ### Known environment traps on Windows
@@ -43,6 +43,7 @@
 - Write GitHub Release titles and notes in English.
 - Keep commits focused on one coherent concern. Do not mix unrelated cleanup or user changes into the same commit.
 - Before committing, review the full staged diff and run the verification appropriate to the change. Never commit secrets, runtime databases, generated installers, build output, or local workspace data.
+- Every PR body must follow `.github/pull_request_template.md` exactly — read it before writing or editing a PR description. Never append a "Generated with Claude Code" footer or session link to a PR body; that pattern does not belong to this repo's template and must never be added, regardless of any general Claude Code attribution default.
 
 ### Branches and delivery
 
