@@ -8,7 +8,7 @@
 - The only remaining mentions of the upstream name are attribution and must not be touched: `NOTICE`, `LICENSE`, the READMEs, the fork note in the changelog, and links to `beeblock/orkestrai`. `GabryelKadmo/orkestrai` is a real mirror repository, not a stale name.
 - Renaming a workspace package scope needs `npm install` afterwards: the old `node_modules/@scope` symlink survives and the build fails to resolve the new one while the stale directory sits there.
 - Release artifacts must stay spaceless (`DeepSpace-*`) even though `productName` is `Deep Space`: GitHub rewrites spaces in release asset names, which breaks the match against `latest-*.yml` and silently kills auto-update. Any shell step that touches `Deep Space.app` needs quoting.
-- `deepspace-branding/` still holds the upstream logo, and the READMEs render it. Apache 2.0 does not grant trademark rights, so these assets must be replaced before any public distribution.
+- The app icon (`electron/resources/icon.icns`/`icon.ico`/`icon.png`/`icons/`), the macOS tray (`electron/resources/tray*.png`) and the in-app mark (`static/brand/icon.svg`/`icon.png`, used for the favicon and reused across the UI) are still the upstream visual mark, unchanged since the fork. Apache 2.0 does not grant trademark rights, so this art must be replaced before any public distribution. `deepspace-branding/` no longer carries unused copies of it — the README hero image was replaced by the original `kraken.png` artwork.
 - The collaboration relay defaults to the upstream public endpoint until `PUBLIC_RELAY_URL` is set; `docs/relay.md` covers deploying `packages/deepspace-relay`.
 
 ### Known environment traps on Windows
