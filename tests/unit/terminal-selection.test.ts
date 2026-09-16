@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange } from '$lib/components/agent-room/terminal-selection.js';
+import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, wordRangeAtCell } from '$lib/components/agent-room/terminal-selection.js';
 
 describe('terminal selection geometry', () => {
   it('mapeia coordenadas pelo retangulo visual escalado', () => {
@@ -15,17 +15,27 @@ describe('terminal selection geometry', () => {
     });
   });
 
-  it('so suprime a selecao nativa do xterm no clique unico, fora de modo de rastreamento de mouse', () => {
+  it('so suprime a selecao nativa do xterm em clique unico/duplo/triplo, fora de modo de rastreamento de mouse (ou com Shift)', () => {
     const leftSingleClick = { button: 0, detail: 1, shiftKey: false };
     expect(shouldSuppressNativeSingleClickSelection(leftSingleClick, 'none')).toBe(true);
-    // Duplo/triplo clique (selecao de palavra/linha) continuam nativos do xterm.
-    expect(shouldSuppressNativeSingleClickSelection({ ...leftSingleClick, detail: 2 }, 'none')).toBe(false);
-    expect(shouldSuppressNativeSingleClickSelection({ ...leftSingleClick, detail: 3 }, 'none')).toBe(false);
+    // Duplo/triplo clique (selecao de palavra/linha) tambem sao suprimidos,
+    // na mesma condicao do clique unico (ver wordRangeAtCell/selectLines).
+    expect(shouldSuppressNativeSingleClickSelection({ ...leftSingleClick, detail: 2 }, 'none')).toBe(true);
+    expect(shouldSuppressNativeSingleClickSelection({ ...leftSingleClick, detail: 3 }, 'none')).toBe(true);
     // So o botao esquerdo.
     expect(shouldSuppressNativeSingleClickSelection({ ...leftSingleClick, button: 2 }, 'none')).toBe(false);
-    // TUI com mouse tracking: xterm deve reportar o clique ao programa, exceto com Shift.
-    expect(shouldSuppressNativeSingleClickSelection(leftSingleClick, 'x10')).toBe(false);
-    expect(shouldSuppressNativeSingleClickSelection({ ...leftSingleClick, shiftKey: true }, 'x10')).toBe(true);
+    // TUI com mouse tracking: o clique deve continuar sendo reportado ao
+    // programa, exceto com Shift (aí a selecao de texto assume).
+    expect(shouldSuppressNativeSingleClickSelection(leftSingleClick, 'any')).toBe(false);
+    expect(shouldSuppressNativeSingleClickSelection({ ...leftSingleClick, shiftKey: true }, 'any')).toBe(true);
+  });
+
+  it('acha a palavra na celula clicada pelo texto real da linha', () => {
+    const line = 'const value = 1';
+    //             0123456789...
+    expect(wordRangeAtCell(line, 2)).toEqual({ start: 0, length: 5 }); // "const"
+    expect(wordRangeAtCell(line, 8)).toEqual({ start: 6, length: 5 }); // "value"
+    expect(wordRangeAtCell(line, 5)).toBeNull(); // espaco entre as palavras
   });
 
   it('copia com Ctrl/Cmd+C somente quando ha selecao e preserva SIGINT sem selecao', () => {

@@ -20,7 +20,7 @@
   import { speakText } from './voice-speech.js';
   import { voiceModelsReadyForUse } from './voice-model-status.js';
   import { terminalDictationInput } from './terminal-dictation.js';
-  import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, type TerminalCell } from './terminal-selection.js';
+  import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, wordRangeAtCell, type TerminalCell } from './terminal-selection.js';
   import { clipboardPasteFiles, storePastedTerminalFiles, terminalPathTokens } from './terminal-paste.js';
   import { workingDirectoryFromOsc } from './terminal-working-directory.js';
   import { audioSignalIsEmpty } from '$lib/modules/agent-room/domain/voice-audio.js';
@@ -433,11 +433,34 @@
     const screen = terminal.element?.querySelector<HTMLElement>('.xterm-screen') ?? null;
     let selectionStart: TerminalCell | null = null;
     let selectionOrigin: { x: number; y: number } | null = null;
+    // Palavra (duplo clique), linha (triplo clique) e arraste refeitos aqui:
+    // a selecao nativa do xterm usa metricas de fonte nao escaladas e acerta
+    // a celula errada sempre que o canvas nao esta a 100% de zoom.
+    //
+    // So roda com mouseTrackingMode 'none' ou com Shift: apps como o Claude
+    // Code ligam mouse tracking pra receber cliques na propria TUI, e sem
+    // esse limite o mouse pararia de ser reportado ao processo em qualquer
+    // clique (tentamos suprimir sempre numa iteracao anterior — quebrou
+    // clicar fora pra desselecionar e ate digitar no terminal depois de uma
+    // selecao, porque a TUI nunca mais recebia mouse nenhum). Sem Shift,
+    // sobre uma TUI com tracking, o clique continua sendo reportado
+    // normalmente ao processo — a selecao de texto so entra com Shift ai.
     const selectionPointerDown = (event: PointerEvent) => {
       if (event.button !== 0 || !screen) return;
       if (terminal.modes.mouseTrackingMode !== 'none' && !event.shiftKey) return;
+      const cell = terminalCellAtPoint(event, screen.getBoundingClientRect(), terminal.cols, terminal.rows, terminal.buffer.active.viewportY);
+      if (event.detail === 2) {
+        const line = terminal.buffer.active.getLine(cell.row);
+        const word = line ? wordRangeAtCell(line.translateToString(false), cell.column) : null;
+        if (word) terminal.select(word.start, cell.row, word.length);
+        return;
+      }
+      if (event.detail === 3) {
+        terminal.selectLines(cell.row, cell.row);
+        return;
+      }
       selectionOrigin = { x: event.clientX, y: event.clientY };
-      selectionStart = terminalCellAtPoint(event, screen.getBoundingClientRect(), terminal.cols, terminal.rows, terminal.buffer.active.viewportY);
+      selectionStart = cell;
     };
     const selectionPointerMove = (event: PointerEvent) => {
       if (!screen || !selectionStart || !selectionOrigin || (event.buttons & 1) === 0) return;
@@ -459,14 +482,15 @@
     // terminal.element tambem recebe o mousedown nativo que o proprio xterm
     // usa para selecionar (fase de bubble); ele roda depois do pointerdown
     // acima e, sem isso, sobrescreve visualmente a selecao correta do overlay
-    // com as metricas nao escaladas do xterm quando o canvas esta com zoom.
-    const blockNativeSingleClickSelection = (event: MouseEvent) => {
+    // com as metricas nao escaladas do xterm quando o canvas esta com zoom —
+    // vale pra clique unico, duplo e triplo (ver shouldSuppressNativeSingleClickSelection).
+    const blockNativeClickSelection = (event: MouseEvent) => {
       if (!screen || !shouldSuppressNativeSingleClickSelection(event, terminal.modes.mouseTrackingMode)) return;
       event.stopPropagation();
     };
     screen?.addEventListener('pointerdown', selectionPointerDown);
     screen?.addEventListener('contextmenu', copySelectionFromContextMenu);
-    terminal.element?.addEventListener('mousedown', blockNativeSingleClickSelection, { capture: true });
+    terminal.element?.addEventListener('mousedown', blockNativeClickSelection, { capture: true });
     // Captura antes dos handlers do proprio xterm (textarea e element): texto
     // segue o fluxo nativo dele, arquivo/imagem viram anexo do workspace.
     const handleTerminalPaste = (event: ClipboardEvent) => {
@@ -762,7 +786,7 @@
       disposed = true;
       screen?.removeEventListener('pointerdown', selectionPointerDown);
       screen?.removeEventListener('contextmenu', copySelectionFromContextMenu);
-      terminal.element?.removeEventListener('mousedown', blockNativeSingleClickSelection, { capture: true });
+      terminal.element?.removeEventListener('mousedown', blockNativeClickSelection, { capture: true });
       terminal.element?.removeEventListener('paste', handleTerminalPaste, { capture: true });
       window.removeEventListener('pointermove', selectionPointerMove);
       window.removeEventListener('pointerup', selectionPointerUp);
