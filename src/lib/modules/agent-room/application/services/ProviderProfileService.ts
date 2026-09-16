@@ -15,9 +15,18 @@ function secretKey(profileId: string): string {
 }
 
 /** `~` nao expande sozinho fora de um shell. A home correta depende do
-    runtime efetivo (host ou distribuicao WSL), entao expandimos no resolve. */
+    runtime efetivo (host ou distribuicao WSL), entao expandimos no resolve.
+    O valor salvo usa `/` (portavel entre SOs); um replace cru misturava esse
+    `/` com o `\` do runtimeHome no Windows nativo — normaliza pro separador
+    do runtimeHome alvo em vez de colar os dois estilos. */
 function expandHome(dir: string, runtimeHome = homedir()): string {
-  return dir === '~' || dir.startsWith('~/') ? dir.replace(/^~/, runtimeHome) : dir;
+  if (dir !== '~' && !dir.startsWith('~/')) return dir;
+  const rest = dir.slice(1).replace(/^[\\/]+/, '');
+  const isWindowsHome = /^[a-zA-Z]:[\\/]/.test(runtimeHome);
+  const sep = isWindowsHome ? '\\' : '/';
+  const trimmedHome = runtimeHome.replace(/[\\/]+$/, '');
+  if (!rest) return trimmedHome;
+  return `${trimmedHome}${sep}${rest.split('/').join(sep)}`;
 }
 
 function normalizeName(name: string): string {
