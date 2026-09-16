@@ -14,8 +14,17 @@ const FETCH_TIMEOUT_MS = 10_000;
 const KIMI_OAUTH_TOKEN_URL = 'https://auth.kimi.com/api/oauth/token';
 const KIMI_OAUTH_CLIENT_ID = '17e5f671-d194-4dfb-9706-5516cb48c098';
 
+/** Mesma normalizacao de `~` do ProviderProfileService.expandHome — o valor
+    salvo usa `/` (portavel); junta com o separador do `home` alvo em vez de
+    colar os dois estilos (misturava `/` e `\` no Windows nativo). */
 function expandProfileHome(path: string, home: string): string {
-  return path === '~' || path.startsWith('~/') ? path.replace(/^~/, home) : path;
+  if (path !== '~' && !path.startsWith('~/')) return path;
+  const rest = path.slice(1).replace(/^[\\/]+/, '');
+  const isWindowsHome = /^[a-zA-Z]:[\\/]/.test(home);
+  const sep = isWindowsHome ? '\\' : '/';
+  const trimmedHome = home.replace(/[\\/]+$/, '');
+  if (!rest) return trimmedHome;
+  return `${trimmedHome}${sep}${rest.split('/').join(sep)}`;
 }
 
 /** Sufixo do service name do Keychain do Claude Code para um CLAUDE_CONFIG_DIR nao padrao. */
@@ -337,7 +346,14 @@ export class UsageService {
       if (response.status === 401 || response.status === 403) {
         throw usageError('credential_expired');
       }
-      if (!response.ok) throw usageError('api_request_failed');
+      if (response.status === 429) {
+        throw usageError('rate_limited');
+      }
+      if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        console.error(`[usage] ${url} -> ${response.status} ${response.statusText}\n${body.slice(0, 2_000)}`);
+        throw usageError('api_request_failed');
+      }
       return (await response.json()) as Record<string, unknown>;
     } catch (error) {
       if (error instanceof Error && (error.name === 'AbortError' || error.name === 'TimeoutError')) {
