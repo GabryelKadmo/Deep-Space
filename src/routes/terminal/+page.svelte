@@ -44,7 +44,6 @@
   import ComputerWorkbenchPanel from '$lib/components/agent-room/ComputerWorkbenchPanel.svelte';
   import DesignEditor from '$lib/components/agent-room/design/DesignEditor.svelte';
   import CouncilDialog from '$lib/components/agent-room/CouncilDialog.svelte';
-  import WorkspaceSharingButton from '$lib/components/collaboration/WorkspaceSharingButton.svelte';
   import WorkspaceSharingDialog from '$lib/components/collaboration/WorkspaceSharingDialog.svelte';
   import AutomationWorkspace from '$lib/components/agent-room/AutomationWorkspace.svelte';
   import ToolWorkshopPanel from '$lib/components/agent-room/ToolWorkshopPanel.svelte';
@@ -91,6 +90,8 @@
   import { TEXT_DICTATION_FALLBACK, type TextDictationFallbackDetail } from '$lib/components/agent-room/text-dictation.js';
   import WorkspaceIcon from '$lib/components/agent-room/WorkspaceIcon.svelte';
   import WorkspaceModeSwitch from '$lib/components/agent-room/WorkspaceModeSwitch.svelte';
+  import { setActiveWorkspaceId, setSharingOpenHandler } from '$lib/components/agent-room/active-workspace.svelte.js';
+  import WorkspaceSharingButton from '$lib/components/collaboration/WorkspaceSharingButton.svelte';
   import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
   import WorkspacePermissionNotice from '$lib/components/agent-room/WorkspacePermissionNotice.svelte';
   import { isWorkspacePermissionError } from '$lib/components/agent-room/workspace-permission.js';
@@ -201,6 +202,18 @@
   let councilOpen = $state(false);
   let councilSource = $state<{ taskId?: string; taskTitle?: string; taskDescription?: string | null; leaderNodeId?: string } | null>(null);
   let sharingOpen = $state(false);
+  /** No Windows, share/sino moram no DesktopTitlebar; mac/Linux nao tem esse
+      titlebar customizado, entao continuam aqui na sidebar. */
+  const windowsDesktop = typeof window !== 'undefined'
+    && (window as unknown as { deepspaceDesktop?: { platform?: string } }).deepspaceDesktop?.platform === 'win32';
+  $effect(() => {
+    setActiveWorkspaceId(selectedWorkspaceId);
+    setSharingOpenHandler(() => (sharingOpen = true));
+    return () => {
+      setActiveWorkspaceId(null);
+      setSharingOpenHandler(null);
+    };
+  });
   let leaderDictationState = $state<LeaderDictationStatus>('idle');
   let leaderDictationNodeId = $state<string | null>(null);
   let loadedWorkspaceIds = $state<string[]>([]);
@@ -1110,19 +1123,19 @@
 
 <main class="grid h-full min-h-0 grid-cols-[300px_minmax(0,1fr)] overflow-hidden bg-[var(--app-canvas)] text-[var(--app-text)] max-[720px]:grid-cols-[236px_minmax(420px,1fr)]" data-testid="workbench-shell">
   <aside class="flex min-h-0 flex-col border-r border-[var(--app-border)] bg-[var(--app-sidebar)]">
-    <div class="flex h-11 shrink-0 items-center gap-2 px-3">
-      <img src="/brand/icon.png" width="20" height="20" alt="" />
-      <strong class="font-['Sora_Variable'] text-[14px] font-semibold text-[var(--app-text)]">Deep Space</strong>
-      <div class="ml-auto"><WorkspaceSharingButton variant="icon" workspaceId={selectedWorkspaceId} onOpen={() => (sharingOpen = true)} /></div>
-    </div>
-    <div class="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-[var(--app-border)] px-3">
+    <div class="flex h-11 shrink-0 items-center gap-2 border-b border-[var(--app-border)] px-3">
       <WorkspaceModeSwitch
         active="terminals"
         workspaceId={selectedWorkspaceId}
         nodeId={isVirtualWorkbenchItemId(selectedNodeId) ? null : selectedNodeId}
       />
-      <AttentionCenter workspaceId={selectedWorkspaceId} />
     </div>
+    {#if !windowsDesktop}
+      <div class="flex h-9 shrink-0 items-center justify-end gap-1 border-b border-[var(--app-border)] px-3">
+        <WorkspaceSharingButton variant="icon" workspaceId={selectedWorkspaceId} onOpen={() => (sharingOpen = true)} />
+        <AttentionCenter workspaceId={selectedWorkspaceId} />
+      </div>
+    {/if}
 
     <div class="shrink-0 p-2.5">
       <InputGroup.Root class="h-8 border-[var(--app-border)] bg-[var(--app-canvas)] shadow-none">
