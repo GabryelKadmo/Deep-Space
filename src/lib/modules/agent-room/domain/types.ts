@@ -634,6 +634,8 @@ export type WorkspaceGroup = {
   position: number;
   /** Estado de expandido/recolhido na arvore da barra lateral, persistido no servidor. */
   collapsed: boolean;
+  /** Nome do icone Lucide (ver workspace-icons.ts); null usa o icone de pasta padrao. */
+  icon: string | null;
   createdAt: string;
   updatedAt: string;
 };

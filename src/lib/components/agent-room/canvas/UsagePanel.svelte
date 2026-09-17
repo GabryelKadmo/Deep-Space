@@ -22,6 +22,7 @@
   const usages = $derived(usageStore.values);
   const loading = $derived(usageStore.loading);
   const lastFetchAt = $derived(usageStore.lastFetchAt);
+  const loadError = $derived(usageStore.error);
 
   function barColor(percent: number): string {
     const severity = usageSeverity(percent);
@@ -111,6 +112,8 @@
         <Skeleton class="h-2.5 w-3/4 bg-[var(--app-surface-raised)]" />
       </section>
     {/each}
+  {:else if loadError && !usages.length}
+    <p class="usage-error"><TriangleAlert size={12} /> {m['usage.load_error']()}</p>
   {/if}
 
   {#each usages as usage (usageRoutingId(usage))}

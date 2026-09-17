@@ -918,6 +918,24 @@ Header: Authorization = Bearer {{accessToken}}`,
       body: 'Abre Ver > Herramientas de desarrollo y reproduce el problema observando Console. Luego elige Ayuda > Abrir carpeta de logs y comparte deep-space.log con soporte. El log local rotativo incluye errores del renderer, fallos del servidor interno y cierres inesperados; las credenciales comunes se ocultan y la salida normal de los agentes no se guarda.',
       tags: ['Herramientas de desarrollo', 'logs locales', 'soporte'],
     },
+    {
+      id: 'group-icons',
+      title: 'Dale un icono propio a una carpeta',
+      body: 'Abre la barra lateral del canvas y busca un grupo (carpeta) entre tus workspaces — agrúpalos con "Nueva carpeta" al final de la lista cuando tengas varios proyectos que organizar por cliente, por equipo o por entorno. Haz clic en el icono de un grupo para abrir el mismo selector que ya usan workspaces y proyectos, y elige uno. Se recuerda la próxima vez que abras la app, así que las carpetas con distintos tipos de trabajo son fáciles de distinguir de un vistazo.',
+      tags: ['Grupos de workspace', 'barra lateral', 'selector de icono'],
+    },
+    {
+      id: 'canvas-connect-any-side',
+      title: 'Conecta nodos por cualquier lado',
+      body: 'Pasa el mouse cerca de cualquier nodo del canvas y aparece un punto de conexión en cada uno de sus cuatro lados — arriba, derecha, abajo e izquierda — en vez de solo en el borde derecho. Arrastra desde el lado más cercano al nodo al que quieres conectarte, así que conectar agentes, notas y herramientas ya no exige rodear la conexión hasta siempre el mismo punto.',
+      tags: ['Canvas', 'conexiones', 'puntos de conexión'],
+    },
+    {
+      id: 'customizable-toolbar',
+      title: 'Fija solo las herramientas que usas',
+      body: 'El botón al final de la barra inferior del canvas abre el menú "más herramientas", con todo tipo de nodo y panel que no está fijado en la barra en ese momento; haz clic en uno para usarlo de inmediato. Abre su submenú Fijados para marcar o desmarcar exactamente qué herramientas quedan visibles — un mínimo se mantiene fijado para que la barra nunca quede vacía — y la elección se recuerda entre workspaces y reinicios de la app.',
+      tags: ['Barra de herramientas', 'personalización', 'elementos fijados'],
+    },
   ],
   changelog: [
 {
@@ -933,7 +951,13 @@ Header: Authorization = Bearer {{accessToken}}`,
     "La pantalla de inicio fue rediseñada: negra, con una luz fría cayendo desde la superficie, partículas finas subiendo y puntos de carga en blanco hielo. Ahora sigue el idioma del sistema, disponible antes que la configuración, y usa inglés para cualquier otro idioma.",
     "Los iconos de la aplicación se reemplazaron en todos los destinos: Windows, Linux, macOS, la bandeja, el favicon y la marca dentro de la app. En Windows y Linux el arte llena la caja de borde a borde; en macOS conserva el margen que espera la retícula de Apple.",
     "El prompt rápido de la terminal se puede plegar, devolviendo el espacio a quien no adjunta archivos ni menciona agentes con @. Cada terminal recuerda su propio estado, y soltar un adjunto reabre el campo.",
-    "Correcciones: la pantalla de inicio ya no queda fija tras cargar la app y ahora cubre el arranque del servidor; la ventana vuelve a arrastrarse por el área vacía de la barra de título; la terminal dibuja los bloques que usan los banners de las CLI; los controles de dictado dejaron de tapar la línea de prompt; la barra de tareas de Windows muestra el icono de la aplicación; el enlace de descarga manual apunta a las versiones de este proyecto; los iconos de importar y exportar tema se corrigieron; y el log es deep-space.log, igual al nombre que cita la documentación."
+    "Los grupos de workspace (carpetas en la barra lateral) ahora pueden tener un icono propio, igual al selector que ya existía en workspaces y proyectos.",
+    "Los nodos del canvas se pueden conectar por cualquier lado — arriba, derecha, abajo o izquierda — en vez de solo por el borde derecho, con puntos de conexión que aparecen al pasar el mouse.",
+    "La barra de herramientas inferior del canvas ahora es personalizable: las ocho herramientas más comunes quedan fijadas por defecto, y el resto pasa al menú 'más herramientas', donde cualquier elemento se puede fijar o desfijar.",
+    "El instalador de Windows ahora muestra una imagen lateral personalizada durante la instalación.",
+    "Los iconos de compartir y notificaciones se movieron de la barra lateral del Workbench a la titlebar nativa de Windows; macOS y Linux los mantienen en la barra lateral.",
+    "El selector de pestañas Canvas/Workbench ahora llena todo el ancho de su contenedor.",
+    "Correcciones: la pantalla de inicio ya no queda fija tras cargar la app y ahora cubre el arranque del servidor; la ventana vuelve a arrastrarse por el área vacía de la barra de título; la terminal dibuja los bloques que usan los banners de las CLI; los controles de dictado dejaron de tapar la línea de prompt; la barra de tareas de Windows muestra el icono de la aplicación; el enlace de descarga manual apunta a las versiones de este proyecto; los iconos de importar y exportar tema se corrigieron; el log es deep-space.log, igual al nombre que cita la documentación; la lista de perfiles de un provider ahora carga desde la primera vez que se expande su tarjeta; la expansión de '~' dejó de mezclar separadores de barra y contrabarra en Windows nativo; el panel de Uso muestra un error explícito en vez de quedar en blanco ante un límite de solicitudes; la selección de texto en la terminal sigue siendo precisa con el canvas en zoom para clic/doble/triple clic; una terminal maestro dejó de reentregar la misma tarea en cada reconexión; y un botón de compartir duplicado en Windows dejó de duplicar el sondeo del canvas al endpoint de colaboración."
   ]
 },
 {

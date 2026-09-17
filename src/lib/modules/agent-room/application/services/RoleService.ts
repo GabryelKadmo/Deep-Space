@@ -233,7 +233,6 @@ export class RoleService {
       role?: string | null;
       roleConfiguredAtLaunch?: string;
       sessionId?: string;
-      maestro?: boolean;
     };
     const role = payload.role && mode !== 'resume' ? await this.get(workspaceId, payload.role) : null;
     if (payload.role && mode !== 'resume' && !role) {
@@ -244,12 +243,14 @@ export class RoleService {
       && payload.roleConfiguredAtLaunch?.toLowerCase() === role.name.toLowerCase()
     );
     const shouldApplyRole = mode !== 'resume' && Boolean(role) && !(mode === 'fresh' && configuredAtLaunch);
+    // So tarefas explicitamente vinculadas a este terminal (assigneeNodeId)
+    // viram briefing ao abrir. O maestro puxar sozinho toda a fila sem
+    // responsavel ja fazia o agente comecar a trabalhar sem o usuario pedir
+    // ou vincular nada; o aviso de tarefa nova sem dono continua existindo
+    // via notifyLeader (na criacao da tarefa), so que sem forcar a acao.
     const tasks = mode === 'role'
       ? []
-      : (await taskBoardService.list(workspaceId)).filter((task) => {
-          if (task.status === 'done') return false;
-          return task.assigneeNodeId === nodeId || (payload.maestro && !task.assigneeNodeId);
-        });
+      : (await taskBoardService.list(workspaceId)).filter((task) => task.status !== 'done' && task.assigneeNodeId === nodeId);
     if (!shouldApplyRole && tasks.length === 0) return { applied: false, tasksDelivered: 0 };
     if (!payload.sessionId) throw new Error('O terminal ainda não tem sessão PTY.');
 

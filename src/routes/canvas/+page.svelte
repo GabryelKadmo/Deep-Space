@@ -52,7 +52,10 @@
   import WorkspaceSharingButton from '$lib/components/collaboration/WorkspaceSharingButton.svelte';
   import WorkspaceSharingDialog from '$lib/components/collaboration/WorkspaceSharingDialog.svelte';
   import WorkspaceIcon from '$lib/components/agent-room/WorkspaceIcon.svelte';
+  import { WORKSPACE_ICONS } from '$lib/components/agent-room/workspace-icons.js';
+  import * as Popover from '$lib/components/ui/popover';
   import WorkspaceModeSwitch from '$lib/components/agent-room/WorkspaceModeSwitch.svelte';
+  import { setActiveWorkspaceId } from '$lib/components/agent-room/active-workspace.svelte.js';
   import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
   import WorkspaceMemoryDialog from '$lib/components/agent-room/WorkspaceMemoryDialog.svelte';
   import AnnotationCenterDialog from '$lib/components/agent-room/AnnotationCenterDialog.svelte';
@@ -91,6 +94,14 @@
   import PortsPanel from '$lib/components/agent-room/canvas/PortsPanel.svelte';
   import PresetLibraryPanel from '$lib/components/agent-room/canvas/PresetLibraryPanel.svelte';
   import AgentToolbarMenu from '$lib/components/agent-room/canvas/AgentToolbarMenu.svelte';
+  import ToolbarOverflowMenu, { type ToolbarMenuItem } from '$lib/components/agent-room/canvas/ToolbarOverflowMenu.svelte';
+  import {
+    DEFAULT_PINNED_TOOLBAR_ITEMS,
+    MIN_PINNED_TOOLBAR_ITEMS,
+    PINNED_TOOLBAR_ITEMS_SETTING,
+    parsePinnedToolbarItems,
+    setToolbarItemPinned,
+  } from '$lib/components/agent-room/toolbar-pins.js';
   import CommandPalette, { type PaletteAction } from '$lib/components/agent-room/canvas/CommandPalette.svelte';
   import { alignRects, boundingBox, distributeRects, tidyRects, type AlignMode } from '$lib/components/agent-room/canvas/layout.js';
   import { findFreeCanvasPosition } from '$lib/modules/agent-room/domain/canvas-placement.js';
@@ -109,7 +120,7 @@
     setAgentProviderPinned,
   } from '$lib/components/agent-room/provider-toolbar.js';
   import { BackgroundVariant, SvelteFlowProvider } from '@xyflow/svelte';
-  import { BadgeCheck, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, Folder, FolderPlus, FolderTree, Gauge, GitFork, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
+  import { BadgeCheck, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
   import ZoomBridge from '$lib/components/agent-room/canvas/ZoomBridge.svelte';
   import type {
     AgentProviderInfo,
@@ -245,6 +256,22 @@
     } catch (error) {
       // Reverte o otimista se o servidor rejeitar (ex.: pasta apagada em outra aba).
       workspaceGroups = workspaceGroups.map((group) => (group.id === groupId ? { ...group, collapsed: !collapsed } : group));
+      toast.error(workspaceGroupErrorText(error));
+    }
+  }
+
+  /** Mesmo padrao otimista do toggleGroupCollapsed acima. */
+  async function setGroupIcon(groupId: string, icon: string | null) {
+    const previous = workspaceGroups.find((group) => group.id === groupId)?.icon ?? null;
+    if (previous === icon) return;
+    workspaceGroups = workspaceGroups.map((group) => (group.id === groupId ? { ...group, icon } : group));
+    try {
+      await api<WorkspaceGroup>(`/api/agent-room/workspace-groups/${groupId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ icon }),
+      });
+    } catch (error) {
+      workspaceGroups = workspaceGroups.map((group) => (group.id === groupId ? { ...group, icon: previous } : group));
       toast.error(workspaceGroupErrorText(error));
     }
   }
@@ -465,8 +492,16 @@
       : workspaces
   );
   let activeWorkspace = $state<Workspace | null>(null);
+  $effect(() => {
+    setActiveWorkspaceId(activeWorkspace?.id ?? null);
+    return () => setActiveWorkspaceId(null);
+  });
   let providers = $state<AgentProviderInfo[]>([]);
   const canChooseAlternateRuntime = typeof navigator !== 'undefined' && navigator.platform.startsWith('Win');
+  /** No Windows o sino mora no DesktopTitlebar (menu nativo); mac/Linux nao tem
+      esse titlebar customizado, entao ele continua aqui na sidebar. */
+  const windowsDesktop = typeof window !== 'undefined'
+    && (window as unknown as { deepspaceDesktop?: { platform?: string } }).deepspaceDesktop?.platform === 'win32';
   let nodes = $state.raw<Node[]>([]);
   let edges = $state.raw<Edge[]>([]);
   let shapePasteSequence = 0;
@@ -589,6 +624,10 @@
 
   // Modo "desenhar no": clique na ferramenta e arraste o retangulo no canvas.
   type DrawTool = 'terminal' | 'note' | 'fileTree' | 'git' | 'diff' | 'portal' | 'apiClient' | 'device' | 'computer' | 'toolWorkshop' | 'loop' | 'shape' | 'tasks' | 'flow' | 'image' | 'imageWorkflow' | 'usage' | 'codeGraph' | 'design';
+  // Ordem canonica de todo item da barra inferior (nos de canvas + acoes +
+  // paineis laterais), usada tanto pra decidir o que fica fixo na barra
+  // quanto pra ordenar a lista do dropdown "mais ferramentas".
+  const TOOLBAR_ITEM_IDS = ['terminal', 'note', 'tasks', 'files', 'git', 'image', 'device', 'usage', 'design', 'diff', 'codeGraph', 'portal', 'flow', 'shape', 'council', 'huddle', 'computer', 'apiClient', 'toolWorkshop', 'loop', 'roles', 'routines', 'floors', 'presets', 'ports', 'organize'] as const;
   let drawTool = $state<DrawTool | null>(null);
   let drawStart = $state<{ x: number; y: number } | null>(null);
   let drawCurrent = $state<{ x: number; y: number } | null>(null);
@@ -912,6 +951,41 @@
   let pinnedProviderIds = $state<string[]>([]);
   let persistedPinnedProviderIds: string[] = [];
   let pinnedProviderSaveQueue: Promise<void> = Promise.resolve();
+  let pinnedToolbarIds = $state<string[]>([...DEFAULT_PINNED_TOOLBAR_ITEMS]);
+  let persistedPinnedToolbarIds: string[] = [...DEFAULT_PINNED_TOOLBAR_ITEMS];
+  let pinnedToolbarSaveQueue: Promise<void> = Promise.resolve();
+
+  function togglePinnedToolbarItem(itemId: string, pinned: boolean) {
+    const next = setToolbarItemPinned(pinnedToolbarIds, itemId, pinned);
+    if (next.minReached) {
+      toast.error(m['canvas.toolbar_pin_min']({ min: String(MIN_PINNED_TOOLBAR_ITEMS) }));
+      return;
+    }
+
+    pinnedToolbarIds = next.ids;
+    const serialized = JSON.stringify(next.ids);
+    appSettings = { ...appSettings, [PINNED_TOOLBAR_ITEMS_SETTING]: serialized };
+
+    pinnedToolbarSaveQueue = pinnedToolbarSaveQueue.then(async () => {
+      try {
+        await api<Record<string, string>>('/api/agent-room/settings', {
+          method: 'PUT',
+          body: JSON.stringify({ [PINNED_TOOLBAR_ITEMS_SETTING]: serialized }),
+        });
+        persistedPinnedToolbarIds = next.ids;
+        invalidateAppSettings();
+      } catch {
+        if (JSON.stringify(pinnedToolbarIds) === serialized) {
+          pinnedToolbarIds = persistedPinnedToolbarIds;
+          appSettings = {
+            ...appSettings,
+            [PINNED_TOOLBAR_ITEMS_SETTING]: JSON.stringify(persistedPinnedToolbarIds),
+          };
+        }
+        toast.error(m['canvas.toolbar_pin_save_error']());
+      }
+    });
+  }
 
   function togglePinnedProvider(providerId: string, pinned: boolean) {
     const next = setAgentProviderPinned(pinnedProviderIds, providerId, pinned);
@@ -1064,6 +1138,8 @@
       pinnedProviderIds = parsePinnedAgentProviders(appSettings[PINNED_AGENT_PROVIDERS_SETTING])
         .filter((id) => availableProviderIds.size === 0 || availableProviderIds.has(id));
       persistedPinnedProviderIds = pinnedProviderIds;
+      pinnedToolbarIds = parsePinnedToolbarItems(appSettings[PINNED_TOOLBAR_ITEMS_SETTING], TOOLBAR_ITEM_IDS);
+      persistedPinnedToolbarIds = pinnedToolbarIds;
       // Se o usuario ja criou/selecionou algo enquanto o fetch inicial estava
       // em voo, a lista antiga nao sobrescreve o estado mais novo.
       if (selectionRequestId === 0) {
@@ -2595,6 +2671,66 @@
       preDragPositions.set(targetNode.id, { x: targetNode.position.x, y: targetNode.position.y });
     }
   }
+
+  // Lista completa (fixados ou nao) usada pelo dropdown "mais ferramentas":
+  // clicar num item nao-fixado executa a mesma acao do botao equivalente.
+  const toolbarMenuItems = $derived<ToolbarMenuItem[]>(TOOLBAR_ITEM_IDS.map((id): ToolbarMenuItem => {
+    switch (id) {
+      case 'terminal':
+        return { id, label: m['canvas.default_shell'](), icon: { kind: 'img', src: '/images/cli.svg' }, onSelect: () => toggleDrawTool('terminal') };
+      case 'council':
+        return { id, label: m['council.title'](), icon: { kind: 'lucide', component: Scale }, onSelect: () => (councilOpen = true) };
+      case 'huddle':
+        return { id, label: m['huddle.title'](), icon: { kind: 'lucide', component: MessageCircleMore }, onSelect: () => (huddleOpen = true) };
+      case 'note':
+        return { id, label: m['canvas.default_note'](), icon: { kind: 'lucide', component: StickyNote }, onSelect: () => toggleDrawTool('note') };
+      case 'image':
+        return { id, label: m['image_workflow.menu'](), icon: { kind: 'lucide', component: ImageIcon }, onSelect: () => toggleDrawTool('image') };
+      case 'design':
+        return { id, label: m['design.menu'](), icon: { kind: 'lucide', component: Palette }, onSelect: () => toggleDrawTool('design') };
+      case 'files':
+        return { id, label: m['canvas.default_files'](), icon: { kind: 'lucide', component: FolderTree }, onSelect: () => toggleDrawTool('fileTree') };
+      case 'git':
+        return { id, label: m['canvas.default_git'](), icon: { kind: 'lucide', component: GitFork }, onSelect: () => toggleDrawTool('git') };
+      case 'codeGraph':
+        return { id, label: m['code_graph.title'](), icon: { kind: 'lucide', component: Waypoints }, onSelect: () => toggleDrawTool('codeGraph') };
+      case 'diff':
+        return { id, label: m['canvas.default_diff'](), icon: { kind: 'lucide', component: FileDiff }, onSelect: () => toggleDrawTool('diff') };
+      case 'portal':
+        return { id, label: m['canvas.default_portal'](), icon: { kind: 'img', src: '/images/portal.svg' }, onSelect: () => toggleDrawTool('portal') };
+      case 'apiClient':
+        return { id, label: m['api_client.title'](), icon: { kind: 'lucide', component: Braces }, onSelect: () => toggleDrawTool('apiClient') };
+      case 'device':
+        return { id, label: m['device.title'](), icon: { kind: 'lucide', component: Smartphone }, onSelect: () => toggleDrawTool('device') };
+      case 'computer':
+        return { id, label: m['computer.title'](), icon: { kind: 'lucide', component: MonitorCog }, onSelect: () => toggleDrawTool('computer') };
+      case 'toolWorkshop':
+        return { id, label: m['tool_workshop.title'](), icon: { kind: 'lucide', component: Wrench }, onSelect: () => toggleDrawTool('toolWorkshop') };
+      case 'loop':
+        return { id, label: m['canvas.label_loop'](), icon: { kind: 'img', src: '/images/loop.svg' }, onSelect: () => toggleDrawTool('loop') };
+      case 'tasks':
+        return { id, label: m['canvas.default_tasks'](), icon: { kind: 'lucide', component: SquareKanban }, onSelect: () => toggleDrawTool('tasks') };
+      case 'flow':
+        return { id, label: m['canvas.default_flow'](), icon: { kind: 'lucide', component: Workflow }, onSelect: () => toggleDrawTool('flow') };
+      case 'shape':
+        return { id, label: m['canvas.label_shape'](), icon: { kind: 'lucide', component: Shapes }, onSelect: () => toggleDrawTool('shape') };
+      case 'organize':
+        return { id, label: m['canvas.label_organize'](), icon: { kind: 'lucide', component: LayoutGrid }, onSelect: () => void organizeCanvas() };
+      case 'presets':
+        return { id, label: m['canvas.label_presets'](), icon: { kind: 'lucide', component: LayoutTemplate }, onSelect: () => toggleSidePanel('presets') };
+      case 'floors':
+        return { id, label: m['canvas.label_floors'](), icon: { kind: 'lucide', component: Layers }, onSelect: () => toggleSidePanel('floors') };
+      case 'routines':
+        return { id, label: m['canvas.label_routines'](), icon: { kind: 'lucide', component: CalendarClock }, onSelect: () => toggleSidePanel('routines') };
+      case 'roles':
+        return { id, label: m['canvas.label_roles'](), icon: { kind: 'lucide', component: BadgeCheck }, onSelect: () => toggleSidePanel('roles') };
+      case 'usage':
+        return { id, label: m['canvas.label_usage'](), icon: { kind: 'lucide', component: Gauge }, onSelect: () => toggleSidePanel('usage') };
+      case 'ports':
+        return { id, label: m['canvas.label_ports'](), icon: { kind: 'lucide', component: RadioTower }, onSelect: () => toggleSidePanel('ports') };
+    }
+  }));
+  const pinnedToolbarSet = $derived(new Set(pinnedToolbarIds));
 </script>
 
 <svelte:head>
@@ -2606,17 +2742,12 @@
 <main class="canvas-page">
   <aside class="sidebar" inert={designModeNodeId !== null} aria-hidden={designModeNodeId ? 'true' : undefined}>
     {#if !sidebarCollapsed}
-      <div class="brand-row">
-        <img src="/brand/icon.png" width="22" height="22" alt="Deep Space" />
-        <span class="brand-name">Deep Space</span>
-      </div>
-      <div class="flex items-center justify-between gap-2 px-3 pb-2">
+      <div class="sidebar-tabs">
         <WorkspaceModeSwitch
           active="canvas"
           workspaceId={activeWorkspace?.id ?? null}
           nodeId={nodes.find((node) => node.selected)?.id ?? canvasRouteNodeId()}
         />
-        <AttentionCenter workspaceId={activeWorkspace?.id ?? null} />
       </div>
     {/if}
       <div class="sidebar-header">
@@ -2624,6 +2755,10 @@
           <h2>{m['canvas.workspaces']()}</h2>
         {/if}
         <div class="sidebar-header-actions">
+          {#if !windowsDesktop}
+            <WorkspaceSharingButton variant="icon" workspaceId={activeWorkspace?.id ?? null} onOpen={() => (sharingOpen = true)} />
+            <AttentionCenter workspaceId={activeWorkspace?.id ?? null} />
+          {/if}
           {#if !sidebarCollapsed}
           <HeaderIconButton label={m['tool.presets']()} side="bottom" onclick={() => toggleSidePanel('presets')}>
             <LayoutTemplate size={14} />
@@ -2797,7 +2932,30 @@
         >
           <ChevronRight size={12} class={node.group.collapsed ? '' : 'expanded'} />
         </button>
-        <Folder size={13} class="ws-group-icon" aria-hidden="true" />
+        <Popover.Root>
+          <Popover.Trigger class="ws-group-icon-trigger" aria-label={m['canvas.folder_icon']()}>
+            <WorkspaceIcon name={node.group.icon} size={13} />
+          </Popover.Trigger>
+          <Popover.Content class="w-56 p-2" align="start">
+            <div class="grid grid-cols-6 gap-1" role="radiogroup" aria-label={m['canvas.folder_icon']()}>
+              {#each WORKSPACE_ICONS as option (option.name)}
+                {@const OptionIcon = option.component}
+                <button
+                  type="button"
+                  class={(node.group.icon ?? null) === option.name
+                    ? 'flex aspect-square items-center justify-center rounded-lg border border-[var(--app-accent)] bg-[var(--app-accent)] text-[var(--app-accent-contrast)] transition-[color,background-color,border-color] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
+                    : 'flex aspect-square items-center justify-center rounded-lg border border-[var(--app-border)] bg-transparent text-[var(--app-text-muted)] transition-[color,background-color,border-color] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'}
+                  role="radio"
+                  aria-checked={(node.group.icon ?? null) === option.name}
+                  aria-label={option.name}
+                  onclick={() => setGroupIcon(node.group.id, (node.group.icon ?? null) === option.name ? null : option.name)}
+                >
+                  <OptionIcon size={14} aria-hidden="true" />
+                </button>
+              {/each}
+            </div>
+          </Popover.Content>
+        </Popover.Root>
         {#if renamingGroupId === node.group.id}
           <input
             class="ws-group-rename"
@@ -2944,95 +3102,151 @@
               </button>
             {/if}
             <div class="toolbar" bind:this={toolbarEl} onscroll={updateToolbarScroll}>
-            <ToolbarButton label={m['tool.shell']()} active={drawTool === 'terminal' && !drawProvider} onclick={() => toggleDrawTool('terminal')}>
-              <img src="/images/cli.svg" width="15" height="15" alt="" class="tool-icon" /> {m['canvas.default_shell']()}
-            </ToolbarButton>
-            <AgentToolbarMenu
-              {providers}
-              {pinnedProviderIds}
-              activeProviderId={drawTool === 'terminal' ? (drawProvider?.id ?? null) : null}
-              allowUnavailableSelection={canChooseAlternateRuntime}
-              onSelect={(provider) => toggleDrawTool('terminal', provider)}
-              onTogglePin={togglePinnedProvider}
-              onOpenProviderCenter={() => void goto('/providers')}
+            {#if pinnedToolbarSet.has('terminal')}
+              <ToolbarButton label={m['tool.shell']()} active={drawTool === 'terminal' && !drawProvider} onclick={() => toggleDrawTool('terminal')}>
+                <img src="/images/cli.svg" width="15" height="15" alt="" class="tool-icon" /> {m['canvas.default_shell']()}
+              </ToolbarButton>
+              <AgentToolbarMenu
+                {providers}
+                {pinnedProviderIds}
+                activeProviderId={drawTool === 'terminal' ? (drawProvider?.id ?? null) : null}
+                allowUnavailableSelection={canChooseAlternateRuntime}
+                onSelect={(provider) => toggleDrawTool('terminal', provider)}
+                onTogglePin={togglePinnedProvider}
+                onOpenProviderCenter={() => void goto('/providers')}
+              />
+            {/if}
+            {#if pinnedToolbarSet.has('note')}
+              <ToolbarButton label={m['tool.note']()} active={drawTool === 'note'} onclick={() => toggleDrawTool('note')}>
+                <StickyNote size={15} class="tool-icon-svg" /> {m['canvas.default_note']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('tasks')}
+              <ToolbarButton label={m['tool.tasks']()} active={drawTool === 'tasks'} onclick={() => toggleDrawTool('tasks')}>
+                <SquareKanban size={15} class="tool-icon-svg" /> {m['canvas.default_tasks']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('files')}
+              <ToolbarButton label={m['tool.files']()} active={drawTool === 'fileTree'} onclick={() => toggleDrawTool('fileTree')}>
+                <FolderTree size={15} class="tool-icon-svg" /> {m['canvas.default_files']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('git')}
+              <ToolbarButton label={m['tool.git']()} active={drawTool === 'git'} onclick={() => toggleDrawTool('git')}>
+                <GitFork size={15} class="tool-icon-svg" /> {m['canvas.default_git']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('image')}
+              <ImageToolbarMenu active={drawTool === 'image' || drawTool === 'imageWorkflow'} onImage={() => toggleDrawTool('image')} onWorkflow={() => toggleDrawTool('imageWorkflow')} />
+            {/if}
+            {#if pinnedToolbarSet.has('device')}
+              <ToolbarButton label={m['tool.device']()} active={drawTool === 'device'} onclick={() => toggleDrawTool('device')}>
+                <Smartphone size={15} class="tool-icon-svg" /> {m['device.title']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('usage')}
+              <ToolbarButton label={m['tool.usage']()} active={showUsagePanel} onclick={() => toggleSidePanel('usage')}>
+                <Gauge size={15} class="tool-icon-svg" /> {m['canvas.label_usage']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('design')}
+              <DesignToolbarMenu
+                active={drawTool === 'design' || designExplorationOpen}
+                onBlank={() => toggleDrawTool('design')}
+                onExploration={() => (designExplorationOpen = true)}
+              />
+            {/if}
+            {#if pinnedToolbarSet.has('diff')}
+              <ToolbarButton label={m['tool.diff']()} active={drawTool === 'diff'} onclick={() => toggleDrawTool('diff')}>
+                <FileDiff size={15} class="tool-icon-svg" /> {m['canvas.default_diff']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('codeGraph')}
+              <ToolbarButton label={m['code_graph.title']()} active={drawTool === 'codeGraph'} onclick={() => toggleDrawTool('codeGraph')}>
+                <Waypoints size={15} class="tool-icon-svg" /> {m['code_graph.title']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('portal')}
+              <ToolbarButton label={m['tool.portal']()} active={drawTool === 'portal'} onclick={() => toggleDrawTool('portal')}>
+                <img src="/images/portal.svg" width="15" height="15" alt="" class="tool-icon" /> {m['canvas.default_portal']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('flow')}
+              <ToolbarButton label={m['tool.flow']()} active={drawTool === 'flow'} onclick={() => toggleDrawTool('flow')}>
+                <Workflow size={15} class="tool-icon-svg" /> {m['canvas.default_flow']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('shape')}
+              <ToolbarButton label={m['tool.shape']()} active={drawTool === 'shape'} onclick={() => toggleDrawTool('shape')}>
+                <Shapes size={15} class="tool-icon-svg" /> {m['canvas.label_shape']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('council')}
+              <ToolbarButton label={m['council.open']()} active={councilOpen} onclick={() => (councilOpen = true)}>
+                <Scale size={15} class="tool-icon-svg" /> {m['council.title']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('huddle')}
+              <ToolbarButton label={m['huddle.title']()} active={huddleOpen} onclick={() => (huddleOpen = true)}>
+                <MessageCircleMore size={15} class="tool-icon-svg" /> {m['huddle.title']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('computer')}
+              <ToolbarButton label={m['computer.tool']()} active={drawTool === 'computer'} onclick={() => toggleDrawTool('computer')}>
+                <MonitorCog size={15} class="tool-icon-svg" /> {m['computer.title']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('apiClient')}
+              <ToolbarButton label={m['api_client.tool']()} active={drawTool === 'apiClient'} onclick={() => toggleDrawTool('apiClient')}>
+                <Braces size={15} class="tool-icon-svg" /> {m['api_client.title']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('toolWorkshop')}
+              <ToolbarButton label={m['tool_workshop.title']()} active={drawTool === 'toolWorkshop'} onclick={() => toggleDrawTool('toolWorkshop')}>
+                <Wrench size={15} class="tool-icon-svg" /> {m['tool_workshop.title']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('loop')}
+              <ToolbarButton label={m['tool.loop']()} active={drawTool === 'loop'} onclick={() => toggleDrawTool('loop')}>
+                <img src="/images/loop.svg" width="15" height="15" alt="" class="tool-icon" /> {m['canvas.label_loop']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('roles')}
+              <ToolbarButton label={m['tool.roles']()} active={showRolesPanel} onclick={() => toggleSidePanel('roles')}>
+                <BadgeCheck size={15} class="tool-icon-svg" /> {m['canvas.label_roles']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('routines')}
+              <ToolbarButton label={m['tool.routines']()} active={showRoutinePanel} onclick={() => toggleSidePanel('routines')}>
+                <CalendarClock size={15} class="tool-icon-svg" /> {m['canvas.label_routines']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('floors')}
+              <ToolbarButton label={m['tool.floors']()} active={showFloorPanel} onclick={() => toggleSidePanel('floors')}>
+                <Layers size={15} class="tool-icon-svg" /> {m['canvas.label_floors']()}{floors.length ? ` (${floors.length})` : ''}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('presets')}
+              <ToolbarButton label={m['tool.presets']()} active={showPresetPanel} onclick={() => toggleSidePanel('presets')}>
+                <LayoutTemplate size={15} class="tool-icon-svg" /> {m['canvas.label_presets']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('ports')}
+              <ToolbarButton label={m['tool.ports']()} active={showPortsPanel} onclick={() => toggleSidePanel('ports')}>
+                <RadioTower size={15} class="tool-icon-svg" /> {m['canvas.label_ports']()}
+              </ToolbarButton>
+            {/if}
+            {#if pinnedToolbarSet.has('organize')}
+              <ToolbarButton label={m['tool.organize']()} onclick={() => void organizeCanvas()}>
+                <LayoutGrid size={15} class="tool-icon-svg" /> {m['canvas.label_organize']()}
+              </ToolbarButton>
+            {/if}
+            <ToolbarOverflowMenu
+              items={toolbarMenuItems}
+              pinnedIds={pinnedToolbarIds}
+              minPinned={MIN_PINNED_TOOLBAR_ITEMS}
+              onTogglePin={togglePinnedToolbarItem}
             />
-            <ToolbarButton label={m['council.open']()} active={councilOpen} onclick={() => (councilOpen = true)}>
-              <Scale size={15} class="tool-icon-svg" /> {m['council.title']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['huddle.title']()} active={huddleOpen} onclick={() => (huddleOpen = true)}>
-              <MessageCircleMore size={15} class="tool-icon-svg" /> {m['huddle.title']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.note']()} active={drawTool === 'note'} onclick={() => toggleDrawTool('note')}>
-              <StickyNote size={15} class="tool-icon-svg" /> {m['canvas.default_note']()}
-            </ToolbarButton>
-            <ImageToolbarMenu active={drawTool === 'image' || drawTool === 'imageWorkflow'} onImage={() => toggleDrawTool('image')} onWorkflow={() => toggleDrawTool('imageWorkflow')} />
-            <DesignToolbarMenu
-              active={drawTool === 'design' || designExplorationOpen}
-              onBlank={() => toggleDrawTool('design')}
-              onExploration={() => (designExplorationOpen = true)}
-            />
-            <ToolbarButton label={m['tool.files']()} active={drawTool === 'fileTree'} onclick={() => toggleDrawTool('fileTree')}>
-              <FolderTree size={15} class="tool-icon-svg" /> {m['canvas.default_files']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.git']()} active={drawTool === 'git'} onclick={() => toggleDrawTool('git')}>
-              <GitFork size={15} class="tool-icon-svg" /> {m['canvas.default_git']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['code_graph.title']()} active={drawTool === 'codeGraph'} onclick={() => toggleDrawTool('codeGraph')}>
-              <Waypoints size={15} class="tool-icon-svg" /> {m['code_graph.title']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.diff']()} active={drawTool === 'diff'} onclick={() => toggleDrawTool('diff')}>
-              <FileDiff size={15} class="tool-icon-svg" /> {m['canvas.default_diff']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.portal']()} active={drawTool === 'portal'} onclick={() => toggleDrawTool('portal')}>
-              <img src="/images/portal.svg" width="15" height="15" alt="" class="tool-icon" /> {m['canvas.default_portal']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['api_client.tool']()} active={drawTool === 'apiClient'} onclick={() => toggleDrawTool('apiClient')}>
-              <Braces size={15} class="tool-icon-svg" /> {m['api_client.title']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.device']()} active={drawTool === 'device'} onclick={() => toggleDrawTool('device')}>
-              <Smartphone size={15} class="tool-icon-svg" /> {m['device.title']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['computer.tool']()} active={drawTool === 'computer'} onclick={() => toggleDrawTool('computer')}>
-              <MonitorCog size={15} class="tool-icon-svg" /> {m['computer.title']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool_workshop.title']()} active={drawTool === 'toolWorkshop'} onclick={() => toggleDrawTool('toolWorkshop')}>
-              <Wrench size={15} class="tool-icon-svg" /> {m['tool_workshop.title']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.loop']()} active={drawTool === 'loop'} onclick={() => toggleDrawTool('loop')}>
-              <img src="/images/loop.svg" width="15" height="15" alt="" class="tool-icon" /> {m['canvas.label_loop']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.tasks']()} active={drawTool === 'tasks'} onclick={() => toggleDrawTool('tasks')}>
-              <SquareKanban size={15} class="tool-icon-svg" /> {m['canvas.default_tasks']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.flow']()} active={drawTool === 'flow'} onclick={() => toggleDrawTool('flow')}>
-              <Workflow size={15} class="tool-icon-svg" /> {m['canvas.default_flow']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.shape']()} active={drawTool === 'shape'} onclick={() => toggleDrawTool('shape')}>
-              <Shapes size={15} class="tool-icon-svg" /> {m['canvas.label_shape']()}
-            </ToolbarButton>
-            <span class="toolbar-sep"></span>
-            <ToolbarButton label={m['tool.organize']()} onclick={() => void organizeCanvas()}>
-              <LayoutGrid size={15} class="tool-icon-svg" /> {m['canvas.label_organize']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.presets']()} active={showPresetPanel} onclick={() => toggleSidePanel('presets')}>
-              <LayoutTemplate size={15} class="tool-icon-svg" /> {m['canvas.label_presets']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.floors']()} active={showFloorPanel} onclick={() => toggleSidePanel('floors')}>
-              <Layers size={15} class="tool-icon-svg" /> {m['canvas.label_floors']()}{floors.length ? ` (${floors.length})` : ''}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.routines']()} active={showRoutinePanel} onclick={() => toggleSidePanel('routines')}>
-              <CalendarClock size={15} class="tool-icon-svg" /> {m['canvas.label_routines']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.roles']()} active={showRolesPanel} onclick={() => toggleSidePanel('roles')}>
-              <BadgeCheck size={15} class="tool-icon-svg" /> {m['canvas.label_roles']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.usage']()} active={showUsagePanel} onclick={() => toggleSidePanel('usage')}>
-              <Gauge size={15} class="tool-icon-svg" /> {m['canvas.label_usage']()}
-            </ToolbarButton>
-            <ToolbarButton label={m['tool.ports']()} active={showPortsPanel} onclick={() => toggleSidePanel('ports')}>
-              <RadioTower size={15} class="tool-icon-svg" /> {m['canvas.label_ports']()}
-            </ToolbarButton>
-            <WorkspaceSharingButton variant="icon" workspaceId={activeWorkspace?.id ?? null} onOpen={() => (sharingOpen = true)} />
             </div>
             {#if canScrollRight}
               <button class="toolbar-arrow" aria-label={m['canvas.scroll_right']()} onclick={() => scrollToolbar(1)}>
@@ -3265,6 +3479,19 @@
     overflow: hidden;
   }
 
+  /* Sangra ate a borda do sidebar (compensa o padding do .sidebar) para a
+     divisoria ficar de ponta a ponta, igual ao Workbench — mesma altura fixa
+     e centralizacao por flex, sem padding vertical (nao "gorda" como antes). */
+  .sidebar-tabs {
+    flex-shrink: 0;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    margin: -12px -10px 0;
+    padding: 0 10px;
+    border-bottom: 1px solid var(--app-border);
+  }
+
   .sidebar-header {
     display: flex;
     justify-content: space-between;
@@ -3281,23 +3508,6 @@
     color: var(--app-text-muted);
     margin: 0;
     white-space: nowrap;
-  }
-
-  .brand-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 34px;
-    padding: 0 3px 9px;
-    border-bottom: 1px solid var(--app-border);
-  }
-
-  .brand-name {
-    font-family: 'Sora Variable', 'Sora', 'Inter Variable', 'Inter', sans-serif;
-    font-size: 15px;
-    font-weight: 650;
-    letter-spacing: 0;
-    color: var(--app-text);
   }
 
   .workspace-filter {
@@ -3435,9 +3645,23 @@
     transform: rotate(90deg);
   }
 
-  :global(.ws-group-icon) {
-    color: var(--app-text-muted);
+  :global(.ws-group-icon-trigger) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--app-text-muted);
+    cursor: pointer;
+  }
+
+  :global(.ws-group-icon-trigger:hover) {
+    background: var(--app-surface-raised);
+    color: var(--app-text);
   }
 
   .ws-group-name {
@@ -3787,12 +4011,6 @@
 
   .toolbar::-webkit-scrollbar {
     display: none;
-  }
-
-  .toolbar-sep {
-    width: 1px;
-    background: var(--app-border);
-    margin: 3px 2px;
   }
 
   .canvas-empty {

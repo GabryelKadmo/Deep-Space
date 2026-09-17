@@ -1,12 +1,16 @@
 import type { Edge, Node } from '@xyflow/svelte';
 
 /**
- * Ancora flutuante do handle de um no: o ponto da borda (+ respiro de 4px)
- * mais proximo do centro do vizinho conectado mais perto. Compartilhada por
+ * Ancora flutuante do handle de um no: o ponto da borda (+ respiro) mais
+ * proximo do centro do vizinho conectado mais perto. Compartilhada por
  * NodeShell (posiciona a bolinha do handle) e DeepSpaceEdge (ponta da corda)
  * para que corda e bolinha coincidam sempre — mesmo com varias conexoes no
  * mesmo no (todas as cordas convergem para a unica bolinha).
  */
+
+/** A bolinha (13px + anel de 3px) tem ~9-10px de raio visual; um respiro de
+    apenas 4px deixava mais da metade dela pisando pra dentro do no. */
+const HANDLE_BREATHING_ROOM_PX = 10;
 
 type NodeLike = Pick<Node, 'id' | 'position'> & {
   measured?: { width?: number; height?: number };
@@ -86,6 +90,9 @@ export function floatingAnchorFor(nodeId: string, nodes: readonly NodeLike[], ed
     }
   }
   if (!best || (best.dx === 0 && best.dy === 0)) return null;
-  const scale = Math.max(Math.abs(best.dx) / (rect.halfW + 4), Math.abs(best.dy) / (rect.halfH + 4));
+  const scale = Math.max(
+    Math.abs(best.dx) / (rect.halfW + HANDLE_BREATHING_ROOM_PX),
+    Math.abs(best.dy) / (rect.halfH + HANDLE_BREATHING_ROOM_PX)
+  );
   return { x: rect.cx + best.dx / scale, y: rect.cy + best.dy / scale };
 }

@@ -918,6 +918,24 @@ Header: Authorization = Bearer {{accessToken}}`,
       body: 'Open View > Developer tools and reproduce the problem while watching Console. Then choose Help > Open logs folder and share deep-space.log with support. The rotating local log includes renderer errors, internal-server failures, and unexpected exits; common credentials are redacted and normal agent output is not persisted.',
       tags: ['Developer tools', 'local logs', 'support'],
     },
+    {
+      id: 'group-icons',
+      title: 'Give a folder its own icon',
+      body: 'Open the canvas sidebar and find a group folder among your workspaces — group them with "New folder" at the bottom of the list once you have several projects to organize per client, per team, or per environment. Click a group\'s icon to open the same picker workspaces and projects already use, and choose one. It is remembered the next time you open the app, so folders holding different kinds of work are easy to tell apart at a glance.',
+      tags: ['Workspace groups', 'sidebar', 'icon picker'],
+    },
+    {
+      id: 'canvas-connect-any-side',
+      title: 'Connect nodes from any side',
+      body: 'Hover near any canvas node and a small handle appears on each of its four sides — top, right, bottom, and left — instead of only the right edge. Drag from whichever side is closest to the node you are connecting to, so wiring up agents, notes, and tools no longer means routing every connection around to the same spot.',
+      tags: ['Canvas', 'connections', 'handles'],
+    },
+    {
+      id: 'customizable-toolbar',
+      title: 'Pin only the tools you use',
+      body: 'The button at the end of the bottom canvas toolbar opens a "more tools" menu listing every tool type and panel not currently pinned to the bar; click one to use it immediately. Open its Pinned submenu to check or uncheck exactly which tools stay visible — a minimum stays pinned so the bar can never be emptied — and the choice is remembered across workspaces and restarts.',
+      tags: ['Canvas toolbar', 'customization', 'pinned tools'],
+    },
   ],
   changelog: [
 {
@@ -933,7 +951,13 @@ Header: Authorization = Bearer {{accessToken}}`,
     "The splash screen was redesigned: black, with a cold light falling from the surface, fine particles rising and ice white loading dots. It now follows the system language, which is available before the settings are, and falls back to English for any other locale.",
     "Application icons were replaced across every target: Windows, Linux, macOS, the tray, the favicon and the in-app mark. On Windows and Linux the artwork fills the box edge to edge; on macOS it keeps the padding Apple's icon grid expects.",
     "The quick prompt in a terminal can be collapsed, giving the space back to anyone who does not attach files or mention agents with @. Each terminal remembers its own state, and dropping an attachment reopens the field.",
-    "Fixes: the splash no longer stays on screen after the app is ready and now covers the server boot; the window can be dragged by the empty area of the title bar again; the terminal draws the block characters agent CLIs use for their banners; the dictation controls stopped covering the prompt line; the Windows taskbar shows the application icon; the manual download link points at this project's releases; theme import and export icons were unswapped; and the log is now deep-space.log, matching the name the documentation cites."
+    "Workspace groups (sidebar folders) can now have a custom icon, matching the existing picker on workspaces and projects.",
+    "Canvas nodes can be connected from any side — top, right, bottom, or left — instead of only the right edge, with handles that appear on hover.",
+    "The bottom canvas toolbar is customizable: the eight most common tools stay pinned by default, and the rest move into a 'more tools' menu where any item can be pinned or unpinned.",
+    "The Windows installer now shows a custom sidebar image during setup.",
+    "Share and notification icons moved from the Workbench sidebar into the native Windows titlebar; macOS and Linux keep them in the sidebar.",
+    "The Canvas/Workbench tab switcher fills the width of its container.",
+    "Fixes: the splash no longer stays on screen after the app is ready and now covers the server boot; the window can be dragged by the empty area of the title bar again; the terminal draws the block characters agent CLIs use for their banners; the dictation controls stopped covering the prompt line; the Windows taskbar shows the application icon; the manual download link points at this project's releases; theme import and export icons were unswapped; the log is now deep-space.log, matching the name the documentation cites; a provider's profile list now loads the first time its card is expanded; '~' expansion no longer mixes slash and backslash separators on native Windows; the Usage panel shows an explicit error instead of staying blank on a rate limit; terminal text selection stays accurate on a zoomed canvas for click/double/triple-click; a maestro terminal no longer redelivers the same task on every reconnect; and a duplicated share button on Windows no longer doubles the canvas's polling of the collaboration endpoint."
   ]
 },
 {

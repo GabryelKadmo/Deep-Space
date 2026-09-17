@@ -173,7 +173,11 @@ describe('RoleService', () => {
     await expect(roleService.applyToTerminal(workspace.id, withRole.id)).rejects.toThrow('sessão');
   });
 
-  it('entrega ao maestro todos os dados das tarefas iniciais sem responsavel', async () => {
+  it('nao entrega ao maestro tarefas que ainda nao foram vinculadas a ele', async () => {
+    // O maestro puxar sozinho toda a fila sem responsavel ao abrir fazia o
+    // agente comecar a trabalhar sem o usuario pedir ou vincular nada — o
+    // aviso de tarefa nova sem dono continua existindo via notifyLeader (na
+    // criacao da tarefa), so que sem forcar a acao.
     const workspace = await workspaceRepository.createWorkspace({ name: 'fila inicial', workingDir: '/tmp' });
     const session = ptySessionManager.create({ command: '/bin/cat', cwd: '/tmp' });
     const leader = await workspaceRepository.createNode({
@@ -182,22 +186,14 @@ describe('RoleService', () => {
       title: 'Lider',
       payload: { command: '/bin/cat', sessionId: session.id, maestro: true },
     });
-    const task = await taskBoardService.create(workspace.id, {
+    await taskBoardService.create(workspace.id, {
       title: 'Revisar onboarding',
       description: 'Validar idioma, acessibilidade e as capturas anexadas.',
       createdBy: 'preset',
     });
 
     const result = await roleService.applyToTerminal(workspace.id, leader.id);
-    expect(result).toEqual({ applied: false, tasksDelivered: 1 });
-
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    const { scrollback, detach } = ptySessionManager.attach(session.id, () => {});
-    detach();
-    expect(scrollback).toContain(task.id.slice(0, 8));
-    expect(scrollback).toContain('Revisar onboarding');
-    expect(scrollback).toContain('Validar idioma, acessibilidade e as capturas anexadas.');
-    expect(scrollback).toContain('deepspace task assign');
+    expect(result).toEqual({ applied: false, tasksDelivered: 0 });
     ptySessionManager.kill(session.id);
   });
 

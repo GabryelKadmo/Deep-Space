@@ -4,10 +4,11 @@ export class CreateWorkspaceGroupDto {
   constructor(
     public readonly name: string,
     public readonly parentId: string | null,
+    public readonly icon: string | null,
   ) {}
 
   static from(input: CreateWorkspaceGroupInput): CreateWorkspaceGroupDto {
-    return new CreateWorkspaceGroupDto(input.name, input.parentId ?? null);
+    return new CreateWorkspaceGroupDto(input.name, input.parentId ?? null, input.icon ?? null);
   }
 }
 
@@ -16,10 +17,11 @@ export class UpdateWorkspaceGroupDto {
     public readonly name: string | undefined,
     public readonly parentId: string | null | undefined,
     public readonly collapsed: boolean | undefined,
+    public readonly icon: string | null | undefined,
   ) {}
 
   static from(input: UpdateWorkspaceGroupInput): UpdateWorkspaceGroupDto {
-    return new UpdateWorkspaceGroupDto(input.name, input.parentId, input.collapsed);
+    return new UpdateWorkspaceGroupDto(input.name, input.parentId, input.collapsed, input.icon);
   }
 }
 

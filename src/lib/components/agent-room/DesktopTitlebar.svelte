@@ -1,6 +1,10 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import { AppWindow, Bug, CheckCircle2, FileText, FolderOpen, LayoutGrid, LifeBuoy, Maximize2, Minus, MonitorUp, PanelTop, RefreshCw, Search, Settings, SquareTerminal, X } from '@lucide/svelte';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+  import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
+  import WorkspaceSharingButton from '$lib/components/collaboration/WorkspaceSharingButton.svelte';
+  import { activeWorkspaceStore, requestOpenSharing } from '$lib/components/agent-room/active-workspace.svelte.js';
   import * as m from '$lib/paraglide/messages.js';
 
   type DesktopBridge = { runMenuCommand?: (action: string) => Promise<unknown> };
@@ -9,6 +13,9 @@
   function run(action: string) {
     void desktop?.runMenuCommand?.(action);
   }
+
+  const isCanvas = $derived(page.url.pathname === '/canvas');
+  const isWorkbench = $derived(page.url.pathname === '/terminal');
 </script>
 
 <header class="desktop-titlebar" data-dictation-ignore>
@@ -80,6 +87,15 @@
         <DropdownMenu.Item onclick={() => run('report-issue')}><LifeBuoy size={14} />{m['desktop.report_issue']()}</DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
+
+    {#if isCanvas || isWorkbench}
+      <div class="context-actions">
+        {#if isWorkbench}
+          <WorkspaceSharingButton variant="titlebar" workspaceId={activeWorkspaceStore.id} onOpen={requestOpenSharing} />
+        {/if}
+        <AttentionCenter workspaceId={activeWorkspaceStore.id} />
+      </div>
+    {/if}
   </nav>
 
   <div class="window-controls" aria-hidden="true"></div>
@@ -126,6 +142,19 @@
   }
 
   .window-controls {
+    -webkit-app-region: no-drag;
+  }
+
+  /* padding-top da folga pro badge de notificacao (posicionado com offset
+     negativo) nao ser cortado pelo topo da janela — nao ha espaco acima do
+     titlebar pra "vazar". */
+  .context-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    padding-top: 4px;
+    padding-right: 6px;
     -webkit-app-region: no-drag;
   }
 
