@@ -130,4 +130,18 @@ describe('WorkspaceGroupService', () => {
     const expanded = await workspaceGroupService.update(group.id, { collapsed: false });
     expect(expanded.collapsed).toBe(false);
   });
+
+  it('icone nasce nulo (pasta padrao) e persiste na atualizacao', async () => {
+    const group = await workspaceGroupService.create({ name: 'Cliente A' });
+    expect(group.icon).toBeNull();
+
+    const updated = await workspaceGroupService.update(group.id, { icon: 'rocket' });
+    expect(updated.icon).toBe('rocket');
+
+    const reloaded = (await workspaceGroupService.list()).find((item) => item.id === group.id);
+    expect(reloaded?.icon).toBe('rocket');
+
+    const cleared = await workspaceGroupService.update(group.id, { icon: null });
+    expect(cleared.icon).toBeNull();
+  });
 });

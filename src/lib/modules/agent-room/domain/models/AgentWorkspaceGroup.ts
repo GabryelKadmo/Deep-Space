@@ -5,7 +5,7 @@ export class AgentWorkspaceGroup extends Model {
   static primaryKey = 'id';
   static incrementing = false;
   static timestamps = true;
-  static fillable = ['id', 'name', 'parent_id', 'position', 'collapsed'];
+  static fillable = ['id', 'name', 'parent_id', 'position', 'collapsed', 'icon'];
 
   static casts = {
     position: 'number' as const,
@@ -19,6 +19,7 @@ export class AgentWorkspaceGroup extends Model {
   declare parent_id: string | null;
   declare position: number;
   declare collapsed: boolean;
+  declare icon: string | null;
   declare created_at: Date;
   declare updated_at: Date;
 }
