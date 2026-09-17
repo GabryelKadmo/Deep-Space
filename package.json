@@ -275,7 +275,9 @@
       "artifactName": "DeepSpace-Setup-${version}.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "shortcutName": "Deep Space"
+      "shortcutName": "Deep Space",
+      "installerSidebar": "electron/resources/installer-sidebar.bmp",
+      "uninstallerSidebar": "electron/resources/installer-sidebar.bmp"
     },
     "dmg": {
       "artifactName": "DeepSpace-${version}-${arch}.${ext}",
