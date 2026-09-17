@@ -65,7 +65,7 @@ pt-BR, English, and Spanish translations.
 
 - The Usage panel shows an explicit error instead of staying blank when a provider's usage endpoint responds with a rate limit.
 
-- Clicking, double-clicking, or triple-clicking to select terminal text stays accurate when the canvas is zoomed. Selecting by dragging still requires holding Shift over an app with mouse tracking enabled (for example Claude Code), which is an upstream xterm.js limitation and not something Deep Space can patch around.
+- Double-clicking a word or triple-clicking a line in a terminal selects it again — `PointerEvent.detail` never carries a reliable click count the way `MouseEvent.detail` does, so the code was checking a value that was always 0 and nothing ever got selected or copied. Word and line selection now listen for the browser's own `dblclick`/`click` events instead. Selecting by dragging still requires holding Shift over an app with mouse tracking enabled (for example Claude Code), which is an upstream xterm.js limitation and not something Deep Space can patch around.
 
 - A maestro terminal no longer redelivers the same task on every reconnect or resume; only tasks explicitly assigned to it are delivered.
 
