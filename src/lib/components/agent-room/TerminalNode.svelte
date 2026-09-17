@@ -445,22 +445,30 @@
     // selecao, porque a TUI nunca mais recebia mouse nenhum). Sem Shift,
     // sobre uma TUI com tracking, o clique continua sendo reportado
     // normalmente ao processo — a selecao de texto so entra com Shift ai.
+    // PointerEvent.detail nao carrega contagem de clique (fica 0 em
+    // pointerdown neste Chromium) — so MouseEvent tradicional (dblclick/click)
+    // garante isso, entao palavra/linha usam listeners nativos separados
+    // abaixo em vez de checar event.detail aqui.
     const selectionPointerDown = (event: PointerEvent) => {
       if (event.button !== 0 || !screen) return;
       if (terminal.modes.mouseTrackingMode !== 'none' && !event.shiftKey) return;
       const cell = terminalCellAtPoint(event, screen.getBoundingClientRect(), terminal.cols, terminal.rows, terminal.buffer.active.viewportY);
-      if (event.detail === 2) {
-        const line = terminal.buffer.active.getLine(cell.row);
-        const word = line ? wordRangeAtCell(line.translateToString(false), cell.column) : null;
-        if (word) terminal.select(word.start, cell.row, word.length);
-        return;
-      }
-      if (event.detail === 3) {
-        terminal.selectLines(cell.row, cell.row);
-        return;
-      }
       selectionOrigin = { x: event.clientX, y: event.clientY };
       selectionStart = cell;
+    };
+    const selectionDoubleClick = (event: MouseEvent) => {
+      if (event.button !== 0 || !screen) return;
+      if (terminal.modes.mouseTrackingMode !== 'none' && !event.shiftKey) return;
+      const cell = terminalCellAtPoint(event, screen.getBoundingClientRect(), terminal.cols, terminal.rows, terminal.buffer.active.viewportY);
+      const line = terminal.buffer.active.getLine(cell.row);
+      const word = line ? wordRangeAtCell(line.translateToString(false), cell.column) : null;
+      if (word) terminal.select(word.start, cell.row, word.length);
+    };
+    const selectionTripleClick = (event: MouseEvent) => {
+      if (event.button !== 0 || event.detail !== 3 || !screen) return;
+      if (terminal.modes.mouseTrackingMode !== 'none' && !event.shiftKey) return;
+      const cell = terminalCellAtPoint(event, screen.getBoundingClientRect(), terminal.cols, terminal.rows, terminal.buffer.active.viewportY);
+      terminal.selectLines(cell.row, cell.row);
     };
     const selectionPointerMove = (event: PointerEvent) => {
       if (!screen || !selectionStart || !selectionOrigin || (event.buttons & 1) === 0) return;
@@ -489,6 +497,8 @@
       event.stopPropagation();
     };
     screen?.addEventListener('pointerdown', selectionPointerDown);
+    screen?.addEventListener('dblclick', selectionDoubleClick);
+    screen?.addEventListener('click', selectionTripleClick);
     screen?.addEventListener('contextmenu', copySelectionFromContextMenu);
     terminal.element?.addEventListener('mousedown', blockNativeClickSelection, { capture: true });
     // Captura antes dos handlers do proprio xterm (textarea e element): texto
@@ -785,6 +795,8 @@
     return () => {
       disposed = true;
       screen?.removeEventListener('pointerdown', selectionPointerDown);
+      screen?.removeEventListener('dblclick', selectionDoubleClick);
+      screen?.removeEventListener('click', selectionTripleClick);
       screen?.removeEventListener('contextmenu', copySelectionFromContextMenu);
       terminal.element?.removeEventListener('mousedown', blockNativeClickSelection, { capture: true });
       terminal.element?.removeEventListener('paste', handleTerminalPaste, { capture: true });
