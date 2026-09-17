@@ -1920,4 +1920,37 @@ export const TOURS_EN: Tour[] = [
       { id: 'open-desktop-logs', title: 'Open the persistent logs', body: 'Choose Help > Open logs folder and send deep-space.log with the report. Files rotate automatically, common credentials are redacted, and normal agent output is not persisted.' },
     ],
   },
+  {
+    id: 'group-icons',
+    icon: 'FolderTree',
+    title: 'Give a folder its own icon',
+    tagline: 'Tell your workspace groups apart at a glance.',
+    steps: [
+      { id: 'open', title: 'Open the canvas sidebar', body: 'Workspace groups live in the sidebar tree on the Canvas page, one row per folder alongside the workspaces inside it.', action: { kind: 'openPage', path: '/canvas' } },
+      { id: 'find', title: 'Find a group folder', body: 'Once you have more than a couple of projects, group them into folders — per client, per team, or per environment — using "New folder" at the bottom of the sidebar list.' },
+      { id: 'pick', title: 'Pick an icon', body: 'Click the folder icon next to its name to open the same picker workspaces and projects already use, and choose one. It is remembered the next time you open the app.' },
+    ],
+  },
+  {
+    id: 'canvas-connect-any-side',
+    icon: 'Cable',
+    title: 'Connect nodes from any side',
+    tagline: 'Wire up agents without routing around to one edge.',
+    steps: [
+      { id: 'open', title: 'Open a workspace on Canvas', body: 'Any canvas with at least two nodes works for this — an agent terminal and a note are enough.', action: { kind: 'openPage', path: '/canvas' } },
+      { id: 'hover', title: 'Hover near a node', body: "Move the mouse close to any node's edge and a small handle appears on each of its four sides — top, right, bottom, and left." },
+      { id: 'drag', title: 'Drag from the closest side', body: 'Start the connection from whichever side faces the other node, instead of routing every drag around to the right edge like before.' },
+    ],
+  },
+  {
+    id: 'customizable-toolbar',
+    icon: 'Pin',
+    title: 'Pin only the tools you use',
+    tagline: 'Keep the bottom bar to what you actually reach for.',
+    steps: [
+      { id: 'open', title: 'Open the canvas', body: 'The bottom toolbar sits at the center-bottom of the Canvas page, right above the zoom controls.', action: { kind: 'openPage', path: '/canvas' } },
+      { id: 'more', title: 'Open "more tools"', body: 'The button at the end of the bar lists every tool type and side panel not currently pinned — click one to use it right away.' },
+      { id: 'pin', title: 'Choose what stays pinned', body: 'Open its Pinned submenu and check or uncheck any item; a minimum stays pinned so the bar can never be emptied. The layout is remembered across workspaces and restarts.' },
+    ],
+  },
 ];

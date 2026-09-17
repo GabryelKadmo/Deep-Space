@@ -1924,4 +1924,37 @@ export const TOURS_PT: Tour[] = [
       { id: 'open-desktop-logs', title: 'Abra os logs persistentes', body: 'Escolha Ajuda > Abrir pasta de logs e envie o deep-space.log junto do relato. Os arquivos giram automaticamente, credenciais comuns são ocultadas e a saída normal dos agentes não é persistida.' },
     ],
   },
+  {
+    id: 'group-icons',
+    icon: 'FolderTree',
+    title: 'Dê um ícone próprio pra uma pasta',
+    tagline: 'Distinga seus grupos de workspace de relance.',
+    steps: [
+      { id: 'open', title: 'Abra a barra lateral do canvas', body: 'Grupos de workspace vivem na árvore da barra lateral da página Canvas, uma linha por pasta junto dos workspaces que ela contém.', action: { kind: 'openPage', path: '/canvas' } },
+      { id: 'find', title: 'Encontre um grupo (pasta)', body: 'Quando você tiver mais de um par de projetos, agrupe-os em pastas — por cliente, por time ou por ambiente — usando "Nova pasta" no fim da lista da barra lateral.' },
+      { id: 'pick', title: 'Escolha um ícone', body: 'Clique no ícone da pasta ao lado do nome pra abrir o mesmo seletor que workspaces e projetos já usam, e escolha um. Ele fica salvo pra próxima vez que você abrir o app.' },
+    ],
+  },
+  {
+    id: 'canvas-connect-any-side',
+    icon: 'Cable',
+    title: 'Conecte nós por qualquer lado',
+    tagline: 'Ligue agentes sem rodear até um único lado.',
+    steps: [
+      { id: 'open', title: 'Abra um workspace no Canvas', body: 'Qualquer canvas com pelo menos dois nós serve pra isso — um terminal de agente e uma nota já bastam.', action: { kind: 'openPage', path: '/canvas' } },
+      { id: 'hover', title: 'Passe o mouse perto de um nó', body: 'Aproxime o mouse da borda de qualquer nó e uma bolinha de conexão aparece em cada um dos quatro lados — cima, direita, baixo e esquerda.' },
+      { id: 'drag', title: 'Arraste a partir do lado mais próximo', body: 'Comece a conexão pelo lado voltado pro outro nó, em vez de rodear cada arrasto até a borda direita como antes.' },
+    ],
+  },
+  {
+    id: 'customizable-toolbar',
+    icon: 'Pin',
+    title: 'Fixe só as ferramentas que você usa',
+    tagline: 'Mantenha a barra inferior só com o que você realmente usa.',
+    steps: [
+      { id: 'open', title: 'Abra o canvas', body: 'A barra inferior fica no centro-baixo da página Canvas, bem acima dos controles de zoom.', action: { kind: 'openPage', path: '/canvas' } },
+      { id: 'more', title: 'Abra "mais ferramentas"', body: 'O botão no fim da barra lista todo tipo de ferramenta e painel lateral que não está fixado no momento — clique num item pra usá-lo na hora.' },
+      { id: 'pin', title: 'Escolha o que fica fixado', body: 'Abra o submenu Fixados e marque ou desmarque qualquer item; um mínimo continua fixado pra barra nunca ficar vazia. A escolha fica salva entre workspaces e reinícios do app.' },
+    ],
+  },
 ];

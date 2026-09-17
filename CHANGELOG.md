@@ -27,6 +27,20 @@ pt-BR, English, and Spanish translations.
 
 - The quick prompt in a terminal node can be collapsed, giving the space back to anyone who does not attach files or mention agents with `@`. Each terminal remembers its own state, and dropping an attachment reopens it so the file reference is not written into a hidden field.
 
+- Workspace groups (folders in the sidebar tree) can now have a custom icon, matching the existing picker on workspaces and projects.
+
+- Canvas nodes can be connected from any side — top, right, bottom, or left — instead of only the right edge. Handles appear on hover, or stay visible once a side is already connected.
+
+- The bottom canvas toolbar is customizable. With close to thirty tools crowding a single row, the eight most commonly used (terminal, note, tasks, files, git, image, device, usage) stay pinned by default, and the rest move into a "more tools" menu. Any item can be pinned or unpinned from there, with a minimum kept pinned so the bar can never be emptied.
+
+- The Windows installer shows a custom sidebar image during setup, generated from the same underwater photo used for the macOS installer background.
+
+### Changed
+
+- Share and notification icons moved from the Workbench sidebar into the native Windows titlebar, next to the rest of the window chrome. macOS and Linux have no custom titlebar, so they keep the icons in the sidebar.
+
+- The Canvas/Workbench tab switcher fills the width of its container instead of sizing to its label.
+
 ### Fixed
 
 - The splash no longer stays on screen after the application is ready. It closed only on a paint event, which Chromium defers while the window is minimised or in the background, so it could sit there until the window was clicked. It also opens before the server boots now, instead of after, which is the wait it exists to cover.
@@ -44,6 +58,18 @@ pt-BR, English, and Spanish translations.
 - Theme import and export no longer carry each other's icons.
 
 - The desktop log is `deep-space.log`, matching the name the documentation and the guided tours tell people to send with a report.
+
+- A provider's profile list now loads the first time its card is expanded; it previously required expanding it twice.
+
+- `~` expansion for provider profile and usage config directories no longer mixes `/` and `\` on native Windows, which produced a path nothing could resolve.
+
+- The Usage panel shows an explicit error instead of staying blank when a provider's usage endpoint responds with a rate limit.
+
+- Clicking, double-clicking, or triple-clicking to select terminal text stays accurate when the canvas is zoomed. Selecting by dragging still requires holding Shift over an app with mouse tracking enabled (for example Claude Code), which is an upstream xterm.js limitation and not something Deep Space can patch around.
+
+- A maestro terminal no longer redelivers the same task on every reconnect or resume; only tasks explicitly assigned to it are delivered.
+
+- Removed a duplicated share button on Windows that doubled the canvas's polling of the collaboration endpoint.
 
 ## 0.30.1 - 2026-09-13
 

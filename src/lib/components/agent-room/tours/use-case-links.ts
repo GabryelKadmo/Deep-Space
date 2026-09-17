@@ -69,6 +69,9 @@ export const USE_CASE_TOUR_IDS: Record<string, string> = {
   'saved-terminal-commands': 'saved-terminal-commands',
   'code-intelligence-graph': 'code-intelligence-graph',
   'desktop-diagnostics': 'desktop-diagnostics',
+  'group-icons': 'group-icons',
+  'canvas-connect-any-side': 'canvas-connect-any-side',
+  'customizable-toolbar': 'customizable-toolbar',
 };
 
 export function tourIdForUseCase(useCaseId: string): string | null {
