@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas, selectCanvasTool } from './helpers.js';
+import { clickToolbarOrOverflow, createNodeOnCanvas, selectCanvasTool } from './helpers.js';
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -38,8 +38,8 @@ test.describe('andares e rotinas', () => {
     await createNodeOnCanvas(page, 'Nota');
     await expect(page.locator('.canvas-note')).toHaveCount(1);
 
-    // Abre o painel e cria um andar
-    await page.getByRole('button', { name: /Andares/ }).click();
+    // Abre o painel e cria um andar.
+    await clickToolbarOrOverflow(page, /Andares/);
     const panel = page.locator('.side-panel');
     await expect(panel).toBeVisible();
     await panel.getByPlaceholder('Nome do andar').fill('feature-x');

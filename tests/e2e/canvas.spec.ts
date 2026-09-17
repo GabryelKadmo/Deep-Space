@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas } from './helpers.js';
+import { createNodeOnCanvas, dragConnectHandles } from './helpers.js';
 
 test.describe('canvas de workspaces', () => {
   test('ignora atalhos globais cujo alvo não é um elemento', async ({ page }) => {
@@ -340,14 +340,7 @@ test.describe('canvas de workspaces', () => {
 
     // Arrasto real do handle do primeiro no ate o handle do segundo —
     // cobre hit-test do handle (overflow/z-index do shell).
-    const sourceHandle = page.locator('.canvas-note').first().locator('.svelte-flow__handle').first();
-    const targetHandle = page.locator('.canvas-note').nth(1).locator('.svelte-flow__handle').first();
-    const sourceBox = await sourceHandle.boundingBox();
-    const targetBox = await targetHandle.boundingBox();
-    await page.mouse.move(sourceBox!.x + sourceBox!.width / 2, sourceBox!.y + sourceBox!.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(targetBox!.x + targetBox!.width / 2, targetBox!.y + targetBox!.height / 2, { steps: 12 });
-    await page.mouse.up();
+    await dragConnectHandles(page, page.locator('.canvas-note').first(), page.locator('.canvas-note').nth(1));
 
     await expect(page.locator('.svelte-flow__edge')).toHaveCount(1);
 
