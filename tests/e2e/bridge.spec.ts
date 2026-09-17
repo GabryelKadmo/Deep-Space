@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas } from './helpers';
+import { createNodeOnCanvas, dragConnectHandles } from './helpers';
 
 /**
  * A CLI `deepspace` autentica com `Authorization: Bearer <token>` e NAO envia
@@ -131,14 +131,7 @@ test.describe('ponte CLI (bridge)', () => {
     await expect(page.locator('.canvas-terminal')).toHaveCount(2);
 
     // Conecta os dois arrastando do handle.
-    const sourceHandle = page.locator('.canvas-terminal').first().locator('.svelte-flow__handle').first();
-    const targetHandle = page.locator('.canvas-terminal').nth(1).locator('.svelte-flow__handle').first();
-    const sourceBox = await sourceHandle.boundingBox();
-    const targetBox = await targetHandle.boundingBox();
-    await page.mouse.move(sourceBox!.x + sourceBox!.width / 2, sourceBox!.y + sourceBox!.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(targetBox!.x + targetBox!.width / 2, targetBox!.y + targetBox!.height / 2, { steps: 10 });
-    await page.mouse.up();
+    await dragConnectHandles(page, page.locator('.canvas-terminal').first(), page.locator('.canvas-terminal').nth(1));
     await expect(page.locator('.svelte-flow__edge')).toHaveCount(1);
 
     // Titulos distintos para o findAgent da bridge.
