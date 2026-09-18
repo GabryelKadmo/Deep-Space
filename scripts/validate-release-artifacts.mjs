@@ -87,16 +87,22 @@ export function validateReleaseArtifacts(directory, version) {
   const files = readdirSync(directory).filter((file) => statSync(path.join(directory, file)).isFile()).sort();
   const v = escaped(version);
 
+  // macOS requires a paid Apple Developer Program membership to sign and notarize.
+  // Without it, build-macos fails and uploads nothing; Windows and Linux still ship on their own.
+  const macArtifactsPresent = existsSync(path.join(directory, 'latest-mac.yml'));
+
   /** @type {Array<[RegExp, string]>} */
   const required = [
-    [new RegExp(`^DeepSpace-${v}-arm64\\.dmg$`), 'Apple Silicon DMG'],
-    [new RegExp(`^DeepSpace-${v}-arm64\\.dmg\\.blockmap$`), 'Apple Silicon DMG blockmap'],
-    [new RegExp(`^DeepSpace-${v}-arm64-mac\\.zip$`), 'Apple Silicon update ZIP'],
-    [new RegExp(`^DeepSpace-${v}-arm64-mac\\.zip\\.blockmap$`), 'Apple Silicon ZIP blockmap'],
-    [new RegExp(`^DeepSpace-${v}-x64\\.dmg$`), 'Intel macOS DMG'],
-    [new RegExp(`^DeepSpace-${v}-x64\\.dmg\\.blockmap$`), 'Intel macOS DMG blockmap'],
-    [new RegExp(`^DeepSpace-${v}-x64-mac\\.zip$`), 'Intel macOS update ZIP'],
-    [new RegExp(`^DeepSpace-${v}-x64-mac\\.zip\\.blockmap$`), 'Intel macOS ZIP blockmap'],
+    ...(macArtifactsPresent ? /** @type {Array<[RegExp, string]>} */ ([
+      [new RegExp(`^DeepSpace-${v}-arm64\\.dmg$`), 'Apple Silicon DMG'],
+      [new RegExp(`^DeepSpace-${v}-arm64\\.dmg\\.blockmap$`), 'Apple Silicon DMG blockmap'],
+      [new RegExp(`^DeepSpace-${v}-arm64-mac\\.zip$`), 'Apple Silicon update ZIP'],
+      [new RegExp(`^DeepSpace-${v}-arm64-mac\\.zip\\.blockmap$`), 'Apple Silicon ZIP blockmap'],
+      [new RegExp(`^DeepSpace-${v}-x64\\.dmg$`), 'Intel macOS DMG'],
+      [new RegExp(`^DeepSpace-${v}-x64\\.dmg\\.blockmap$`), 'Intel macOS DMG blockmap'],
+      [new RegExp(`^DeepSpace-${v}-x64-mac\\.zip$`), 'Intel macOS update ZIP'],
+      [new RegExp(`^DeepSpace-${v}-x64-mac\\.zip\\.blockmap$`), 'Intel macOS ZIP blockmap'],
+    ]) : []),
     [new RegExp(`^DeepSpace-Setup-${v}\\.exe$`), 'Windows NSIS installer'],
     [new RegExp(`^DeepSpace-Setup-${v}\\.exe\\.blockmap$`), 'Windows NSIS blockmap'],
     [new RegExp(`^DeepSpace-${v}\\.AppImage$`), 'Linux AppImage'],
@@ -104,16 +110,18 @@ export function validateReleaseArtifacts(directory, version) {
   ];
   for (const [pattern, description] of required) requireFile(files, pattern, description);
 
-  const mac = validateManifest(directory, 'latest-mac.yml', version);
+  const mac = macArtifactsPresent ? validateManifest(directory, 'latest-mac.yml', version) : null;
   const windows = validateManifest(directory, 'latest.yml', version);
   const linux = validateManifest(directory, 'latest-linux.yml', version);
 
-  const macUrls = manifestFiles(mac, 'latest-mac.yml').map((entry) => String(entry.url));
-  if (!macUrls.some((url) => url.endsWith('-arm64-mac.zip'))) {
-    fail('latest-mac.yml does not contain the Apple Silicon update ZIP');
-  }
-  if (!macUrls.some((url) => url.endsWith('-mac.zip') && !url.includes('-arm64-'))) {
-    fail('latest-mac.yml does not contain the Intel update ZIP');
+  if (mac) {
+    const macUrls = manifestFiles(mac, 'latest-mac.yml').map((entry) => String(entry.url));
+    if (!macUrls.some((url) => url.endsWith('-arm64-mac.zip'))) {
+      fail('latest-mac.yml does not contain the Apple Silicon update ZIP');
+    }
+    if (!macUrls.some((url) => url.endsWith('-mac.zip') && !url.includes('-arm64-'))) {
+      fail('latest-mac.yml does not contain the Intel update ZIP');
+    }
   }
 
   const windowsUrls = manifestFiles(windows, 'latest.yml').map((entry) => String(entry.url));
