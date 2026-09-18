@@ -330,7 +330,7 @@ jobs:
 
   publish:
     name: Publish verified release
-    if: github.event_name != 'workflow_dispatch' || !inputs.build_only
+    if: always() && (github.event_name != 'workflow_dispatch' || !inputs.build_only) && needs.validate.result == 'success' && needs.build-windows.result == 'success' && needs.build-linux.result == 'success'
     needs: [validate, build-macos, build-windows, build-linux]
     runs-on: ubuntu-latest
     steps:

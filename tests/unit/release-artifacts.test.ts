@@ -76,6 +76,29 @@ function fixture() {
   return directory;
 }
 
+function fixtureWithoutMac() {
+  const directory = mkdtempSync(path.join(tmpdir(), 'deepspace-release-'));
+  temporaryDirectories.push(directory);
+  const nonMacAssets = requiredAssets.filter((filename) => !filename.includes('mac') && !filename.includes('dmg'));
+  for (const filename of nonMacAssets) writeFileSync(path.join(directory, filename), `fixture:${filename}`);
+
+  writeFileSync(
+    path.join(directory, 'latest.yml'),
+    stringify({ version: VERSION, files: [manifestEntry(directory, `DeepSpace-Setup-${VERSION}.exe`)] }),
+  );
+  writeFileSync(
+    path.join(directory, 'latest-linux.yml'),
+    stringify({
+      version: VERSION,
+      files: [
+        manifestEntry(directory, `DeepSpace-${VERSION}.AppImage`),
+        manifestEntry(directory, `DeepSpace-${VERSION}.x86_64.rpm`),
+      ],
+    }),
+  );
+  return directory;
+}
+
 describe('release artifact validation', () => {
   it('builds QA from an immutable tested SHA without enabling release publication', () => {
     const workflow = parse(readFileSync('.github/workflows/release.yml', 'utf8'));
@@ -83,9 +106,12 @@ describe('release artifact validation', () => {
     for (const name of ['build-macos', 'build-windows', 'build-linux', 'publish']) {
       expect(workflow.jobs[name].steps[0].with.ref).toBe('${{ needs.validate.outputs.source_sha }}');
     }
-    for (const name of ['build-windows', 'build-linux', 'publish']) {
+    for (const name of ['build-windows', 'build-linux']) {
       expect(workflow.jobs[name].if).toBe("github.event_name != 'workflow_dispatch' || !inputs.build_only");
     }
+    expect(workflow.jobs.publish.if).toBe(
+      "always() && (github.event_name != 'workflow_dispatch' || !inputs.build_only) && needs.validate.result == 'success' && needs.build-windows.result == 'success' && needs.build-linux.result == 'success'",
+    );
     const script = workflow.jobs.validate.steps.find((step: { id?: string }) => step.id === 'release').run;
     const directory = mkdtempSync(path.join(tmpdir(), 'deepspace-release-source-'));
     temporaryDirectories.push(directory);
@@ -118,6 +144,12 @@ describe('release artifact validation', () => {
     const files = validateReleaseArtifacts(fixture(), VERSION);
     expect(files).toContain('latest-mac.yml');
     expect(files).toHaveLength(requiredAssets.length + 3);
+  });
+
+  it('accepts Windows and Linux artifacts when macOS was not signed', () => {
+    const files = validateReleaseArtifacts(fixtureWithoutMac(), VERSION);
+    expect(files).not.toContain('latest-mac.yml');
+    expect(files).toHaveLength(requiredAssets.length - 8 + 2);
   });
 
   it('rejects a manifest checksum that does not match the installer', () => {
