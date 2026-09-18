@@ -17,7 +17,7 @@ concurrency:
 env:
   NODE_VERSION: '24'
   NPM_VERSION: '11.6.2'
-  NODE_OPTIONS: '--max-old-space-size=6144'
+  NODE_OPTIONS: '--max-old-space-size=12288'
 
 jobs:
   windows-native:
@@ -68,6 +68,9 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Report runner memory
+        run: free -h
 
       - name: Build production application
         run: npm run build
