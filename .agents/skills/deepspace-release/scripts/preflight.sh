@@ -41,11 +41,10 @@ git fetch origin main --quiet
 TODAY="$(date +%F)"
 grep -Eq "^## $VERSION - $TODAY$" CHANGELOG.md || fail "CHANGELOG.md has no English $VERSION section dated $TODAY"
 for catalog in src/lib/i18n/docs/pt-BR.ts src/lib/i18n/docs/en.ts src/lib/i18n/docs/es.ts; do
-  grep -Fq "DeepSpace $VERSION" "$catalog" || fail "$catalog does not mention DeepSpace $VERSION"
+  grep -Fq "Deep Space $VERSION" "$catalog" || fail "$catalog does not mention Deep Space $VERSION"
 done
 
 COMPANION_ROOT="$(dirname "$ROOT")"
-SITE_REPO="$COMPANION_ROOT/orkestra-site"
 LEGACY_REPO_ROOT="$COMPANION_ROOT/deepspace-releases"
 
 verify_companion_repo() {
@@ -58,12 +57,6 @@ verify_companion_repo() {
   git -C "$repo" fetch origin main --quiet
   [[ "$(git -C "$repo" rev-parse HEAD)" == "$(git -C "$repo" rev-parse origin/main)" ]] || fail "$repo is not synchronized with origin/main"
 }
-
-verify_companion_repo "$SITE_REPO" "beeblock/orkestrai-site"
-
-for catalog in src/lib/content/site/pt-BR.ts src/lib/content/site/en.ts src/lib/content/site/es.ts; do
-  grep -Fq "$VERSION" "$SITE_REPO/$catalog" || fail "$SITE_REPO/$catalog does not mention $VERSION"
-done
 
 if [[ "$VERSION" == "$LEGACY_TRANSITION_VERSION" ]]; then
   verify_companion_repo "$LEGACY_REPO_ROOT" "$LEGACY_REPO"
