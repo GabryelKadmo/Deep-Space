@@ -69,6 +69,13 @@ arquivos referenciados, tamanho e SHA-512 dos manifests `latest-mac.yml`,
 preparados e validados antes da publicação; a partir da `0.1.5`, somente o
 repositório principal recebe releases novas.
 
+O job `publish` não exige mais que `build-macos` tenha sucesso: sem os cinco
+secrets de assinatura (ver Assinatura abaixo), esse job falha de propósito e
+não sobe nenhum artefato, mas Windows e Linux publicam normalmente sozinhos.
+`validate-release-artifacts.mjs` trata os arquivos de macOS como opcionais —
+se `latest-mac.yml` não existir no diretório baixado, a validação pula
+inteiramente os requisitos de macOS em vez de falhar a release inteira.
+
 ## Assinatura
 
 Windows NSIS, Linux AppImage e Linux RPM atualizam mesmo sem assinatura. Windows mostra o
