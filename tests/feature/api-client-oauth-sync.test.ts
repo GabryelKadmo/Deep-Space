@@ -39,7 +39,7 @@ describe('API Client OAuth, cookies, and sync', () => {
   });
 
   async function fixture() {
-    tempDir = await mkdtemp(join(tmpdir(), 'orkestrai-api-auth-sync-'));
+    tempDir = await mkdtemp(join(tmpdir(), 'deepspace-api-auth-sync-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'API', workingDir: tempDir });
     const node = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'apiClient', title: 'Project API', payload: {} });
     return { workspace, node };
@@ -142,7 +142,7 @@ describe('API Client OAuth, cookies, and sync', () => {
       ...imported.payload,
       requests: imported.payload.requests!.map((request) => ({ ...request, name: 'Status', url: 'https://example.test/status' })),
     });
-    const pushed = await apiClientSyncService.execute(workspace.id, ApiClientSyncDto.from({ action: 'push', nodeId: node.id, payload: changed, resolution: 'orkestrai' }));
+    const pushed = await apiClientSyncService.execute(workspace.id, ApiClientSyncDto.from({ action: 'push', nodeId: node.id, payload: changed, resolution: 'deepspace' }));
     expect(pushed).toMatchObject({ status: 'complete', direction: 'push' });
     expect(await readdir(collection)).not.toContain('health.bru');
     const statusFile = (await readdir(collection)).find((file) => /^Status\.bru$/i.test(file));
@@ -191,7 +191,7 @@ describe('API Client OAuth, cookies, and sync', () => {
   });
 
   it('links a Bruno collection in an explicitly registered sibling repository', async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'orkestrai-multi-repo-'));
+    tempDir = await mkdtemp(join(tmpdir(), 'deepspace-multi-repo-'));
     const coordinator = join(tempDir, 'workspace-coordinator');
     const testRepository = join(tempDir, 'api-tests');
     const collection = join(testRepository, 'bruno');
@@ -284,7 +284,7 @@ describe('API Client OAuth, cookies, and sync', () => {
     expect(statusResponse.status).toBe(200);
     expect((await statusResponse.json()).data).toMatchObject({ conflict: true, sourceChanged: true, localChanged: true });
     const forceResponse = await controller.syncApiClient(bridgeEvent('POST', `/api/agent-room/bridge/api-clients/${imported.nodeId}/sync`, {
-      action: 'push', resolution: 'orkestrai', from: agent.id,
+      action: 'push', resolution: 'deepspace', from: agent.id,
     }, { nodeId: imported.nodeId }, token) as any) as Response;
     expect(forceResponse.status).toBe(200);
     expect((await forceResponse.json()).data).toMatchObject({ status: 'complete', direction: 'push' });

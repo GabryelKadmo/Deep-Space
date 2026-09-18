@@ -38,7 +38,7 @@ function instructionFileContents(role: AgentRole): string {
   return [
     '---',
     `name: ${role.slug}`,
-    `description: ${JSON.stringify(`Orkestrai workspace role: ${role.name}`)}`,
+    `description: ${JSON.stringify(`Deep Space workspace role: ${role.name}`)}`,
     '---',
     '',
     role.prompt.trim(),
@@ -64,7 +64,7 @@ function readRoleFile(file: string, fallbackName: string, slug: string): AgentRo
 
 /**
  * Responsabilidades (roles) de agentes: nome, cor e conjunto de instruções.
- * Portateis: ficam em `.orkestrai/roles/<slug>/role.json` (+ AGENTS.md) no
+ * Portateis: ficam em `.deepspace/roles/<slug>/role.json` (+ AGENTS.md) no
  * working_dir do workspace, entao viajam com o repositório.
  *
  * Aplicacao: uma sessão nova recebe a role pelo mecanismo nativo do provider
@@ -85,7 +85,7 @@ export class RoleService {
   private async rolesDir(workspaceId: string): Promise<string> {
     const workspace = await workspaceRepository.getWorkspace(workspaceId);
     if (!workspace) throw new Error('Workspace não encontrado.');
-    const current = resolve(workspace.workingDir, '.orkestrai', 'roles');
+    const current = resolve(workspace.workingDir, '.deepspace', 'roles');
     // Legado: workspaces criados na era .pantheon/ continuam legiveis.
     if (!existsSync(current)) {
       const legacy = resolve(workspace.workingDir, '.pantheon', 'roles');
@@ -182,7 +182,7 @@ export class RoleService {
     if (!workspace) throw new Error('Workspace não encontrado.');
     const base = fromDir ?? workspace.workingDir;
     if (fromDir && !isAbsolute(fromDir)) throw new Error('O diretório de origem deve ser absoluto.');
-    const source = resolve(base, '.orkestrai', 'roles');
+    const source = resolve(base, '.deepspace', 'roles');
     if (!existsSync(source)) return { imported: 0, roles: [] };
 
     const realBase = realpathSync(base);
@@ -233,7 +233,6 @@ export class RoleService {
       role?: string | null;
       roleConfiguredAtLaunch?: string;
       sessionId?: string;
-      maestro?: boolean;
     };
     const role = payload.role && mode !== 'resume' ? await this.get(workspaceId, payload.role) : null;
     if (payload.role && mode !== 'resume' && !role) {
@@ -244,12 +243,14 @@ export class RoleService {
       && payload.roleConfiguredAtLaunch?.toLowerCase() === role.name.toLowerCase()
     );
     const shouldApplyRole = mode !== 'resume' && Boolean(role) && !(mode === 'fresh' && configuredAtLaunch);
+    // So tarefas explicitamente vinculadas a este terminal (assigneeNodeId)
+    // viram briefing ao abrir. O maestro puxar sozinho toda a fila sem
+    // responsavel ja fazia o agente comecar a trabalhar sem o usuario pedir
+    // ou vincular nada; o aviso de tarefa nova sem dono continua existindo
+    // via notifyLeader (na criacao da tarefa), so que sem forcar a acao.
     const tasks = mode === 'role'
       ? []
-      : (await taskBoardService.list(workspaceId)).filter((task) => {
-          if (task.status === 'done') return false;
-          return task.assigneeNodeId === nodeId || (payload.maestro && !task.assigneeNodeId);
-        });
+      : (await taskBoardService.list(workspaceId)).filter((task) => task.status !== 'done' && task.assigneeNodeId === nodeId);
     if (!shouldApplyRole && tasks.length === 0) return { applied: false, tasksDelivered: 0 };
     if (!payload.sessionId) throw new Error('O terminal ainda não tem sessão PTY.');
 
@@ -265,7 +266,7 @@ export class RoleService {
         workspaceId,
         nodeId,
         sessionId: payload.sessionId,
-        message: `[responsabilidade: ${role.name}] Leia e siga .orkestrai/roles/${role.slug}/AGENTS.md como sua funcao permanente neste workspace.`,
+        message: `[responsabilidade: ${role.name}] Leia e siga .deepspace/roles/${role.slug}/AGENTS.md como sua funcao permanente neste workspace.`,
       });
       applied = true;
     }
@@ -286,8 +287,8 @@ export class RoleService {
         ].join('\n');
       }).join('\n\n');
       const instruction = mode === 'resume'
-        ? `[retomada do workspace] Continue somente o trabalho aberto abaixo a partir do ponto em que parou. Consulte o estado atual com orkestrai task list e mantenha cada etapa atualizada.`
-        : `[fila inicial do Kanban] Revise o trabalho aberto abaixo. Tarefas sem responsável devem ser atribuídas com orkestrai task assign <id> "<Agente>" antes de mensagens diretas.`;
+        ? `[retomada do workspace] Continue somente o trabalho aberto abaixo a partir do ponto em que parou. Consulte o estado atual com deepspace task list e mantenha cada etapa atualizada.`
+        : `[fila inicial do Kanban] Revise o trabalho aberto abaixo. Tarefas sem responsável devem ser atribuídas com deepspace task assign <id> "<Agente>" antes de mensagens diretas.`;
       await agentTerminalDeliveryService.deliver({
         workspaceId,
         nodeId,

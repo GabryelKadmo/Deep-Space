@@ -565,9 +565,9 @@
       class="flex h-[52px] items-center gap-2.5 border-b border-[var(--app-border)] px-4"
     >
       <span class="grid size-7 place-items-center rounded-[6px] bg-[#10101d]"
-        ><img src="/brand/icon.svg" class="size-4" alt="" /></span
+        ><img src="/brand/icon.png" class="size-4" alt="" /></span
       >
-      <strong class="text-sm font-semibold tracking-[0]">Orkestrai</strong>
+      <strong class="text-sm font-semibold tracking-[0]">Deep Space</strong>
       <Badge variant="outline" class="ml-auto h-5 px-1.5 text-ui-xs uppercase"
         >{m["remote.companion_badge"]()}</Badge
       >
@@ -617,7 +617,7 @@
   >
     <span
       class="grid size-7 shrink-0 place-items-center rounded-[6px] bg-[#10101d] md:hidden"
-      ><img src="/brand/icon.svg" class="size-4" alt="" /></span
+      ><img src="/brand/icon.png" class="size-4" alt="" /></span
     >
     <div class="min-w-0">
       <h1 class="truncate text-xs font-semibold sm:text-sm">

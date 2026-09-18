@@ -20,7 +20,7 @@
   import { speakText } from './voice-speech.js';
   import { voiceModelsReadyForUse } from './voice-model-status.js';
   import { terminalDictationInput } from './terminal-dictation.js';
-  import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, type TerminalCell } from './terminal-selection.js';
+  import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, wordRangeAtCell, type TerminalCell } from './terminal-selection.js';
   import { clipboardPasteFiles, storePastedTerminalFiles, terminalPathTokens } from './terminal-paste.js';
   import { workingDirectoryFromOsc } from './terminal-working-directory.js';
   import { audioSignalIsEmpty } from '$lib/modules/agent-room/domain/voice-audio.js';
@@ -347,8 +347,8 @@
     const selection = terminal.getSelection();
     if (!selection) return false;
     const desktop = (window as typeof window & {
-      orkestraiDesktop?: { writeClipboardText?: (value: string) => Promise<boolean> };
-    }).orkestraiDesktop;
+      deepspaceDesktop?: { writeClipboardText?: (value: string) => Promise<boolean> };
+    }).deepspaceDesktop;
     try {
       if (desktop?.writeClipboardText) return await desktop.writeClipboardText(selection);
       await navigator.clipboard.writeText(selection);
@@ -377,7 +377,7 @@
 
   onMount(() => {
     let fontSize = 13;
-    let fontFamily = 'ui-monospace, SFMono-Regular, Menlo, monospace';
+    let fontFamily = "'JetBrains Mono Variable', 'JetBrains Mono', Consolas, 'Cascadia Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
 
     const terminal = new Terminal({
       cursorBlink: true,
@@ -397,8 +397,8 @@
         void copyTerminalSelection(terminal);
         return false;
       }
-      const desktopPlatform = (window as typeof window & { orkestraiDesktop?: { platform?: string } })
-        .orkestraiDesktop?.platform;
+      const desktopPlatform = (window as typeof window & { deepspaceDesktop?: { platform?: string } })
+        .deepspaceDesktop?.platform;
       // Sem preventDefault: o xterm ignora a tecla e o Chromium dispara o
       // "paste" nativo, tratado abaixo — texto pelo proprio xterm, arquivo
       // pelo handler de captura. E o que padroniza o atalho entre as CLIs.
@@ -433,11 +433,42 @@
     const screen = terminal.element?.querySelector<HTMLElement>('.xterm-screen') ?? null;
     let selectionStart: TerminalCell | null = null;
     let selectionOrigin: { x: number; y: number } | null = null;
+    // Palavra (duplo clique), linha (triplo clique) e arraste refeitos aqui:
+    // a selecao nativa do xterm usa metricas de fonte nao escaladas e acerta
+    // a celula errada sempre que o canvas nao esta a 100% de zoom.
+    //
+    // So roda com mouseTrackingMode 'none' ou com Shift: apps como o Claude
+    // Code ligam mouse tracking pra receber cliques na propria TUI, e sem
+    // esse limite o mouse pararia de ser reportado ao processo em qualquer
+    // clique (tentamos suprimir sempre numa iteracao anterior — quebrou
+    // clicar fora pra desselecionar e ate digitar no terminal depois de uma
+    // selecao, porque a TUI nunca mais recebia mouse nenhum). Sem Shift,
+    // sobre uma TUI com tracking, o clique continua sendo reportado
+    // normalmente ao processo — a selecao de texto so entra com Shift ai.
+    // PointerEvent.detail nao carrega contagem de clique (fica 0 em
+    // pointerdown neste Chromium) — so MouseEvent tradicional (dblclick/click)
+    // garante isso, entao palavra/linha usam listeners nativos separados
+    // abaixo em vez de checar event.detail aqui.
     const selectionPointerDown = (event: PointerEvent) => {
       if (event.button !== 0 || !screen) return;
       if (terminal.modes.mouseTrackingMode !== 'none' && !event.shiftKey) return;
+      const cell = terminalCellAtPoint(event, screen.getBoundingClientRect(), terminal.cols, terminal.rows, terminal.buffer.active.viewportY);
       selectionOrigin = { x: event.clientX, y: event.clientY };
-      selectionStart = terminalCellAtPoint(event, screen.getBoundingClientRect(), terminal.cols, terminal.rows, terminal.buffer.active.viewportY);
+      selectionStart = cell;
+    };
+    const selectionDoubleClick = (event: MouseEvent) => {
+      if (event.button !== 0 || !screen) return;
+      if (terminal.modes.mouseTrackingMode !== 'none' && !event.shiftKey) return;
+      const cell = terminalCellAtPoint(event, screen.getBoundingClientRect(), terminal.cols, terminal.rows, terminal.buffer.active.viewportY);
+      const line = terminal.buffer.active.getLine(cell.row);
+      const word = line ? wordRangeAtCell(line.translateToString(false), cell.column) : null;
+      if (word) terminal.select(word.start, cell.row, word.length);
+    };
+    const selectionTripleClick = (event: MouseEvent) => {
+      if (event.button !== 0 || event.detail !== 3 || !screen) return;
+      if (terminal.modes.mouseTrackingMode !== 'none' && !event.shiftKey) return;
+      const cell = terminalCellAtPoint(event, screen.getBoundingClientRect(), terminal.cols, terminal.rows, terminal.buffer.active.viewportY);
+      terminal.selectLines(cell.row, cell.row);
     };
     const selectionPointerMove = (event: PointerEvent) => {
       if (!screen || !selectionStart || !selectionOrigin || (event.buttons & 1) === 0) return;
@@ -459,14 +490,17 @@
     // terminal.element tambem recebe o mousedown nativo que o proprio xterm
     // usa para selecionar (fase de bubble); ele roda depois do pointerdown
     // acima e, sem isso, sobrescreve visualmente a selecao correta do overlay
-    // com as metricas nao escaladas do xterm quando o canvas esta com zoom.
-    const blockNativeSingleClickSelection = (event: MouseEvent) => {
+    // com as metricas nao escaladas do xterm quando o canvas esta com zoom —
+    // vale pra clique unico, duplo e triplo (ver shouldSuppressNativeSingleClickSelection).
+    const blockNativeClickSelection = (event: MouseEvent) => {
       if (!screen || !shouldSuppressNativeSingleClickSelection(event, terminal.modes.mouseTrackingMode)) return;
       event.stopPropagation();
     };
     screen?.addEventListener('pointerdown', selectionPointerDown);
+    screen?.addEventListener('dblclick', selectionDoubleClick);
+    screen?.addEventListener('click', selectionTripleClick);
     screen?.addEventListener('contextmenu', copySelectionFromContextMenu);
-    terminal.element?.addEventListener('mousedown', blockNativeSingleClickSelection, { capture: true });
+    terminal.element?.addEventListener('mousedown', blockNativeClickSelection, { capture: true });
     // Captura antes dos handlers do proprio xterm (textarea e element): texto
     // segue o fluxo nativo dele, arquivo/imagem viram anexo do workspace.
     const handleTerminalPaste = (event: ClipboardEvent) => {
@@ -680,7 +714,7 @@
           }
           break;
         case 'say':
-          // orkestrai say: TTS sob demanda no desktop (falha silenciosa sem modelo).
+          // deepspace say: TTS sob demanda no desktop (falha silenciosa sem modelo).
           if ((!workspaceId || message.workspaceId === workspaceId) && typeof message.text === 'string' && message.text.trim()) {
             speakText(String(message.text), appSettingsStore.values.audioOutputDeviceId).catch(() => {});
           }
@@ -761,8 +795,10 @@
     return () => {
       disposed = true;
       screen?.removeEventListener('pointerdown', selectionPointerDown);
+      screen?.removeEventListener('dblclick', selectionDoubleClick);
+      screen?.removeEventListener('click', selectionTripleClick);
       screen?.removeEventListener('contextmenu', copySelectionFromContextMenu);
-      terminal.element?.removeEventListener('mousedown', blockNativeSingleClickSelection, { capture: true });
+      terminal.element?.removeEventListener('mousedown', blockNativeClickSelection, { capture: true });
       terminal.element?.removeEventListener('paste', handleTerminalPaste, { capture: true });
       window.removeEventListener('pointermove', selectionPointerMove);
       window.removeEventListener('pointerup', selectionPointerUp);
@@ -807,6 +843,30 @@
         <Tooltip.Content side="left">{m['term.idle']()}</Tooltip.Content>
       </Tooltip.Root>
   {/if}
+  {#if searchOpen}
+    <div class="terminal-search nodrag">
+      <input
+        bind:value={searchQuery}
+        oninput={() => searchQuery && searchAddon?.findNext(searchQuery)}
+        placeholder={m['ph.search_terminal']()}
+        spellcheck="false"
+      />
+      <span class="search-hint">{m['term.esc_closes']()}</span>
+    </div>
+  {/if}
+  {#if dictateError}
+    <p class="terminal-status">{dictateError}</p>
+  {/if}
+  {#if dictateStatus && !dictateError}
+    <p class="terminal-status">{dictateStatus}</p>
+  {/if}
+  {#if statusMessage}
+    <p class="terminal-status">{statusMessage}</p>
+  {/if}
+  {#if exited !== null}
+    <p class="terminal-status">{m['term.process_exited']({ code: exited })}</p>
+  {/if}
+  <div class="terminal-container" bind:this={container} style:--terminal-padding="{terminalPaddingPx}px"></div>
   {#if dictationSupported}
     <div class="dictate-controls">
       {#if dictating}
@@ -844,30 +904,6 @@
       </HeaderIconButton>
     </div>
   {/if}
-  {#if searchOpen}
-    <div class="terminal-search nodrag">
-      <input
-        bind:value={searchQuery}
-        oninput={() => searchQuery && searchAddon?.findNext(searchQuery)}
-        placeholder={m['ph.search_terminal']()}
-        spellcheck="false"
-      />
-      <span class="search-hint">{m['term.esc_closes']()}</span>
-    </div>
-  {/if}
-  {#if dictateError}
-    <p class="terminal-status">{dictateError}</p>
-  {/if}
-  {#if dictateStatus && !dictateError}
-    <p class="terminal-status">{dictateStatus}</p>
-  {/if}
-  {#if statusMessage}
-    <p class="terminal-status">{statusMessage}</p>
-  {/if}
-  {#if exited !== null}
-    <p class="terminal-status">{m['term.process_exited']({ code: exited })}</p>
-  {/if}
-  <div class="terminal-container" bind:this={container} style:--terminal-padding="{terminalPaddingPx}px"></div>
   <VoiceConfirmDialog bind:open={voiceConfirmOpen} onConfirm={() => toggleDictation()} onCancel={() => {}} />
 </div>
 
@@ -919,14 +955,18 @@
     color: #6d6d78;
   }
 
+  /*
+   * Fora do fluxo, estes controles cobriam a linha de prompt do agente. Como
+   * .terminal-node ja e flex column e o container e flex:1, uma regua estatica
+   * abaixo do terminal nunca sobrepoe o que esta sendo digitado.
+   */
   .dictate-controls {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
     display: flex;
-    gap: 4px;
-    z-index: 10;
+    flex-shrink: 0;
+    justify-content: flex-end;
     align-items: center;
+    gap: 4px;
+    padding: 3px 8px 5px;
   }
 
   :global(.dictate-lang) {

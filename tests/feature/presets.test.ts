@@ -18,7 +18,7 @@ describe('PresetService', () => {
 
   it('snapshot + apply em workspace novo: time, arestas, roles, rotinas e nota instanciados sem runtime', async () => {
     // Monta um workspace completo: lider + dev conectados, nota, role, rotina.
-    const sourceDir = mkdtempSync(join(tmpdir(), 'orkestrai-preset-src-'));
+    const sourceDir = mkdtempSync(join(tmpdir(), 'deepspace-preset-src-'));
     const source = await workspaceRepository.createWorkspace({ name: 'Origem', workingDir: sourceDir });
     const leader = await workspaceRepository.createNode({
       workspaceId: source.id,
@@ -52,7 +52,7 @@ describe('PresetService', () => {
     expect(preset.agents).toBe(2);
 
     // Aplica num workspace NOVO (outra pasta).
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-preset-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-preset-'));
     const applied = await presetService.apply(preset.id, { name: 'Projeto Novo', workingDir: dir });
     expect(applied.nodes).toBe(3);
     expect(applied.edges).toBe(2);
@@ -102,7 +102,7 @@ describe('PresetService', () => {
     const workspace = await workspaceRepository.getWorkspace(applied.workspaceId);
     expect(workspace!.name).toBe('Projeto Novo');
     expect(workspace!.workingDir).toBe(dir);
-    expect(existsSync(join(dir, '.orkestrai', 'workspace.json'))).toBe(true);
+    expect(existsSync(join(dir, '.deepspace', 'workspace.json'))).toBe(true);
   });
 
   it('aplicar em workspace existente soma o time sem apagar o que existe', async () => {
@@ -142,7 +142,7 @@ describe('PresetService', () => {
     const svelar = presets.find((preset) => preset.id === 'builtin:svelar-team');
     expect(svelar?.name).toBe('Svelar team');
 
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-builtin-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-builtin-'));
     const applied = await presetService.apply('builtin:svelar-team', { name: 'Svelar App', workingDir: dir, locale: 'en' });
     expect(applied.nodes).toBe(6);
     expect(applied.roles).toBe(4);
@@ -154,7 +154,7 @@ describe('PresetService', () => {
     expect(workspace?.syncAgentInstructionFiles).toBe(true);
     expect(existsSync(join(dir, 'AGENTS.md'))).toBe(true);
     expect(existsSync(join(dir, 'CLAUDE.md'))).toBe(true);
-    expect(existsSync(join(dir, '.orkestrai', 'workspace.json'))).toBe(true);
+    expect(existsSync(join(dir, '.deepspace', 'workspace.json'))).toBe(true);
 
     const roles = await roleService.list(applied.workspaceId);
     expect(roles).toHaveLength(4);
@@ -187,12 +187,12 @@ describe('PresetService', () => {
     expect(roleArgsFor('codex')?.[0]).toBe('-c');
     expect(roleArgsFor('codex')?.[1]).toContain('developer_instructions=');
     expect(roleArgsFor('kimi')?.[0]).toBe('--agent-file');
-    expect(roleArgsFor('kimi')?.[1]).toContain('.orkestrai/roles/');
+    expect(roleArgsFor('kimi')?.[1]).toContain('.deepspace/roles/');
   });
 
   it('creates a preset workspace directly in the selected destination group', async () => {
     const group = await workspaceGroupService.create({ name: 'Preset projects' });
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-preset-group-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-preset-group-'));
 
     const applied = await presetService.apply('builtin:svelar-team', {
       name: 'Grouped Svelar app',
@@ -207,10 +207,10 @@ describe('PresetService', () => {
     });
   });
 
-  it('installs the Orkestrai contributing consensus team and its complete workflow', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-contributing-'));
-    const applied = await presetService.apply('builtin:orkestrai-contributing', {
-      name: 'Contribuição Orkestrai',
+  it('installs the Deep Space contributing consensus team and its complete workflow', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-contributing-'));
+    const applied = await presetService.apply('builtin:deepspace-contributing', {
+      name: 'Contribuição Deep Space',
       workingDir: dir,
       locale: 'pt-BR',
     });
@@ -234,11 +234,11 @@ describe('PresetService', () => {
     expect(columns.map((column) => column.name)).toEqual(['Entrada', 'Planejado', 'Em andamento', 'Revisão', 'Validação', 'Feito']);
     const tasks = await taskBoardService.list(applied.workspaceId);
     expect(tasks[0].noteTitle).toBe('Protocolo de consenso');
-    expect(existsSync(join(dir, '.agents', 'skills', 'orkestrai-contributing', 'SKILL.md'))).toBe(true);
+    expect(existsSync(join(dir, '.agents', 'skills', 'deepspace-contributing', 'SKILL.md'))).toBe(true);
   });
 
   it('starts non-development teams with localized workflow stages', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-campaign-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-campaign-'));
     const applied = await presetService.apply('builtin:campaign-launch', {
       name: 'Campanha',
       workingDir: dir,
@@ -250,7 +250,7 @@ describe('PresetService', () => {
   });
 
   it('exports, imports, and versions checksum-protected Team Packs', async () => {
-    const source = await workspaceRepository.createWorkspace({ name: 'Pack source', workingDir: mkdtempSync(join(tmpdir(), 'orkestrai-pack-source-')) });
+    const source = await workspaceRepository.createWorkspace({ name: 'Pack source', workingDir: mkdtempSync(join(tmpdir(), 'deepspace-pack-source-')) });
     await workspaceRepository.createNode({ workspaceId: source.id, type: 'terminal', title: 'Lead', payload: { provider: 'codex', maestro: true } });
     const created = await presetService.createFromWorkspace(source.id, { name: 'Product team', description: 'A complete team' });
     expect(created.version).toBe('1.0.0');
@@ -261,7 +261,7 @@ describe('PresetService', () => {
     expect((await presetService.revisions(created.id)).map((item) => item.version)).toEqual(['1.1.0', '1.0.0']);
 
     const bundle = await presetService.exportPack(created.id, 'en');
-    expect(bundle).toMatchObject({ format: 'orkestrai-team-pack', schemaVersion: 1, manifest: { version: '1.1.0' } });
+    expect(bundle).toMatchObject({ format: 'deepspace-team-pack', schemaVersion: 1, manifest: { version: '1.1.0' } });
     const imported = await presetService.importPack(bundle);
     expect(imported).toMatchObject({ name: 'Product team', version: '1.1.0' });
     await expect(presetService.importPack({ ...bundle, data: { ...bundle.data, createdAt: '2030-01-01T00:00:00.000Z' } })).rejects.toThrow('Checksum');

@@ -30,7 +30,7 @@ function visualizerBaseUrl(requestUrl: string): string {
 
 /**
  * Gives Postman visualizers an explicit, credential-free base URL. Without a
- * base, relative media paths inside srcdoc target Orkestrai's own HTTP server.
+ * base, relative media paths inside srcdoc target Deep Space's own HTTP server.
  */
 export function apiClientVisualizerDocument(content: string, requestUrl: string): string {
   const bounded = content.slice(0, 1_000_000).replace(/<base\b[^>]*>/gi, '');

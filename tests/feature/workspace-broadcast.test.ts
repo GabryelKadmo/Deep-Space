@@ -14,12 +14,12 @@ describe('WorkspaceService — broadcast de mudancas estruturais', () => {
 
   afterEach(() => {
     events.length = 0;
-    delete (globalThis as { __orkestraiBroadcast?: unknown }).__orkestraiBroadcast;
-    delete (globalThis as { __orkestraiStopWorkspaceDevice?: unknown }).__orkestraiStopWorkspaceDevice;
+    delete (globalThis as { __deepspaceBroadcast?: unknown }).__deepspaceBroadcast;
+    delete (globalThis as { __deepspaceStopWorkspaceDevice?: unknown }).__deepspaceStopWorkspaceDevice;
   });
 
   function capture() {
-    (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast = (payload) => {
+    (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast = (payload) => {
       events.push(payload);
     };
   }
@@ -73,7 +73,7 @@ describe('WorkspaceService — broadcast de mudancas estruturais', () => {
     expect((await workspaceRepository.listNodes(workspace.id)).filter((node) => node.type === 'device')).toHaveLength(1);
 
     let stoppedWorkspaceId = '';
-    (globalThis as { __orkestraiStopWorkspaceDevice?: (workspaceId: string) => Promise<void> }).__orkestraiStopWorkspaceDevice = async (workspaceId) => {
+    (globalThis as { __deepspaceStopWorkspaceDevice?: (workspaceId: string) => Promise<void> }).__deepspaceStopWorkspaceDevice = async (workspaceId) => {
       stoppedWorkspaceId = workspaceId;
     };
     await workspaceService.deleteNode(workspace.id, first.id);

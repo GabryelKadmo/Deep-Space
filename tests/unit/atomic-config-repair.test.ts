@@ -12,7 +12,7 @@ afterEach(async () => {
 
 describe('atomic config repair', () => {
   it('creates one backup and serializes concurrent repairs', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'orkestrai-config-'));
+    const dir = await mkdtemp(join(tmpdir(), 'deepspace-config-'));
     dirs.push(dir);
     const path = join(dir, 'config.toml');
     await writeFile(path, 'broken\n', { mode: 0o600 });
@@ -27,6 +27,6 @@ describe('atomic config repair', () => {
 
     expect(results.filter(Boolean)).toHaveLength(1);
     expect(await readFile(path, 'utf8')).toBe('fixed\n');
-    expect(await readFile(`${path}.before-orkestrai-repair`, 'utf8')).toBe('broken\n');
+    expect(await readFile(`${path}.before-deepspace-repair`, 'utf8')).toBe('broken\n');
   });
 });

@@ -216,7 +216,7 @@ function generalPreset(locale: PresetLocale, key: string, category: 'creative' |
   return {
     id: `builtin:${key}`, key, name: copy.name, icon, description: copy.description, category,
     data: {
-      format: 'orkestrai-preset', version: 2, createdAt: '2026-08-09T00:00:00.000Z',
+      format: 'deepspace-preset', version: 2, createdAt: '2026-08-09T00:00:00.000Z',
       workspace: { name: copy.name, icon, instructions: copy.instructions, syncAgentInstructionFiles: true, hooks: {} },
       nodes,
       edges: [1, 2, 3, 4, 5, 6].map((targetIndex) => ({ sourceIndex: 0, targetIndex, style: 'cord' as const })),
@@ -250,16 +250,16 @@ type ContributingCopy = {
 
 const CONTRIBUTING: Record<PresetLocale, ContributingCopy> = {
   'pt-BR': {
-    name: 'Orkestrai Contributing', description: 'Time completo para evoluir o Orkestrai com consenso Claude + Codex + Kimi, Svelar, desktop, QA e release.',
-    instructions: 'Você contribui no Orkestrai. Antes de criar tarefas, o Líder deve ler AGENTS.md, CLAUDE.md, README e CHANGELOG; pedir análise independente ao Oráculo Codex e ao Oráculo Kimi; sintetizar o plano; e obter APROVADO explícito dos dois. Se qualquer um pedir revisão, ajuste e consulte novamente. Só depois registre o consenso na nota e crie tarefas com título, descrição, imagens/notas, critério de aceite, responsável e etapa. Siga Svelar, i18n pt-BR/en/es, testes, build e changelog no mesmo commit. Mensagens de commit sempre em inglês.',
-    board: 'Entrega Orkestrai', consensus: 'Protocolo de consenso',
+    name: 'Deep Space Contributing', description: 'Time completo para evoluir o Deep Space com consenso Claude + Codex + Kimi, Svelar, desktop, QA e release.',
+    instructions: 'Você contribui no Deep Space. Antes de criar tarefas, o Líder deve ler AGENTS.md, CLAUDE.md, README e CHANGELOG; pedir análise independente ao Oráculo Codex e ao Oráculo Kimi; sintetizar o plano; e obter APROVADO explícito dos dois. Se qualquer um pedir revisão, ajuste e consulte novamente. Só depois registre o consenso na nota e crie tarefas com título, descrição, imagens/notas, critério de aceite, responsável e etapa. Siga Svelar, i18n pt-BR/en/es, testes, build e changelog no mesmo commit. Mensagens de commit sempre em inglês.',
+    board: 'Entrega Deep Space', consensus: 'Protocolo de consenso',
     consensusBody: '# Protocolo de consenso\n\n1. Líder lê contexto e restrições.\n2. Codex propõe/critica arquitetura.\n3. Kimi faz análise independente de riscos e UX.\n4. Líder sintetiza.\n5. Codex e Kimi respondem **APROVADO** ou **REVISAR** com motivo.\n6. Só após dois APROVADO o líder registra o plano e cria tarefas completas.',
-    architecture: 'Mapa do Orkestrai', architectureBody: '# Mapa técnico\n\n- Svelar: route → controller → schema/FormRequest → DTO → service → repository → model → response.\n- Svelte 5 + Paraglide nos três idiomas.\n- PTY/MCP/CLI são contratos críticos.\n- Electron empacota o servidor adapter-node.\n- Releases exigem changelog, assinatura e artefatos validados.',
+    architecture: 'Mapa do Deep Space', architectureBody: '# Mapa técnico\n\n- Svelar: route → controller → schema/FormRequest → DTO → service → repository → model → response.\n- Svelte 5 + Paraglide nos três idiomas.\n- PTY/MCP/CLI são contratos críticos.\n- Electron empacota o servidor adapter-node.\n- Releases exigem changelog, assinatura e artefatos validados.',
     files: 'Código e Git', diff: 'Revisão de mudanças', flow: 'Consenso: Claude + Codex + Kimi',
     task: 'Validar a primeira contribuição', taskDescription: 'Leia a solicitação completa, execute o Flow de consenso ou consulte os dois oráculos, registre a decisão na nota e só então decomponha o trabalho.',
     columns: ['Entrada', 'Planejado', 'Em andamento', 'Revisão', 'Validação', 'Feito'],
     agents: [
-      { title: 'Líder Orkestrai', provider: 'claude', color: '#7de5ff', prompt: 'Você orquestra a contribuição. Não crie tarefas antes do consenso explícito com os dois oráculos. Depois distribua briefings completos, acompanhe o quadro e integre apenas trabalho revisado, testado e documentado.' },
+      { title: 'Líder Deep Space', provider: 'claude', color: '#7de5ff', prompt: 'Você orquestra a contribuição. Não crie tarefas antes do consenso explícito com os dois oráculos. Depois distribua briefings completos, acompanhe o quadro e integre apenas trabalho revisado, testado e documentado.' },
       { title: 'Oráculo Codex', provider: 'codex', color: '#b7f171', prompt: 'Você é o oráculo técnico. Analise arquitetura, contratos, migrações, concorrência, segurança, testes e regressões. Responda APROVADO apenas quando o plano for executável e verificável; caso contrário responda REVISAR com mudanças concretas.' },
       { title: 'Oráculo Kimi', provider: 'kimi', color: '#c4a1ff', prompt: 'Você é o oráculo crítico. Analise produto, UX, casos extremos, compatibilidade multiplataforma, clareza para não-programadores e riscos esquecidos. Responda APROVADO ou REVISAR com justificativa objetiva.' },
       { title: 'Especialista Svelar', provider: 'codex', color: '#9675ff', prompt: 'Você implementa backend e frontend seguindo estritamente a arquitetura Svelar, geradores, ORM, schemas compartilhados, Svelte 5, Tailwind, shadcn e Paraglide.' },
@@ -276,15 +276,15 @@ const CONTRIBUTING: Record<PresetLocale, ContributingCopy> = {
     ],
   },
   en: {
-    name: 'Orkestrai Contributing', description: 'A complete team for evolving Orkestrai with Claude + Codex + Kimi consensus, Svelar, desktop, QA, and release.',
-    instructions: 'You contribute to Orkestrai. Before creating tasks, the Lead must read AGENTS.md, CLAUDE.md, README, and CHANGELOG; request independent analysis from the Codex Oracle and Kimi Oracle; synthesize the plan; and obtain an explicit APPROVED from both. If either requests changes, revise and ask again. Only then record consensus in the note and create tasks with title, description, images/notes, acceptance criteria, owner, and stage. Follow Svelar, pt-BR/en/es i18n, tests, build, and changelog in the same commit. Commit messages are always in English.',
-    board: 'Orkestrai delivery', consensus: 'Consensus protocol', consensusBody: '# Consensus protocol\n\n1. Lead reads context and constraints.\n2. Codex proposes or critiques architecture.\n3. Kimi independently reviews risks and UX.\n4. Lead synthesizes.\n5. Codex and Kimi answer **APPROVED** or **REVISE** with a reason.\n6. Only after two approvals does the lead record the plan and create complete tasks.',
-    architecture: 'Orkestrai map', architectureBody: '# Technical map\n\n- Svelar: route → controller → schema/FormRequest → DTO → service → repository → model → response.\n- Svelte 5 + Paraglide in three languages.\n- PTY/MCP/CLI are critical contracts.\n- Electron packages the adapter-node server.\n- Releases require changelog, signing, and validated artifacts.',
+    name: 'Deep Space Contributing', description: 'A complete team for evolving Deep Space with Claude + Codex + Kimi consensus, Svelar, desktop, QA, and release.',
+    instructions: 'You contribute to Deep Space. Before creating tasks, the Lead must read AGENTS.md, CLAUDE.md, README, and CHANGELOG; request independent analysis from the Codex Oracle and Kimi Oracle; synthesize the plan; and obtain an explicit APPROVED from both. If either requests changes, revise and ask again. Only then record consensus in the note and create tasks with title, description, images/notes, acceptance criteria, owner, and stage. Follow Svelar, pt-BR/en/es i18n, tests, build, and changelog in the same commit. Commit messages are always in English.',
+    board: 'Deep Space delivery', consensus: 'Consensus protocol', consensusBody: '# Consensus protocol\n\n1. Lead reads context and constraints.\n2. Codex proposes or critiques architecture.\n3. Kimi independently reviews risks and UX.\n4. Lead synthesizes.\n5. Codex and Kimi answer **APPROVED** or **REVISE** with a reason.\n6. Only after two approvals does the lead record the plan and create complete tasks.',
+    architecture: 'Deep Space map', architectureBody: '# Technical map\n\n- Svelar: route → controller → schema/FormRequest → DTO → service → repository → model → response.\n- Svelte 5 + Paraglide in three languages.\n- PTY/MCP/CLI are critical contracts.\n- Electron packages the adapter-node server.\n- Releases require changelog, signing, and validated artifacts.',
     files: 'Code and Git', diff: 'Change review', flow: 'Consensus: Claude + Codex + Kimi',
     task: 'Validate the first contribution', taskDescription: 'Read the complete request, run the consensus Flow or consult both oracles, record the decision in the note, and only then break down the work.',
     columns: ['Inbox', 'Planned', 'In progress', 'Review', 'Validation', 'Done'],
     agents: [
-      { title: 'Orkestrai Lead', provider: 'claude', color: '#7de5ff', prompt: 'You orchestrate the contribution. Do not create tasks before explicit consensus with both oracles. Then distribute complete briefs, track the board, and integrate only reviewed, tested, documented work.' },
+      { title: 'Deep Space Lead', provider: 'claude', color: '#7de5ff', prompt: 'You orchestrate the contribution. Do not create tasks before explicit consensus with both oracles. Then distribute complete briefs, track the board, and integrate only reviewed, tested, documented work.' },
       { title: 'Codex Oracle', provider: 'codex', color: '#b7f171', prompt: 'You are the technical oracle. Review architecture, contracts, migrations, concurrency, security, tests, and regressions. Answer APPROVED only when the plan is executable and verifiable; otherwise answer REVISE with concrete changes.' },
       { title: 'Kimi Oracle', provider: 'kimi', color: '#c4a1ff', prompt: 'You are the critical oracle. Review product, UX, edge cases, cross-platform compatibility, clarity for non-programmers, and overlooked risks. Answer APPROVED or REVISE with an objective reason.' },
       { title: 'Svelar Specialist', provider: 'codex', color: '#9675ff', prompt: 'You implement backend and frontend while strictly following Svelar architecture, generators, ORM, shared schemas, Svelte 5, Tailwind, shadcn, and Paraglide.' },
@@ -301,15 +301,15 @@ const CONTRIBUTING: Record<PresetLocale, ContributingCopy> = {
     ],
   },
   es: {
-    name: 'Orkestrai Contributing', description: 'Equipo completo para evolucionar Orkestrai con consenso Claude + Codex + Kimi, Svelar, desktop, QA y release.',
-    instructions: 'Contribuyes en Orkestrai. Antes de crear tareas, el Líder debe leer AGENTS.md, CLAUDE.md, README y CHANGELOG; pedir análisis independiente al Oráculo Codex y Oráculo Kimi; sintetizar el plan; y obtener APROBADO explícito de ambos. Si cualquiera pide revisión, ajusta y consulta otra vez. Solo entonces registra el consenso en la nota y crea tareas con título, descripción, imágenes/notas, criterio de aceptación, responsable y etapa. Sigue Svelar, i18n pt-BR/en/es, pruebas, build y changelog en el mismo commit. Los commits siempre van en inglés.',
-    board: 'Entrega Orkestrai', consensus: 'Protocolo de consenso', consensusBody: '# Protocolo de consenso\n\n1. Líder lee contexto y restricciones.\n2. Codex propone o critica arquitectura.\n3. Kimi revisa riesgos y UX de forma independiente.\n4. Líder sintetiza.\n5. Codex y Kimi responden **APROBADO** o **REVISAR** con motivo.\n6. Solo tras dos aprobaciones el líder registra el plan y crea tareas completas.',
-    architecture: 'Mapa de Orkestrai', architectureBody: '# Mapa técnico\n\n- Svelar: route → controller → schema/FormRequest → DTO → service → repository → model → response.\n- Svelte 5 + Paraglide en tres idiomas.\n- PTY/MCP/CLI son contratos críticos.\n- Electron empaqueta el servidor adapter-node.\n- Releases exigen changelog, firma y artefactos validados.',
+    name: 'Deep Space Contributing', description: 'Equipo completo para evolucionar Deep Space con consenso Claude + Codex + Kimi, Svelar, desktop, QA y release.',
+    instructions: 'Contribuyes en Deep Space. Antes de crear tareas, el Líder debe leer AGENTS.md, CLAUDE.md, README y CHANGELOG; pedir análisis independiente al Oráculo Codex y Oráculo Kimi; sintetizar el plan; y obtener APROBADO explícito de ambos. Si cualquiera pide revisión, ajusta y consulta otra vez. Solo entonces registra el consenso en la nota y crea tareas con título, descripción, imágenes/notas, criterio de aceptación, responsable y etapa. Sigue Svelar, i18n pt-BR/en/es, pruebas, build y changelog en el mismo commit. Los commits siempre van en inglés.',
+    board: 'Entrega Deep Space', consensus: 'Protocolo de consenso', consensusBody: '# Protocolo de consenso\n\n1. Líder lee contexto y restricciones.\n2. Codex propone o critica arquitectura.\n3. Kimi revisa riesgos y UX de forma independiente.\n4. Líder sintetiza.\n5. Codex y Kimi responden **APROBADO** o **REVISAR** con motivo.\n6. Solo tras dos aprobaciones el líder registra el plan y crea tareas completas.',
+    architecture: 'Mapa de Deep Space', architectureBody: '# Mapa técnico\n\n- Svelar: route → controller → schema/FormRequest → DTO → service → repository → model → response.\n- Svelte 5 + Paraglide en tres idiomas.\n- PTY/MCP/CLI son contratos críticos.\n- Electron empaqueta el servidor adapter-node.\n- Releases exigen changelog, firma y artefactos validados.',
     files: 'Código y Git', diff: 'Revisión de cambios', flow: 'Consenso: Claude + Codex + Kimi',
     task: 'Validar la primera contribución', taskDescription: 'Lee la solicitud completa, ejecuta el Flow de consenso o consulta los dos oráculos, registra la decisión en la nota y solo entonces divide el trabajo.',
     columns: ['Entrada', 'Planificado', 'En progreso', 'Revisión', 'Validación', 'Hecho'],
     agents: [
-      { title: 'Líder Orkestrai', provider: 'claude', color: '#7de5ff', prompt: 'Orquestas la contribución. No crees tareas antes del consenso explícito con ambos oráculos. Después distribuye briefings completos, acompaña el tablero e integra solo trabajo revisado, probado y documentado.' },
+      { title: 'Líder Deep Space', provider: 'claude', color: '#7de5ff', prompt: 'Orquestas la contribución. No crees tareas antes del consenso explícito con ambos oráculos. Después distribuye briefings completos, acompaña el tablero e integra solo trabajo revisado, probado y documentado.' },
       { title: 'Oráculo Codex', provider: 'codex', color: '#b7f171', prompt: 'Eres el oráculo técnico. Revisa arquitectura, contratos, migraciones, concurrencia, seguridad, pruebas y regresiones. Responde APROBADO solo cuando el plan sea ejecutable y verificable; de lo contrario responde REVISAR con cambios concretos.' },
       { title: 'Oráculo Kimi', provider: 'kimi', color: '#c4a1ff', prompt: 'Eres el oráculo crítico. Revisa producto, UX, casos extremos, compatibilidad multiplataforma, claridad para no-programadores y riesgos olvidados. Responde APROBADO o REVISAR con motivo objetivo.' },
       { title: 'Especialista Svelar', provider: 'codex', color: '#9675ff', prompt: 'Implementas backend y frontend siguiendo estrictamente arquitectura Svelar, generadores, ORM, schemas compartidos, Svelte 5, Tailwind, shadcn y Paraglide.' },
@@ -359,15 +359,15 @@ function contributingPreset(locale: PresetLocale): BuiltinPresetRecipe {
     },
   ];
   const skills = [
-    ...skillPair(locale, 'orkestrai-contributing', copy.name, copy.instructions),
+    ...skillPair(locale, 'deepspace-contributing', copy.name, copy.instructions),
     ...skillPair(locale, 'svelar-conventions', 'Svelar', copy.architectureBody),
-    ...skillPair(locale, 'release-discipline', 'Orkestrai release', copy.agents[5].prompt),
+    ...skillPair(locale, 'release-discipline', 'Deep Space release', copy.agents[5].prompt),
   ];
   return {
-    id: 'builtin:orkestrai-contributing', key: 'orkestrai-contributing', name: copy.name, icon: 'wrench',
-    description: copy.description, category: 'orkestrai',
+    id: 'builtin:deepspace-contributing', key: 'deepspace-contributing', name: copy.name, icon: 'wrench',
+    description: copy.description, category: 'deepspace',
     data: {
-      format: 'orkestrai-preset', version: 2, createdAt: '2026-08-09T00:00:00.000Z',
+      format: 'deepspace-preset', version: 2, createdAt: '2026-08-09T00:00:00.000Z',
       workspace: { name: copy.name, icon: 'wrench', instructions: copy.instructions, syncAgentInstructionFiles: true, hooks: {} },
       nodes,
       edges: [

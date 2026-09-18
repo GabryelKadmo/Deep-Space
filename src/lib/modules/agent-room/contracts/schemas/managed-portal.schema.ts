@@ -10,7 +10,7 @@ export const portalProfileSchema = z.object({
   profileId: z.string().trim().min(1).max(64).regex(/^[a-zA-Z0-9_-]+$/).default('default'),
   profileScope: z.enum(['private', 'workspace']).default('workspace'),
   allowedHosts: z.array(z.string().trim().min(1).max(253).toLowerCase()).max(64).default([]),
-  downloadDirectory: safeRelativePathSchema.default('.orkestrai/downloads'),
+  downloadDirectory: safeRelativePathSchema.default('.deepspace/downloads'),
   control: z.enum(['disabled', 'read', 'interact']).default('disabled'),
   agentIds: z.array(z.string().uuid()).max(100).default([]),
   paused: z.boolean().default(false),

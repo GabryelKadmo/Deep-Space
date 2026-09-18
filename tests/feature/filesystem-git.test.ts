@@ -9,9 +9,9 @@ import { gitService } from '$lib/modules/agent-room/application/services/GitServ
 import { workspaceRepository } from '$lib/modules/agent-room/infrastructure/repositories/WorkspaceRepository.js';
 
 function makeGitRepo() {
-  const dir = mkdtempSync(join(tmpdir(), 'orkestrai-git-'));
+  const dir = mkdtempSync(join(tmpdir(), 'deepspace-git-'));
   execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-  execFileSync('git', ['config', 'user.email', 'teste@orkestrai.local'], { cwd: dir });
+  execFileSync('git', ['config', 'user.email', 'teste@deepspace.local'], { cwd: dir });
   execFileSync('git', ['config', 'user.name', 'Teste'], { cwd: dir });
   writeFileSync(join(dir, 'README.md'), '# repo\n');
   mkdirSync(join(dir, 'src'));
@@ -160,7 +160,7 @@ describe('FilesystemService + GitService', () => {
   });
 
   it('status em diretorio sem repo retorna isRepo false', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-nogit-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-nogit-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'fs', workingDir: dir });
     const status = await gitService.status(workspace.id);
     expect(status.isRepo).toBe(false);

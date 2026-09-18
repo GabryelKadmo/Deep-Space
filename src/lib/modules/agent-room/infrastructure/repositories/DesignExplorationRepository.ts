@@ -102,10 +102,10 @@ export class DesignExplorationRepository {
           ? designNodes[DESIGN_EXPLORATION_DIRECTIONS.indexOf(task.direction)]
           : null;
         const marker = designNode
-          ? `<!-- orkestrai:design-node=${designNode.id} -->`
+          ? `<!-- deepspace:design-node=${designNode.id} -->`
           : task.kind === 'review'
-            ? `<!-- orkestrai:design-review=${explorationId} -->`
-            : `<!-- orkestrai:design-stage=${task.kind};exploration=${explorationId} -->`;
+            ? `<!-- deepspace:design-review=${explorationId} -->`
+            : `<!-- deepspace:design-stage=${task.kind};exploration=${explorationId} -->`;
         await AgentBoardTask.query().insert({
           id: taskId,
           workspace_id: input.workspaceId,

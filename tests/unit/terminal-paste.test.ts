@@ -25,20 +25,20 @@ describe('colagem de arquivos no terminal', () => {
   });
 
   it('entrega caminhos prontos para o prompt da CLI', () => {
-    expect(terminalPathTokens(['.orkestrai/attachments/a.png'])).toBe('.orkestrai/attachments/a.png ');
-    expect(terminalPathTokens(['.orkestrai/attachments/meu print.png'])).toBe('".orkestrai/attachments/meu print.png" ');
+    expect(terminalPathTokens(['.deepspace/attachments/a.png'])).toBe('.deepspace/attachments/a.png ');
+    expect(terminalPathTokens(['.deepspace/attachments/meu print.png'])).toBe('".deepspace/attachments/meu print.png" ');
     expect(terminalPathTokens([])).toBe('');
   });
 
   it('guarda cada arquivo colado no workspace e devolve os caminhos', async () => {
     uploadWorkspaceAttachment.mockImplementation(async (_workspaceId: string, file: File) => ({
       kind: 'file',
-      path: `.orkestrai/attachments/${file.name}`,
+      path: `.deepspace/attachments/${file.name}`,
     }));
     const files = [new File(['a'], 'a.png'), new File(['b'], 'b.png')];
     await expect(storePastedTerminalFiles('ws-1', files)).resolves.toEqual([
-      '.orkestrai/attachments/a.png',
-      '.orkestrai/attachments/b.png',
+      '.deepspace/attachments/a.png',
+      '.deepspace/attachments/b.png',
     ]);
     expect(uploadWorkspaceAttachment).toHaveBeenCalledWith('ws-1', files[0]);
   });

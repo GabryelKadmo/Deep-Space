@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PassThrough } from 'node:stream';
-import { runMcpServer, MCP_TOOLS } from '../../packages/orkestrai-cli/src/mcp.js';
+import { runMcpServer, MCP_TOOLS } from '../../packages/deepspace-cli/src/mcp.js';
 
 /** Roda o servidor MCP com streams em memoria + bridge fake (captura o body). */
 function startMcp(bridgeResult = { ok: true }, selfAgent = 'n1') {
@@ -41,13 +41,13 @@ function startMcp(bridgeResult = { ok: true }, selfAgent = 'n1') {
   return { send, sendLsp, waitFor, done, input };
 }
 
-describe('servidor MCP (orkestrai mcp)', () => {
+describe('servidor MCP (deepspace mcp)', () => {
   it('handshake initialize + tools/list com as tools do canvas', async () => {
     const { send, waitFor, input } = startMcp();
     send({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2024-11-05', capabilities: {} } });
     const init = await waitFor(1);
     expect(init.result.protocolVersion).toBe('2024-11-05');
-    expect(init.result.serverInfo.name).toBe('orkestrai');
+    expect(init.result.serverInfo.name).toBe('deepspace');
 
     send({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
     const list = await waitFor(2);
@@ -105,7 +105,7 @@ describe('servidor MCP (orkestrai mcp)', () => {
     } });
     const response = await waitFor(1);
     expect(response.result.isError).toBe(true);
-    expect(response.result.content[0].text).toMatch(/ORKESTRAI_NODE_ID.*tarefa/i);
+    expect(response.result.content[0].text).toMatch(/DEEPSPACE_NODE_ID.*tarefa/i);
     input.end();
   });
 

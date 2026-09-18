@@ -21,7 +21,7 @@ export type SecretRefRecord = {
 };
 
 const hostVault = globalThis as typeof globalThis & {
-  __orkestraiHostVaultResolve?: (reference: string) => Promise<string | null>;
+  __deepspaceHostVaultResolve?: (reference: string) => Promise<string | null>;
 };
 
 function iso(value: unknown): string {
@@ -151,7 +151,7 @@ export class SecretRefService {
       const provider = String(model.getAttribute('provider'));
       const key = String(model.getAttribute('secret_key'));
       const value = provider === 'host_vault'
-        ? await hostVault.__orkestraiHostVaultResolve?.(reference) ?? null
+        ? await hostVault.__deepspaceHostVaultResolve?.(reference) ?? null
         : await desktopSecretService.get(key);
       if (!value) throw new Error('SecretRef has no stored value.');
       await AgentSecretRef.query().where('id', id).update({ last_used_at: new Date(), updated_at: new Date() });

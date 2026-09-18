@@ -634,6 +634,8 @@ export type WorkspaceGroup = {
   position: number;
   /** Estado de expandido/recolhido na arvore da barra lateral, persistido no servidor. */
   collapsed: boolean;
+  /** Nome do icone Lucide (ver workspace-icons.ts); null usa o icone de pasta padrao. */
+  icon: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -927,7 +929,7 @@ export type ApiClientNodePayload = {
   environments?: Record<string, Record<string, string>>;
   globalVariables?: Record<string, string>;
   runtimeVariables?: Record<string, string>;
-  scriptDialect?: 'orkestrai' | 'postman' | 'bruno';
+  scriptDialect?: 'deepspace' | 'postman' | 'bruno';
   vaultKeys?: string[];
   activeEnvironment?: string | null;
   history?: ApiClientHistoryEntry[];
@@ -950,7 +952,7 @@ export type ApiClientNodePayload = {
   };
   sync?: {
     mode: 'manual' | 'watch';
-    conflictPolicy: 'ask' | 'orkestrai' | 'filesystem';
+    conflictPolicy: 'ask' | 'deepspace' | 'filesystem';
     lastSyncedAt: string | null;
     sourceFingerprint: string | null;
     localFingerprint: string | null;

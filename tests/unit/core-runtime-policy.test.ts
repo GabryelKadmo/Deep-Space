@@ -18,8 +18,8 @@ describe('Core runtime policy', () => {
   });
 
   it('recognizes the hidden start-at-login launch', () => {
-    expect(policy.isBackgroundCoreLaunch(['Orkestrai', policy.BACKGROUND_CORE_ARGUMENT])).toBe(true);
-    expect(policy.isBackgroundCoreLaunch(['Orkestrai'])).toBe(false);
+    expect(policy.isBackgroundCoreLaunch(['Deep Space', policy.BACKGROUND_CORE_ARGUMENT])).toBe(true);
+    expect(policy.isBackgroundCoreLaunch(['Deep Space'])).toBe(false);
   });
 
   it('keeps the Core alive only while background mode is enabled and the app is not quitting', () => {

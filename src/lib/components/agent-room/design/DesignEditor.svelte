@@ -704,7 +704,7 @@
   }
 
   function openProposalCouncil(proposal: DesignProposal): void {
-    window.dispatchEvent(new CustomEvent('orkestrai:open-council', {
+    window.dispatchEvent(new CustomEvent('deepspace:open-council', {
       detail: {
         workspaceId,
         source: { taskTitle: proposal.title, taskDescription: proposal.description || proposal.operations.map((operation) => String(operation.kind ?? '')).join(', ') },
@@ -3289,7 +3289,7 @@ function interaction(e,type){const el=e.target.closest?.('[data-design-element]'
       leftPanelVisible = restoredSession.leftPanelVisible;
       rightPanelVisible = restoredSession.rightPanelVisible;
     }
-    const storageKey = 'orkestrai.design.collaboration.participant';
+    const storageKey = 'deepspace.design.collaboration.participant';
     const storedId = sessionStorage.getItem(storageKey);
     const id = storedId && storedId.length >= 8 ? storedId : participant.id;
     sessionStorage.setItem(storageKey, id);

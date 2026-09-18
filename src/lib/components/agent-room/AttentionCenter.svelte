@@ -150,12 +150,12 @@
       }
     };
     const show = () => { open = true; void loadItems(); };
-    window.addEventListener('orkestrai:open-attention', show);
+    window.addEventListener('deepspace:open-attention', show);
     return () => {
       if (refreshTimer) clearTimeout(refreshTimer);
       clearInterval(clockTimer);
       socket.close();
-      window.removeEventListener('orkestrai:open-attention', show);
+      window.removeEventListener('deepspace:open-attention', show);
     };
   });
 </script>

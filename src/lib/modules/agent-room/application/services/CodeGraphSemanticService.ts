@@ -32,9 +32,9 @@ type SemanticSyncState = {
 };
 
 function semanticSyncState(): SemanticSyncState {
-  const global = globalThis as typeof globalThis & { __orkestraiCodeGraphSemanticSyncState?: SemanticSyncState };
-  global.__orkestraiCodeGraphSemanticSyncState ??= { inFlight: new Map() };
-  return global.__orkestraiCodeGraphSemanticSyncState;
+  const global = globalThis as typeof globalThis & { __deepspaceCodeGraphSemanticSyncState?: SemanticSyncState };
+  global.__deepspaceCodeGraphSemanticSyncState ??= { inFlight: new Map() };
+  return global.__deepspaceCodeGraphSemanticSyncState;
 }
 
 function normalized(value: string): string {

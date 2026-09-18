@@ -3,7 +3,7 @@ import type { ApiClientNodePayload } from '../../domain/types.js';
 import type { ApiClientFolder } from '../../domain/types.js';
 import type { ApiClientScriptResponse, ApiClientScriptStage } from './ApiClientScriptSandbox.js';
 
-export type ApiClientScriptDialect = 'orkestrai' | 'postman' | 'bruno';
+export type ApiClientScriptDialect = 'deepspace' | 'postman' | 'bruno';
 
 export type ApiClientScriptScopes = {
   collection: Record<string, unknown>;

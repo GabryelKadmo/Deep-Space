@@ -12,16 +12,16 @@ afterEach(() => {
 
 describe('fallbackCliLauncher', () => {
   it('usa o launcher .cmd no Windows e nunca o JavaScript cru', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-launcher-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-launcher-'));
     temporaryDirs.push(dir);
-    const launcher = join(dir, 'orkestrai.cmd');
+    const launcher = join(dir, 'deepspace.cmd');
     writeFileSync(launcher, '@echo off\r\n');
 
-    expect(fallbackCliLauncher('win32', { ORKESTRAI_SHIM_DIR: dir }, 'C:\\app\\orkestrai.js')).toBe(launcher);
-    expect(fallbackCliLauncher('win32', {}, 'C:\\app\\orkestrai.js')).toBeUndefined();
+    expect(fallbackCliLauncher('win32', { DEEPSPACE_SHIM_DIR: dir }, 'C:\\app\\deepspace.js')).toBe(launcher);
+    expect(fallbackCliLauncher('win32', {}, 'C:\\app\\deepspace.js')).toBeUndefined();
   });
 
   it('mantem o fallback por shebang no POSIX', () => {
-    expect(fallbackCliLauncher('darwin', {}, '/app/orkestrai.js')).toBe('/app/orkestrai.js');
+    expect(fallbackCliLauncher('darwin', {}, '/app/deepspace.js')).toBe('/app/deepspace.js');
   });
 });

@@ -1,4 +1,4 @@
-# Build do Orkestrai no Windows
+# Build do Deep Space no Windows
 
 Guia para compilar o app desktop nativamente numa máquina Windows (o caminho
 recomendado para produzir o instalador NSIS — cross-build via Docker/wine em
@@ -33,9 +33,9 @@ npx electron-builder --win zip --x64 --publish never "-c.npmRebuild=false"
 
 Artefatos em `release/`:
 
-- `Orkestrai-Setup-<versão>.exe` — instalador NSIS (unsigned: o SmartScreen vai
+- `DeepSpace-Setup-<versão>.exe` — instalador NSIS (unsigned: o SmartScreen vai
   avisar; "Mais informações" → "Executar assim mesmo")
-- `Orkestrai-<versão>-win.zip` — versão portátil (descompactar e rodar `Orkestrai.exe`)
+- `DeepSpace-<versão>-x64.zip` — versão portátil (descompactar e rodar `Deep Space.exe`)
 
 ## Decisões de empacotamento (não mude sem ler)
 
@@ -44,7 +44,7 @@ Artefatos em `release/`:
   exigir compilar `better-sqlite3` do zero (aí sim precisa de Visual Studio
   Build Tools). O `node-pty` traz prebuilds win32-x64 no próprio tarball.
 - **`asar: false`** no `package.json`: o servidor de produção
-  (`scripts/orkestrai-server.mjs`) é ESM e o loader ESM do Node não resolve
+  (`scripts/deepspace-server.mjs`) é ESM e o loader ESM do Node não resolve
   pacotes dentro do asar. Não reative.
 - **`node_modules` de UI excluídos do `files`**: `@tabler`, `@xterm`,
   `@codemirror`, `@lezer`, `codemirror`, `@xyflow`, `layerchart`, `bits-ui` e
@@ -61,7 +61,7 @@ Artefatos em `release/`:
 - **Runtime de console da ponte**: o hook `scripts/after-pack.mjs` baixa o
   `node.exe` x64 pinado na versão usada pelo projeto, valida o arquivo contra o
   SHA-256 oficial fixado no código e o inclui em
-  `resources/orkestrai-cli-runtime/node.exe`. Esse binário é intencional: o
+  `resources/deepspace-cli-runtime/node.exe`. Esse binário é intencional: o
   executável Electron usa o subsistema gráfico do Windows e, quando chamado
   pelo WSL, não devolve `stdout`/`stderr`; por isso não pode ser usado como
   runtime da CLI ou do MCP. Não remova o hook nem substitua a validação por um
@@ -79,8 +79,8 @@ Artefatos em `release/`:
 
 ## Runtime no Windows
 
-- **Dados do app**: `%APPDATA%\orkestrai\` (SQLite, backups rotativos,
-  `bin/orkestrai.cmd` da CLI da ponte — entra no PATH dos terminais PTY
+- **Dados do app**: `%APPDATA%\deepspace\` (SQLite, backups rotativos,
+  `bin/deepspace.cmd` da CLI da ponte — entra no PATH dos terminais PTY
   automaticamente a cada boot do servidor interno).
 - **PTY**: `node-pty` usa **conpty** nativo do Windows 10+ (fallback winpty).
   Shells: `powershell.exe` por padrão; WSL funciona apontando o terminal para

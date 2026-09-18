@@ -24,7 +24,7 @@ describe('DesignReviewService', () => {
   });
 
   it('requires a real concept and records human approval for the exact revision', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-design-review-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-design-review-'));
     directories.push(directory);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Visual review', workingDir: directory });
     const node = await workspaceRepository.createNode({
@@ -172,7 +172,7 @@ describe('DesignReviewService', () => {
   });
 
   it('preserves review metadata written while a design revision is being persisted', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-design-review-race-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-design-review-race-'));
     directories.push(directory);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Concurrent visual review', workingDir: directory });
     const node = await workspaceRepository.createNode({
@@ -237,7 +237,7 @@ describe('DesignReviewService', () => {
   });
 
   it('records the selected direction and refuses to close incomplete delivery stages', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orkestrai-design-delivery-gate-'));
+    const directory = mkdtempSync(join(tmpdir(), 'deepspace-design-delivery-gate-'));
     directories.push(directory);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Todo design delivery', workingDir: directory });
     const exploration = await designExplorationService.create(workspace.id, CreateDesignExplorationDto.from(createDesignExplorationSchema.parse({

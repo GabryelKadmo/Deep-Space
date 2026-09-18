@@ -17,18 +17,18 @@ export type CoreRuntimeStatus = {
 
 export class CoreRuntimeService {
   authorized(token: string | null): boolean {
-    const expected = process.env.ORKESTRAI_CORE_TOKEN ?? '';
+    const expected = process.env.DEEPSPACE_CORE_TOKEN ?? '';
     return Boolean(expected && token && sameSecret(expected, token));
   }
 
   status(): CoreRuntimeStatus {
     return {
       status: 'ok',
-      coreId: process.env.ORKESTRAI_CORE_ID ?? 'development',
+      coreId: process.env.DEEPSPACE_CORE_ID ?? 'development',
       pid: process.pid,
-      startedAt: process.env.ORKESTRAI_CORE_STARTED_AT ?? new Date(Date.now() - process.uptime() * 1000).toISOString(),
+      startedAt: process.env.DEEPSPACE_CORE_STARTED_AT ?? new Date(Date.now() - process.uptime() * 1000).toISOString(),
       uptimeSeconds: Math.floor(process.uptime()),
-      version: process.env.ORKESTRAI_CORE_VERSION ?? 'development',
+      version: process.env.DEEPSPACE_CORE_VERSION ?? 'development',
     };
   }
 }

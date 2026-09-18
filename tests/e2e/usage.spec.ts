@@ -37,7 +37,7 @@ test.describe('usage dos providers', () => {
   });
 
   test('painel de usage abre no canvas e mostra cards', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-usage-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-usage-'));
     const workspaceName = `E2E usage ${Date.now()}`;
     const created = await request.post('/api/agent-room/workspaces', {
       data: { name: workspaceName, workingDir: dir },
@@ -107,7 +107,7 @@ test.describe('usage dos providers', () => {
   test('traduz erros coletados pelo backend para o idioma ativo', async ({ page, request }) => {
     const settingsResponse = await request.get('/api/agent-room/settings');
     const originalSettings = (await settingsResponse.json()).data as Record<string, unknown>;
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-usage-locale-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-usage-locale-'));
     const workspaceName = `E2E usage locale ${Date.now()}`;
     const created = await request.post('/api/agent-room/workspaces', {
       data: { name: workspaceName, workingDir: dir },

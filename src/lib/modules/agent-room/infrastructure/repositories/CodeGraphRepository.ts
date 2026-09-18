@@ -37,10 +37,10 @@ type PersistedRevisionIndex = {
 
 function persistenceCache(): Map<string, PersistedRevisionIndex> {
   const global = globalThis as typeof globalThis & {
-    __orkestraiCodeGraphPersistenceCache?: Map<string, PersistedRevisionIndex>;
+    __deepspaceCodeGraphPersistenceCache?: Map<string, PersistedRevisionIndex>;
   };
-  global.__orkestraiCodeGraphPersistenceCache ??= new Map();
-  return global.__orkestraiCodeGraphPersistenceCache;
+  global.__deepspaceCodeGraphPersistenceCache ??= new Map();
+  return global.__deepspaceCodeGraphPersistenceCache;
 }
 
 const EMPTY_STATS: CodeGraphStats = {

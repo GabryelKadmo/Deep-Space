@@ -8,9 +8,9 @@ import { floorService } from '$lib/modules/agent-room/application/services/Floor
 import { workspaceRepository } from '$lib/modules/agent-room/infrastructure/repositories/WorkspaceRepository.js';
 
 function makeRepo() {
-  const dir = mkdtempSync(join(tmpdir(), 'orkestrai-floor-'));
+  const dir = mkdtempSync(join(tmpdir(), 'deepspace-floor-'));
   execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-  execFileSync('git', ['config', 'user.email', 'teste@orkestrai.local'], { cwd: dir });
+  execFileSync('git', ['config', 'user.email', 'teste@deepspace.local'], { cwd: dir });
   execFileSync('git', ['config', 'user.name', 'Teste'], { cwd: dir });
   writeFileSync(join(dir, 'app.ts'), 'const v = 1;\n');
   execFileSync('git', ['add', '.'], { cwd: dir });
@@ -30,9 +30,9 @@ describe('FloorService', () => {
     const workspace = await workspaceRepository.createWorkspace({ name: 'ws', workingDir: dir });
 
     const floor = await floorService.create(workspace.id, { name: 'Fix login' });
-    expect(floor.branch).toBe('orkestrai/fix-login');
+    expect(floor.branch).toBe('deepspace/fix-login');
     expect(git(dir, ['worktree', 'list'])).toContain('fix-login');
-    expect(git(floor.path, ['branch', '--show-current']).trim()).toBe('orkestrai/fix-login');
+    expect(git(floor.path, ['branch', '--show-current']).trim()).toBe('deepspace/fix-login');
 
     expect(await floorService.list(workspace.id)).toHaveLength(1);
 
@@ -41,7 +41,7 @@ describe('FloorService', () => {
 
     await floorService.remove(floor.id, true);
     expect(await floorService.list(workspace.id)).toHaveLength(0);
-    expect(git(dir, ['branch', '--list', 'orkestrai/*'])).not.toContain('fix-login');
+    expect(git(dir, ['branch', '--list', 'deepspace/*'])).not.toContain('fix-login');
   });
 
   it('clona layout do terreo quando pedido', async () => {
@@ -119,16 +119,16 @@ describe('FloorService', () => {
     await floorService.remove(floor.id, true);
   });
 
-  it('hooks recebem variaveis ORKESTRAI_*', async () => {
+  it('hooks recebem variaveis DEEPSPACE_*', async () => {
     const dir = makeRepo();
     const workspace = await workspaceRepository.createWorkspace({ name: 'MeuProj', workingDir: dir });
     const floor = await floorService.create(workspace.id, { name: 'hooked' });
 
     const results = await floorService.runHooks(floor, workspace, [
-      { command: 'echo "$ORKESTRAI_FLOOR_NAME|$ORKESTRAI_PROJECT_NAME|$ORKESTRAI_BRANCH_NAME"' },
+      { command: 'echo "$DEEPSPACE_FLOOR_NAME|$DEEPSPACE_PROJECT_NAME|$DEEPSPACE_BRANCH_NAME"' },
     ]);
     expect(results[0].ok).toBe(true);
-    expect(results[0].output).toBe('hooked|MeuProj|orkestrai/hooked');
+    expect(results[0].output).toBe('hooked|MeuProj|deepspace/hooked');
 
     await floorService.remove(floor.id, true);
   });

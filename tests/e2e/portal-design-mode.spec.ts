@@ -5,7 +5,7 @@ import { join } from 'node:path';
 
 test.describe('Portal Design Mode', () => {
   test('keeps browser fallback explicit instead of silently exposing a broken inspector', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-portal-design-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-portal-design-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspaceResponse = await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E Portal Design ${Date.now()}`, workingDir: dir },
@@ -21,7 +21,7 @@ test.describe('Portal Design Mode', () => {
 
     try {
       await request.put('/api/agent-room/settings', {
-        data: { ...originalSettings, uiLanguage: 'en', appTheme: 'orkestrai-light' },
+        data: { ...originalSettings, uiLanguage: 'en', appTheme: 'deepspace-light' },
       });
       await page.goto(`/canvas?workspace=${workspace.id}&node=${portal.id}`);
       const portalNode = page.locator('.canvas-portal');

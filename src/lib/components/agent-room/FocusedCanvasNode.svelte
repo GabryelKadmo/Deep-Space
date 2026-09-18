@@ -241,7 +241,7 @@
         workspaceRuntime,
         payload: node.payload,
         exactResumeArgsFor: (agentSessionId: string) => provider?.tui?.exactResumeArgs?.map(
-          (arg) => arg.replace('__ORKESTRAI_SESSION_ID__', agentSessionId)
+          (arg) => arg.replace('__DEEPSPACE_SESSION_ID__', agentSessionId)
         ) ?? null,
         freshSessionArgsFor: () => provider?.tui?.freshSessionArgs ?? null,
         sessionStorageFor: () => provider?.sessionStorage ?? null,

@@ -1,4 +1,4 @@
-export const SHAPE_CLIPBOARD_TYPE = 'application/x-orkestrai-shapes+json';
+export const SHAPE_CLIPBOARD_TYPE = 'application/x-deepspace-shapes+json';
 
 const MAX_CLIPBOARD_BYTES = 2_000_000;
 const MAX_SHAPES = 100;

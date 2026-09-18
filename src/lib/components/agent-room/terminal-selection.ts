@@ -28,18 +28,32 @@ export function terminalSelectionRange(start: TerminalCell, end: TerminalCell, c
  * O xterm tem seu proprio SelectionService escutando "mousedown" nativo, que
  * recalcula a faixa com metricas de fonte nao escaladas (alheias ao
  * transform:scale() do canvas) e sobrescreve visualmente a selecao correta
- * do overlay baseado em pointerdown/pointermove. So bloqueamos o clique
- * unico (detail===1) na mesma condicao em que o overlay assume a selecao;
- * duplo/triplo clique (palavra/linha) continuam nativos do xterm, que le
- * event.detail do proprio navegador — nao depende de ver o mousedown
- * anterior, entao bloquear so o clique 1 nao quebra a contagem.
+ * do overlay baseado em pointerdown/pointermove/duplo/triplo clique. So
+ * suprimimos na mesma condicao em que o overlay assume a selecao — apps com
+ * mouseTrackingMode ativo (ex.: Claude Code) usam o mouse pra reportar
+ * clique/posicao pra propria TUI, entao sem Shift o clique tem que continuar
+ * chegando ao processo normalmente (suprimir sempre, numa iteracao anterior,
+ * quebrou clicar fora pra desselecionar e digitar no terminal).
  */
 export function shouldSuppressNativeSingleClickSelection(
   event: Pick<MouseEvent, 'button' | 'detail' | 'shiftKey'>,
   mouseTrackingMode: string
 ): boolean {
-  if (event.button !== 0 || event.detail !== 1) return false;
+  if (event.button !== 0 || event.detail < 1) return false;
   return mouseTrackingMode === 'none' || event.shiftKey;
+}
+
+/** Separadores de palavra (mesmo espirito do wordSeparator padrao do xterm). */
+const WORD_SEPARATOR = /[\s,.;:!?"'`()[\]{}<>|&*@#$%^~=+/\\-]/;
+
+/** Faixa da palavra na celula (column, row) usando o texto real da linha. */
+export function wordRangeAtCell(lineText: string, column: number): { start: number; length: number } | null {
+  if (column < 0 || column >= lineText.length || WORD_SEPARATOR.test(lineText[column])) return null;
+  let start = column;
+  while (start > 0 && !WORD_SEPARATOR.test(lineText[start - 1])) start -= 1;
+  let end = column;
+  while (end < lineText.length - 1 && !WORD_SEPARATOR.test(lineText[end + 1])) end += 1;
+  return { start, length: end - start + 1 };
 }
 
 export function isTerminalCopyShortcut(event: Pick<KeyboardEvent, 'type' | 'key' | 'ctrlKey' | 'metaKey' | 'altKey' | 'shiftKey'>, hasSelection: boolean) {

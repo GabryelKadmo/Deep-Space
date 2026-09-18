@@ -70,7 +70,7 @@ export function apiClientPayloadFingerprint(payload: ApiClientNodePayload): stri
     environments: payload.environments ?? {},
     globalVariables: payload.globalVariables ?? {},
     runtimeVariables: payload.runtimeVariables ?? {},
-    scriptDialect: payload.scriptDialect ?? 'orkestrai',
+    scriptDialect: payload.scriptDialect ?? 'deepspace',
     activeEnvironment: payload.activeEnvironment ?? null,
     collectionPreRequestScript: payload.collectionPreRequestScript ?? '',
     collectionPostResponseScript: payload.collectionPostResponseScript ?? '',
@@ -80,7 +80,7 @@ export function apiClientPayloadFingerprint(payload: ApiClientNodePayload): stri
 
 export async function writeApiClientFileAtomic(path: string, content: string): Promise<void> {
   const target = resolve(path);
-  const temporary = join(dirname(target), `.${basename(target)}.orkestrai-${process.pid}-${Date.now()}.tmp`);
+  const temporary = join(dirname(target), `.${basename(target)}.deepspace-${process.pid}-${Date.now()}.tmp`);
   try {
     await writeFile(temporary, content, { encoding: 'utf8', flag: 'wx' });
     await rename(temporary, target);

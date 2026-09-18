@@ -42,6 +42,11 @@
   let platform = $state<Platform>('linux');
 
   let profiles = $state<Record<string, ProviderProfile[]>>({});
+  /** Busca sempre que o card expandido muda — nao depende de um cache manual
+      dentro do onclick (que dava zero requisicoes na primeira expansao). */
+  $effect(() => {
+    if (expandedProvider) void loadProfiles(expandedProvider);
+  });
   let profileFormOpen = $state<string | null>(null);
   let profileEditingId = $state<string | null>(null);
   let profileFormName = $state('');
@@ -212,7 +217,7 @@
 </script>
 
 <svelte:head>
-  <title>Orkestrai — {m['providers.title']()}</title>
+  <title>Deep Space — {m['providers.title']()}</title>
 </svelte:head>
 
 <main class="providers-page">
@@ -315,7 +320,6 @@
                 onclick={() => {
                   if (expanded && profileFormOpen === provider.id) closeProfileForm();
                   expandedProvider = expanded ? null : provider.id;
-                  if (!expanded && !profiles[provider.id]) loadProfiles(provider.id);
                 }}
               >
                 {expanded ? m['providers.setup_close']() : m['providers.setup_open']()}

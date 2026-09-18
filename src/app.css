@@ -52,7 +52,7 @@ h4 {
 }
 
 /*
- * Paleta padrao = Orkestrai Dark (DEFAULT_APP_THEME_ID).
+ * Paleta padrao = Deep Space Dark (DEFAULT_APP_THEME_ID).
  *
  * `applyAppTheme` sobrescreve tudo isto com variaveis inline no <html> assim que
  * as settings chegam, e o script de bootstrap do app.html reaplica o tema em
@@ -66,38 +66,38 @@ h4 {
   --radius: 0.5rem;
 
   /* Tokens do produto */
-  --app-page: #0d0f12;
-  --app-canvas: #0a0d10;
-  --app-sidebar: #111419;
-  --app-surface: #171b20;
-  --app-surface-raised: #20262d;
-  --app-surface-subtle: #12161b;
-  --app-text: #f4f5f6;
-  --app-text-soft: #c2c7cd;
-  --app-text-muted: #85909a;
-  --app-border: #2a3037;
-  --app-border-strong: #404852;
-  --app-accent: #f3c34f;
-  --app-accent-soft: #302915;
-  --app-accent-contrast: #17130a;
-  --app-secondary: #63b3d1;
-  --app-success: #42c990;
+  --app-page: #0d0d0d;
+  --app-canvas: #0d0d0d;
+  --app-sidebar: #0d0d0d;
+  --app-surface: #1b1c1f;
+  --app-surface-raised: #232428;
+  --app-surface-subtle: #131315;
+  --app-text: #f2f3f5;
+  --app-text-soft: #c5c8ce;
+  --app-text-muted: #8d929c;
+  --app-border: #2e2f34;
+  --app-border-strong: #43454c;
+  --app-accent: #e5e7eb;
+  --app-accent-soft: #2a2b30;
+  --app-accent-contrast: #151619;
+  --app-secondary: #8fa3b8;
+  --app-success: #45c992;
   --app-warning: #e7b557;
-  --app-danger: #e26670;
-  --app-grid: #252b31;
-  --app-edge: #59636e;
+  --app-danger: #ed6a70;
+  --app-grid: #2a2b30;
+  --app-edge: #55585f;
 
   /* Derivados (ver derivedThemeVariables em app-themes.ts) */
-  --app-hover: color-mix(in srgb, #f4f5f6 8%, transparent);
-  --app-info: #63b3d1;
-  --app-info-soft: color-mix(in srgb, #63b3d1 16%, transparent);
-  --app-danger-soft: color-mix(in srgb, #e26670 16%, transparent);
+  --app-hover: color-mix(in srgb, #f2f3f5 8%, transparent);
+  --app-info: #8fa3b8;
+  --app-info-soft: color-mix(in srgb, #8fa3b8 16%, transparent);
+  --app-danger-soft: color-mix(in srgb, #ed6a70 16%, transparent);
   --app-warning-soft: color-mix(in srgb, #e7b557 16%, transparent);
-  --app-success-soft: color-mix(in srgb, #42c990 16%, transparent);
-  --app-surface-muted: #12161b;
-  --app-code-bg: #12161b;
-  --app-code-text: #c2c7cd;
-  --app-ring: #f3c34f;
+  --app-success-soft: color-mix(in srgb, #45c992 16%, transparent);
+  --app-surface-muted: #131315;
+  --app-code-bg: #131315;
+  --app-code-text: #c5c8ce;
+  --app-ring: #e5e7eb;
   --app-logo-plate: #20242c;
   --app-shadow-card: 0 1px 2px color-mix(in srgb, #000 28%, transparent), 0 10px 28px color-mix(in srgb, #000 24%, transparent);
   --app-shadow-panel: 0 8px 24px color-mix(in srgb, #000 24%, transparent);
@@ -182,7 +182,7 @@ h4 {
  * Casa em CSS do tema claro. `applyAppTheme` liga a classe `light` junto com o
  * `dark`; o bootstrap do app.html faz o mesmo. Sem isto, um tema claro so
  * existia como style inline pos-hidratacao.
- * Mantenha em sincronia com o tema `orkestrai-light` em app-themes.ts.
+ * Mantenha em sincronia com o tema `deepspace-light` em app-themes.ts.
  */
 :root.light {
   --app-page: #f5f6f7;

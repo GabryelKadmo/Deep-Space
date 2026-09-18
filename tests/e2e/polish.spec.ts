@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas } from './helpers.js';
+import { clickToolbarOrOverflow, createNodeOnCanvas } from './helpers.js';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 async function createWorkspaceIn(page: import('@playwright/test').Page, name: string) {
-  const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-polish-'));
+  const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-polish-'));
   await page.goto('/canvas');
   await page.getByRole('button', { name: 'Novo workspace' }).click();
   await page.getByPlaceholder('Nome', { exact: true }).fill(name);
@@ -43,7 +43,7 @@ test.describe('polimento do canvas', () => {
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toHaveCount(0);
 
-    await page.getByRole('button', { name: 'Huddles', exact: true }).click();
+    await clickToolbarOrOverflow(page, 'Huddles');
     const huddle = page.getByTestId('huddle-dialog');
     await expect(huddle).toBeVisible();
 

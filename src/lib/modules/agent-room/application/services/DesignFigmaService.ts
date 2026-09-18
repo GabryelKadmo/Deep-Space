@@ -359,7 +359,7 @@ export class DesignFigmaService {
       id: linkId,
       fileKey: input.fileKey,
       fileName: input.fileName,
-      url: `https://www.figma.com/design/${input.fileKey}/Orkestrai`,
+      url: `https://www.figma.com/design/${input.fileKey}/Deep Space`,
       sourceNodeIds,
       sourceVersion: null,
       sourceLastModified: null,

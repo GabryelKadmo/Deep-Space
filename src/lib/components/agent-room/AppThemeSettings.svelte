@@ -118,7 +118,7 @@
     const next = customThemes().filter((theme) => theme.id !== activeCustomTheme.id);
     updateSettings({
       [CUSTOM_APP_THEMES_SETTING]: serializeCustomAppThemes(next),
-      [APP_THEME_SETTING]: 'orkestrai-dark',
+      [APP_THEME_SETTING]: 'deepspace-dark',
     });
   }
 
@@ -127,7 +127,7 @@
     const url = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `${activeTheme.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'orkestrai-theme'}.json`;
+    anchor.download = `${activeTheme.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'deepspace-theme'}.json`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -170,11 +170,11 @@
         {m['theme.duplicate']()}
       </Button>
       <Button variant="outline" size="sm" onclick={() => importInput.click()}>
-        <Upload size={14} aria-hidden="true" />
+        <Download size={14} aria-hidden="true" />
         {m['theme.import']()}
       </Button>
       <Button variant="outline" size="icon-sm" title={m['theme.export']()} aria-label={m['theme.export']()} onclick={exportTheme}>
-        <Download size={14} aria-hidden="true" />
+        <Upload size={14} aria-hidden="true" />
       </Button>
       <input bind:this={importInput} class="hidden-input" type="file" accept="application/json,.json" onchange={importTheme} />
     </div>

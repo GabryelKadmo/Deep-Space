@@ -17,7 +17,7 @@ describe('WorkstreamService', () => {
       id: uuidv7(),
       workspace_id: workspace.id,
       name: 'API hardening',
-      branch: 'orkestrai/api-hardening',
+      branch: 'deepspace/api-hardening',
       path: '/tmp/api-hardening',
       status: 'active',
     });
@@ -77,7 +77,7 @@ describe('WorkstreamService', () => {
       title: 'Harden API authentication',
       stage: 'blocked',
       assigneeTitle: 'API Engineer',
-      floor: { name: 'API hardening', branch: 'orkestrai/api-hardening' },
+      floor: { name: 'API hardening', branch: 'deepspace/api-hardening' },
       reviews: [{ title: 'Authentication review', evidenceCount: 1, testCount: 1, riskCount: 1 }],
     });
     expect(snapshot.workstreams[0].timeline).toHaveLength(1);

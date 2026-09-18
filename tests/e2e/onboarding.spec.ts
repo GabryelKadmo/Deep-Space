@@ -23,7 +23,7 @@ test.describe('onboarding guiado', () => {
     const settings = await request.get('/api/agent-room/settings');
     expect((await settings.json()).data.uiLanguage).toBe('pt-BR');
     // Etapa 2: boas-vindas (com workspace ativo, antes pulava direto pros tours)
-    await expect(dialog.getByText('Bem-vindo ao Orkestrai')).toBeVisible();
+    await expect(dialog.getByText('Bem-vindo ao Deep Space')).toBeVisible();
     // Etapa 3: criação de workspace
     await dialog.getByRole('button', { name: 'Criar e continuar' }).click();
     await expect(dialog.getByPlaceholder('/caminho/do/projeto')).toBeVisible();
@@ -87,7 +87,7 @@ test.describe('onboarding guiado', () => {
     await expect(dialog).toBeVisible();
     await expect(dialog.getByText('Escolha seu idioma')).toBeVisible();
     await dialog.getByRole('button', { name: 'English' }).click();
-    await expect(dialog.getByText('Welcome to Orkestrai')).toBeVisible({ timeout: 20_000 });
+    await expect(dialog.getByText('Welcome to Deep Space')).toBeVisible({ timeout: 20_000 });
 
     const settings = await request.get('/api/agent-room/settings');
     expect((await settings.json()).data.uiLanguage).toBe('en');

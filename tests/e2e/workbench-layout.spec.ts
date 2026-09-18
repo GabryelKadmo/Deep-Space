@@ -75,7 +75,7 @@ test.describe('Workbench layout and search', () => {
     try {
       await page.goto(`/terminal?workspace=${workspace.id}&node=${note.id}`);
       await expect(page.getByTestId('workbench-pane-primary')).toBeVisible();
-      await page.evaluate(() => window.dispatchEvent(new CustomEvent('orkestrai:global-search')));
+      await page.evaluate(() => window.dispatchEvent(new CustomEvent('deepspace:global-search')));
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
       await dialog.getByRole('combobox').fill(title);
@@ -90,7 +90,7 @@ test.describe('Workbench layout and search', () => {
   });
 
   test('opens a workspace file from the global palette without creating a canvas node', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-workbench-palette-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-workbench-palette-'));
     const fileName = `palette-${Date.now()}.ts`;
     writeFileSync(join(dir, fileName), 'export const openedFromPalette = true;\n');
     const workspaceResponse = await request.post('/api/agent-room/workspaces', {
@@ -123,7 +123,7 @@ test.describe('Workbench layout and search', () => {
   });
 
   test('hands a file from the Canvas tree directly to the Workbench', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-canvas-file-handoff-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-canvas-file-handoff-'));
     const fileName = `canvas-handoff-${Date.now()}.ts`;
     writeFileSync(join(dir, fileName), 'export const openedFromCanvas = true;\n');
     const workspaceResponse = await request.post('/api/agent-room/workspaces', {

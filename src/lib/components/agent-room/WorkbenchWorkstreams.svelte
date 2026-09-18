@@ -118,7 +118,7 @@
   }
 
   function openCouncil(item: AgentWorkstream): void {
-    window.dispatchEvent(new CustomEvent('orkestrai:open-council', {
+    window.dispatchEvent(new CustomEvent('deepspace:open-council', {
       detail: { workspaceId, source: { taskId: item.id, taskTitle: item.title, taskDescription: item.description } },
     }));
   }

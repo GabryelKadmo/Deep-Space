@@ -7,7 +7,7 @@ import { join } from 'node:path';
 test.describe('Design delivery', () => {
   test('imports code, generates a protected artifact, and opens it in Monaco', async ({ page, request }) => {
     test.setTimeout(120_000);
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-design-delivery-e2e-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-design-delivery-e2e-'));
     const originalSettings = (await (await request.get('/api/agent-room/settings')).json()).data as Record<string, string>;
     const workspace = (await (await request.post('/api/agent-room/workspaces', {
       data: { name: `E2E design delivery ${Date.now()}`, workingDir: dir },

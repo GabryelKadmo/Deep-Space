@@ -7,10 +7,10 @@ import { join } from 'node:path';
 test.describe('Review Center', () => {
   test('reviews a structured Git diff and persists an offline agent decision', async ({ page, request }) => {
     test.setTimeout(90_000);
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-review-center-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-review-center-'));
     execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-    execFileSync('git', ['config', 'user.email', 'e2e@orkestrai.local'], { cwd: dir });
-    execFileSync('git', ['config', 'user.name', 'Orkestrai E2E'], { cwd: dir });
+    execFileSync('git', ['config', 'user.email', 'e2e@deepspace.local'], { cwd: dir });
+    execFileSync('git', ['config', 'user.name', 'Deep Space E2E'], { cwd: dir });
     writeFileSync(join(dir, 'feature.ts'), 'export const phase = 4;\n');
     execFileSync('git', ['add', '.'], { cwd: dir });
     execFileSync('git', ['commit', '-m', 'initial'], { cwd: dir });
@@ -30,7 +30,7 @@ test.describe('Review Center', () => {
 
     try {
       await request.put('/api/agent-room/settings', {
-        data: { ...originalSettings, uiLanguage: 'en', appTheme: 'orkestrai-light', workbenchTabPlacement: 'vertical' },
+        data: { ...originalSettings, uiLanguage: 'en', appTheme: 'deepspace-light', workbenchTabPlacement: 'vertical' },
       });
       await page.goto(`/terminal?workspace=${workspace.id}&node=workbench-review-center%3A${workspace.id}`);
       const center = page.getByTestId('review-center');

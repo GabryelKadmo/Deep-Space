@@ -7,8 +7,8 @@ const e2eNodeOptions = process.env.NODE_OPTIONS?.includes('--max-old-space-size'
   ? process.env.NODE_OPTIONS
   : [process.env.NODE_OPTIONS, '--max-old-space-size=8192'].filter(Boolean).join(' ');
 const e2eServerCommand = process.env.CI
-  ? 'PORT=5199 node scripts/orkestrai-server.mjs'
-  : 'npm run build && PORT=5199 node scripts/orkestrai-server.mjs';
+  ? 'PORT=5199 node scripts/deepspace-server.mjs'
+  : 'npm run build && PORT=5199 node scripts/deepspace-server.mjs';
 rmSync(e2eDataDir, { recursive: true, force: true });
 
 export default defineConfig({
@@ -35,9 +35,9 @@ export default defineConfig({
   webServer: {
     command: e2eServerCommand,
     env: {
-      APP_KEY: process.env.APP_KEY ?? 'orkestrai-e2e-test-key',
+      APP_KEY: process.env.APP_KEY ?? 'deepspace-e2e-test-key',
       NODE_OPTIONS: e2eNodeOptions,
-      ORKESTRAI_DATA_DIR: e2eDataDir,
+      DEEPSPACE_DATA_DIR: e2eDataDir,
     },
     url: 'http://127.0.0.1:5199',
     timeout: 180_000,

@@ -122,10 +122,10 @@ export function exportOpenApiDocument(name: string, payload: ApiClientNodePayloa
     const security = authExport(request as ApiClientRequestInput, document);
     if (security) operation.security = security;
     else delete operation.security;
-    if (request.preRequestScript) operation['x-orkestrai-pre-request'] = request.preRequestScript;
-    else delete operation['x-orkestrai-pre-request'];
-    if (request.postResponseScript) operation['x-orkestrai-post-response'] = request.postResponseScript;
-    else delete operation['x-orkestrai-post-response'];
+    if (request.preRequestScript) operation['x-deepspace-pre-request'] = request.preRequestScript;
+    else delete operation['x-deepspace-pre-request'];
+    if (request.postResponseScript) operation['x-deepspace-post-response'] = request.postResponseScript;
+    else delete operation['x-deepspace-post-response'];
     const pathMetadata = clone(sourceData.pathItem ?? {});
     document.paths[path] = { ...(document.paths[path] ?? pathMetadata), [request.method.toLowerCase()]: operation };
   }

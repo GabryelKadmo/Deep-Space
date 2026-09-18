@@ -49,18 +49,18 @@ export class WorkspaceGroupService {
     await this.requireGroup(id);
   }
 
-  async create(input: { name: string; parentId?: string | null }): Promise<WorkspaceGroup> {
+  async create(input: { name: string; parentId?: string | null; icon?: string | null }): Promise<WorkspaceGroup> {
     const name = input.name.trim();
     if (!name) throw groupError('group_name_required');
     const parentId = input.parentId ?? null;
     if (parentId) await this.requireGroup(parentId);
     const position = await this.repository.nextPosition(parentId);
-    return this.repository.create({ name, parentId, position });
+    return this.repository.create({ name, parentId, position, icon: input.icon ?? null });
   }
 
-  async update(id: string, input: { name?: string; parentId?: string | null; collapsed?: boolean }): Promise<WorkspaceGroup> {
+  async update(id: string, input: { name?: string; parentId?: string | null; collapsed?: boolean; icon?: string | null }): Promise<WorkspaceGroup> {
     const existing = await this.requireGroup(id);
-    const changes: { name?: string; parentId?: string | null; collapsed?: boolean } = {};
+    const changes: { name?: string; parentId?: string | null; collapsed?: boolean; icon?: string | null } = {};
 
     if (input.name !== undefined) {
       const name = input.name.trim();
@@ -77,6 +77,7 @@ export class WorkspaceGroupService {
     }
 
     if (input.collapsed !== undefined) changes.collapsed = input.collapsed;
+    if (input.icon !== undefined) changes.icon = input.icon;
 
     const updated = await this.repository.update(id, changes);
     if (!updated) throw groupError('group_not_found');

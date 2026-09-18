@@ -9,7 +9,7 @@ type Desktop = {
 };
 
 export function managedPortalSurface(host: HTMLElement, input: SurfaceInput) {
-  const desktop = (window as unknown as { orkestraiDesktop: Desktop }).orkestraiDesktop;
+  const desktop = (window as unknown as { deepspaceDesktop: Desktop }).deepspaceDesktop;
   const identity = { workspaceId: input.workspaceId, nodeId: input.nodeId, lease: crypto.randomUUID() };
   let disposed = false;
   let current: State | undefined;

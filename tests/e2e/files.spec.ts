@@ -7,7 +7,7 @@ import { join } from 'node:path';
 test.describe('arquivos e editor do workspace', () => {
   test('abre arquivo da arvore no Workbench, edita e salva', async ({ page, request }) => {
     test.setTimeout(90_000);
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-fs-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-fs-'));
     mkdirSync(join(dir, 'src'));
     writeFileSync(join(dir, 'src', 'hello.ts'), 'export const hello = "ola";\n');
     const workspaceName = `E2E fs ${Date.now()}`;
@@ -60,10 +60,10 @@ test.describe('arquivos e editor do workspace', () => {
   });
 
   test('arvore mostra branch e status git', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-git-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-git-'));
     const { execFileSync } = await import('node:child_process');
     execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-    execFileSync('git', ['config', 'user.email', 'e2e@orkestrai.local'], { cwd: dir });
+    execFileSync('git', ['config', 'user.email', 'e2e@deepspace.local'], { cwd: dir });
     execFileSync('git', ['config', 'user.name', 'E2E'], { cwd: dir });
     writeFileSync(join(dir, 'README.md'), '# x\n');
     execFileSync('git', ['add', '.'], { cwd: dir });
@@ -97,10 +97,10 @@ test.describe('arquivos e editor do workspace', () => {
   });
 
   test('diff viewer mostra alteracoes e faz stage', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-diff-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-diff-'));
     const { execFileSync } = await import('node:child_process');
     execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-    execFileSync('git', ['config', 'user.email', 'e2e@orkestrai.local'], { cwd: dir });
+    execFileSync('git', ['config', 'user.email', 'e2e@deepspace.local'], { cwd: dir });
     execFileSync('git', ['config', 'user.name', 'E2E'], { cwd: dir });
     writeFileSync(join(dir, 'app.ts'), 'const v = 1;\n');
     execFileSync('git', ['add', '.'], { cwd: dir });

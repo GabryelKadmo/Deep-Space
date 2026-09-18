@@ -7,12 +7,12 @@ import {
   generateHandshakeNonce,
   generatePairingSecret,
   parseInviteUri,
-} from '@orkestrai/collaboration-protocol';
+} from '@deepspace/collaboration-protocol';
 import {
   SecureCollaborationChannel as SecureBrowserCollaborationChannel,
   deriveSessionMaterial as deriveBrowserSessionMaterial,
   importPairingSecret,
-} from '@orkestrai/collaboration-protocol/browser';
+} from '@deepspace/collaboration-protocol/browser';
 
 function channelPair() {
   const pairingSecret = generatePairingSecret();
@@ -37,11 +37,11 @@ describe('collaboration protocol', () => {
   it('keeps the pairing secret in the URI fragment', () => {
     const secret = generatePairingSecret();
     const uri = createInviteUri('share_private_preview', secret);
-    expect(uri).toBe(`orkestrai://join/share_private_preview#${secret}`);
+    expect(uri).toBe(`deepspace://join/share_private_preview#${secret}`);
     expect(new URL(uri).search).toBe('');
     expect(parseInviteUri(uri)).toEqual({ shareId: 'share_private_preview', pairingSecret: secret });
-    const webUri = createWebInviteUri('https://remote.orkestrai.app', 'share_private_preview', secret);
-    expect(webUri).toBe(`https://remote.orkestrai.app/join/share_private_preview#${secret}`);
+    const webUri = createWebInviteUri('https://remote.deepspace.app', 'share_private_preview', secret);
+    expect(webUri).toBe(`https://remote.deepspace.app/join/share_private_preview#${secret}`);
     expect(new URL(webUri).search).toBe('');
     expect(parseInviteUri(webUri)).toEqual({ shareId: 'share_private_preview', pairingSecret: secret });
   });

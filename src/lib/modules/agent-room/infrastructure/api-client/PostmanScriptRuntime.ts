@@ -32,7 +32,7 @@ const BUNDLED_PACKAGES = Object.fromEntries([
 type IterationMetadata = { index: number; count: number };
 
 function iterationPrelude(metadata: IterationMetadata): string {
-  return `const __orkestraiPostmanPm_1f7c89 = pm; pm = new Proxy({}, { get(_target, property) { const source = __orkestraiPostmanPm_1f7c89; if (property === 'info') return new Proxy({}, { get(_infoTarget, key) { if (key === 'iteration') return ${metadata.index}; if (key === 'iterationCount') return ${metadata.count}; return Reflect.get(source.info, key, source.info); } }); const value = Reflect.get(source, property, source); return typeof value === 'function' ? value.bind(source) : value; } });`;
+  return `const __deepspacePostmanPm_1f7c89 = pm; pm = new Proxy({}, { get(_target, property) { const source = __deepspacePostmanPm_1f7c89; if (property === 'info') return new Proxy({}, { get(_infoTarget, key) { if (key === 'iteration') return ${metadata.index}; if (key === 'iterationCount') return ${metadata.count}; return Reflect.get(source.info, key, source.info); } }); const value = Reflect.get(source, property, source); return typeof value === 'function' ? value.bind(source) : value; } });`;
 }
 
 function event(listen: 'prerequest' | 'test', script: string, metadata: IterationMetadata) {
@@ -259,9 +259,9 @@ function runtimeProxy(network: NonNullable<ApiClientNodePayload['network']>) {
 
 function runtimeCertificates(network: NonNullable<ApiClientNodePayload['network']>) {
   const certificate = network.clientPfxPath
-    ? { name: 'Orkestrai client certificate', matches: ['https://*:*/*'], pfx: { src: network.clientPfxPath }, passphrase: network.clientKeyPassphrase }
+    ? { name: 'Deep Space client certificate', matches: ['https://*:*/*'], pfx: { src: network.clientPfxPath }, passphrase: network.clientKeyPassphrase }
     : network.clientCertificatePath && network.clientKeyPath
-      ? { name: 'Orkestrai client certificate', matches: ['https://*:*/*'], cert: { src: network.clientCertificatePath }, key: { src: network.clientKeyPath }, passphrase: network.clientKeyPassphrase }
+      ? { name: 'Deep Space client certificate', matches: ['https://*:*/*'], cert: { src: network.clientCertificatePath }, key: { src: network.clientKeyPath }, passphrase: network.clientKeyPassphrase }
       : null;
   return certificate ? new postman.CertificateList(null, [certificate]) : undefined;
 }

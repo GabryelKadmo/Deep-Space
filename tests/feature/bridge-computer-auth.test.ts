@@ -13,7 +13,7 @@ import { BridgeController } from '$lib/modules/agent-room/interface/http/control
 
 function event(token: string, agentToken: string | null, body: unknown) {
   const url = new URL('http://localhost/api/agent-room/bridge/computers');
-  return { request: new Request(url, { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${token}`, ...(agentToken ? { 'x-orkestrai-agent-token': agentToken } : {}) }, body: JSON.stringify(body) }), params: {}, url };
+  return { request: new Request(url, { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${token}`, ...(agentToken ? { 'x-deepspace-agent-token': agentToken } : {}) }, body: JSON.stringify(body) }), params: {}, url };
 }
 
 describe('natural-language computer preparation through the authenticated bridge', () => {
@@ -27,12 +27,12 @@ describe('natural-language computer preparation through the authenticated bridge
   });
 
   it('lets the agent author its task and node, preserves owner pauses, and rejects impersonation', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-computer-auth-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-computer-auth-'));
     dirs.push(dir);
     const workspace = await workspaceRepository.createWorkspace({ name: 'Natural desktop request', workingDir: dir });
     const agent = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'terminal', title: 'Desktop agent', x: 0, y: 0, width: 680, height: 440 });
     const other = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'terminal', title: 'Other agent' });
-    sessions.push(ptySessionManager.create({ command: '/bin/cat', cwd: dir, workspaceId: workspace.id, nodeId: agent.id, provider: 'codex', bridgeAgentToken: 'desktop-agent-test-token', env: { ORKESTRAI_AGENT_TOKEN: 'desktop-agent-test-token' } }).id);
+    sessions.push(ptySessionManager.create({ command: '/bin/cat', cwd: dir, workspaceId: workspace.id, nodeId: agent.id, provider: 'codex', bridgeAgentToken: 'desktop-agent-test-token', env: { DEEPSPACE_AGENT_TOKEN: 'desktop-agent-test-token' } }).id);
     const token = await bridgeService.getOrCreateToken(workspace.id);
     const policy = await autonomyPolicyService.get(workspace.id);
     await autonomyPolicyService.update(workspace.id, { enabled: true, mode: 'bounded', policy: { ...policy.policy, capabilities: ['computer'], allowedApps: ['com.apple.calculator'] } });

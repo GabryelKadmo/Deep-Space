@@ -10,5 +10,6 @@ export function usageErrorText(code: UsageErrorCode, provider: string): string {
   if (code === 'refresh_failed') return m['usage.error_refresh_failed']({ provider });
   if (code === 'api_timeout') return m['usage.error_api_timeout']({ provider });
   if (code === 'api_request_failed') return m['usage.error_api_request_failed']({ provider });
+  if (code === 'rate_limited') return m['usage.error_rate_limited']({ provider });
   return m['usage.error_unexpected']({ provider });
 }

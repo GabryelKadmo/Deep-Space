@@ -29,7 +29,7 @@ export const USE_CASE_TOUR_IDS: Record<string, string> = {
   'portable-role-library': 'portable-role-library',
   'custom-workflow': 'custom-board-stages',
   'campaign-launch': 'campaign-ready-team',
-  'orkestrai-contributing': 'orkestrai-consensus-team',
+  'deepspace-contributing': 'deepspace-consensus-team',
   'approval-pipeline': 'pipeline-aprovacao',
   'chained-flows': 'chained-flows',
   'design-figma': 'design-figma',
@@ -69,6 +69,9 @@ export const USE_CASE_TOUR_IDS: Record<string, string> = {
   'saved-terminal-commands': 'saved-terminal-commands',
   'code-intelligence-graph': 'code-intelligence-graph',
   'desktop-diagnostics': 'desktop-diagnostics',
+  'group-icons': 'group-icons',
+  'canvas-connect-any-side': 'canvas-connect-any-side',
+  'customizable-toolbar': 'customizable-toolbar',
 };
 
 export function tourIdForUseCase(useCaseId: string): string | null {

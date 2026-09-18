@@ -45,7 +45,7 @@ const POLL_INTERVALS: Partial<Record<AutomationTriggerType, number>> = {
 };
 
 const routineRuntime = globalThis as typeof globalThis & {
-  __orkestraiAbortWorkspaceRuns?: (workspaceId: string, reason: string) => Promise<number>;
+  __deepspaceAbortWorkspaceRuns?: (workspaceId: string, reason: string) => Promise<number>;
 };
 
 function toIso(value: unknown): string {
@@ -977,4 +977,4 @@ export class RoutineService {
 }
 
 export const routineService = new RoutineService();
-routineRuntime.__orkestraiAbortWorkspaceRuns = (workspaceId, reason) => routineService.abortWorkspace(workspaceId, reason);
+routineRuntime.__deepspaceAbortWorkspaceRuns = (workspaceId, reason) => routineService.abortWorkspace(workspaceId, reason);

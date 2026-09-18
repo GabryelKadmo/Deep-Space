@@ -1,6 +1,6 @@
 const CAPTURE_CHUNK_SIZE = 4096;
 
-class OrkestraiPcmCaptureProcessor extends AudioWorkletProcessor {
+class DeepSpacePcmCaptureProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
     this.buffer = new Float32Array(CAPTURE_CHUNK_SIZE);
@@ -47,4 +47,4 @@ class OrkestraiPcmCaptureProcessor extends AudioWorkletProcessor {
   }
 }
 
-registerProcessor('orkestrai-pcm-capture', OrkestraiPcmCaptureProcessor);
+registerProcessor('deepspace-pcm-capture', DeepSpacePcmCaptureProcessor);

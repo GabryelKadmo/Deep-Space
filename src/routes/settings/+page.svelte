@@ -248,7 +248,7 @@
   };
   const desktop =
     typeof window !== 'undefined'
-      ? (window as unknown as { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop
+      ? (window as unknown as { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop
       : undefined;
   let appVersion = $state('');
   let checkingUpdate = $state(false);
@@ -379,7 +379,7 @@
 </script>
 
 <svelte:head>
-  <title>Orkestrai — {m['settings.title']()}</title>
+  <title>Deep Space — {m['settings.title']()}</title>
 </svelte:head>
 
 <svelte:window onkeydown={captureHotkey} />
@@ -569,7 +569,7 @@
       style:font-size={`${settings.terminalFontSize || 13}px`}
       style:padding={`${settings.terminalPadding ?? 8}px`}
     >
-      <div><span style={`color:${previewTheme.green}`}>➜</span> <span style={`color:${previewTheme.blue}`}>~/orkestrai</span> npm run dev</div>
+      <div><span style={`color:${previewTheme.green}`}>➜</span> <span style={`color:${previewTheme.blue}`}>~/deepspace</span> npm run dev</div>
       <div><span style={`color:${previewTheme.yellow}`}>warn</span> {m['settings.preview_sample_warn']()}</div>
       <div><span style={`color:${previewTheme.red}`}>✗</span> {m['settings.preview_sample_error']()}</div>
     </div>

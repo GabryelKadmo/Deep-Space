@@ -33,8 +33,8 @@ export class DesignRevisionConflictError extends Error {
 }
 
 type DesignServiceGlobals = typeof globalThis & {
-  __orkestraiDesignMutationQueues?: Map<string, Promise<void>>;
-  __orkestraiDesignRecoveries?: Map<string, { recoveredAt: string; revision: number }>;
+  __deepspaceDesignMutationQueues?: Map<string, Promise<void>>;
+  __deepspaceDesignRecoveries?: Map<string, { recoveredAt: string; revision: number }>;
 };
 
 export type DesignHistoryEntry = {
@@ -64,13 +64,13 @@ export function migrateDesignDocument(value: unknown): DesignDocument {
 
 function mutationQueues(): Map<string, Promise<void>> {
   const globals = globalThis as DesignServiceGlobals;
-  return globals.__orkestraiDesignMutationQueues ??= new Map<string, Promise<void>>();
+  return globals.__deepspaceDesignMutationQueues ??= new Map<string, Promise<void>>();
 }
 
 function broadcastDesignChanged(workspaceId: string, nodeId: string, revision: number): void {
   const broadcast = (globalThis as {
-    __orkestraiBroadcast?: (payload: Record<string, unknown>) => void;
-  }).__orkestraiBroadcast;
+    __deepspaceBroadcast?: (payload: Record<string, unknown>) => void;
+  }).__deepspaceBroadcast;
   broadcast?.({ type: 'designChanged', workspaceId, nodeId, revision });
 }
 
@@ -1400,14 +1400,14 @@ export class DesignDocumentService {
       throw new Error('Design document not found.');
     }
     const root = resolve(workspace.workingDir);
-    const directory = resolve(root, '.orkestrai', 'designs');
+    const directory = resolve(root, '.deepspace', 'designs');
     if (directory !== root && !directory.startsWith(root + sep)) throw new Error('Invalid design directory.');
     return {
       node,
       root,
       directory,
-      path: join(directory, `${nodeId}.orkestrai-design.json`),
-      backupPath: join(directory, `${nodeId}.backup.orkestrai-design.json`),
+      path: join(directory, `${nodeId}.deepspace-design.json`),
+      backupPath: join(directory, `${nodeId}.backup.deepspace-design.json`),
       historyPath: join(directory, `${nodeId}.history.jsonl`),
       thumbnailPath: join(directory, 'thumbnails', `${nodeId}.png`),
       thumbnailRevisionPath: join(directory, 'thumbnails', `${nodeId}.revision`),
@@ -1490,7 +1490,7 @@ export class DesignDocumentService {
           await rename(context.path, `${context.path}.corrupt-${Date.now()}`).catch(() => undefined);
           await this.writeAtomic(context.path, recovered);
           const recoveredAt = new Date().toISOString();
-          const recoveries = (globalThis as DesignServiceGlobals).__orkestraiDesignRecoveries ??= new Map();
+          const recoveries = (globalThis as DesignServiceGlobals).__deepspaceDesignRecoveries ??= new Map();
           recoveries.set(`${workspaceId}:${nodeId}`, { recoveredAt, revision: recovered.revision });
           return recovered;
         } catch {
@@ -1520,14 +1520,14 @@ export class DesignDocumentService {
       workspaceRepository.getWorkspace(destinationWorkspaceId),
     ]);
     if (!sourceWorkspace || !destinationWorkspace) throw new Error('canvas_transfer_workspace_not_found');
-    const destinationDirectory = await workspacePathService.resolveWritable(destinationWorkspace, '.orkestrai/designs');
-    const destinationPath = await workspacePathService.resolveWritable(destinationWorkspace, `.orkestrai/designs/${destinationNodeId}.orkestrai-design.json`);
-    const destinationAssetsDirectory = await workspacePathService.resolveWritable(destinationWorkspace, `.orkestrai/designs/assets/${destinationNodeId}`);
+    const destinationDirectory = await workspacePathService.resolveWritable(destinationWorkspace, '.deepspace/designs');
+    const destinationPath = await workspacePathService.resolveWritable(destinationWorkspace, `.deepspace/designs/${destinationNodeId}.deepspace-design.json`);
+    const destinationAssetsDirectory = await workspacePathService.resolveWritable(destinationWorkspace, `.deepspace/designs/assets/${destinationNodeId}`);
     const assets: DesignAsset[] = [];
     try {
       for (const asset of source.assets) {
         const sourcePath = await workspacePathService.resolveExisting(sourceWorkspace, asset.path);
-        const relativePath = `.orkestrai/designs/assets/${destinationNodeId}/${asset.id}-${safeAssetFilename(asset.name)}`;
+        const relativePath = `.deepspace/designs/assets/${destinationNodeId}/${asset.id}-${safeAssetFilename(asset.name)}`;
         const destinationAssetPath = await workspacePathService.resolveWritable(destinationWorkspace, relativePath);
         await mkdir(dirname(destinationAssetPath), { recursive: true });
         await copyFile(sourcePath, destinationAssetPath);
@@ -1564,12 +1564,12 @@ export class DesignDocumentService {
     const workspace = await workspaceRepository.getWorkspace(workspaceId);
     if (!workspace) return;
     const paths = await Promise.all([
-      `.orkestrai/designs/${nodeId}.orkestrai-design.json`,
-      `.orkestrai/designs/${nodeId}.backup.orkestrai-design.json`,
-      `.orkestrai/designs/${nodeId}.history.jsonl`,
-      `.orkestrai/designs/assets/${nodeId}`,
-      `.orkestrai/designs/thumbnails/${nodeId}.png`,
-      `.orkestrai/designs/thumbnails/${nodeId}.revision`,
+      `.deepspace/designs/${nodeId}.deepspace-design.json`,
+      `.deepspace/designs/${nodeId}.backup.deepspace-design.json`,
+      `.deepspace/designs/${nodeId}.history.jsonl`,
+      `.deepspace/designs/assets/${nodeId}`,
+      `.deepspace/designs/thumbnails/${nodeId}.png`,
+      `.deepspace/designs/thumbnails/${nodeId}.revision`,
     ].map((path) => workspacePathService.resolveWritable(workspace, path)));
     await Promise.all([
       rm(paths[0], { force: true }),
@@ -1630,7 +1630,7 @@ export class DesignDocumentService {
             },
           },
         });
-        const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+        const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
         broadcast?.({ type: 'workspaceChanged', workspaceId: dto.workspaceId, nodeId: dto.nodeId });
       }
       broadcastDesignChanged(dto.workspaceId, dto.nodeId, validated.revision);
@@ -1657,7 +1657,7 @@ export class DesignDocumentService {
       if (current.revision !== baseRevision) throw new DesignRevisionConflictError(current);
       const mimeType = assetMimeType(file.name, file.type);
       const id = uuidv7();
-      const relativePath = `.orkestrai/designs/assets/${nodeId}/${id}-${safeAssetFilename(file.name)}`;
+      const relativePath = `.deepspace/designs/assets/${nodeId}/${id}-${safeAssetFilename(file.name)}`;
       const absolutePath = resolve(context.root, relativePath);
       if (!absolutePath.startsWith(context.root + sep)) throw new Error('Invalid design asset path.');
       const now = new Date().toISOString();
@@ -1719,7 +1719,7 @@ export class DesignDocumentService {
       await this.appendHistory(context.historyPath, {
         revision: validated.revision,
         baseRevision: current.revision,
-        actor: { kind: 'system', id: null, name: 'Orkestrai', taskId: null },
+        actor: { kind: 'system', id: null, name: 'Deep Space', taskId: null },
         summary: `Rename design to ${normalizedName}`,
         operations: [{ kind: 'rename-document', name: normalizedName }],
         createdAt: now,
@@ -1745,7 +1745,7 @@ export class DesignDocumentService {
         return [];
       }
     }).slice(-50).reverse();
-    const recovery = (globalThis as DesignServiceGlobals).__orkestraiDesignRecoveries?.get(`${workspaceId}:${nodeId}`) ?? null;
+    const recovery = (globalThis as DesignServiceGlobals).__deepspaceDesignRecoveries?.get(`${workspaceId}:${nodeId}`) ?? null;
     return {
       backupRevision,
       historyBytes: Buffer.byteLength(historyText),
@@ -1766,7 +1766,7 @@ export class DesignDocumentService {
       await this.appendHistory(context.historyPath, {
         revision: restored.revision,
         baseRevision: current.revision,
-        actor: { kind: 'system', id: null, name: 'Orkestrai', taskId: null },
+        actor: { kind: 'system', id: null, name: 'Deep Space', taskId: null },
         summary: `Restore automatic backup from revision ${backup.revision}`,
         operations: [],
         createdAt: now,

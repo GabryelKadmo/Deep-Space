@@ -11,7 +11,7 @@ import {
   parseInviteUri,
   type CollaborationEnvelope,
   type CollaborationMessage,
-} from '@orkestrai/collaboration-protocol';
+} from '@deepspace/collaboration-protocol';
 import type { CollaborationCommand, CollaborationCommandResult, SharedWorkspaceDto } from '../../domain/types.js';
 import { collaborationRepository } from '../../infrastructure/repositories/CollaborationRepository.js';
 import { scopeSharedWorkspaceSnapshot, sharedWorkspaceQuery } from '../queries/SharedWorkspaceQuery.js';
@@ -105,7 +105,7 @@ type GuestSession = {
 };
 
 type ManagerState = { hosts: Map<string, HostSession>; guest: GuestSession | null };
-const globalKey = Symbol.for('orkestrai.collaborationSessionManager');
+const globalKey = Symbol.for('deepspace.collaborationSessionManager');
 const globals = globalThis as typeof globalThis & { [globalKey]?: ManagerState };
 const managerState = globals[globalKey] ??= { hosts: new Map(), guest: null };
 
@@ -280,7 +280,7 @@ export class CollaborationSessionManager {
     host.socket = socket;
     socket.on('open', () => { host.transportState = 'connected'; });
     socket.on('message', (data) => void this.handleHostMessage(host, websocketDataText(data)).catch((error) => {
-      console.error('[orkestrai:collaboration] Host frame failed:', error);
+      console.error('[deepspace:collaboration] Host frame failed:', error);
     }));
     socket.on('close', () => {
       host.socket = null;
@@ -817,5 +817,5 @@ export class CollaborationSessionManager {
 
 export const collaborationSessionManager = new CollaborationSessionManager();
 
-const shutdown = globalThis as typeof globalThis & { __orkestraiShutdownCollaboration?: () => Promise<void> };
-shutdown.__orkestraiShutdownCollaboration = async () => collaborationSessionManager.shutdown();
+const shutdown = globalThis as typeof globalThis & { __deepspaceShutdownCollaboration?: () => Promise<void> };
+shutdown.__deepspaceShutdownCollaboration = async () => collaborationSessionManager.shutdown();

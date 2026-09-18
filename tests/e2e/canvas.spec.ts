@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas } from './helpers.js';
+import { createNodeOnCanvas, dragConnectHandles } from './helpers.js';
 
 test.describe('canvas de workspaces', () => {
   test('ignora atalhos globais cujo alvo não é um elemento', async ({ page }) => {
@@ -167,7 +167,7 @@ test.describe('canvas de workspaces', () => {
       await page.keyboard.press('Escape');
       await client.getByRole('button', { name: 'Importar coleção' }).click();
       await page.getByRole('menuitem', { name: 'Importar coleção' }).hover();
-      await expect(page.getByRole('menuitem', { name: 'Importar coleção do Orkestrai' })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: 'Importar coleção do Deep Space' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: 'Importar OpenAPI / Swagger' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: 'Importar OpenCollection YAML' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: 'Importar ambiente do Postman' })).toBeVisible();
@@ -176,7 +176,7 @@ test.describe('canvas de workspaces', () => {
       await expect(page.getByRole('menuitem', { name: 'Exportar coleção Bruno' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: 'Exportar OpenAPI 3.1 YAML' })).toBeVisible();
       await expect(page.getByRole('menuitem', { name: 'Exportar OpenCollection YAML' })).toBeVisible();
-      await expect(page.getByRole('menuitem', { name: 'Exportar coleção Orkestrai' })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: 'Exportar coleção Deep Space' })).toBeVisible();
       expect(pageErrors).toEqual([]);
     } finally {
       await request.delete(`/api/agent-room/workspaces/${workspace.id}`);
@@ -340,14 +340,7 @@ test.describe('canvas de workspaces', () => {
 
     // Arrasto real do handle do primeiro no ate o handle do segundo —
     // cobre hit-test do handle (overflow/z-index do shell).
-    const sourceHandle = page.locator('.canvas-note').first().locator('.svelte-flow__handle').first();
-    const targetHandle = page.locator('.canvas-note').nth(1).locator('.svelte-flow__handle').first();
-    const sourceBox = await sourceHandle.boundingBox();
-    const targetBox = await targetHandle.boundingBox();
-    await page.mouse.move(sourceBox!.x + sourceBox!.width / 2, sourceBox!.y + sourceBox!.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(targetBox!.x + targetBox!.width / 2, targetBox!.y + targetBox!.height / 2, { steps: 12 });
-    await page.mouse.up();
+    await dragConnectHandles(page, page.locator('.canvas-note').first(), page.locator('.canvas-note').nth(1));
 
     await expect(page.locator('.svelte-flow__edge')).toHaveCount(1);
 
@@ -359,10 +352,10 @@ test.describe('canvas de workspaces', () => {
     expect(((await edgesResponse.json()).data as unknown[]).length).toBe(1);
 
     // Clica num ponto livre do traco (fora do handle e do X) para fixar o X
-    await expect(page.locator('.orkestrai-edge path.edge-line')).toHaveCount(1);
+    await expect(page.locator('.deepspace-edge path.edge-line')).toHaveCount(1);
     await page.waitForTimeout(2500); // espera a corda assentar (fisica)
     const ropePoint = await page.evaluate(() => {
-      const path = document.querySelector<SVGPathElement>('.orkestrai-edge path.edge-line')!;
+      const path = document.querySelector<SVGPathElement>('.deepspace-edge path.edge-line')!;
       const ctm = path.getScreenCTM()!;
       for (const fraction of [0.3, 0.4, 0.5, 0.6, 0.7, 0.25, 0.75]) {
         const point = path.getPointAtLength(path.getTotalLength() * fraction);

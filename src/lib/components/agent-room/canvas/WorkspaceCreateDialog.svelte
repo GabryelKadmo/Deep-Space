@@ -92,7 +92,7 @@
   });
 
   const desktop = typeof window !== 'undefined'
-    ? (window as unknown as { orkestraiDesktop?: { pickDirectory: () => Promise<string | null> } }).orkestraiDesktop
+    ? (window as unknown as { deepspaceDesktop?: { pickDirectory: () => Promise<string | null> } }).deepspaceDesktop
     : undefined;
 
   // O adapter resolve 'zod/v3' pelo zod aninhado do superforms (4.x compat);

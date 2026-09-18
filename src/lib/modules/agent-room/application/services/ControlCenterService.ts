@@ -70,7 +70,7 @@ type BlockedTaskRecovery = {
 };
 
 function broadcast(payload: Record<string, unknown>): void {
-  const send = (globalThis as { __orkestraiBroadcast?: (frame: Record<string, unknown>) => void }).__orkestraiBroadcast;
+  const send = (globalThis as { __deepspaceBroadcast?: (frame: Record<string, unknown>) => void }).__deepspaceBroadcast;
   send?.(payload);
 }
 
@@ -152,8 +152,8 @@ export class ControlCenterService {
     ) {
       const sessionId = typeof input.metadata?.sessionId === 'string' ? input.metadata.sessionId : null;
       const lifecycle = globalThis as unknown as {
-        __orkestraiRecoverBlockedTask?: (recovery: BlockedTaskRecovery) => void;
-        __orkestraiPendingTaskRecoveries?: BlockedTaskRecovery[];
+        __deepspaceRecoverBlockedTask?: (recovery: BlockedTaskRecovery) => void;
+        __deepspacePendingTaskRecoveries?: BlockedTaskRecovery[];
       };
       const recovery: BlockedTaskRecovery = {
         workspaceId: input.workspaceId,
@@ -163,12 +163,12 @@ export class ControlCenterService {
         previousState: previous.state,
         previousAction: previous.action,
       };
-      if (lifecycle.__orkestraiRecoverBlockedTask) {
-        lifecycle.__orkestraiRecoverBlockedTask(recovery);
+      if (lifecycle.__deepspaceRecoverBlockedTask) {
+        lifecycle.__deepspaceRecoverBlockedTask(recovery);
       } else {
-        const pending = lifecycle.__orkestraiPendingTaskRecoveries ?? [];
+        const pending = lifecycle.__deepspacePendingTaskRecoveries ?? [];
         if (!pending.some((item) => item.taskId === taskId && item.sessionId === sessionId)) pending.push(recovery);
-        lifecycle.__orkestraiPendingTaskRecoveries = pending.slice(-100);
+        lifecycle.__deepspacePendingTaskRecoveries = pending.slice(-100);
       }
     }
     return event;
@@ -341,10 +341,10 @@ export class ControlCenterService {
 export const controlCenterService = new ControlCenterService();
 
 const lifecycle = globalThis as unknown as {
-  __orkestraiRecordActivity?: (input: RecordActivityInput) => void;
+  __deepspaceRecordActivity?: (input: RecordActivityInput) => void;
 };
-lifecycle.__orkestraiRecordActivity = (input) => {
+lifecycle.__deepspaceRecordActivity = (input) => {
   void controlCenterService.recordLifecycleActivity(input).catch((error) => {
-    console.error('[orkestrai:activity] Falha ao registrar estado do agente:', error);
+    console.error('[deepspace:activity] Falha ao registrar estado do agente:', error);
   });
 };

@@ -24,7 +24,7 @@ const capture: PortalDesignCapture = {
 describe('portal design inspector', () => {
   it('injects a temporary inspector without reading browser secrets', () => {
     const source = portalInspectorSource();
-    expect(source).toContain('__orkestraiPortalInspector');
+    expect(source).toContain('__deepspacePortalInspector');
     expect(source).toContain("delete window[KEY]");
     expect(source).not.toContain('document.cookie');
     expect(source).not.toContain('localStorage');

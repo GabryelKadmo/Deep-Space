@@ -54,7 +54,7 @@ describe('ApiClientService', () => {
   });
 
   async function fixture() {
-    tempDir = await mkdtemp(join(tmpdir(), 'orkestrai-api-client-'));
+    tempDir = await mkdtemp(join(tmpdir(), 'deepspace-api-client-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'API', workingDir: tempDir });
     const node = await workspaceRepository.createNode({
       workspaceId: workspace.id,
@@ -77,7 +77,7 @@ describe('ApiClientService', () => {
         request: {
           method: 'POST',
           url: { raw: '{{baseUrl}}/users?expand=roles', query: [{ key: 'expand', value: 'roles' }] },
-          header: [{ key: 'X-Project', value: 'Orkestrai' }],
+          header: [{ key: 'X-Project', value: 'Deep Space' }],
           auth: { type: 'bearer', bearer: [{ key: 'token', value: '{{token}}' }] },
           body: { mode: 'raw', raw: '{"name":"Ada"}', options: { raw: { language: 'json' } } },
         },
@@ -280,11 +280,11 @@ settings {
     expect(exportedFolder.request.script.req).toContain('folderReady');
   });
 
-  it('restores the complete versioned Orkestrai collection state', async () => {
+  it('restores the complete versioned Deep Space collection state', async () => {
     const { workspace, node } = await fixture();
-    const path = join(tempDir!, 'project.orkestrai-api.json');
+    const path = join(tempDir!, 'project.deepspace-api.json');
     await writeFile(path, JSON.stringify({
-      schema: 'https://orkestrai.app/schemas/api-client/v1',
+      schema: 'https://deepspace.app/schemas/api-client/v1',
       version: 1,
       name: 'Portable project API',
       exportedAt: '2026-08-20T12:00:00.000Z',
@@ -551,10 +551,10 @@ paths:
     };
     await workspaceRepository.updateNode(node.id, { payload: { requests: [request] } });
 
-    const result = await apiClientService.executeSaved(workspace.id, node.id, request.id, { name: 'Orkestrai' });
+    const result = await apiClientService.executeSaved(workspace.id, node.id, request.id, { name: 'Deep Space' });
 
-    expect(result).toMatchObject({ status: 200, ok: true, body: expect.stringContaining('Orkestrai') });
-    expect(received).toMatchObject({ operationName: 'Hello', variables: { name: 'Orkestrai' } });
+    expect(result).toMatchObject({ status: 200, ok: true, body: expect.stringContaining('Deep Space') });
+    expect(received).toMatchObject({ operationName: 'Hello', variables: { name: 'Deep Space' } });
   });
 
   it('executes WebSocket handshakes and preserves the bidirectional transcript', async () => {
@@ -672,12 +672,12 @@ message WatchReply { string event = 1; }
     ]);
     const result = await apiClientService.executeSaved(workspace.id, node.id, request.id, {
       baseUrl: `http://127.0.0.1:${address.port}`,
-      project: 'Orkestrai',
+      project: 'Deep Space',
       token: 'secret',
     }, agent.id);
 
     expect(result).toMatchObject({ status: 200, ok: true, contentType: 'application/json' });
-    expect(JSON.parse(result.body)).toEqual({ path: '/health', project: 'Orkestrai', authorization: 'Bearer secret' });
+    expect(JSON.parse(result.body)).toEqual({ path: '/health', project: 'Deep Space', authorization: 'Bearer secret' });
     expect(result.durationMs).toBeGreaterThanOrEqual(0);
     expect(result.size).toBeGreaterThan(0);
   });
@@ -709,8 +709,8 @@ message WatchReply { string event = 1; }
     });
 
     const created = await apiClientService.createForAgent(workspace.id, CreateAgentApiClientDto.from({ title: 'Agent API', collection, from: agent.id }));
-    expect(created.collection.requests[0].auth.token).toBe('__ORKESTRAI_REDACTED__');
-    expect(created.collection.variables.apiToken).toBe('__ORKESTRAI_REDACTED__');
+    expect(created.collection.requests[0].auth.token).toBe('__DEEPSPACE_REDACTED__');
+    expect(created.collection.variables.apiToken).toBe('__DEEPSPACE_REDACTED__');
     expect(created.collection.runners[0].requestIds).toEqual(['health']);
 
     const edited = structuredClone(created.collection);
@@ -741,11 +741,11 @@ message WatchReply { string event = 1; }
     const postman = await apiClientService.exportForAgent(workspace.id, created.nodeId, ExportAgentApiClientDto.from({ kind: 'postman', path: 'exports/postman', from: agent.id }));
     const postmanDocument = JSON.parse(await readFile(postman.path, 'utf8'));
     expect(postmanDocument.item[0].event.find((entry: any) => entry.listen === 'test').script.exec.join('\n')).toContain('returns 200');
-    expect(postmanDocument.item[0].request.auth.bearer[0].value).toBe('__ORKESTRAI_REDACTED__');
+    expect(postmanDocument.item[0].request.auth.bearer[0].value).toBe('__DEEPSPACE_REDACTED__');
     const bruno = await apiClientService.exportForAgent(workspace.id, created.nodeId, ExportAgentApiClientDto.from({ kind: 'bruno', path: 'exports/bruno', from: agent.id }));
     const parsed = parseRequest(await readFile(join(bruno.path, 'Health.bru'), 'utf8'), { format: 'bru' });
     expect(parsed.request.tests).toContain('returns 200');
-    expect(parsed.request.auth.bearer.token).toBe('__ORKESTRAI_REDACTED__');
+    expect(parsed.request.auth.bearer.token).toBe('__DEEPSPACE_REDACTED__');
 
     const disconnectedAgent = await workspaceRepository.createNode({ workspaceId: workspace.id, type: 'terminal', title: 'Unrelated agent' });
     await expect(apiClientService.readForAgent(workspace.id, created.nodeId, disconnectedAgent.id)).rejects.toThrow('not connected');

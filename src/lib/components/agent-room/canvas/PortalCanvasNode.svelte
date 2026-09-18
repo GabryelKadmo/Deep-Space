@@ -114,7 +114,7 @@
   let profileId = $state(data.payload.portalProfileId ?? 'default');
   let profileScope = $state<'private' | 'workspace'>(data.payload.portalProfileScope ?? 'workspace');
   let allowedHosts = $state((data.payload.portalAllowedHosts ?? []).join('\n'));
-  let downloadDirectory = $state(data.payload.portalDownloadDirectory ?? '.orkestrai/downloads');
+  let downloadDirectory = $state(data.payload.portalDownloadDirectory ?? '.deepspace/downloads');
   let control = $state<'disabled' | 'read' | 'interact'>(data.payload.portalControl ?? 'disabled');
   let agentIds = $state<string[]>(data.payload.portalAgentIds ?? []);
   let paused = $state(data.payload.portalPaused ?? false);
@@ -137,20 +137,20 @@
   }
   const readyWaiters = new Set<{ resolve: () => void; reject: (error: Error) => void; timer: ReturnType<typeof setTimeout> }>();
 
-  const isDesktop = typeof window !== 'undefined' && 'orkestraiDesktop' in window;
+  const isDesktop = typeof window !== 'undefined' && 'deepspaceDesktop' in window;
   const desktop = typeof window === 'undefined' ? undefined : (window as unknown as {
-    orkestraiDesktop?: {
+    deepspaceDesktop?: {
       onPortalOpenRequest: (callback: (payload: { sourceWebContentsId: number; url: string }) => void) => () => void;
       portalSurface: (input: Record<string, unknown>) => Promise<any>;
     };
-  }).orkestraiDesktop;
+  }).deepspaceDesktop;
   const sanitizedElementHtml = $derived(DOMPurify.sanitize(capture?.html ?? '', {
     ALLOWED_TAGS: ['a', 'button', 'div', 'span', 'p', 'label', 'input', 'select', 'option', 'img', 'svg', 'path', 'h1', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'strong', 'em', 'small'],
     ALLOWED_ATTR: ['role', 'aria-label', 'title', 'alt', 'href', 'src', 'type', 'placeholder', 'viewBox', 'd'],
     FORBID_ATTR: ['style'],
   }));
   const currentTargets = $derived(destinationKind === 'agent' ? agents : tasks);
-  const portalPartition = $derived(`persist:orkestrai-portal-${(profileScope === 'private' ? id : data.workspaceId).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80)}-${profileId.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) || 'default'}`);
+  const portalPartition = $derived(`persist:deepspace-portal-${(profileScope === 'private' ? id : data.workspaceId).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80)}-${profileId.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) || 'default'}`);
 
   function csrfHeaders(json = false): HeadersInit {
     const csrf = getCsrfToken();
@@ -383,7 +383,7 @@
   function savePortalSettings() {
     const cleanProfile = profileId.trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) || 'default';
     const hosts = [...new Set(allowedHosts.split(/[\s,]+/).map((host: string) => host.trim().toLowerCase()).filter((host: string) => /^[a-z0-9.-]+$/.test(host)))].slice(0, 64);
-    const cleanDirectory = downloadDirectory.trim() || '.orkestrai/downloads';
+    const cleanDirectory = downloadDirectory.trim() || '.deepspace/downloads';
     if (cleanDirectory.startsWith('/') || cleanDirectory.startsWith('\\') || /(^|[\\/])\.\.([\\/]|$)/.test(cleanDirectory)) {
       toast.error(m['portal.managed_path_error']());
       return;

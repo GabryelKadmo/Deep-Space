@@ -1,18 +1,25 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import { AppWindow, Bug, CheckCircle2, FileText, FolderOpen, LayoutGrid, LifeBuoy, Maximize2, Minus, MonitorUp, PanelTop, RefreshCw, Search, Settings, SquareTerminal, X } from '@lucide/svelte';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+  import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
+  import WorkspaceSharingButton from '$lib/components/collaboration/WorkspaceSharingButton.svelte';
+  import { activeWorkspaceStore, requestOpenSharing } from '$lib/components/agent-room/active-workspace.svelte.js';
   import * as m from '$lib/paraglide/messages.js';
 
   type DesktopBridge = { runMenuCommand?: (action: string) => Promise<unknown> };
-  const desktop = (window as unknown as { orkestraiDesktop?: DesktopBridge }).orkestraiDesktop;
+  const desktop = (window as unknown as { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
 
   function run(action: string) {
     void desktop?.runMenuCommand?.(action);
   }
+
+  const isCanvas = $derived(page.url.pathname === '/canvas');
+  const isWorkbench = $derived(page.url.pathname === '/terminal');
 </script>
 
 <header class="desktop-titlebar" data-dictation-ignore>
-  <div class="brand"><img src="/brand/icon.svg" alt="" width="17" height="17" /><strong>Orkestrai</strong></div>
+  <div class="brand"><img src="/brand/icon.png" alt="" width="17" height="17" /><strong>Deep Space</strong></div>
 
   <nav aria-label={m['desktop.menu_aria']()}>
     <DropdownMenu.Root>
@@ -80,6 +87,15 @@
         <DropdownMenu.Item onclick={() => run('report-issue')}><LifeBuoy size={14} />{m['desktop.report_issue']()}</DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
+
+    {#if isCanvas || isWorkbench}
+      <div class="context-actions">
+        {#if isWorkbench}
+          <WorkspaceSharingButton variant="titlebar" workspaceId={activeWorkspaceStore.id} onOpen={requestOpenSharing} />
+        {/if}
+        <AttentionCenter workspaceId={activeWorkspaceStore.id} />
+      </div>
+    {/if}
   </nav>
 
   <div class="window-controls" aria-hidden="true"></div>
@@ -112,11 +128,33 @@
     font-weight: 600;
   }
 
+  /*
+   * O nav ocupa a coluna 1fr inteira, então marcá-lo como no-drag tornava todo o
+   * espaço vazio à direita dos menus não-arrastável — sobrava só a logo para mover
+   * a janela. O no-drag pertence aos botões; o vazio entre e depois deles herda o
+   * drag do header.
+   */
   nav,
   .window-controls {
     height: 100%;
     display: flex;
     align-items: center;
+  }
+
+  .window-controls {
+    -webkit-app-region: no-drag;
+  }
+
+  /* padding-top da folga pro badge de notificacao (posicionado com offset
+     negativo) nao ser cortado pelo topo da janela — nao ha espaco acima do
+     titlebar pra "vazar". */
+  .context-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    padding-top: 4px;
+    padding-right: 6px;
     -webkit-app-region: no-drag;
   }
 
@@ -128,6 +166,7 @@
     background: transparent;
     color: var(--app-text-soft);
     font-size: 11px;
+    -webkit-app-region: no-drag;
   }
 
   :global(.menu-trigger:hover),

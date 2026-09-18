@@ -1,4 +1,4 @@
-const PORTAL_PARTITION = 'persist:orkestrai-portals';
+const PORTAL_PARTITION = 'persist:deepspace-portals';
 
 function publicPortalUrl(candidate) {
   if (candidate === 'about:blank') return candidate;
@@ -17,7 +17,7 @@ function publicPortalUrl(candidate) {
 function managedPortalPartition(workspaceId, nodeId, profileId = 'default', profileScope = 'workspace') {
   const clean = (value) => String(value ?? '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80) || 'default';
   const owner = profileScope === 'private' ? clean(nodeId) : clean(workspaceId);
-  return `persist:orkestrai-portal-${owner}-${clean(profileId)}`;
+  return `persist:deepspace-portal-${owner}-${clean(profileId)}`;
 }
 
 function isAllowedPortalUrl(candidate) {

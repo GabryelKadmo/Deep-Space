@@ -33,12 +33,12 @@ export class NativeNotificationService {
     // Heartbeats ficam no Control Center. O sistema operacional recebe apenas
     // transições semânticas de atenção e conclusão.
     if (kind === 'info') return { notified: false };
-    const title = `Orkestrai — ${copy[kind]}`;
+    const title = `Deep Space — ${copy[kind]}`;
     const subject = input.title?.trim();
     const body = [subject ? `“${subject}”` : '', input.message.trim(), workspace.name]
       .filter(Boolean)
       .join(' · ');
-    console.log(`[orkestrai:notify] ${JSON.stringify({ kind, title, body })}`);
+    console.log(`[deepspace:notify] ${JSON.stringify({ kind, title, body })}`);
     return { notified: true };
   }
 }

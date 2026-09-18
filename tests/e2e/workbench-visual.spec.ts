@@ -79,7 +79,7 @@ test.describe('Workbench visual baseline', () => {
     await page.route(`**/api/agent-room/workspaces/${workspace.id}/fs/list*`, (route) => route.fulfill({ json: { data: files } }));
 
     try {
-      for (const theme of ['orkestrai-light', 'orkestrai-dark']) {
+      for (const theme of ['deepspace-light', 'deepspace-dark']) {
         await request.put('/api/agent-room/settings', {
           data: { ...originalSettings, appTheme: theme, workbenchTabPlacement: 'vertical', uiLanguage: 'en' },
         });

@@ -28,10 +28,10 @@ describe('safeAgentRespawn', () => {
       ['--effort', 'medium'],
       null,
       (id) => ['--resume', id],
-      ['--session-id', '__ORKESTRAI_SESSION_ID__'],
+      ['--session-id', '__DEEPSPACE_SESSION_ID__'],
     )).toEqual({
       args: ['--effort', 'medium'],
-      freshSessionArgs: ['--session-id', '__ORKESTRAI_SESSION_ID__'],
+      freshSessionArgs: ['--session-id', '__DEEPSPACE_SESSION_ID__'],
     });
   });
 });

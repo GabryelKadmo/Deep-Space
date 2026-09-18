@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 
 for (const mode of ['canvas', 'terminal']) {
   test(`flow waits for saved steps and rejects a failed save in ${mode}`, async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-flow-save-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-flow-save-'));
     const workspace = (await (await request.post('/api/agent-room/workspaces', { data: { name: `Flow save ${mode} ${Date.now()}`, workingDir: dir } })).json()).data;
     const root = `/api/agent-room/workspaces/${workspace.id}`;
     const node = (await (await request.post(`${root}/nodes`, { data: { type: 'flow', title: 'Flow save', width: 640, height: 600, payload: { steps: [], iterations: 1 } } })).json()).data;

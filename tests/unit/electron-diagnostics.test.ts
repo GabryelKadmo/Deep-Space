@@ -21,7 +21,7 @@ afterEach(() => {
 
 describe('Electron diagnostics', () => {
   it('redacts credentials before they reach disk', () => {
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'orkestrai-diagnostics-'));
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'deepspace-diagnostics-'));
     directories.push(directory);
     const logger = createDiagnosticsLogger(directory);
 
@@ -39,7 +39,7 @@ describe('Electron diagnostics', () => {
   });
 
   it('rotates bounded log files', () => {
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'orkestrai-diagnostics-'));
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'deepspace-diagnostics-'));
     directories.push(directory);
     const logger = createDiagnosticsLogger(directory, { maxBytes: 1_024, backups: 2 });
 

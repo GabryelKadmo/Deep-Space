@@ -7,7 +7,7 @@ const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const { createManagedPortalExecutor } = require('../electron/managed-portal.cjs');
 
-const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'orkestrai-portal-regression-'));
+const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'deepspace-portal-regression-'));
 app.setPath('userData', profile);
 const showWindow = process.argv.includes('--show-window');
 const html = `<!doctype html><html><head><title>Controlled Portal QA</title></head>
@@ -18,7 +18,7 @@ const html = `<!doctype html><html><head><title>Controlled Portal QA</title></he
 <iframe title="Private frame" srcdoc="<p>Frame credentials</p>"></iframe>
 <button id="send" onclick="document.getElementById('result').textContent=document.getElementById('message').value">Send report</button>
 <button id="change">Change me</button><p id="result">Ready</p><a href="/tab" target="_blank">New tab</a>
-<script>window.pageIdentity = Math.random(); window.__orkestraiControlledPortal = { snapshot: () => [{name:'forged'}] };</script>
+<script>window.pageIdentity = Math.random(); window.__deepspaceControlledPortal = { snapshot: () => [{name:'forged'}] };</script>
 </body></html>`;
 let server, parent, executor;
 const watchdog = setTimeout(() => { console.error('Managed Portal regression timed out.'); finish(1); }, 30000);
@@ -86,7 +86,7 @@ async function main() {
   const framePixel = (Math.floor(iframeRect.y + iframeRect.height / 2) * captured.getSize().width + Math.floor(iframeRect.x + iframeRect.width / 2)) * 4;
   assert.deepEqual([...pixels.subarray(framePixel, framePixel + 3)], [68, 68, 68], 'frames must not expose uninspectable credentials');
   await new Promise((resolve) => setTimeout(resolve, 300));
-  const screenshot = path.join(os.tmpdir(), 'orkestrai-managed-portal-qa.png');
+  const screenshot = path.join(os.tmpdir(), 'deepspace-managed-portal-qa.png');
   fs.writeFileSync(screenshot, Buffer.from(capture.result.dataUrl.split(',')[1], 'base64'));
   const replacementLease = randomUUID();
   await executor.surface(request, parent, replacementLease);

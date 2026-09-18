@@ -77,7 +77,7 @@
 
   // Handle flutuante: a bolinha desliza pela borda do no ate o ponto mais
   // proximo do vizinho conectado mais perto — a mesma matematica da ancora
-  // da corda (OrkestraiEdge), entao a ponta da corda sempre toca a bolinha.
+  // da corda (DeepSpaceEdge), entao a ponta da corda sempre toca a bolinha.
   const floatingAnchor = $derived.by(() => {
     const absolute = floatingAnchorFor(id, nodesStore.current, edgesStore.current);
     if (!absolute) return null;
@@ -91,6 +91,10 @@
       ? `left: ${floatingAnchor.x}px; top: ${floatingAnchor.y}px; right: auto; transform: translate(-50%, -50%);`
       : undefined
   );
+  // Com conexao ja feita a bolinha fica visivel sempre (e a ancora da corda);
+  // sem conexao ela só aparece perto do hover, pra nao poluir 4 bolinhas por
+  // no o tempo todo.
+  const handleClass = $derived(floatingAnchor ? 'node-handle connected' : 'node-handle');
 </script>
 
 <div class={`node-shell nowheel ${klass}`} class:selected style:--accent={accent}>
@@ -102,10 +106,15 @@
     lineStyle="border-color: var(--accent)"
     handleStyle="background: var(--accent)"
   />
-  <!-- Handle unico bidirecional (connectionMode Loose), estilo Maestri: sem
-       conexoes fica na lateral direita; com conexoes flutua pela borda ate a
-       ancora da corda (ver floatingAnchor acima). -->
-  <Handle type="source" position={Position.Right} class="node-handle" style={handleStyle} />
+  <!-- Quatro handles bidirecionais (connectionMode Loose), um por lado, para
+       conectar sem precisar navegar ate a lateral direita do vizinho. Sem
+       conexoes cada um fica no seu lado; com conexoes todos flutuam juntos
+       ate a mesma ancora na borda mais proxima da corda (floatingAnchor
+       acima) — na pratica vira uma unica bolinha visivel. -->
+  <Handle id="top" type="source" position={Position.Top} class={handleClass} style={handleStyle} />
+  <Handle id="right" type="source" position={Position.Right} class={handleClass} style={handleStyle} />
+  <Handle id="bottom" type="source" position={Position.Bottom} class={handleClass} style={handleStyle} />
+  <Handle id="left" type="source" position={Position.Left} class={handleClass} style={handleStyle} />
 
   <header class="node-header">
     <span class="node-icon">{@render icon()}</span>
@@ -357,9 +366,27 @@
     /* O anel nao e elevacao: e um recorte na cor do fundo para a bolinha
        nao encostar nas cordas que passam por baixo. */
     box-shadow: 0 0 0 3px var(--app-canvas), 0 0 8px var(--accent);
-    opacity: 0.95;
-    transition: transform 130ms ease, box-shadow 130ms ease;
+    /* Sem conexao a bolinha so aparece perto do mouse (hover do no) — com
+       4 bolinhas por no, ficarem sempre visiveis poluia o canvas. Ja
+       conectada fica sempre visivel: e a ancora da corda existente. */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 130ms ease, transform 130ms ease, box-shadow 130ms ease;
   }
+
+  .node-shell:hover :global(.node-handle),
+  .node-shell :global(.node-handle.connected) {
+    opacity: 0.95;
+    pointer-events: auto;
+  }
+
+  /* Posicao de repouso (sem conexao) empurrada pra fora da borda — o padrao
+     do xyflow centraliza a bolinha em cima da borda (metade pra dentro do
+     no), que e exatamente a queixa da bolinha "pisando" no conteudo. */
+  .node-shell :global(.node-handle.svelte-flow__handle-top) { top: -6px; }
+  .node-shell :global(.node-handle.svelte-flow__handle-right) { right: -6px; }
+  .node-shell :global(.node-handle.svelte-flow__handle-bottom) { bottom: -6px; }
+  .node-shell :global(.node-handle.svelte-flow__handle-left) { left: -6px; }
 
   .node-shell :global(.node-handle:hover) {
     transform: scale(1.45);

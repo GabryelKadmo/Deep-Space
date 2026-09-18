@@ -37,19 +37,19 @@ describe('Design editor session', () => {
 
   it('rejects malformed or unsafe persisted values', () => {
     const storage = memoryStorage();
-    storage.setItem('orkestrai.design.editor.v2:workspace-a:design-a', JSON.stringify({
+    storage.setItem('deepspace.design.editor.v2:workspace-a:design-a', JSON.stringify({
       ...session,
       zoom: 99,
     }));
     expect(readDesignEditorSession(storage, 'workspace-a', 'design-a')).toBeNull();
 
-    storage.setItem('orkestrai.design.editor.v2:workspace-a:design-a', '{');
+    storage.setItem('deepspace.design.editor.v2:workspace-a:design-a', '{');
     expect(readDesignEditorSession(storage, 'workspace-a', 'design-a')).toBeNull();
   });
 
   it('migrates removed contextual tabs without discarding the viewport', () => {
     const storage = memoryStorage();
-    storage.setItem('orkestrai.design.editor.v2:workspace-a:design-a', JSON.stringify({
+    storage.setItem('deepspace.design.editor.v2:workspace-a:design-a', JSON.stringify({
       ...session,
       rightPanel: 'collaboration',
     }));
@@ -62,7 +62,7 @@ describe('Design editor session', () => {
 
   it('does not restore camera coordinates saved for the oversized v1 scene', () => {
     const storage = memoryStorage();
-    storage.setItem('orkestrai.design.editor.v1:workspace-a:design-a', JSON.stringify(session));
+    storage.setItem('deepspace.design.editor.v1:workspace-a:design-a', JSON.stringify(session));
     expect(readDesignEditorSession(storage, 'workspace-a', 'design-a')).toBeNull();
   });
 });

@@ -21,8 +21,8 @@ describe('CanvasNodeTransfer', () => {
   });
 
   async function workspacePair() {
-    const sourceRoot = await mkdtemp(join(tmpdir(), 'orkestrai-transfer-source-'));
-    const destinationRoot = await mkdtemp(join(tmpdir(), 'orkestrai-transfer-destination-'));
+    const sourceRoot = await mkdtemp(join(tmpdir(), 'deepspace-transfer-source-'));
+    const destinationRoot = await mkdtemp(join(tmpdir(), 'deepspace-transfer-destination-'));
     roots.push(sourceRoot, destinationRoot);
     const source = await workspaceRepository.createWorkspace({ name: 'Source', workingDir: sourceRoot });
     const destination = await workspaceRepository.createWorkspace({ name: 'Destination', workingDir: destinationRoot });
@@ -32,8 +32,8 @@ describe('CanvasNodeTransfer', () => {
   it('copies nodes, internal edges, note attachments, and native designs without live runtime state', async () => {
     const { source, destination, sourceRoot, destinationRoot } = await workspacePair();
     const attachmentId = uuidv7();
-    const attachmentPath = `.orkestrai/attachments/${attachmentId}-brief.txt`;
-    await mkdir(join(sourceRoot, '.orkestrai', 'attachments'), { recursive: true });
+    const attachmentPath = `.deepspace/attachments/${attachmentId}-brief.txt`;
+    await mkdir(join(sourceRoot, '.deepspace', 'attachments'), { recursive: true });
     await writeFile(join(sourceRoot, attachmentPath), 'transfer me');
     const terminal = await workspaceRepository.createNode({
       workspaceId: source.id,
@@ -140,15 +140,15 @@ describe('CanvasNodeTransfer', () => {
     const copiedNode = result.nodes.find((node) => node.type === 'image')!;
     const copied = copiedNode.payload as ImageNodePayload;
 
-    expect(copied.path).toContain(`.orkestrai/transfers/${copiedNode.id}/`);
-    expect(copied.generatedBy?.sourceMasterPath).toContain(`.orkestrai/transfers/${copiedNode.id}/masters/`);
+    expect(copied.path).toContain(`.deepspace/transfers/${copiedNode.id}/`);
+    expect(copied.generatedBy?.sourceMasterPath).toContain(`.deepspace/transfers/${copiedNode.id}/masters/`);
     expect(await readFile(join(destinationRoot, copied.path!), 'utf8')).toBe('exact delivery');
     expect(await readFile(join(destinationRoot, copied.generatedBy!.sourceMasterPath!), 'utf8')).toBe('native master');
   });
 
   it('rejects assets that escape the workspace through a symlink', async () => {
     const { source, destination, sourceRoot } = await workspacePair();
-    const externalRoot = await mkdtemp(join(tmpdir(), 'orkestrai-transfer-external-'));
+    const externalRoot = await mkdtemp(join(tmpdir(), 'deepspace-transfer-external-'));
     roots.push(externalRoot);
     await writeFile(join(externalRoot, 'secret.txt'), 'outside workspace');
     await symlink(join(externalRoot, 'secret.txt'), join(sourceRoot, 'linked.txt'));

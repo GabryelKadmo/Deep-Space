@@ -210,10 +210,10 @@ describe('ControlCenterService', () => {
     });
 
     const recoveries: unknown[] = [];
-    const lifecycle = globalThis as unknown as { __orkestraiRecoverBlockedTask?: (input: unknown) => void };
-    const previousRecovery = lifecycle.__orkestraiRecoverBlockedTask;
+    const lifecycle = globalThis as unknown as { __deepspaceRecoverBlockedTask?: (input: unknown) => void };
+    const previousRecovery = lifecycle.__deepspaceRecoverBlockedTask;
     try {
-      lifecycle.__orkestraiRecoverBlockedTask = (input) => recoveries.push(input);
+      lifecycle.__deepspaceRecoverBlockedTask = (input) => recoveries.push(input);
       await controlCenterService.recordLifecycleActivity({
         workspaceId: workspace.id,
         nodeId: agent.id,
@@ -229,8 +229,8 @@ describe('ControlCenterService', () => {
         metadata: { sessionId: 'resumed-session' },
       });
     } finally {
-      if (previousRecovery) lifecycle.__orkestraiRecoverBlockedTask = previousRecovery;
-      else delete lifecycle.__orkestraiRecoverBlockedTask;
+      if (previousRecovery) lifecycle.__deepspaceRecoverBlockedTask = previousRecovery;
+      else delete lifecycle.__deepspaceRecoverBlockedTask;
     }
 
     const history = await controlCenterRepository.listActivity(workspace.id);
@@ -269,14 +269,14 @@ describe('ControlCenterService', () => {
     });
 
     const lifecycle = globalThis as unknown as {
-      __orkestraiRecoverBlockedTask?: (input: unknown) => void;
-      __orkestraiPendingTaskRecoveries?: unknown[];
+      __deepspaceRecoverBlockedTask?: (input: unknown) => void;
+      __deepspacePendingTaskRecoveries?: unknown[];
     };
-    const previousRecovery = lifecycle.__orkestraiRecoverBlockedTask;
-    const previousPending = lifecycle.__orkestraiPendingTaskRecoveries;
+    const previousRecovery = lifecycle.__deepspaceRecoverBlockedTask;
+    const previousPending = lifecycle.__deepspacePendingTaskRecoveries;
     try {
-      delete lifecycle.__orkestraiRecoverBlockedTask;
-      lifecycle.__orkestraiPendingTaskRecoveries = [];
+      delete lifecycle.__deepspaceRecoverBlockedTask;
+      lifecycle.__deepspacePendingTaskRecoveries = [];
       await controlCenterService.recordLifecycleActivity({
         workspaceId: workspace.id,
         nodeId: agent.id,
@@ -284,13 +284,13 @@ describe('ControlCenterService', () => {
         action: 'system:pty_resumed',
         metadata: { sessionId: 'new-session' },
       });
-      expect(lifecycle.__orkestraiPendingTaskRecoveries).toEqual([
+      expect(lifecycle.__deepspacePendingTaskRecoveries).toEqual([
         expect.objectContaining({ taskId, sessionId: 'new-session', previousState: 'blocked' }),
       ]);
     } finally {
-      if (previousRecovery) lifecycle.__orkestraiRecoverBlockedTask = previousRecovery;
-      else delete lifecycle.__orkestraiRecoverBlockedTask;
-      lifecycle.__orkestraiPendingTaskRecoveries = previousPending;
+      if (previousRecovery) lifecycle.__deepspaceRecoverBlockedTask = previousRecovery;
+      else delete lifecycle.__deepspaceRecoverBlockedTask;
+      lifecycle.__deepspacePendingTaskRecoveries = previousPending;
     }
   });
 
@@ -347,7 +347,7 @@ describe('ControlCenterService', () => {
       id: uuidv7(),
       workspace_id: workspace.id,
       name: 'Feature checkout',
-      branch: 'orkestrai/feature-checkout',
+      branch: 'deepspace/feature-checkout',
       path: '/tmp/feature-checkout',
       status: 'active',
     });

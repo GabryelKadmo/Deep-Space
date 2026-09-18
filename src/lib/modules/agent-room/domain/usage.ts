@@ -12,6 +12,7 @@ export type UsageErrorCode =
   | 'refresh_failed'
   | 'api_timeout'
   | 'api_request_failed'
+  | 'rate_limited'
   | 'unexpected';
 
 export function usageSeverity(usedPercent: number): UsageSeverity {

@@ -33,17 +33,17 @@ describe('AgentSessionService provider profiles', () => {
     expect(create.mock.calls[0][0].env).toMatchObject({
       SAFE_VALUE: 'kept',
       TEST_PROFILE_SECRET: 'runtime-only',
-      ORKESTRAI_NODE_ID: node.id,
-      ORKESTRAI_WORKSPACE_CONFIG: '/tmp/.orkestrai/workspace.json',
+      DEEPSPACE_NODE_ID: node.id,
+      DEEPSPACE_WORKSPACE_CONFIG: '/tmp/.deepspace/workspace.json',
     });
-    expect(create.mock.calls[0][0].env.ORKESTRAI_AGENT_TOKEN).toMatch(/^[0-9a-f-]{36}$/);
-    expect(create.mock.calls[0][0].bridgeAgentToken).toBe(create.mock.calls[0][0].env.ORKESTRAI_AGENT_TOKEN);
-    expect(create.mock.calls[0][0].forwardEnvToWsl).toEqual(['TEST_PROFILE_SECRET', 'ORKESTRAI_POLICY_ENVELOPE']);
+    expect(create.mock.calls[0][0].env.DEEPSPACE_AGENT_TOKEN).toMatch(/^[0-9a-f-]{36}$/);
+    expect(create.mock.calls[0][0].bridgeAgentToken).toBe(create.mock.calls[0][0].env.DEEPSPACE_AGENT_TOKEN);
+    expect(create.mock.calls[0][0].forwardEnvToWsl).toEqual(['TEST_PROFILE_SECRET', 'DEEPSPACE_POLICY_ENVELOPE']);
     expect(create.mock.calls[0][0].args).toContain(`projects={${JSON.stringify(realpathSync('/tmp'))}={trust_level="trusted"}}`);
     const persisted = await workspaceRepository.getNode(node.id);
     expect(JSON.stringify(persisted?.payload)).not.toContain('runtime-only');
-    expect(JSON.stringify(persisted?.payload)).not.toContain(create.mock.calls[0][0].env.ORKESTRAI_AGENT_TOKEN);
-    expect(JSON.stringify(persisted?.payload)).not.toContain(create.mock.calls[0][0].env.ORKESTRAI_POLICY_ENVELOPE);
+    expect(JSON.stringify(persisted?.payload)).not.toContain(create.mock.calls[0][0].env.DEEPSPACE_AGENT_TOKEN);
+    expect(JSON.stringify(persisted?.payload)).not.toContain(create.mock.calls[0][0].env.DEEPSPACE_POLICY_ENVELOPE);
     ptySessionManager.kill(ensured.sessionId);
   });
 });

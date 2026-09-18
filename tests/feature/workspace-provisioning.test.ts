@@ -60,29 +60,29 @@ describe('WorkspaceService — provisionamento da ponte', () => {
   });
 
   it('provisiona skill e token ao criar o workspace', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-prov-new-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-new-'));
     const workspace = await workspaceService.create({ name: 'novo', workingDir: dir, icon: null, instructions: null });
 
     expect(workspace.id).toBeTruthy();
     expect(workspace.repositoryRoots).toEqual([]);
-    expect(existsSync(join(dir, '.orkestrai', 'workspace.json'))).toBe(true);
-    expect(existsSync(join(dir, '.claude', 'skills', 'orkestrai', 'SKILL.md'))).toBe(true);
-    expect(existsSync(join(dir, '.cline', 'skills', 'orkestrai', 'SKILL.md'))).toBe(true);
-    expect(existsSync(join(dir, '.agents', 'skills', 'orkestrai', 'SKILL.md'))).toBe(true);
+    expect(existsSync(join(dir, '.deepspace', 'workspace.json'))).toBe(true);
+    expect(existsSync(join(dir, '.claude', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
+    expect(existsSync(join(dir, '.cline', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
+    expect(existsSync(join(dir, '.agents', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
     // AGENTS.md portavel + os formatos MCP proprios de cada provider.
     const agentsMd = readFileSync(join(dir, 'AGENTS.md'), 'utf8');
-    expect(agentsMd).toContain('<!-- orkestrai:begin -->');
-    expect(agentsMd).toContain('orkestrai ask');
+    expect(agentsMd).toContain('<!-- deepspace:begin -->');
+    expect(agentsMd).toContain('deepspace ask');
     const opencode = JSON.parse(readFileSync(join(dir, 'opencode.json'), 'utf8'));
-    expect(opencode.mcp.orkestrai).toMatchObject({
+    expect(opencode.mcp.deepspace).toMatchObject({
       type: 'local',
-      command: [process.execPath, join(process.cwd(), 'packages', 'orkestrai-cli', 'bin', 'orkestrai.js'), 'mcp'],
+      command: [process.execPath, join(process.cwd(), 'packages', 'deepspace-cli', 'bin', 'deepspace.js'), 'mcp'],
       enabled: true,
     });
     for (const path of ['.mcp.json', '.cursor/mcp.json', '.cline/mcp.json', '.agents/mcp_config.json']) {
       const config = JSON.parse(readFileSync(join(dir, path), 'utf8'));
-      expect(config.mcpServers.orkestrai.command).toBe(process.execPath);
-      expect(config.mcpServers.orkestrai.args.at(-1)).toBe('mcp');
+      expect(config.mcpServers.deepspace.command).toBe(process.execPath);
+      expect(config.mcpServers.deepspace.args.at(-1)).toBe('mcp');
       if (path === '.mcp.json') {
         expect(config.mcpServers.figma).toEqual({ type: 'http', url: 'https://mcp.figma.com/mcp' });
       } else if (path === '.cursor/mcp.json') {
@@ -94,19 +94,19 @@ describe('WorkspaceService — provisionamento da ponte', () => {
   });
 
   it('preserva conteudo do usuario no AGENTS.md ao atualizar o bloco', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-prov-merge-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-merge-'));
     const { writeFileSync: write } = await import('node:fs');
     write(join(dir, 'AGENTS.md'), '# Meu projeto\n\nRegras minhas aqui.\n');
     const workspace = await workspaceService.create({ name: 'merge', workingDir: dir, icon: null, instructions: null });
 
     const agentsMd = readFileSync(join(dir, 'AGENTS.md'), 'utf8');
     expect(agentsMd).toContain('Regras minhas aqui.');
-    expect(agentsMd).toContain('<!-- orkestrai:begin -->');
+    expect(agentsMd).toContain('<!-- deepspace:begin -->');
     expect(workspace.id).toBeTruthy();
   });
 
   it('preserva AGENTS.md e CLAUDE.md do usuario ao sincronizar instrucoes de preset', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-prov-instructions-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-instructions-'));
     writeFileSync(join(dir, 'AGENTS.md'), '# Product rules\n\nNever rewrite this section.\n');
     writeFileSync(join(dir, 'CLAUDE.md'), '# Claude rules\n\nKeep this too.\n');
 
@@ -128,14 +128,14 @@ describe('WorkspaceService — provisionamento da ponte', () => {
     expect(agents).toContain('Never rewrite this section.');
     expect(agents).toContain('Updated team instructions.');
     expect(agents).not.toContain('\nTeam instructions.\n');
-    expect(agents).toContain('<!-- orkestrai:begin -->');
+    expect(agents).toContain('<!-- deepspace:begin -->');
     expect(claude).toContain('# Claude rules');
     expect(claude).toContain('Keep this too.');
     expect(claude).toContain('Updated team instructions.');
   });
 
   it('migrates legacy whole-file instructions into a managed block', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-prov-legacy-instructions-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-legacy-instructions-'));
     writeFileSync(join(dir, 'AGENTS.md'), 'Old managed instructions.\n');
     const workspace = await workspaceRepository.createWorkspace({
       name: 'legacy instructions',
@@ -148,13 +148,13 @@ describe('WorkspaceService — provisionamento da ponte', () => {
 
     const agents = readFileSync(join(dir, 'AGENTS.md'), 'utf8');
     expect(agents.match(/Old managed instructions\./g)).toBeNull();
-    expect(agents).toContain('<!-- orkestrai:workspace-instructions:begin -->');
+    expect(agents).toContain('<!-- deepspace:workspace-instructions:begin -->');
     expect(agents).toContain('New managed instructions.');
-    expect(agents).toContain('<!-- orkestrai:begin -->');
+    expect(agents).toContain('<!-- deepspace:begin -->');
   });
 
   it('preserva servidores MCP configurados pelo usuario', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-prov-mcp-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-mcp-'));
     const { mkdirSync: mkdir, writeFileSync: write } = await import('node:fs');
     mkdir(join(dir, '.cursor'), { recursive: true });
     write(
@@ -166,37 +166,37 @@ describe('WorkspaceService — provisionamento da ponte', () => {
 
     const config = JSON.parse(readFileSync(join(dir, '.cursor', 'mcp.json'), 'utf8'));
     expect(config.mcpServers.custom).toEqual({ command: 'custom-server', args: ['serve'] });
-    expect(config.mcpServers.orkestrai.command).toBe(process.execPath);
+    expect(config.mcpServers.deepspace.command).toBe(process.execPath);
     expect(config.mcpServers.figma.url).toBe('https://mcp.figma.com/mcp');
   });
 
   it('repara skill e token ao abrir workspace antigo (sem provisionamento)', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-prov-old-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-old-'));
     // Criado direto no repositorio: simula workspace de versao antiga do app.
     const workspace = await workspaceRepository.createWorkspace({ name: 'antigo', workingDir: dir });
-    expect(existsSync(join(dir, '.orkestrai', 'workspace.json'))).toBe(false);
+    expect(existsSync(join(dir, '.deepspace', 'workspace.json'))).toBe(false);
 
     await workspaceService.get(workspace.id);
 
-    expect(existsSync(join(dir, '.orkestrai', 'workspace.json'))).toBe(true);
-    const skillPath = join(dir, '.claude', 'skills', 'orkestrai', 'SKILL.md');
+    expect(existsSync(join(dir, '.deepspace', 'workspace.json'))).toBe(true);
+    const skillPath = join(dir, '.claude', 'skills', 'deepspace', 'SKILL.md');
     expect(existsSync(skillPath)).toBe(true);
     const skill = readFileSync(skillPath, 'utf8');
     expect(skill).toContain('Modo Maestro');
-    expect(skill).toContain('ORKESTRAI_NODE_ID');
+    expect(skill).toContain('DEEPSPACE_NODE_ID');
 
-    const config = JSON.parse(readFileSync(join(dir, '.orkestrai', 'workspace.json'), 'utf8'));
+    const config = JSON.parse(readFileSync(join(dir, '.deepspace', 'workspace.json'), 'utf8'));
     expect(config.token).toBeTruthy();
   });
 
   it('atualiza skill com conteudo antigo ao abrir o workspace', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-prov-stale-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-stale-'));
     const workspace = await workspaceService.create({ name: 'stale', workingDir: dir, icon: null, instructions: null });
     // Envelhece a skill (simula template de versao anterior).
-    const skillPath = join(dir, '.claude', 'skills', 'orkestrai', 'SKILL.md');
+    const skillPath = join(dir, '.claude', 'skills', 'deepspace', 'SKILL.md');
     const { writeFileSync: write, mkdirSync: mkdir } = await import('node:fs');
-    mkdir(join(dir, '.claude', 'skills', 'orkestrai'), { recursive: true });
-    write(skillPath, '---\nname: orkestrai-bridge\n---\nskill antiga\n');
+    mkdir(join(dir, '.claude', 'skills', 'deepspace'), { recursive: true });
+    write(skillPath, '---\nname: deepspace-bridge\n---\nskill antiga\n');
 
     const staleService = new (await import('$lib/modules/agent-room/application/services/WorkspaceService.js')).WorkspaceService();
     await staleService.get(workspace.id);

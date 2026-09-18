@@ -200,10 +200,10 @@ export class AndroidSdk {
     return devices;
   }
 
-  async attach(device: DeviceDescriptor): Promise<{ serial: string; startedByOrkestrai: boolean }> {
+  async attach(device: DeviceDescriptor): Promise<{ serial: string; startedByDeepSpace: boolean }> {
     if (!device.id.startsWith(AVD_PREFIX)) {
       await this.waitForBoot(device.id, 30_000);
-      return { serial: device.id, startedByOrkestrai: false };
+      return { serial: device.id, startedByDeepSpace: false };
     }
     const avdName = device.id.slice(AVD_PREFIX.length);
     const emulator = await this.emulatorPath();
@@ -218,7 +218,7 @@ export class AndroidSdk {
       const serial = await this.waitForAvd(avdName, 180_000);
       await this.waitForBoot(serial, 180_000);
       this.listCache = null;
-      return { serial, startedByOrkestrai: true };
+      return { serial, startedByDeepSpace: true };
     } catch (error) {
       child.kill();
       throw error;
@@ -259,7 +259,7 @@ export class AndroidSdk {
   }
 
   async accessibilityTree(serial: string): Promise<unknown> {
-    const remotePath = `/data/local/tmp/orkestrai-window-${Date.now()}.xml`;
+    const remotePath = `/data/local/tmp/deepspace-window-${Date.now()}.xml`;
     try {
       await this.runAdb(serial, ['shell', 'uiautomator', 'dump', '--compressed', remotePath], 30_000);
       const xml = await this.runAdb(serial, ['exec-out', 'cat', remotePath], 30_000);

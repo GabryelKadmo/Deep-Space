@@ -44,7 +44,6 @@
   import ComputerWorkbenchPanel from '$lib/components/agent-room/ComputerWorkbenchPanel.svelte';
   import DesignEditor from '$lib/components/agent-room/design/DesignEditor.svelte';
   import CouncilDialog from '$lib/components/agent-room/CouncilDialog.svelte';
-  import WorkspaceSharingButton from '$lib/components/collaboration/WorkspaceSharingButton.svelte';
   import WorkspaceSharingDialog from '$lib/components/collaboration/WorkspaceSharingDialog.svelte';
   import AutomationWorkspace from '$lib/components/agent-room/AutomationWorkspace.svelte';
   import ToolWorkshopPanel from '$lib/components/agent-room/ToolWorkshopPanel.svelte';
@@ -91,6 +90,8 @@
   import { TEXT_DICTATION_FALLBACK, type TextDictationFallbackDetail } from '$lib/components/agent-room/text-dictation.js';
   import WorkspaceIcon from '$lib/components/agent-room/WorkspaceIcon.svelte';
   import WorkspaceModeSwitch from '$lib/components/agent-room/WorkspaceModeSwitch.svelte';
+  import { setActiveWorkspaceId, setSharingOpenHandler } from '$lib/components/agent-room/active-workspace.svelte.js';
+  import WorkspaceSharingButton from '$lib/components/collaboration/WorkspaceSharingButton.svelte';
   import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
   import WorkspacePermissionNotice from '$lib/components/agent-room/WorkspacePermissionNotice.svelte';
   import { isWorkspacePermissionError } from '$lib/components/agent-room/workspace-permission.js';
@@ -201,6 +202,18 @@
   let councilOpen = $state(false);
   let councilSource = $state<{ taskId?: string; taskTitle?: string; taskDescription?: string | null; leaderNodeId?: string } | null>(null);
   let sharingOpen = $state(false);
+  /** No Windows, share/sino moram no DesktopTitlebar; mac/Linux nao tem esse
+      titlebar customizado, entao continuam aqui na sidebar. */
+  const windowsDesktop = typeof window !== 'undefined'
+    && (window as unknown as { deepspaceDesktop?: { platform?: string } }).deepspaceDesktop?.platform === 'win32';
+  $effect(() => {
+    setActiveWorkspaceId(selectedWorkspaceId);
+    setSharingOpenHandler(() => (sharingOpen = true));
+    return () => {
+      setActiveWorkspaceId(null);
+      setSharingOpenHandler(null);
+    };
+  });
   let leaderDictationState = $state<LeaderDictationStatus>('idle');
   let leaderDictationNodeId = $state<string | null>(null);
   let loadedWorkspaceIds = $state<string[]>([]);
@@ -455,7 +468,7 @@
   }
 
   function persistSelection(layout = selectedLayout) {
-    if (selectedWorkspaceId) localStorage.setItem('orkestrai.activeWorkspaceId', selectedWorkspaceId);
+    if (selectedWorkspaceId) localStorage.setItem('deepspace.activeWorkspaceId', selectedWorkspaceId);
     const params = new URLSearchParams();
     if (selectedWorkspaceId) params.set('workspace', selectedWorkspaceId);
     if (selectedNodeId) params.set('node', selectedNodeId);
@@ -525,7 +538,7 @@
   }
 
   function handlePaneDragOver(event: DragEvent, paneId: WorkbenchPaneId): void {
-    if (!event.dataTransfer?.types.includes('application/x-orkestrai-workbench-node')) return;
+    if (!event.dataTransfer?.types.includes('application/x-deepspace-workbench-node')) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
     dropTargetPaneId = paneId;
@@ -533,7 +546,7 @@
 
   function handlePaneDrop(event: DragEvent, paneId: WorkbenchPaneId): void {
     event.preventDefault();
-    const nodeId = event.dataTransfer?.getData('application/x-orkestrai-workbench-node');
+    const nodeId = event.dataTransfer?.getData('application/x-deepspace-workbench-node');
     dropTargetPaneId = null;
     if (nodeId) moveOpenNode(paneId, nodeId);
   }
@@ -819,18 +832,18 @@
     window.addEventListener(LEADER_DICTATION_STATE, handleDictationState);
     window.addEventListener(TEXT_DICTATION_FALLBACK, handleFallback);
     window.addEventListener(WORKBENCH_OPEN_REQUEST, handleWorkbenchOpen);
-    window.addEventListener('orkestrai:open-council', handleCouncilOpen);
-    window.addEventListener('orkestrai:open-sharing', handleSharingOpen);
-    window.addEventListener('orkestrai:open-file', handleWorkbenchFileOpen);
+    window.addEventListener('deepspace:open-council', handleCouncilOpen);
+    window.addEventListener('deepspace:open-sharing', handleSharingOpen);
+    window.addEventListener('deepspace:open-file', handleWorkbenchFileOpen);
     return () => {
       window.removeEventListener(WORKBENCH_EDITOR_STATE_EVENT, handleEditorState);
       window.removeEventListener('beforeunload', guardDirtyBuffers);
       window.removeEventListener(LEADER_DICTATION_STATE, handleDictationState);
       window.removeEventListener(TEXT_DICTATION_FALLBACK, handleFallback);
       window.removeEventListener(WORKBENCH_OPEN_REQUEST, handleWorkbenchOpen);
-      window.removeEventListener('orkestrai:open-council', handleCouncilOpen);
-      window.removeEventListener('orkestrai:open-sharing', handleSharingOpen);
-      window.removeEventListener('orkestrai:open-file', handleWorkbenchFileOpen);
+      window.removeEventListener('deepspace:open-council', handleCouncilOpen);
+      window.removeEventListener('deepspace:open-sharing', handleSharingOpen);
+      window.removeEventListener('deepspace:open-file', handleWorkbenchFileOpen);
     };
   });
 
@@ -887,12 +900,12 @@
         const params = new URLSearchParams(location.search);
         let pendingFile: { workspaceId?: string; path?: string } | null = null;
         try {
-          pendingFile = JSON.parse(sessionStorage.getItem('orkestrai.open-file') ?? 'null');
+          pendingFile = JSON.parse(sessionStorage.getItem('deepspace.open-file') ?? 'null');
         } catch {
           pendingFile = null;
         }
         const explicitWorkspace = params.get('workspace') || pendingFile?.workspaceId || null;
-        const rememberedWorkspace = localStorage.getItem('orkestrai.activeWorkspaceId');
+        const rememberedWorkspace = localStorage.getItem('deepspace.activeWorkspaceId');
         const initialWorkspace = workspaceList.find((workspace) => workspace.id === explicitWorkspace)
           ?? workspaceList.find((workspace) => workspace.id === rememberedWorkspace && !workspace.suspendedAt)
           ?? workspaceList.find((workspace) => !workspace.suspendedAt)
@@ -932,7 +945,7 @@
           }
           if (pendingFile?.workspaceId === initialWorkspace.id && pendingFile.path) {
             layout = openWorkbenchNode(layout, workbenchFileItemId(pendingFile.path));
-            sessionStorage.removeItem('orkestrai.open-file');
+            sessionStorage.removeItem('deepspace.open-file');
           }
           applyWorkbenchLayout(initialWorkspace.id, layout);
           persistSelection();
@@ -964,7 +977,7 @@
 </script>
 
 <svelte:head>
-  <title>Orkestrai - {m['workspace_view.workbench']()}</title>
+  <title>Deep Space - {m['workspace_view.workbench']()}</title>
 </svelte:head>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -1093,7 +1106,7 @@
   {:else if selectedWorkspace}
     <Resizable.PaneGroup
       direction={node.direction}
-      autoSaveId={`orkestrai.workbench.panes.v2.${selectedWorkspace.id}.${node.id}`}
+      autoSaveId={`deepspace.workbench.panes.v2.${selectedWorkspace.id}.${node.id}`}
       class="min-h-0 min-w-0"
     >
       {#each node.children as child, index (child.id)}
@@ -1110,19 +1123,19 @@
 
 <main class="grid h-full min-h-0 grid-cols-[300px_minmax(0,1fr)] overflow-hidden bg-[var(--app-canvas)] text-[var(--app-text)] max-[720px]:grid-cols-[236px_minmax(420px,1fr)]" data-testid="workbench-shell">
   <aside class="flex min-h-0 flex-col border-r border-[var(--app-border)] bg-[var(--app-sidebar)]">
-    <div class="flex h-11 shrink-0 items-center gap-2 px-3">
-      <img src="/brand/icon.svg" width="20" height="20" alt="" />
-      <strong class="font-['Sora_Variable'] text-[14px] font-semibold text-[var(--app-text)]">Orkestrai</strong>
-      <div class="ml-auto"><WorkspaceSharingButton variant="icon" workspaceId={selectedWorkspaceId} onOpen={() => (sharingOpen = true)} /></div>
-    </div>
-    <div class="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-[var(--app-border)] px-3">
+    <div class="flex h-11 shrink-0 items-center gap-2 border-b border-[var(--app-border)] px-3">
       <WorkspaceModeSwitch
         active="terminals"
         workspaceId={selectedWorkspaceId}
         nodeId={isVirtualWorkbenchItemId(selectedNodeId) ? null : selectedNodeId}
       />
-      <AttentionCenter workspaceId={selectedWorkspaceId} />
     </div>
+    {#if !windowsDesktop}
+      <div class="flex h-9 shrink-0 items-center justify-end gap-1 border-b border-[var(--app-border)] px-3">
+        <WorkspaceSharingButton variant="icon" workspaceId={selectedWorkspaceId} onOpen={() => (sharingOpen = true)} />
+        <AttentionCenter workspaceId={selectedWorkspaceId} />
+      </div>
+    {/if}
 
     <div class="shrink-0 p-2.5">
       <InputGroup.Root class="h-8 border-[var(--app-border)] bg-[var(--app-canvas)] shadow-none">

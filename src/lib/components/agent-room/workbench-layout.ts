@@ -1,6 +1,6 @@
 export const WORKBENCH_LAYOUT_VERSION = 2 as const;
-export const WORKBENCH_LAYOUT_STORAGE_PREFIX = 'orkestrai.workbench.layout.v2';
-export const LEGACY_WORKBENCH_LAYOUT_STORAGE_PREFIX = 'orkestrai.workbench.layout.v1';
+export const WORKBENCH_LAYOUT_STORAGE_PREFIX = 'deepspace.workbench.layout.v2';
+export const LEGACY_WORKBENCH_LAYOUT_STORAGE_PREFIX = 'deepspace.workbench.layout.v1';
 export const MAX_WORKBENCH_PANES = 8;
 
 export type WorkbenchPaneId = string;

@@ -45,10 +45,10 @@ type WorkspaceProvisionState = {
   inFlight: Map<string, Promise<void>>;
 };
 
-const WORKSPACE_PROVISION_STATE = Symbol.for('orkestrai.workspaceProvisionState');
-const WORKSPACE_INSTRUCTIONS_BEGIN = '<!-- orkestrai:workspace-instructions:begin -->';
-const WORKSPACE_INSTRUCTIONS_END = '<!-- orkestrai:workspace-instructions:end -->';
-const WORKSPACE_INSTRUCTIONS_PATTERN = /<!-- orkestrai:workspace-instructions:begin -->[\s\S]*?<!-- orkestrai:workspace-instructions:end -->/;
+const WORKSPACE_PROVISION_STATE = Symbol.for('deepspace.workspaceProvisionState');
+const WORKSPACE_INSTRUCTIONS_BEGIN = '<!-- deepspace:workspace-instructions:begin -->';
+const WORKSPACE_INSTRUCTIONS_END = '<!-- deepspace:workspace-instructions:end -->';
+const WORKSPACE_INSTRUCTIONS_PATTERN = /<!-- deepspace:workspace-instructions:begin -->[\s\S]*?<!-- deepspace:workspace-instructions:end -->/;
 
 function managedInstructionBlock(instructions: string): string {
   return `${WORKSPACE_INSTRUCTIONS_BEGIN}\n${instructions}\n${WORKSPACE_INSTRUCTIONS_END}`;
@@ -66,7 +66,7 @@ function mergeInstructionFile(current: string, instructions: string | null, lega
   if (trimmed && knownLegacy.includes(trimmed)) return block ? `${block}\n` : '';
   if (!block) return current;
 
-  const bridgeMarker = current.indexOf('<!-- orkestrai:begin -->');
+  const bridgeMarker = current.indexOf('<!-- deepspace:begin -->');
   if (bridgeMarker > 0 && knownLegacy.includes(current.slice(0, bridgeMarker).trim())) {
     return `${block}\n\n${current.slice(bridgeMarker).trimStart()}`;
   }
@@ -102,7 +102,7 @@ export class WorkspaceService {
    * (arrastar/redimensionar dispararia reloads em tempestade).
    */
   private notifyStructureChanged(workspaceId: string): void {
-    const broadcast = (globalThis as { __orkestraiBroadcast?: (payload: Record<string, unknown>) => void }).__orkestraiBroadcast;
+    const broadcast = (globalThis as { __deepspaceBroadcast?: (payload: Record<string, unknown>) => void }).__deepspaceBroadcast;
     broadcast?.({ type: 'workspaceChanged', workspaceId });
   }
 
@@ -166,22 +166,22 @@ export class WorkspaceService {
     // Uma unica checagem assincrona deixa threads livres enquanto o dialogo do
     // sistema aguarda o usuario; chamadas concorrentes esgotavam o pool fs.
     await access(workspace.workingDir, fsConstants.R_OK | fsConstants.W_OK);
-    const skillPath = resolve(workspace.workingDir, '.claude', 'skills', 'orkestrai', 'SKILL.md');
+    const skillPath = resolve(workspace.workingDir, '.claude', 'skills', 'deepspace', 'SKILL.md');
     const bridgeRuntime = await this.preferredBridgeRuntime(workspace);
-    const cliEntry = process.env.ORKESTRAI_CLI_JS ?? resolve(process.cwd(), 'packages', 'orkestrai-cli', 'bin', 'orkestrai.js');
+    const cliEntry = process.env.DEEPSPACE_CLI_JS ?? resolve(process.cwd(), 'packages', 'deepspace-cli', 'bin', 'deepspace.js');
     const [skillCurrent, hasConfig, agentsMdCurrent, hasWslLauncher] = await Promise.all([
       readFile(skillPath, 'utf8').then((content) => content === bridgeService.bridgeSkillContent()).catch(() => false),
-      access(resolve(workspace.workingDir, '.orkestrai', 'workspace.json')).then(() => true).catch(() => false),
+      access(resolve(workspace.workingDir, '.deepspace', 'workspace.json')).then(() => true).catch(() => false),
       readFile(resolve(workspace.workingDir, 'AGENTS.md'), 'utf8').catch(() => ''),
       bridgeRuntime?.kind === 'wsl'
-        ? readFile(resolve(workspace.workingDir, '.orkestrai', 'bin', 'orkestrai'), 'utf8')
-            .then((content) => content.includes('orkestrai:wsl-console-launcher-v2') && content.includes(cliEntry))
+        ? readFile(resolve(workspace.workingDir, '.deepspace', 'bin', 'deepspace'), 'utf8')
+            .then((content) => content.includes('deepspace:wsl-console-launcher-v2') && content.includes(cliEntry))
             .catch(() => false)
         : Promise.resolve(true),
     ]);
     // Bloco AGENTS.md (codex/kimi/opencode) entrou depois — workspaces antigos
     // so ganham os arquivos novos se o reparo verificar o marcador tambem.
-    const hasAgentsMd = agentsMdCurrent.includes('<!-- orkestrai:begin -->');
+    const hasAgentsMd = agentsMdCurrent.includes('<!-- deepspace:begin -->');
     if (skillCurrent && hasConfig && hasAgentsMd && hasWslLauncher) {
       this.provisionChecked.add(workspace.id);
       return;
@@ -217,7 +217,7 @@ export class WorkspaceService {
     });
     this.writeInstructionFiles(workspace);
     // Provisiona a ponte (token + skill) ja no nascimento do workspace:
-    // qualquer agente criado depois nasce sabendo usar a CLI orkestrai,
+    // qualquer agente criado depois nasce sabendo usar a CLI deepspace,
     // sem o usuario precisar conectar nada antes (fluxo zero-config).
     const token = await bridgeService.getOrCreateToken(workspace.id).catch(() => null);
     if (token) await bridgeService.provisionSkill(workspace, token, workspaceExecutionRuntime(workspace));
@@ -586,8 +586,8 @@ export class WorkspaceService {
     }
     if (node.type === 'device') {
       await (globalThis as typeof globalThis & {
-        __orkestraiStopWorkspaceDevice?: (targetWorkspaceId: string) => Promise<void>;
-      }).__orkestraiStopWorkspaceDevice?.(workspaceId).catch(() => undefined);
+        __deepspaceStopWorkspaceDevice?: (targetWorkspaceId: string) => Promise<void>;
+      }).__deepspaceStopWorkspaceDevice?.(workspaceId).catch(() => undefined);
     }
     if (node.type === 'computer') await computerService.removeEvidence(workspaceId).catch(() => undefined);
     if (node.type === 'terminal') {
@@ -657,7 +657,7 @@ export class WorkspaceService {
       workspaceRepository.listEdges(id),
     ]);
     return {
-      format: 'orkestrai-workspace',
+      format: 'deepspace-workspace',
       version: 1,
       exportedAt: new Date().toISOString(),
       workspace: {
@@ -698,8 +698,8 @@ export class WorkspaceService {
       nodes?: Array<{ type: string; title?: string | null; x?: number; y?: number; width?: number; height?: number; zIndex?: number; payload?: object }>;
       edges?: Array<{ sourceIndex: number; targetIndex: number; style?: 'cord' | 'circuit' }>;
     };
-    if (parsed.format !== 'orkestrai-workspace' || !parsed.workspace) {
-      throw new Error('Arquivo nao e um workspace do Orkestrai (format: orkestrai-workspace).');
+    if (parsed.format !== 'deepspace-workspace' || !parsed.workspace) {
+      throw new Error('Arquivo nao e um workspace do Deep Space (format: deepspace-workspace).');
     }
     const info = parsed.workspace;
     const workingDir = workingDirOverride ?? info.workingDir;

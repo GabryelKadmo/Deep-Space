@@ -82,7 +82,7 @@ export class AgentTerminalDeliveryService {
           await workspaceRepository.updateNode(node.id, {
             payload: { ...currentPayload, agentSessionId: match.sessionId } as never,
           });
-          const broadcast = (globalThis as { __orkestraiBroadcast?: (frame: Record<string, unknown>) => void }).__orkestraiBroadcast;
+          const broadcast = (globalThis as { __deepspaceBroadcast?: (frame: Record<string, unknown>) => void }).__deepspaceBroadcast;
           broadcast?.({ type: 'workspaceChanged', workspaceId: input.workspaceId, nodeId: node.id });
         }
       }

@@ -26,7 +26,7 @@ import { collaborationCommandSchema } from '$lib/modules/collaboration/contracts
 import { huddleService } from '$lib/modules/agent-room/application/services/HuddleService.js';
 
 async function setup(role: 'viewer' | 'operator' | 'administrator' = 'operator') {
-  const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-collaboration-'));
+  const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-collaboration-'));
   const workspace = await workspaceRepository.createWorkspace({
     name: 'Shared workspace',
     workingDir,

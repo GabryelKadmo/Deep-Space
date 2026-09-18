@@ -12,9 +12,9 @@ describe('RoleService', () => {
   useSvelarTest({ refreshDatabase: true });
 
   it('discovers validated roles from a selected folder without overwriting existing slugs', async () => {
-    const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-role-target-'));
-    const sourceDir = mkdtempSync(join(tmpdir(), 'orkestrai-role-source-'));
-    const rolesDir = join(sourceDir, '.orkestrai', 'roles');
+    const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-role-target-'));
+    const sourceDir = mkdtempSync(join(tmpdir(), 'deepspace-role-source-'));
+    const rolesDir = join(sourceDir, '.deepspace', 'roles');
     const workspace = await workspaceRepository.createWorkspace({ name: 'role import', workingDir });
     await roleService.save(workspace.id, {
       name: 'Architecture reviewer',
@@ -49,9 +49,9 @@ describe('RoleService', () => {
   });
 
   it('rejects relative discovery paths and ignores unsafe role files', async () => {
-    const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-role-safe-target-'));
-    const sourceDir = mkdtempSync(join(tmpdir(), 'orkestrai-role-safe-source-'));
-    const rolesDir = join(sourceDir, '.orkestrai', 'roles');
+    const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-role-safe-target-'));
+    const sourceDir = mkdtempSync(join(tmpdir(), 'deepspace-role-safe-source-'));
+    const rolesDir = join(sourceDir, '.deepspace', 'roles');
     const workspace = await workspaceRepository.createWorkspace({ name: 'safe role import', workingDir });
 
     mkdirSync(join(rolesDir, 'invalid-color'), { recursive: true });
@@ -73,7 +73,7 @@ describe('RoleService', () => {
   });
 
   it('gera frontmatter valido para Kimi e repara arquivos antigos no launch', async () => {
-    const workingDir = mkdtempSync(join(tmpdir(), 'orkestrai-role-'));
+    const workingDir = mkdtempSync(join(tmpdir(), 'deepspace-role-'));
     const workspace = await workspaceRepository.createWorkspace({ name: 'role Kimi', workingDir });
     await roleService.save(workspace.id, {
       name: 'Revisor de Arquitetura',
@@ -81,7 +81,7 @@ describe('RoleService', () => {
     });
     const instructionFile = join(
       workingDir,
-      '.orkestrai',
+      '.deepspace',
       'roles',
       'revisor-de-arquitetura',
       'AGENTS.md',
@@ -90,7 +90,7 @@ describe('RoleService', () => {
     expect(readFileSync(instructionFile, 'utf8')).toBe([
       '---',
       'name: revisor-de-arquitetura',
-      'description: "Orkestrai workspace role: Revisor de Arquitetura"',
+      'description: "Deep Space workspace role: Revisor de Arquitetura"',
       '---',
       '',
       'Revise limites de modulo e riscos de acoplamento.',
@@ -100,7 +100,7 @@ describe('RoleService', () => {
     writeFileSync(instructionFile, 'formato legado sem frontmatter\n');
     expect((await roleService.launchContext(workspace.id, 'Revisor de Arquitetura'))?.instructionFile)
       .toBe(instructionFile);
-    expect(readFileSync(instructionFile, 'utf8')).toContain('\ndescription: "Orkestrai workspace role: Revisor de Arquitetura"\n');
+    expect(readFileSync(instructionFile, 'utf8')).toContain('\ndescription: "Deep Space workspace role: Revisor de Arquitetura"\n');
     expect(readFileSync(instructionFile, 'utf8')).not.toContain('formato legado');
   });
 
@@ -121,7 +121,7 @@ describe('RoleService', () => {
     await new Promise((resolve) => setTimeout(resolve, 600));
     const { scrollback, detach } = ptySessionManager.attach(session.id, () => {});
     detach();
-    expect(scrollback).toContain('[responsabilidade: Revisor] Leia e siga .orkestrai/roles/revisor/AGENTS.md');
+    expect(scrollback).toContain('[responsabilidade: Revisor] Leia e siga .deepspace/roles/revisor/AGENTS.md');
     expect(scrollback).not.toContain('so aponte problemas, nao edite codigo');
     ptySessionManager.kill(session.id);
   });
@@ -173,7 +173,11 @@ describe('RoleService', () => {
     await expect(roleService.applyToTerminal(workspace.id, withRole.id)).rejects.toThrow('sessão');
   });
 
-  it('entrega ao maestro todos os dados das tarefas iniciais sem responsavel', async () => {
+  it('nao entrega ao maestro tarefas que ainda nao foram vinculadas a ele', async () => {
+    // O maestro puxar sozinho toda a fila sem responsavel ao abrir fazia o
+    // agente comecar a trabalhar sem o usuario pedir ou vincular nada — o
+    // aviso de tarefa nova sem dono continua existindo via notifyLeader (na
+    // criacao da tarefa), so que sem forcar a acao.
     const workspace = await workspaceRepository.createWorkspace({ name: 'fila inicial', workingDir: '/tmp' });
     const session = ptySessionManager.create({ command: '/bin/cat', cwd: '/tmp' });
     const leader = await workspaceRepository.createNode({
@@ -182,22 +186,14 @@ describe('RoleService', () => {
       title: 'Lider',
       payload: { command: '/bin/cat', sessionId: session.id, maestro: true },
     });
-    const task = await taskBoardService.create(workspace.id, {
+    await taskBoardService.create(workspace.id, {
       title: 'Revisar onboarding',
       description: 'Validar idioma, acessibilidade e as capturas anexadas.',
       createdBy: 'preset',
     });
 
     const result = await roleService.applyToTerminal(workspace.id, leader.id);
-    expect(result).toEqual({ applied: false, tasksDelivered: 1 });
-
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    const { scrollback, detach } = ptySessionManager.attach(session.id, () => {});
-    detach();
-    expect(scrollback).toContain(task.id.slice(0, 8));
-    expect(scrollback).toContain('Revisar onboarding');
-    expect(scrollback).toContain('Validar idioma, acessibilidade e as capturas anexadas.');
-    expect(scrollback).toContain('orkestrai task assign');
+    expect(result).toEqual({ applied: false, tasksDelivered: 0 });
     ptySessionManager.kill(session.id);
   });
 
@@ -281,7 +277,7 @@ describe('RoleService', () => {
     await new Promise((resolve) => setTimeout(resolve, 600));
     const { scrollback, detach } = ptySessionManager.attach(session.id, () => {});
     detach();
-    expect(scrollback).toContain('[responsabilidade: Lider técnico] Leia e siga .orkestrai/roles/lider-tecnico/AGENTS.md');
+    expect(scrollback).toContain('[responsabilidade: Lider técnico] Leia e siga .deepspace/roles/lider-tecnico/AGENTS.md');
     expect(scrollback).not.toContain('coordene o time');
     expect(scrollback).not.toContain('Fila já existente');
     ptySessionManager.kill(session.id);

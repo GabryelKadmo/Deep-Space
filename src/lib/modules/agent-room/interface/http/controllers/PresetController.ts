@@ -14,7 +14,7 @@ const createPresetSchema = z.object({
 const publishTeamPackSchema = z.object({
   version: z.string().trim().min(5).max(40),
   releaseNotes: z.string().trim().max(8_000).nullish(),
-  minimumOrkestraiVersion: z.string().trim().max(40).nullish(),
+  minimumDeepSpaceVersion: z.string().trim().max(40).nullish(),
 });
 
 /** Presets de equipe (templates de workspace) — globais, nao por workspace. */

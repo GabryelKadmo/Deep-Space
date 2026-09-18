@@ -21,7 +21,7 @@ import {
 const directories: string[] = [];
 
 async function fixture() {
-  const directory = await mkdtemp(join(tmpdir(), 'orkestrai-code-operations-'));
+  const directory = await mkdtemp(join(tmpdir(), 'deepspace-code-operations-'));
   directories.push(directory);
   await mkdir(join(directory, 'src'));
   await writeFile(join(directory, 'package.json'), '{"name":"operations-test"}\n');
@@ -210,7 +210,7 @@ describe('Code graph operational intelligence', () => {
     const tasks = await taskBoardService.list(workspace.id);
     expect(tasks.find((task) => task.id === leaderResult.artifact.id)?.assigneeNodeId).toBe(leader.id);
     expect(tasks.find((task) => task.id === agentResult.artifact.id)?.assigneeNodeId).toBe(worker.id);
-    expect(tasks.find((task) => task.id === taskResult.artifact.id)?.description).toContain(`orkestrai:code-graph-symbols=${symbol.id}`);
+    expect(tasks.find((task) => task.id === taskResult.artifact.id)?.description).toContain(`deepspace:code-graph-symbols=${symbol.id}`);
 
     vi.spyOn(councilService, 'start').mockResolvedValue({
       id: '00000000-0000-7000-8000-000000000099',

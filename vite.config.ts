@@ -8,15 +8,15 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'path';
 import { WebSocketServer } from 'ws';
 import { handlePtyConnection, isAllowedPtyWsOrigin, isPtyWsPath } from './src/lib/modules/agent-room/infrastructure/pty/pty-ws.ts';
-import { installOrkestraiShim, writeOrkestraiRuntimeFile } from './scripts/install-orkestrai-shim.mjs';
+import { installDeepSpaceShim, writeDeepSpaceRuntimeFile } from './scripts/install-deepspace-shim.mjs';
 
-// Shim da CLI `orkestrai` acessivel nos terminais PTY tambem em dev.
-installOrkestraiShim();
+// Shim da CLI `deepspace` acessivel nos terminais PTY tambem em dev.
+installDeepSpaceShim();
 
 /** Expoe o WebSocket de PTY no servidor de dev do vite. */
 function ptyWebSocketPlugin(): Plugin {
   return {
-    name: 'orkestrai-pty-websocket',
+    name: 'deepspace-pty-websocket',
     configureServer(server: ViteDevServer) {
       const wss = new WebSocketServer({ noServer: true });
       server.httpServer?.on('upgrade', (request, socket, head) => {
@@ -28,11 +28,11 @@ function ptyWebSocketPlugin(): Plugin {
         }
         wss.handleUpgrade(request, socket, head, (ws) => handlePtyConnection(ws));
       });
-      // Anuncia a porta real do dev server para a CLI orkestrai.
+      // Anuncia a porta real do dev server para a CLI deepspace.
       server.httpServer?.on('listening', () => {
         const address = server.httpServer?.address();
         if (address && typeof address === 'object' && address.port) {
-          writeOrkestraiRuntimeFile(`http://127.0.0.1:${address.port}`);
+          writeDeepSpaceRuntimeFile(`http://127.0.0.1:${address.port}`);
         }
       });
     },
@@ -57,7 +57,7 @@ function setCrossOriginIsolationHeaders(response: { setHeader: (header: string, 
 
 function crossOriginIsolationPlugin(): Plugin {
   return {
-    name: 'orkestrai-cross-origin-isolation',
+    name: 'deepspace-cross-origin-isolation',
     configureServer(server: ViteDevServer) {
       server.middlewares.use((_request, response, next) => {
         setCrossOriginIsolationHeaders(response);
@@ -87,8 +87,8 @@ function envFileKeys(mode: string): string[] {
 }
 
 function markPrivateChildEnv(...keys: string[]): void {
-  const current = (process.env.ORKESTRAI_PRIVATE_ENV_KEYS ?? '').split(',').filter(Boolean);
-  process.env.ORKESTRAI_PRIVATE_ENV_KEYS = [...new Set([...current, ...keys.filter(Boolean)])].join(',');
+  const current = (process.env.DEEPSPACE_PRIVATE_ENV_KEYS ?? '').split(',').filter(Boolean);
+  process.env.DEEPSPACE_PRIVATE_ENV_KEYS = [...new Set([...current, ...keys.filter(Boolean)])].join(',');
 }
 
 export default defineConfig(({ mode }) => {

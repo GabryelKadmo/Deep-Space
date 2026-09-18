@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Empacota o Orkestrai para Linux e Windows LOCALMENTE via Docker, usando as
+# Empacota o Deep Space para Linux e Windows LOCALMENTE via Docker, usando as
 # imagens oficiais do electron-builder. Pensado para macOS (Intel ou Apple
 # Silicon); em CI depois e so reusar os mesmos comandos.
 #
@@ -22,7 +22,7 @@ set -euo pipefail
 
 TARGET="${1:-all}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-STAGE="$(mktemp -d /tmp/orkestrai-cross-XXXXXX)"
+STAGE="$(mktemp -d /tmp/deepspace-cross-XXXXXX)"
 CACHE_ELECTRON="$HOME/.cache/electron"
 CACHE_BUILDER="$HOME/.cache/electron-builder"
 mkdir -p "$CACHE_ELECTRON" "$CACHE_BUILDER" "$ROOT/release"
@@ -57,7 +57,7 @@ rsync -a --delete \
   --exclude 'database.db*' \
   --exclude 'test-results' \
   --exclude 'storage' \
-  --exclude 'orkestrai-branding' \
+  --exclude 'deepspace-branding' \
   --exclude 'projects' \
   --exclude '.env' \
   "$ROOT/" "$STAGE/"

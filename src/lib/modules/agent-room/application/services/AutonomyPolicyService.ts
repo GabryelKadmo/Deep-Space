@@ -99,7 +99,7 @@ const DEFAULT_RISKS: AutonomyRisk[] = [
 ];
 
 const runtime = globalThis as typeof globalThis & {
-  __orkestraiAbortWorkspaceRuns?: (workspaceId: string, reason: string) => Promise<number>;
+  __deepspaceAbortWorkspaceRuns?: (workspaceId: string, reason: string) => Promise<number>;
 };
 
 function iso(value: unknown): string {
@@ -522,7 +522,7 @@ export class AutonomyPolicyService {
       revision: policy.revision + 1,
       updated_at: new Date(),
     });
-    await runtime.__orkestraiAbortWorkspaceRuns?.(workspaceId, 'Workspace emergency stop requested.');
+    await runtime.__deepspaceAbortWorkspaceRuns?.(workspaceId, 'Workspace emergency stop requested.');
     const routines = await AgentRoutine.query().where('workspace_id', workspaceId).get();
     let cancelled = 0;
     for (const routine of routines) {

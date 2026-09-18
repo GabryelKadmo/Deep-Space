@@ -46,7 +46,7 @@ export class DesignDeliveryService {
     const distance = relative(root, path);
     if (!distance || distance === '..' || distance.startsWith(`..${sep}`) || isAbsolute(distance)) throw new Error('Generated files must stay inside the workspace.');
     const first = distance.split(sep)[0].toLowerCase();
-    if (['.git', '.orkestrai', 'node_modules', 'build', 'dist'].includes(first)) throw new Error(`Generated files cannot be written inside ${first}.`);
+    if (['.git', '.deepspace', 'node_modules', 'build', 'dist'].includes(first)) throw new Error(`Generated files cannot be written inside ${first}.`);
     await this.assertResolvedInside(root, path);
     return { root, path, relativePath: distance.split(sep).join('/') };
   }

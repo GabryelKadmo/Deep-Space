@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { updateOrkestraiGitExclude } from '$lib/modules/agent-room/infrastructure/bridge-git-exclude.js';
+import { updateDeepSpaceGitExclude } from '$lib/modules/agent-room/infrastructure/bridge-git-exclude.js';
 
 describe('bridge git excludes', () => {
   it('unhides user-owned files from the exact legacy block', () => {
     const current = [
       '# local excludes',
-      '.orkestrai/',
-      '.claude/skills/orkestrai/',
-      '.cline/skills/orkestrai/',
-      '.devin/skills/orkestrai/',
-      '.agents/skills/orkestrai/',
+      '.deepspace/',
+      '.claude/skills/deepspace/',
+      '.cline/skills/deepspace/',
+      '.devin/skills/deepspace/',
+      '.agents/skills/deepspace/',
       '.mcp.json',
       '.cursor/mcp.json',
       '.cline/mcp.json',
@@ -20,9 +20,9 @@ describe('bridge git excludes', () => {
       '',
     ].join('\r\n');
 
-    const next = updateOrkestraiGitExclude(current);
+    const next = updateDeepSpaceGitExclude(current);
 
-    expect(next).toContain('.orkestrai/');
+    expect(next).toContain('.deepspace/');
     expect(next).not.toContain('.mcp.json');
     expect(next).not.toContain('AGENTS.md');
     expect(next).toContain('\r\n');
@@ -30,7 +30,7 @@ describe('bridge git excludes', () => {
 
   it('preserves independently maintained excludes outside the legacy block', () => {
     const current = '# mine\nAGENTS.md\n';
-    const next = updateOrkestraiGitExclude(current);
+    const next = updateDeepSpaceGitExclude(current);
     expect(next).toContain('# mine\nAGENTS.md\n');
   });
 });

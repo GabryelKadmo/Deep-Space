@@ -116,7 +116,7 @@ export class CodeGraphHandoffService {
     const context = options.context ? await codeGraphOperationsService.context(workspaceId, options.context) : null;
     const description = context?.markdown ?? (scope && analysis ? this.taskDescription(scope, analysis, copy) : '');
     const marker = context?.selectedSymbolIds.length
-      ? `\n\n<!-- orkestrai:code-graph-symbols=${context.selectedSymbolIds.join(',')} -->`
+      ? `\n\n<!-- deepspace:code-graph-symbols=${context.selectedSymbolIds.join(',')} -->`
       : '';
     const taskDescription = `${description.slice(0, Math.max(0, 24_000 - marker.length))}${marker}`;
     if (options.kind === 'leader' || options.kind === 'agent') {

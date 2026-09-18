@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas, selectCanvasTool } from './helpers.js';
+import { clickToolbarOrOverflow, createNodeOnCanvas, selectCanvasTool } from './helpers.js';
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -22,10 +22,10 @@ async function cleanup(request: import('@playwright/test').APIRequestContext, na
 
 test.describe('andares e rotinas', () => {
   test('cria andar, alterna visao e exclui', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-floor-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-floor-'));
     const { execFileSync } = await import('node:child_process');
     execFileSync('git', ['init', '-b', 'main'], { cwd: dir });
-    execFileSync('git', ['config', 'user.email', 'e2e@orkestrai.local'], { cwd: dir });
+    execFileSync('git', ['config', 'user.email', 'e2e@deepspace.local'], { cwd: dir });
     execFileSync('git', ['config', 'user.name', 'E2E'], { cwd: dir });
     writeFileSync(join(dir, 'README.md'), '# x\n');
     execFileSync('git', ['add', '.'], { cwd: dir });
@@ -38,8 +38,8 @@ test.describe('andares e rotinas', () => {
     await createNodeOnCanvas(page, 'Nota');
     await expect(page.locator('.canvas-note')).toHaveCount(1);
 
-    // Abre o painel e cria um andar
-    await page.getByRole('button', { name: /Andares/ }).click();
+    // Abre o painel e cria um andar.
+    await clickToolbarOrOverflow(page, /Andares/);
     const panel = page.locator('.side-panel');
     await expect(panel).toBeVisible();
     await panel.getByPlaceholder('Nome do andar').fill('feature-x');
@@ -64,7 +64,7 @@ test.describe('andares e rotinas', () => {
   });
 
   test('automacao manual dispara prompt no terminal alvo', async ({ page, request }) => {
-    const dir = mkdtempSync(join(tmpdir(), 'orkestrai-e2e-routine-'));
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-routine-'));
     const workspaceName = `E2E routine ${Date.now()}`;
     await createWorkspaceIn(page, workspaceName, dir);
 

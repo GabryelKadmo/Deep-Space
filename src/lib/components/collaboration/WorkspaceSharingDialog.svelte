@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { getCsrfToken } from "@beeblock/svelar/http";
+  import { DEFAULT_RELAY_URL } from "$lib/modules/collaboration/relay.js";
   import { toast } from "@beeblock/svelar/ui";
   import { defaults, superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
@@ -97,7 +98,7 @@
         defaultRole: "viewer" as CollaborationRole,
         expiresInMinutes: 15,
         maxPeers: 5,
-        relayUrl: "wss://relay.orkestrai.app/v1/connect",
+        relayUrl: DEFAULT_RELAY_URL,
       },
       zod(schema),
     ),

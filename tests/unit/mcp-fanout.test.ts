@@ -8,7 +8,7 @@ describe('mcp-fanout', () => {
   let workingDir: string;
 
   beforeEach(async () => {
-    workingDir = await mkdtemp(join(tmpdir(), 'orkestrai-mcp-fanout-'));
+    workingDir = await mkdtemp(join(tmpdir(), 'deepspace-mcp-fanout-'));
   });
 
   afterEach(async () => {

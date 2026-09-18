@@ -103,7 +103,7 @@
 
   function startUseCaseTour(tourId: string) {
     const params = new URLSearchParams({ tour: tourId });
-    const workspaceId = localStorage.getItem('orkestrai.activeWorkspaceId');
+    const workspaceId = localStorage.getItem('deepspace.activeWorkspaceId');
     if (workspaceId) params.set('workspace', workspaceId);
     else params.set('onboarding', '1');
     location.href = `/canvas?${params}`;

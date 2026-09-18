@@ -165,7 +165,7 @@ export const executeCollaborationCommandSchema = z.object({
 }).strict();
 
 export const joinRemoteCollaborationSchema = z.object({
-  inviteUri: z.string().trim().min(60).max(1_000).regex(/^orkestrai:\/\/join\/[a-zA-Z0-9_-]+#[a-zA-Z0-9_-]{43}$/),
+  inviteUri: z.string().trim().min(60).max(1_000).regex(/^deepspace:\/\/join\/[a-zA-Z0-9_-]+#[a-zA-Z0-9_-]{43}$/),
   relayUrl: z.string().url().max(500),
   displayName: z.string().trim().min(1).max(80),
   platform: z.enum(['darwin', 'win32', 'linux', 'ios', 'android', 'web']),

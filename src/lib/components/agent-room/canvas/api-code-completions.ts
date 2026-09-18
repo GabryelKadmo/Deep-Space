@@ -1,7 +1,7 @@
 import { snippetCompletion, type Completion, type CompletionContext, type CompletionResult } from '@codemirror/autocomplete';
 import { javascriptLanguage } from '@codemirror/lang-javascript';
 
-export type ApiCodeCompletionProfile = 'none' | 'orkestrai' | 'postman' | 'bruno';
+export type ApiCodeCompletionProfile = 'none' | 'deepspace' | 'postman' | 'bruno';
 
 type Entry = {
   label: string;
@@ -207,11 +207,11 @@ const roots: Record<Exclude<ApiCodeCompletionProfile, 'none'>, Entry[]> = {
   postman: [
     { label: 'pm', detail: 'Postman API', type: 'variable' },
   ],
-  orkestrai: [
-    { label: 'bru', detail: 'Orkestrai compatibility API', type: 'variable' },
+  deepspace: [
+    { label: 'bru', detail: 'Deep Space compatibility API', type: 'variable' },
     { label: 'req', detail: 'Request', type: 'variable' },
     { label: 'res', detail: 'Response', type: 'variable' },
-    { label: 'pm', detail: 'Orkestrai compatibility API', type: 'variable' },
+    { label: 'pm', detail: 'Deep Space compatibility API', type: 'variable' },
     { label: 'test', snippet: 'test(${name}, () => {\n  ${}\n})', detail: '(name, callback)', type: 'function' },
     { label: 'expect', snippet: 'expect(${actual})', detail: '(actual)', type: 'function' },
   ],
@@ -232,7 +232,7 @@ export function apiClientCompletionOptions(profile: ApiCodeCompletionProfile, pa
         : true;
     if (!allowed) return [];
     const entries = members[path] ?? [];
-    if (profile !== 'orkestrai') return entries.map(completion);
+    if (profile !== 'deepspace') return entries.map(completion);
     const nativeBru = new Set(['getVar', 'hasVar', 'setVar', 'deleteVar', 'getAllVars']);
     const nativePm = new Set(['test', 'expect', 'variables', 'environment', 'collectionVariables', 'request', 'response']);
     if (path === 'bru') return entries.filter((entry) => nativeBru.has(entry.label)).map(completion);

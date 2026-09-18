@@ -5,11 +5,11 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { IosSimulatorAdapter } from '$lib/modules/agent-room/application/adapters/devices/IosSimulatorAdapter.js';
 import type { DeviceRuntimeSession } from '$lib/modules/agent-room/application/adapters/devices/types.js';
 
-const manualDescribe = process.env.ORKESTRAI_TEST_IOS_DEVICE === '1' ? describe : describe.skip;
+const manualDescribe = process.env.DEEPSPACE_TEST_IOS_DEVICE === '1' ? describe : describe.skip;
 
 manualDescribe('iOS device adapter (manual)', () => {
   const adapter = new IosSimulatorAdapter();
-  const screenshotDirectory = join(tmpdir(), `orkestrai-ios-device-${process.pid}`);
+  const screenshotDirectory = join(tmpdir(), `deepspace-ios-device-${process.pid}`);
   let session: DeviceRuntimeSession | null = null;
 
   afterEach(async () => {

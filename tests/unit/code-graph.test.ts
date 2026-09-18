@@ -23,7 +23,7 @@ function source(path: string, content: string): ScannedCodeFile {
 
 describe('CodeGraphFileScanner', () => {
   it('treats a repository without supported source files as an empty graph', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orkestrai-code-graph-empty-'));
+    const root = await mkdtemp(join(tmpdir(), 'deepspace-code-graph-empty-'));
     try {
       await writeFile(join(root, 'README.md'), '# Empty project\n', 'utf8');
       await expect(new CodeGraphFileScanner().scan(root)).resolves.toMatchObject({

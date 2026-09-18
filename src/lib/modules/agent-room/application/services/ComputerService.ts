@@ -25,7 +25,7 @@ import type { AutonomyRisk } from '../../contracts/schemas/autonomy-policy.schem
 import { workspacePathService } from './WorkspacePathService.js';
 
 // Input focus belongs to the host, not a workspace or service instance.
-const desktop = globalThis as typeof globalThis & { __orkestraiComputerBusy?: boolean };
+const desktop = globalThis as typeof globalThis & { __deepspaceComputerBusy?: boolean };
 
 export type ComputerExecutionContext = {
   actorType: 'agent' | 'automation' | 'user';
@@ -77,12 +77,12 @@ export class ComputerService {
 
   async execute(workspaceId: string, rawInput: ComputerCommandInput, context: ComputerExecutionContext): Promise<ComputerCommandResult> {
     const input = computerCommandSchema.parse(rawInput);
-    if (desktop.__orkestraiComputerBusy) throw new Error('Another desktop action is running. Retry with the same idempotency key after it finishes.');
-    desktop.__orkestraiComputerBusy = true;
+    if (desktop.__deepspaceComputerBusy) throw new Error('Another desktop action is running. Retry with the same idempotency key after it finishes.');
+    desktop.__deepspaceComputerBusy = true;
     try {
       return await this.executeExclusive(workspaceId, input, context);
     } finally {
-      desktop.__orkestraiComputerBusy = false;
+      desktop.__deepspaceComputerBusy = false;
     }
   }
 
@@ -199,7 +199,7 @@ export class ComputerService {
     if (!/^[0-9a-f-]{36}$/i.test(evidenceId)) throw new Error('Invalid computer evidence reference.');
     const workspace = await workspaceRepository.getWorkspace(workspaceId);
     if (!workspace) throw new Error('Workspace not found.');
-    const path = await workspacePathService.resolveExisting(workspace, `.orkestrai/computer/evidence/${evidenceId}.png`);
+    const path = await workspacePathService.resolveExisting(workspace, `.deepspace/computer/evidence/${evidenceId}.png`);
     await stat(path);
     return path;
   }
@@ -207,7 +207,7 @@ export class ComputerService {
   async removeEvidence(workspaceId: string): Promise<void> {
     const workspace = await workspaceRepository.getWorkspace(workspaceId);
     if (!workspace) return;
-    await rm(await workspacePathService.resolveWritable(workspace, '.orkestrai/computer/evidence'), { recursive: true, force: true });
+    await rm(await workspacePathService.resolveWritable(workspace, '.deepspace/computer/evidence'), { recursive: true, force: true });
   }
 
   private async executeUnchecked(workspaceId: string, nodeId: string, config: ComputerNodeConfig, input: Exclude<ComputerCommandInput, { command: 'inspect' | 'open_settings' | 'prepare' }>, snapshot: ComputerSnapshot, appId: string | null): Promise<ComputerCommandResult> {
@@ -249,12 +249,12 @@ export class ComputerService {
       const workspace = await workspaceRepository.getWorkspace(workspaceId);
       if (!workspace) throw new Error('Workspace not found.');
       const evidenceId = uuidv7();
-      const directory = await workspacePathService.resolveWritable(workspace, '.orkestrai/computer/evidence');
+      const directory = await workspacePathService.resolveWritable(workspace, '.deepspace/computer/evidence');
       await mkdir(directory, { recursive: true });
       await this.cleanupEvidence(directory, config.evidenceRetentionDays);
       const absolute = join(directory, `${evidenceId}.png`);
       const dimensions = await this.adapter.screenshot(input, { evidencePath: absolute });
-      const path = `.orkestrai/computer/evidence/${evidenceId}.png`;
+      const path = `.deepspace/computer/evidence/${evidenceId}.png`;
       const node = await workspaceRepository.getNode(nodeId);
       if (node) await workspaceRepository.updateNode(nodeId, { payload: { ...(node.payload as Record<string, unknown>), computerLastEvidence: path } });
       return { kind: 'screenshot', path, evidenceId, ...dimensions, snapshot: await this.adapterSnapshot() };

@@ -43,7 +43,7 @@
 
   onMount(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem('orkestrai:design:recent-colors') ?? '[]');
+      const saved = JSON.parse(localStorage.getItem('deepspace:design:recent-colors') ?? '[]');
       if (Array.isArray(saved)) recentColors = saved.filter((entry): entry is string => typeof entry === 'string' && Boolean(normalizeDesignHex(entry))).slice(0, 12);
     } catch {
       recentColors = [];
@@ -53,7 +53,7 @@
   function remember(next: string) {
     recentColors = [next, ...recentColors.filter((entry) => entry !== next)].slice(0, 12);
     try {
-      localStorage.setItem('orkestrai:design:recent-colors', JSON.stringify(recentColors));
+      localStorage.setItem('deepspace:design:recent-colors', JSON.stringify(recentColors));
     } catch {
       // Recent colors remain available for the current editor session.
     }

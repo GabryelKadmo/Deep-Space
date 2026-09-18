@@ -9,9 +9,9 @@ export type BuiltinPresetRecipe = {
   name: string;
   icon: string;
   description: string;
-  category: 'product' | 'frontend' | 'backend' | 'creative' | 'growth' | 'orkestrai';
+  category: 'product' | 'frontend' | 'backend' | 'creative' | 'growth' | 'deepspace';
   data: {
-    format: 'orkestrai-preset';
+    format: 'deepspace-preset';
     version: 2;
     createdAt: string;
     workspace: {
@@ -236,7 +236,7 @@ export function builtinPresetCatalog(locale: PresetLocale): BuiltinPresetRecipe[
       description: definition.descriptions[locale],
       category: definition.category,
       data: {
-        format: 'orkestrai-preset',
+        format: 'deepspace-preset',
         version: 2,
         createdAt: '2026-08-09T00:00:00.000Z',
         workspace: {

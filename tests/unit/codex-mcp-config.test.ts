@@ -10,23 +10,23 @@ import {
 
 describe('configuracao MCP do Codex', () => {
   const windowsLaunch = {
-    command: 'C:\\Program Files\\Orkestrai\\Orkestrai.exe',
-    args: ['C:\\Program Files\\Orkestrai\\resources\\app\\packages\\orkestrai-cli\\bin\\orkestrai.js', 'mcp'],
+    command: 'C:\\Program Files\\Deep Space\\Deep Space.exe',
+    args: ['C:\\Program Files\\Deep Space\\resources\\app\\packages\\deepspace-cli\\bin\\deepspace.js', 'mcp'],
     electronRuntime: true,
   };
 
   it('repara exatamente o TOML corrompido por versoes anteriores', () => {
     const corrupted = [
-      '[mcp_servers.orkestrai]',
-      'command = "/Applications/Orkestrai.app/Contents/MacOS/Orkestrai"',
-      'args = ["/Applications/Orkestrai.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js", "mcp"]',
+      '[mcp_servers.deepspace]',
+      'command = "/Applications/Deep Space.app/Contents/MacOS/Deep Space"',
+      'args = ["/Applications/Deep Space.app/Contents/Resources/app/packages/deepspace-cli/bin/deepspace.js", "mcp"]',
       'default_tools_approval_mode = "approve"',
-      '  "/Applications/Orkestrai.app/Contents/Resources/app/packages/orkestrai-cli/bin/orkestrai.js",',
+      '  "/Applications/Deep Space.app/Contents/Resources/app/packages/deepspace-cli/bin/deepspace.js",',
       '  "mcp"',
       ']',
       'env = { ELECTRON_RUN_AS_NODE = "1" }',
       '',
-      '[mcp_servers.orkestrai.env]',
+      '[mcp_servers.deepspace.env]',
       'ELECTRON_RUN_AS_NODE = "1"',
       '',
       '[features]',
@@ -37,21 +37,21 @@ describe('configuracao MCP do Codex', () => {
     const result = repairLegacyCodexMcpConfig(corrupted);
 
     expect(result.repaired).toBe(true);
-    expect(result.content).not.toContain('\n  "/Applications/Orkestrai.app');
+    expect(result.content).not.toContain('\n  "/Applications/Deep Space.app');
     expect(result.content).not.toContain('env = { ELECTRON_RUN_AS_NODE');
     expect(result.content).toContain('default_tools_approval_mode = "approve"');
     expect(result.content).toContain('[features]\njs_repl = false');
     expect(() => parse(result.content)).not.toThrow();
   });
 
-  it('nao altera TOML invalido que nao tenha a assinatura de corrupcao do Orkestrai', () => {
+  it('nao altera TOML invalido que nao tenha a assinatura de corrupcao do Deep Space', () => {
     const malformed = '[features]\nthis is not toml\n';
     expect(repairLegacyCodexMcpConfig(malformed)).toEqual({ content: malformed, repaired: false });
   });
 
-  it('nao altera configuracao global valida, inclusive uma secao Orkestrai customizada', () => {
+  it('nao altera configuracao global valida, inclusive uma secao Deep Space customizada', () => {
     const valid = [
-      '[mcp_servers.orkestrai]',
+      '[mcp_servers.deepspace]',
       'command = "my-wrapper"',
       'args = ["mcp"]',
       'default_tools_approval_mode = "approve"',
@@ -63,14 +63,14 @@ describe('configuracao MCP do Codex', () => {
   it('gera overrides efemeros completos sem persistir configuracao', () => {
     const args = codexMcpOverrideArgs(windowsLaunch);
 
-    expect(args).toContain('mcp_servers.orkestrai.command="C:\\\\Program Files\\\\Orkestrai\\\\Orkestrai.exe"');
-    expect(args).toContain('mcp_servers.orkestrai.env={ ELECTRON_RUN_AS_NODE = "1" }');
+    expect(args).toContain('mcp_servers.deepspace.command="C:\\\\Program Files\\\\Deep Space\\\\Deep Space.exe"');
+    expect(args).toContain('mcp_servers.deepspace.env={ ELECTRON_RUN_AS_NODE = "1" }');
     expect(args).toContain(`mcp_servers.figma.url="${FIGMA_MCP_URL}"`);
-    const forwarded = args.find((arg) => arg.startsWith('mcp_servers.orkestrai.env_vars='))!;
+    const forwarded = args.find((arg) => arg.startsWith('mcp_servers.deepspace.env_vars='))!;
     const config = parse(forwarded) as any;
-    expect(config.mcp_servers.orkestrai.env_vars).toContain('ORKESTRAI_AGENT_TOKEN');
-    expect(config.mcp_servers.orkestrai.env_vars).toContain('ORKESTRAI_NODE_ID');
-    expect(config.mcp_servers.orkestrai.env_vars).not.toContain('OPENAI_API_KEY');
+    expect(config.mcp_servers.deepspace.env_vars).toContain('DEEPSPACE_AGENT_TOKEN');
+    expect(config.mcp_servers.deepspace.env_vars).toContain('DEEPSPACE_NODE_ID');
+    expect(config.mcp_servers.deepspace.env_vars).not.toContain('OPENAI_API_KEY');
   });
 
   it('resolve o launcher dentro da distribuicao WSL sem reutilizar caminhos Windows', () => {
@@ -81,7 +81,7 @@ describe('configuracao MCP do Codex', () => {
     });
 
     expect(launch).toEqual({
-      command: '/home/raoni/project/.orkestrai/bin/orkestrai',
+      command: '/home/raoni/project/.deepspace/bin/deepspace',
       args: ['mcp'],
       electronRuntime: false,
     });

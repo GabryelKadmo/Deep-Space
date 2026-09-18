@@ -247,11 +247,11 @@ export class WorkspaceRepository {
 
   async deleteWorkspace(id: string): Promise<boolean> {
     await (globalThis as typeof globalThis & {
-      __orkestraiStopWorkspaceDevice?: (workspaceId: string) => Promise<void>;
-    }).__orkestraiStopWorkspaceDevice?.(id).catch(() => undefined);
+      __deepspaceStopWorkspaceDevice?: (workspaceId: string) => Promise<void>;
+    }).__deepspaceStopWorkspaceDevice?.(id).catch(() => undefined);
     await (globalThis as typeof globalThis & {
-      __orkestraiDeleteCollaborationWorkspace?: (workspaceId: string) => Promise<void>;
-    }).__orkestraiDeleteCollaborationWorkspace?.(id);
+      __deepspaceDeleteCollaborationWorkspace?: (workspaceId: string) => Promise<void>;
+    }).__deepspaceDeleteCollaborationWorkspace?.(id);
     await controlCenterRepository.deleteWorkspaceHistory(id);
     await reviewCenterRepository.deleteWorkspaceHistory(id);
     await councilRepository.deleteWorkspaceHistory(id);
