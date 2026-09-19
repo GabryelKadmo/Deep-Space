@@ -17,6 +17,7 @@ pt-BR, English, and Spanish translations.
 ### Changed
 
 - Top-level workspace folders (e.g. "Personal", "Work") now render with a slightly larger, bolder name than nested subfolders and workspaces, so the sidebar tree reads with a clearer hierarchy.
+- The Usage panel now explains that it only lists accounts registered as a Provider Profile, with a direct link to Provider Center to register one. An account logged in through a different `CLAUDE_CONFIG_DIR` (or equivalent) was previously invisible with no explanation.
 
 ### Fixed
 
