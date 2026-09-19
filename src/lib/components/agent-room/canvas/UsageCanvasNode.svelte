@@ -229,6 +229,7 @@
               <Select.Item value="monthly">{m['usage.window_monthly']()}</Select.Item>
             </Select.Content>
           </Select.Root>
+          <p class="routing-window-hint">{m['usage.routing_window_hint']()}</p>
         </label>
         <label class="threshold-field">
           <span>{m['usage.routing_threshold']({ percent: policy.thresholdPercent })}</span>
@@ -246,6 +247,9 @@
 
       {#if policy.enabled}
         {@const sourceReport = report.providers.find((provider) => provider.routingId === policy.sourceProvider)}
+        {@const otherCriticalWindow = sourceReport?.status === 'available'
+          ? sourceReport.windows.find((window) => window.kind !== policy.windowKind && window.usedPercent >= policy.thresholdPercent)
+          : undefined}
         <p class:recommendation={report.shouldFallback || sourceReport?.status === 'near_limit' || sourceReport?.status === 'exhausted'} class="routing-result">
           {#if report.shouldFallback}
             {m['usage.routing_recommendation']({ source: providerName(policy.sourceProvider), fallback: providerName(report.recommendedProvider ?? policy.fallbackProvider) })}
@@ -257,6 +261,17 @@
             {m['usage.routing_healthy']({ source: providerName(policy.sourceProvider) })}
           {/if}
         </p>
+        {#if otherCriticalWindow}
+          <p class="routing-result recommendation">
+            <TriangleAlert size={12} aria-hidden="true" />
+            {m['usage.routing_other_window_warning']({
+              source: providerName(policy.sourceProvider),
+              window: windowKindLabel(otherCriticalWindow.kind),
+              percent: otherCriticalWindow.usedPercent,
+              monitored: windowKindLabel(policy.windowKind),
+            })}
+          </p>
+        {/if}
       {/if}
     </section>
 
@@ -554,6 +569,20 @@
     border-left-color: var(--app-warning);
     background: color-mix(in srgb, var(--app-warning) 9%, transparent);
     color: var(--app-warning);
+  }
+
+  .routing-result + .routing-result {
+    margin-top: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .routing-window-hint {
+    margin: 3px 0 0;
+    color: var(--app-text-muted);
+    font-size: 9.5px;
+    line-height: 1.4;
   }
 
   .provider-error.diagnostic {
