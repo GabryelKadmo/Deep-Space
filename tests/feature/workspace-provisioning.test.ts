@@ -4,8 +4,22 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { useSvelarTest } from '@beeblock/svelar/testing';
 import { WorkspaceService, workspaceService } from '$lib/modules/agent-room/application/services/WorkspaceService.js';
-import { UpdateWorkspaceDto } from '$lib/modules/agent-room/application/dto/WorkspaceDtos.js';
+import { CreateCanvasNodeDto, UpdateWorkspaceDto } from '$lib/modules/agent-room/application/dto/WorkspaceDtos.js';
 import { workspaceRepository } from '$lib/modules/agent-room/infrastructure/repositories/WorkspaceRepository.js';
+
+function createTerminal(workspaceId: string, provider: string) {
+  return workspaceService.createNode(new CreateCanvasNodeDto(
+    workspaceId,
+    'terminal',
+    provider,
+    0,
+    0,
+    560,
+    340,
+    0,
+    { command: provider, args: [], provider },
+  ));
+}
 
 describe('WorkspaceService — provisionamento da ponte', () => {
   useSvelarTest({ refreshDatabase: true });
@@ -59,38 +73,62 @@ describe('WorkspaceService — provisionamento da ponte', () => {
     await first;
   });
 
-  it('provisiona skill e token ao criar o workspace', async () => {
+  it('provisiona so os arquivos portaveis ao criar o workspace, sem nenhum provider ainda em uso', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-new-'));
     const workspace = await workspaceService.create({ name: 'novo', workingDir: dir, icon: null, instructions: null });
 
     expect(workspace.id).toBeTruthy();
     expect(workspace.repositoryRoots).toEqual([]);
     expect(existsSync(join(dir, '.deepspace', 'workspace.json'))).toBe(true);
-    expect(existsSync(join(dir, '.claude', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
-    expect(existsSync(join(dir, '.cline', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
-    expect(existsSync(join(dir, '.agents', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
-    // AGENTS.md portavel + os formatos MCP proprios de cada provider.
+    expect(existsSync(join(dir, '.deepspace', 'SKILL.md'))).toBe(true);
+    // AGENTS.md portavel e lido por qualquer CLI sem arquivo dedicado.
     const agentsMd = readFileSync(join(dir, 'AGENTS.md'), 'utf8');
     expect(agentsMd).toContain('<!-- deepspace:begin -->');
     expect(agentsMd).toContain('deepspace ask');
-    const opencode = JSON.parse(readFileSync(join(dir, 'opencode.json'), 'utf8'));
-    expect(opencode.mcp.deepspace).toMatchObject({
-      type: 'local',
-      command: [process.execPath, join(process.cwd(), 'packages', 'deepspace-cli', 'bin', 'deepspace.js'), 'mcp'],
-      enabled: true,
-    });
-    for (const path of ['.mcp.json', '.cursor/mcp.json', '.cline/mcp.json', '.agents/mcp_config.json']) {
-      const config = JSON.parse(readFileSync(join(dir, path), 'utf8'));
-      expect(config.mcpServers.deepspace.command).toBe(process.execPath);
-      expect(config.mcpServers.deepspace.args.at(-1)).toBe('mcp');
-      if (path === '.mcp.json') {
-        expect(config.mcpServers.figma).toEqual({ type: 'http', url: 'https://mcp.figma.com/mcp' });
-      } else if (path === '.cursor/mcp.json') {
-        expect(config.mcpServers.figma).toEqual({ url: 'https://mcp.figma.com/mcp' });
-      } else {
-        expect(config.mcpServers.figma).toBeUndefined();
-      }
+    // Nenhum provider tem terminal ainda: nada dos arquivos dedicados de CLI nasce de saida.
+    for (const path of [
+      '.claude/skills/deepspace/SKILL.md',
+      '.cline/skills/deepspace/SKILL.md',
+      '.devin/skills/deepspace/SKILL.md',
+      '.agents/skills/deepspace/SKILL.md',
+      '.mcp.json',
+      '.cursor/mcp.json',
+      '.cline/mcp.json',
+      '.devin/mcp_config.json',
+      '.agents/mcp_config.json',
+      'opencode.json',
+    ]) {
+      expect(existsSync(join(dir, path))).toBe(false);
     }
+  });
+
+  it('provisiona a skill e o MCP so do provider que ganha um terminal', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-provider-'));
+    const workspace = await workspaceService.create({ name: 'com-claude', workingDir: dir, icon: null, instructions: null });
+
+    await createTerminal(workspace.id, 'claude');
+
+    expect(existsSync(join(dir, '.claude', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
+    const mcp = JSON.parse(readFileSync(join(dir, '.mcp.json'), 'utf8'));
+    expect(mcp.mcpServers.deepspace.command).toBe(process.execPath);
+    expect(mcp.mcpServers.figma).toEqual({ type: 'http', url: 'https://mcp.figma.com/mcp' });
+    // Cline, Devin, Antigravity e OpenCode continuam sem terminal: sem arquivos deles.
+    for (const path of [
+      '.cline/skills/deepspace/SKILL.md',
+      '.devin/skills/deepspace/SKILL.md',
+      '.agents/skills/deepspace/SKILL.md',
+      '.cline/mcp.json',
+      '.devin/mcp_config.json',
+      '.agents/mcp_config.json',
+      'opencode.json',
+    ]) {
+      expect(existsSync(join(dir, path))).toBe(false);
+    }
+
+    await createTerminal(workspace.id, 'opencode');
+    const opencode = JSON.parse(readFileSync(join(dir, 'opencode.json'), 'utf8'));
+    expect(opencode.mcp.deepspace).toMatchObject({ type: 'local', enabled: true });
+    expect(existsSync(join(dir, '.cursor', 'mcp.json'))).toBe(false);
   });
 
   it('preserva conteudo do usuario no AGENTS.md ao atualizar o bloco', async () => {
@@ -162,7 +200,8 @@ describe('WorkspaceService — provisionamento da ponte', () => {
       `${JSON.stringify({ mcpServers: { custom: { command: 'custom-server', args: ['serve'] } } }, null, 2)}\n`
     );
 
-    await workspaceService.create({ name: 'mcp-merge', workingDir: dir, icon: null, instructions: null });
+    const workspace = await workspaceService.create({ name: 'mcp-merge', workingDir: dir, icon: null, instructions: null });
+    await createTerminal(workspace.id, 'cursor');
 
     const config = JSON.parse(readFileSync(join(dir, '.cursor', 'mcp.json'), 'utf8'));
     expect(config.mcpServers.custom).toEqual({ command: 'custom-server', args: ['serve'] });
@@ -172,8 +211,15 @@ describe('WorkspaceService — provisionamento da ponte', () => {
 
   it('repara skill e token ao abrir workspace antigo (sem provisionamento)', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-old-'));
-    // Criado direto no repositorio: simula workspace de versao antiga do app.
+    // Criado direto no repositorio: simula workspace de versao antiga do app,
+    // ja com um terminal Claude criado antes do provisionamento zero-config existir.
     const workspace = await workspaceRepository.createWorkspace({ name: 'antigo', workingDir: dir });
+    await workspaceRepository.createNode({
+      workspaceId: workspace.id,
+      type: 'terminal',
+      title: 'Lider',
+      payload: { command: 'claude', provider: 'claude' },
+    });
     expect(existsSync(join(dir, '.deepspace', 'workspace.json'))).toBe(false);
 
     await workspaceService.get(workspace.id);
@@ -192,11 +238,10 @@ describe('WorkspaceService — provisionamento da ponte', () => {
   it('atualiza skill com conteudo antigo ao abrir o workspace', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-stale-'));
     const workspace = await workspaceService.create({ name: 'stale', workingDir: dir, icon: null, instructions: null });
-    // Envelhece a skill (simula template de versao anterior).
-    const skillPath = join(dir, '.claude', 'skills', 'deepspace', 'SKILL.md');
-    const { writeFileSync: write, mkdirSync: mkdir } = await import('node:fs');
-    mkdir(join(dir, '.claude', 'skills', 'deepspace'), { recursive: true });
-    write(skillPath, '---\nname: deepspace-bridge\n---\nskill antiga\n');
+    // Envelhece a copia canonica (.deepspace/SKILL.md), sempre gravada
+    // independente de provider, que e o marcador usado pelo reparo.
+    const skillPath = join(dir, '.deepspace', 'SKILL.md');
+    writeFileSync(skillPath, '---\nname: deepspace-bridge\n---\nskill antiga\n');
 
     const staleService = new (await import('$lib/modules/agent-room/application/services/WorkspaceService.js')).WorkspaceService();
     await staleService.get(workspace.id);
@@ -204,5 +249,18 @@ describe('WorkspaceService — provisionamento da ponte', () => {
     const skill = readFileSync(skillPath, 'utf8');
     expect(skill).toContain('Modo Maestro');
     expect(skill).not.toContain('skill antiga');
+  });
+
+  it('provisiona a skill dedicada quando um provider novo entra num workspace ja aberto', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-ondemand-'));
+    const workspace = await workspaceService.create({ name: 'ondemand', workingDir: dir, icon: null, instructions: null });
+    await workspaceService.get(workspace.id);
+    expect(existsSync(join(dir, '.devin', 'skills', 'deepspace', 'SKILL.md'))).toBe(false);
+
+    await createTerminal(workspace.id, 'devin');
+
+    expect(existsSync(join(dir, '.devin', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
+    const config = JSON.parse(readFileSync(join(dir, '.devin', 'mcp_config.json'), 'utf8'));
+    expect(config.mcpServers.deepspace.command).toBe(process.execPath);
   });
 });

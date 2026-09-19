@@ -22,6 +22,7 @@ pt-BR, English, and Spanish translations.
 - Top-level workspace folders (e.g. "Personal", "Work") now render with a slightly larger, bolder name than nested subfolders and workspaces, so the sidebar tree reads with a clearer hierarchy.
 - The Usage panel now explains that it only lists accounts registered as a Provider Profile, with a direct link to Provider Center to register one. An account logged in through a different `CLAUDE_CONFIG_DIR` (or equivalent) was previously invisible with no explanation.
 - Leader routing (Usage node) now explains that "Monitored limit" decides the switch alone — the provider's other quotas are ignored even at 100%. It also warns when a non-monitored window is at or past the switch threshold while reporting "within policy," and clarifies that a recommended switch only applies to new tasks, not a reply already in progress.
+- A workspace's root no longer fills up with skill/MCP files for every supported CLI (Claude, Cline, Devin, Antigravity, OpenCode...) regardless of which ones are actually used. Each provider's dedicated folder and MCP config now appear only once a terminal with that provider exists, provisioned on demand when it's created or switched. The portable `.deepspace/` skill and `AGENTS.md`, read by any CLI without a dedicated file, are unaffected and still provision immediately.
 
 ### Fixed
 

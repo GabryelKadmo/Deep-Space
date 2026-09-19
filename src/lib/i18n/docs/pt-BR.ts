@@ -957,7 +957,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     "O painel de Usage agora explica que só lista contas cadastradas como Provider Profile, com um link direto pra Central de Providers pra cadastrar uma. Uma conta logada por um CLAUDE_CONFIG_DIR diferente ficava invisível sem nenhuma explicação.",
     "O botão de expandir em cada cartão do kanban abre um detalhe amplo — título completo, descrição em markdown renderizada com checklist clicável, imagens em tamanho legível, anexos e edição direta de responsável, coluna e nota vinculada — com Anterior/Próximo pra navegar entre os cartões da mesma coluna sem fechar.",
     "Configurações agora protege contra perda de alterações não salvas: tentar sair da página com edições pendentes mostra um diálogo Salvar/Descartar/Continuar editando, fechar ou recarregar a janela mostra o aviso nativo do navegador, e Ctrl/Cmd+S salva na hora.",
-    "O botão flutuante de ditado (mic) podia sair sozinho do lugar — ele era travado contra o retângulo do próprio canvas, que muda ao trocar de tela ou recolher/expandir a barra lateral. Agora é travado contra a janela inteira, que não muda entre rotas, então só se move por ação sua."
+    "O botão flutuante de ditado (mic) podia sair sozinho do lugar — ele era travado contra o retângulo do próprio canvas, que muda ao trocar de tela ou recolher/expandir a barra lateral. Agora é travado contra a janela inteira, que não muda entre rotas, então só se move por ação sua.",
+    "A raiz do workspace deixou de se enchar de arquivos de skill/MCP de todo CLI suportado (Claude, Cline, Devin, Antigravity, OpenCode...) independente do que você realmente usa. A pasta e o MCP de cada provider só aparecem quando um terminal desse provider existe, provisionados na hora em que ele é criado ou trocado. A skill portátil em .deepspace/ e o AGENTS.md, lidos por qualquer CLI sem arquivo próprio, continuam chegando de imediato."
   ]
 },
 {
