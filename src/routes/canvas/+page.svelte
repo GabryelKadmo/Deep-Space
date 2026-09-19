@@ -3995,6 +3995,7 @@
   }
 
   .canvas-area :global(.svelte-flow__minimap) {
+    z-index: 2000 !important;
     background: var(--app-surface);
     border: 1px solid var(--app-border);
     border-radius: 7px;
@@ -4003,6 +4004,7 @@
 
 
   .canvas-area :global(.svelte-flow__controls) {
+    z-index: 2000 !important;
     border: 1px solid var(--app-border);
     border-radius: 7px;
     overflow: hidden;

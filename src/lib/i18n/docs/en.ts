@@ -947,7 +947,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     "Five new icons: Landing Page, Flower, Building, Person, and the Deep Space kraken mark itself.",
     "Top-level folders (like \"Personal\" or \"Work\") now render with a slightly larger, bolder name than nested subfolders and workspaces, so the sidebar tree reads with a clearer hierarchy.",
     "Settings has a new \"Custom icons\" section: add any icon from the Lucide library by name — search lucide.dev, paste the name — and it shows up everywhere workspace and folder icons are picked.",
-    "The copy button on the install command in Provider Center sat flush against the block's right edge with no padding, and its background clashed with the code behind it. It now has breathing room, sits centered, and only stands out on hover."
+    "The copy button on the install command in Provider Center sat flush against the block's right edge with no padding, and its background clashed with the code behind it. It now has breathing room, sits centered, and only stands out on hover.",
+    "The canvas minimap and zoom controls could end up hidden behind a node or panel positioned over their corner. Both now always render above every node."
   ]
 },
 {
