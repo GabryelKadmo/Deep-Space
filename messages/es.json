@@ -340,6 +340,7 @@
   "canvas.palette_tidy": "Organizar en cuadrícula",
   "canvas.palette_group": "Agrupar selección",
   "canvas.palette_zoom_sel": "Zoom a la selección",
+  "canvas.zoom_reset": "Restablecer el zoom al 100% (Ctrl/Cmd+0)",
   "canvas.hint_action": "acción",
   "canvas.hint_view": "vista",
   "canvas.hint_selection": "selección",
