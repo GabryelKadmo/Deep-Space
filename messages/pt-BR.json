@@ -1203,6 +1203,8 @@
   "roles.error_name_required": "Informe o nome.",
   "roles.error_prompt_required": "Informe as instruções.",
   "usage.title": "Uso dos providers",
+  "usage.scope_hint": "Mostra só as contas cadastradas como Provider Profile — uma conta logada por fora (outro CLAUDE_CONFIG_DIR, por exemplo) não aparece até ser cadastrada.",
+  "usage.scope_hint_link": "Cadastrar na Central de Providers",
   "usage.refresh": "Atualizar agora",
   "usage.close": "Fechar",
   "usage.no_windows": "Sem janelas de uso reportadas.",

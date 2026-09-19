@@ -953,7 +953,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     "Configurações ganhou uma seção \"Ícones extras\": adicione qualquer ícone da biblioteca Lucide pelo nome — pesquise em lucide.dev, cole o nome — e ele aparece em todo seletor de ícone de workspace e pasta.",
     "O botão de copiar do comando de instalação na Central de Providers ficava colado na borda direita do bloco, sem respiro, com um fundo que destoava do código. Agora tem espaço, fica centralizado e só se destaca no hover.",
     "O minimapa e os controles de zoom do canvas podiam ficar escondidos atrás de um nó ou painel posicionado por cima deles. Agora os dois ficam sempre acima de qualquer nó.",
-    "Os controles de zoom do canvas agora mostram a porcentagem atual. Clicar nela, ou apertar Ctrl/Cmd+0, restaura o zoom para 100%."
+    "Os controles de zoom do canvas agora mostram a porcentagem atual. Clicar nela, ou apertar Ctrl/Cmd+0, restaura o zoom para 100%.",
+    "O painel de Usage agora explica que só lista contas cadastradas como Provider Profile, com um link direto pra Central de Providers pra cadastrar uma. Uma conta logada por um CLAUDE_CONFIG_DIR diferente ficava invisível sem nenhuma explicação."
   ]
 },
 {
