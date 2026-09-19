@@ -3911,6 +3911,7 @@
   "canvas.transfer_error_asset_invalid": "Um arquivo selecionado está fora do diretório autorizado do workspace.",
   "canvas.transfer_error_failed": "Não foi possível transferir os nós selecionados. Nada foi removido do workspace de origem.",
   "git.title": "Workspace Git",
+  "git.branch_indicator_label": "Branch atual: {branch}. Clique para abrir o Git.",
   "git.error_api": "Não foi possível concluir a requisição Git.",
   "git.error_load": "Não foi possível carregar o estado do repositório.",
   "git.error_action": "Não foi possível executar a operação Git.",

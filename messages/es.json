@@ -3911,6 +3911,7 @@
   "canvas.transfer_error_asset_invalid": "Un archivo seleccionado está fuera del directorio autorizado del workspace.",
   "canvas.transfer_error_failed": "No se pudieron transferir los nodos seleccionados. No se eliminó nada del workspace de origen.",
   "git.title": "Workspace Git",
+  "git.branch_indicator_label": "Branch actual: {branch}. Haz clic para abrir Git.",
   "git.error_api": "No se pudo completar la solicitud Git.",
   "git.error_load": "No se pudo cargar el estado del repositorio.",
   "git.error_action": "No se pudo ejecutar la operación Git.",

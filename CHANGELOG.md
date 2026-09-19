@@ -15,6 +15,7 @@ pt-BR, English, and Spanish translations.
 - The canvas zoom controls now show the current zoom percentage. Clicking it, or pressing Ctrl/Cmd+0, resets the zoom to 100%.
 - Kanban cards can now open a full detail view (an expand button on each card): full title, rendered markdown description with a clickable checklist, larger reference images, attachments, and column/assignee/linked-note editing, with Previous/Next navigation between cards in the same column.
 - Settings now guards against losing unsaved changes: trying to leave the page with edits pending shows a Save/Discard/Keep editing dialog, closing or reloading the window shows the browser's own unsaved-changes prompt, and Ctrl/Cmd+S saves immediately.
+- The Windows titlebar now shows the current git branch for the active workspace on Canvas and Workbench, so you don't have to open the Git panel just to check it. Click it for a quick Git popover (changes, graph, branches, worktrees) without leaving what you're doing.
 
 ### Changed
 

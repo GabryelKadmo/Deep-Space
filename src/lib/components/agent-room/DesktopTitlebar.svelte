@@ -3,6 +3,7 @@
   import { AppWindow, Bug, CheckCircle2, FileText, FolderOpen, LayoutGrid, LifeBuoy, Maximize2, Minus, MonitorUp, PanelTop, RefreshCw, Search, Settings, SquareTerminal, X } from '@lucide/svelte';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
+  import GitBranchIndicator from '$lib/components/agent-room/GitBranchIndicator.svelte';
   import WorkspaceSharingButton from '$lib/components/collaboration/WorkspaceSharingButton.svelte';
   import { activeWorkspaceStore, requestOpenSharing } from '$lib/components/agent-room/active-workspace.svelte.js';
   import * as m from '$lib/paraglide/messages.js';
@@ -90,6 +91,7 @@
 
     {#if isCanvas || isWorkbench}
       <div class="context-actions">
+        <GitBranchIndicator />
         {#if isWorkbench}
           <WorkspaceSharingButton variant="titlebar" workspaceId={activeWorkspaceStore.id} onOpen={requestOpenSharing} />
         {/if}
