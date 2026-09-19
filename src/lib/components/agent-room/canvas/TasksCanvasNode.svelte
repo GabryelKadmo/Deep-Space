@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { NodeProps } from '@xyflow/svelte';
-  import { Archive, ArchiveRestore, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Columns3, History, Link2, Paperclip, Plus, Scale, SquareKanban, StickyNote, Trash2, X } from '@lucide/svelte';
+  import { Archive, ArchiveRestore, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Columns3, History, Link2, Maximize2, Paperclip, Plus, Scale, SquareKanban, StickyNote, Trash2, X } from '@lucide/svelte';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import * as Dialog from '$lib/components/ui/dialog';
   import NodeShell from './NodeShell.svelte';
@@ -464,6 +464,45 @@
 
   const imageUrl = (path: string) =>
     `/api/agent-room/workspaces/${data.workspaceId}/fs/raw?path=${encodeURIComponent(path)}`;
+
+  // -- Detalhe do card (visao ampla) --------------------------------------------
+  let detailTaskId = $state<string | null>(null);
+  const detailTask = $derived(detailTaskId ? (tasks.find((task) => task.id === detailTaskId) ?? null) : null);
+
+  function openDetail(task: BoardTask) {
+    detailTaskId = task.id;
+  }
+
+  function closeDetail() {
+    detailTaskId = null;
+    editingDescId = null;
+  }
+
+  function detailNav(delta: number) {
+    if (!detailTask) return;
+    const siblings = tasks.filter((task) => task.status === detailTask.status);
+    const index = siblings.findIndex((task) => task.id === detailTask.id);
+    if (index === -1) return;
+    const next = siblings[(index + delta + siblings.length) % siblings.length];
+    if (next) detailTaskId = next.id;
+  }
+
+  const CHECKLIST_ITEM_RE = /^(\s*[-*+]\s+\[)([ xX])(\]\s?)/;
+
+  function toggleChecklistItem(task: BoardTask, targetIndex: number, checked: boolean) {
+    const source = task.description ?? '';
+    const lines = source.split('\n');
+    let count = -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (!CHECKLIST_ITEM_RE.test(lines[i])) continue;
+      count += 1;
+      if (count === targetIndex) {
+        lines[i] = lines[i].replace(CHECKLIST_ITEM_RE, `$1${checked ? 'x' : ' '}$3`);
+        break;
+      }
+    }
+    void patchTask(task.id, { description: lines.join('\n') });
+  }
 </script>
 
 <NodeShell
@@ -696,6 +735,9 @@
                   <span class="tb-title" title={undefined} ondblclick={() => startEdit(task)}>{task.title}</span>
                 {/if}
                 <div class="flex shrink-0 items-center gap-0.5">
+                  <HeaderIconButton label={m['tasks.open_detail']()} class="tb-icon-btn subtle" side="top" onclick={() => openDetail(task)}>
+                    <Maximize2 size={11} />
+                  </HeaderIconButton>
                   <HeaderIconButton label={m['council.ask_perspectives']()} class="tb-icon-btn subtle" side="top" onclick={() => openCouncil(task)}>
                     <Scale size={11} />
                   </HeaderIconButton>
@@ -824,6 +866,109 @@
       </Dialog.Header>
       <div class="tb-note-viewer-body nodrag nowheel">
         <MarkdownView content={noteViewer.content} />
+      </div>
+    </Dialog.Content>
+  </Dialog.Root>
+{/if}
+
+{#if detailTask}
+  {@const current = detailTask}
+  <Dialog.Root open={detailTask !== null} onOpenChange={(open: boolean) => !open && closeDetail()}>
+    <Dialog.Content class="tb-detail-content nodrag nowheel">
+      <Dialog.Header>
+        <div class="tb-detail-head">
+          <HeaderIconButton label={m['tasks.detail_prev']()} class="tb-icon-btn subtle" side="top" onclick={() => detailNav(-1)}>
+            <ChevronLeft size={15} />
+          </HeaderIconButton>
+          {#if editingId === current.id}
+            <input
+              class="tb-detail-title-edit"
+              bind:value={editDraft}
+              aria-label={m['tasks.edit_task']()}
+              spellcheck="false"
+              onkeydown={(event) => {
+                if (event.key === 'Enter') commitEdit();
+                if (event.key === 'Escape') editingId = null;
+              }}
+              onblur={commitEdit}
+            />
+          {:else}
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <Dialog.Title class="tb-detail-title" ondblclick={() => startEdit(current)}>{current.title}</Dialog.Title>
+          {/if}
+          <HeaderIconButton label={m['tasks.detail_next']()} class="tb-icon-btn subtle" side="top" onclick={() => detailNav(1)}>
+            <ChevronRight size={15} />
+          </HeaderIconButton>
+        </div>
+        <Dialog.Description class="tb-detail-subtitle">{m['tasks.detail_desc']()}</Dialog.Description>
+      </Dialog.Header>
+
+      <div class="tb-detail-meta">
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger class="tb-detail-chip" aria-label={m['tasks.detail_column_aria']()}>
+            <Columns3 size={11} />{COLUMNS.find((column) => column.status === current.status)?.label ?? current.status}
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content class="w-44">
+            {#each COLUMNS as column (column.id)}
+              <DropdownMenu.Item onclick={() => patchTask(current.id, { status: column.status })}>{column.label}</DropdownMenu.Item>
+            {/each}
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger class="tb-detail-chip" aria-label={m['tasks.assign_aria']()}>
+            {current.assigneeTitle ?? m['tasks.assign_fallback']()}
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content class="w-44">
+            <DropdownMenu.Item onclick={() => patchTask(current.id, { assigneeNodeId: null })}>{m['tasks.no_assignee']()}</DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            {#each agents as agent (agent.id)}
+              <DropdownMenu.Item onclick={() => patchTask(current.id, { assigneeNodeId: agent.id })}>{agent.title}</DropdownMenu.Item>
+            {/each}
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+        {#if current.noteId}
+          <button class="tb-detail-chip" onclick={() => openLinkedNote(current.noteId!, true)}>
+            <StickyNote size={11} />{current.noteTitle ?? m['tasks.note_fallback']()}
+          </button>
+        {/if}
+      </div>
+
+      <div class="tb-detail-body">
+        {#if current.images?.length}
+          <div class="tb-detail-images">
+            {#each current.images as path, index (path)}
+              <button class="tb-detail-thumb-btn" aria-label={m['tasks.view_image']({ index: index + 1, total: current.images.length })} onclick={() => openViewer(current, index)}>
+                <img class="tb-detail-thumb" src={imageUrl(path)} alt="" loading="lazy" />
+              </button>
+            {/each}
+          </div>
+        {/if}
+
+        {#if editingDescId === current.id}
+          <textarea
+            class="tb-detail-desc-edit"
+            bind:value={editDescDraft}
+            aria-label={m['tasks.edit_desc']()}
+            rows="10"
+            spellcheck="false"
+            onkeydown={(event) => { if (event.key === 'Escape') editingDescId = null; }}
+            onblur={commitDescEdit}
+          ></textarea>
+        {:else if current.description?.trim()}
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div class="tb-detail-desc" ondblclick={() => startDescEdit(current)}>
+            <MarkdownView content={current.description} onToggleCheckbox={(index, checked) => toggleChecklistItem(current, index, checked)} />
+          </div>
+        {:else}
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <p class="tb-detail-empty" ondblclick={() => startDescEdit(current)}>{m['tasks.detail_add_desc']()}</p>
+        {/if}
+
+        <AttachmentList
+          workspaceId={data.workspaceId}
+          attachments={(current.attachments ?? []).filter((attachment) => !attachment.path || !current.images.includes(attachment.path))}
+          onRemove={(attachment) => removeTaskAttachment(current, attachment)}
+        />
       </div>
     </Dialog.Content>
   </Dialog.Root>
@@ -1254,6 +1399,142 @@
 
   .tb-viewer-delete:hover {
     background: color-mix(in srgb, var(--app-danger) 22%, transparent);
+  }
+
+  /* ---- Detalhe amplo do card --------------------------------------------- */
+  :global(.tb-detail-content) {
+    max-width: min(680px, 92vw) !important;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tb-detail-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tb-detail-title {
+    flex: 1;
+    min-width: 0;
+    font-size: 16px;
+    overflow-wrap: break-word;
+    cursor: text;
+  }
+
+  .tb-detail-title-edit {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--app-accent);
+    border-radius: 7px;
+    background: var(--app-surface-subtle);
+    color: var(--app-text);
+    font-size: 16px;
+    font-weight: 650;
+    padding: 4px 8px;
+    outline: none;
+  }
+
+  .tb-detail-subtitle {
+    font-size: 11px;
+  }
+
+  .tb-detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--app-border);
+  }
+
+  :global(.tb-detail-chip) {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid var(--app-border);
+    background: var(--app-surface-subtle);
+    color: var(--app-text-soft);
+    font-size: 11px;
+    border-radius: 999px;
+    padding: 4px 10px;
+    cursor: pointer;
+  }
+
+  :global(.tb-detail-chip:hover) {
+    border-color: var(--app-border-strong);
+    color: var(--app-text);
+  }
+
+  .tb-detail-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+
+  .tb-detail-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tb-detail-thumb-btn {
+    border: 1px solid var(--app-border);
+    border-radius: 8px;
+    padding: 0;
+    background: transparent;
+    cursor: zoom-in;
+    overflow: hidden;
+    line-height: 0;
+  }
+
+  .tb-detail-thumb-btn:hover {
+    border-color: var(--app-border-strong);
+  }
+
+  .tb-detail-thumb {
+    width: 140px;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .tb-detail-desc {
+    padding: 10px 12px;
+    border-radius: 9px;
+    background: var(--app-surface-subtle);
+    cursor: text;
+  }
+
+  .tb-detail-desc-edit {
+    width: 100%;
+    min-height: 220px;
+    border: 1px solid var(--app-border);
+    border-radius: 9px;
+    background: var(--app-surface-subtle);
+    color: var(--app-text);
+    font-size: 13px;
+    font-family: inherit;
+    padding: 10px 12px;
+    outline: none;
+    resize: vertical;
+  }
+
+  .tb-detail-desc-edit:focus {
+    border-color: var(--app-accent);
+  }
+
+  .tb-detail-empty {
+    margin: 0;
+    padding: 14px 12px;
+    border: 1px dashed var(--app-border-strong);
+    border-radius: 9px;
+    color: var(--app-text-muted);
+    font-size: 12px;
+    cursor: text;
   }
 
   .tb-card-top {
