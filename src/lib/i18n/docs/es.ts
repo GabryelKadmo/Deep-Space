@@ -952,7 +952,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     "Los controles de zoom del canvas ahora muestran el porcentaje de zoom actual. Hacer clic en él, o presionar Ctrl/Cmd+0, restablece el zoom al 100%.",
     "El panel de Usage ahora explica que solo lista cuentas registradas como Provider Profile, con un enlace directo a la Central de Providers para registrar una. Una cuenta iniciada con un CLAUDE_CONFIG_DIR distinto quedaba invisible sin ninguna explicación.",
     "El botón de expandir de cada tarjeta del kanban abre un detalle amplio — título completo, descripción en markdown renderizada con checklist clicable, imágenes en tamaño legible, adjuntos y edición directa de responsable, columna y nota vinculada — con Anterior/Siguiente para navegar entre las tarjetas de la misma columna sin cerrarlo.",
-    "Configuración ahora protege contra la pérdida de cambios sin guardar: intentar salir de la página con ediciones pendientes muestra un diálogo Guardar/Descartar/Seguir editando, cerrar o recargar la ventana muestra el aviso nativo del navegador, y Ctrl/Cmd+S guarda al instante."
+    "Configuración ahora protege contra la pérdida de cambios sin guardar: intentar salir de la página con ediciones pendientes muestra un diálogo Guardar/Descartar/Seguir editando, cerrar o recargar la ventana muestra el aviso nativo del navegador, y Ctrl/Cmd+S guarda al instante.",
+    "El botón flotante de dictado (mic) podía salirse solo de lugar — se ajustaba contra el rectángulo del propio canvas, que cambia al cambiar de página o al colapsar/expandir la barra lateral. Ahora se ajusta contra la ventana completa, que no cambia entre rutas, así que solo se mueve por acción tuya."
   ]
 },
 {

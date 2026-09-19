@@ -952,7 +952,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     "The canvas zoom controls now show the current zoom percentage. Clicking it, or pressing Ctrl/Cmd+0, resets the zoom to 100%.",
     "The Usage panel now explains that it only lists accounts registered as a Provider Profile, with a direct link to Provider Center to register one. An account logged in through a different CLAUDE_CONFIG_DIR used to be invisible with no explanation.",
     "Each kanban card's expand button opens a full detail view — complete title, rendered markdown description with a clickable checklist, full-size images, attachments, and direct editing of assignee, column, and linked note — with Previous/Next to move between cards in the same column without closing it.",
-    "Settings now guards against losing unsaved changes: trying to leave the page with edits pending shows a Save/Discard/Keep editing dialog, closing or reloading the window shows the browser's own unsaved-changes prompt, and Ctrl/Cmd+S saves immediately."
+    "Settings now guards against losing unsaved changes: trying to leave the page with edits pending shows a Save/Discard/Keep editing dialog, closing or reloading the window shows the browser's own unsaved-changes prompt, and Ctrl/Cmd+S saves immediately.",
+    "The floating dictation (mic) button could drift on its own — it was clamped against the canvas area's own rectangle, which changes when you switch pages or collapse/expand the sidebar. It's now clamped against the viewport, which doesn't change between routes, so it only moves when you drag or reset it."
   ]
 },
 {
