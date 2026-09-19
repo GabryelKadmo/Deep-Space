@@ -945,7 +945,8 @@ Header: Authorization = Bearer {{accessToken}}`,
   "items": [
     "Clicking a workspace's icon in the sidebar now opens the icon picker directly, the same shortcut folders already had — no need to open the full workspace dialog just to change it.",
     "Five new icons: Landing Page, Flower, Building, Person, and the Deep Space kraken mark itself.",
-    "Top-level folders (like \"Personal\" or \"Work\") now render with a slightly larger, bolder name than nested subfolders and workspaces, so the sidebar tree reads with a clearer hierarchy."
+    "Top-level folders (like \"Personal\" or \"Work\") now render with a slightly larger, bolder name than nested subfolders and workspaces, so the sidebar tree reads with a clearer hierarchy.",
+    "Settings has a new \"Custom icons\" section: add any icon from the Lucide library by name — search lucide.dev, paste the name — and it shows up everywhere workspace and folder icons are picked."
   ]
 },
 {

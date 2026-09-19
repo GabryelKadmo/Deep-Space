@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Folder } from '@lucide/svelte';
   import { isLegacyEmojiIcon, workspaceIconComponent } from './workspace-icons.js';
+  import { ensureCustomIconsLoaded, getCustomIconComponent } from './workspace-custom-icons.svelte.js';
 
   type Props = {
     name: string | null | undefined;
@@ -9,8 +10,10 @@
 
   let { name, size = 14 }: Props = $props();
 
-  const IconComponent = $derived(workspaceIconComponent(name));
-  const legacyEmoji = $derived(isLegacyEmojiIcon(name) ? name : null);
+  void ensureCustomIconsLoaded();
+
+  const IconComponent = $derived(workspaceIconComponent(name) ?? (name ? getCustomIconComponent(name) : null));
+  const legacyEmoji = $derived(isLegacyEmojiIcon(name) && !getCustomIconComponent(name ?? '') ? name : null);
 </script>
 
 {#if legacyEmoji}

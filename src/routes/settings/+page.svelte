@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import { Activity, ArrowLeft, Check, Command, Keyboard, Languages, Layers, Mic, Palette, Pencil, Play, Power, RefreshCw, RotateCw, SquareTerminal, Trash2, Volume2 } from '@lucide/svelte';
+  import { Activity, ArrowLeft, Check, Command, Keyboard, Languages, Layers, Mic, Palette, Pencil, Play, Plus, Power, RefreshCw, RotateCw, Shapes, SquareTerminal, Trash2, Volume2 } from '@lucide/svelte';
   import { isMacPlatform } from '$lib/components/agent-room/platform.js';
   import WorkspaceIcon from '$lib/components/agent-room/WorkspaceIcon.svelte';
   import * as m from '$lib/paraglide/messages.js';
@@ -16,6 +16,7 @@
   import { normalizeTerminalTheme, TERMINAL_THEMES, TERMINAL_THEME_ORDER } from '$lib/components/agent-room/terminal-themes.js';
   import { DEFAULT_DICTATION_HOTKEY, comboFromEvent, comboLabel } from '$lib/components/agent-room/dictation-hotkey.js';
   import { appSettingsStore, getAppSettings, invalidateAppSettings } from '$lib/components/agent-room/app-settings.svelte.js';
+  import { addCustomIcon, customIconNames, ensureCustomIconsLoaded, getCustomIconComponent, removeCustomIcon } from '$lib/components/agent-room/workspace-custom-icons.svelte.js';
   import VoiceConfirmDialog from '$lib/components/agent-room/VoiceConfirmDialog.svelte';
   import {
     DEFAULT_EMBEDDED_TTS_SPEED,
@@ -77,6 +78,7 @@
     loaded = true;
     await refreshModelStatus();
     await loadPresets();
+    await ensureCustomIconsLoaded();
     if (desktop?.appVersion) appVersion = await desktop.appVersion().catch(() => '');
     await refreshCoreStatus();
     if (desktop?.coreStatus) coreStatusTimer = window.setInterval(() => void refreshCoreStatus(), 10_000);
@@ -228,6 +230,26 @@
     await fetch(`/api/agent-room/presets/${deletingPreset.id}`, { method: 'DELETE' });
     deletingPreset = null;
     await loadPresets();
+  }
+
+  let customIconDraft = $state('');
+  const customIconOptions = $derived(
+    customIconNames()
+      .map((name) => ({ name, component: getCustomIconComponent(name) }))
+      .filter((option): option is { name: string; component: NonNullable<typeof option.component> } => option.component !== null),
+  );
+
+  async function submitCustomIcon() {
+    const name = customIconDraft.trim();
+    if (!name) return;
+    const result = await addCustomIcon(name);
+    if (result === 'added') {
+      customIconDraft = '';
+    } else if (result === 'duplicate') {
+      toast.error(m['settings.custom_icon_duplicate']({ name }));
+    } else {
+      toast.error(m['settings.custom_icon_invalid']({ name }));
+    }
   }
   type DesktopBridge = {
     appVersion?: () => Promise<string>;
@@ -927,6 +949,45 @@
               <Pencil size={12} />
             </button>
             <button class="preset-action danger" aria-label={m['settings.preset_delete_named']({ name: preset.name })} onclick={() => (deletingPreset = preset)}>
+              <Trash2 size={12} />
+            </button>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+  </section>
+
+  <section class={settingsSectionClasses} id="custom-icons">
+    <header class="section-head">
+      <span class="icon-chip"><Shapes size={15} aria-hidden="true" /></span>
+      <div class="section-titles">
+        <h2>{m['settings.section_custom_icons']()}</h2>
+        <p>{m['settings.section_custom_icons_desc']()}</p>
+      </div>
+    </header>
+    <div class="flex gap-2">
+      <Input
+        bind:value={customIconDraft}
+        placeholder={m['settings.custom_icon_name_placeholder']()}
+        autocomplete="off"
+        spellcheck={false}
+        onkeydown={(event) => event.key === 'Enter' && submitCustomIcon()}
+      />
+      <Button type="button" variant="outline" onclick={submitCustomIcon}>
+        <Plus size={14} aria-hidden="true" />
+        {m['settings.custom_icon_add']()}
+      </Button>
+    </div>
+    {#if customIconOptions.length === 0}
+      <p class="field-hint">{m['settings.custom_icons_empty']()}</p>
+    {:else}
+      <ul class="preset-list">
+        {#each customIconOptions as option (option.name)}
+          {@const OptionIcon = option.component}
+          <li class="preset-row">
+            <span class="preset-icon"><OptionIcon size={14} /></span>
+            <span class="preset-name">{option.name}</span>
+            <button class="preset-action danger" aria-label={m['settings.custom_icon_remove_named']({ name: option.name })} onclick={() => removeCustomIcon(option.name)}>
               <Trash2 size={12} />
             </button>
           </li>

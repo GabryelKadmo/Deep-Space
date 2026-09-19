@@ -57,3 +57,41 @@ export function workspaceIconComponent(name: string | null | undefined) {
 export function isLegacyEmojiIcon(value: string | null | undefined): boolean {
   return Boolean(value) && !BY_NAME.has(value as WorkspaceIconName);
 }
+
+/**
+ * Todos os icones do pacote @lucide/svelte (a lista curada acima usa so uns
+ * 30), carregados sob demanda por nome (kebab-case, o mesmo mostrado em
+ * lucide.dev) — usado pelos icones "extras" que o usuario adiciona em
+ * Configuracoes. import.meta.glob resolve os arquivos no build (funciona em
+ * dev e produção); um import() dinamico com string simples nao resolveria
+ * fora do dev server.
+ */
+const dynamicLucideModules = import.meta.glob('/node_modules/@lucide/svelte/dist/icons/*.svelte');
+
+function toKebabCase(input: string): string {
+  return input
+    .trim()
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase();
+}
+
+const dynamicIconResolutionCache = new Map<string, Promise<unknown>>();
+
+/** Resolve um nome de icone lucide arbitrario; null se o nome nao existir. */
+export function resolveDynamicLucideIcon(name: string): Promise<unknown> {
+  const kebab = toKebabCase(name);
+  const cached = dynamicIconResolutionCache.get(kebab);
+  if (cached) return cached;
+  const loader = dynamicLucideModules[`/node_modules/@lucide/svelte/dist/icons/${kebab}.svelte`];
+  const promise = loader
+    ? loader().then((module) => (module as { default: unknown }).default)
+    : Promise.resolve(null);
+  dynamicIconResolutionCache.set(kebab, promise);
+  return promise;
+}
+
+/** Normaliza um nome de icone custom pro mesmo formato usado na resolucao/cache. */
+export function normalizeCustomIconName(name: string): string {
+  return toKebabCase(name);
+}

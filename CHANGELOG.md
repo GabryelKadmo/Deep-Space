@@ -11,6 +11,7 @@ pt-BR, English, and Spanish translations.
 
 - Clicking a workspace's icon in the sidebar now opens the icon picker directly, matching the existing behavior for folder icons. Editing the icon no longer requires opening the full workspace dialog.
 - Five new icons: Landing Page, Flower, Building, Person, and the Deep Space kraken mark itself.
+- Settings has a new "Custom icons" section: add any icon from the Lucide library by name (search lucide.dev, paste the name) and it becomes selectable everywhere workspace and folder icons are picked.
 
 ### Changed
 
