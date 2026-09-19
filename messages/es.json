@@ -1202,6 +1202,8 @@
   "roles.error_name_required": "Ingresa el nombre.",
   "roles.error_prompt_required": "Ingresa las instrucciones.",
   "usage.title": "Uso de providers",
+  "usage.scope_hint": "Muestra solo las cuentas registradas como Provider Profile — una cuenta iniciada por fuera (otro CLAUDE_CONFIG_DIR, por ejemplo) no aparece hasta que se registre.",
+  "usage.scope_hint_link": "Registrar en la Central de Providers",
   "usage.refresh": "Actualizar ahora",
   "usage.close": "Cerrar",
   "usage.no_windows": "Sin ventanas de uso reportadas.",
