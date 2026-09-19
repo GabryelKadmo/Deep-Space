@@ -16,7 +16,8 @@
   import { onMount } from 'svelte';
   import McpIcon from '../McpIcon.svelte';
   import { isLegacyEmojiIcon, WORKSPACE_ICONS } from '../workspace-icons.js';
-  import { customIconNames, ensureCustomIconsLoaded, getCustomIconComponent } from '../workspace-custom-icons.svelte.js';
+  import { customIconNames, ensureCustomIconsLoaded, getCustomIconNode } from '../workspace-custom-icons.svelte.js';
+  import DynamicLucideIcon from '../DynamicLucideIcon.svelte';
   import type { CodeIntelligenceMode, Workspace, WorkspaceRepositoryRoot } from '$lib/modules/agent-room/domain/types.js';
   import * as m from '$lib/paraglide/messages.js';
 
@@ -228,8 +229,8 @@
 
   const customIconOptions = $derived(
     customIconNames()
-      .map((name) => ({ name, component: getCustomIconComponent(name) }))
-      .filter((option): option is { name: string; component: NonNullable<typeof option.component> } => option.component !== null),
+      .map((name) => ({ name, iconNode: getCustomIconNode(name) }))
+      .filter((option): option is { name: string; iconNode: NonNullable<typeof option.iconNode> } => option.iconNode !== null),
   );
 
   async function loadWslAvailability(path = '') {
@@ -502,7 +503,6 @@
               </button>
             {/each}
             {#each customIconOptions as option (option.name)}
-              {@const OptionIcon = option.component}
               <button
                 type="button"
                 class={($formData.icon ?? null) === option.name
@@ -513,7 +513,7 @@
                 aria-label={option.name}
                 onclick={() => ($formData.icon = ($formData.icon ?? null) === option.name ? null : option.name)}
               >
-                <OptionIcon size={15} aria-hidden="true" />
+                <DynamicLucideIcon iconNode={option.iconNode} size={15} />
               </button>
             {/each}
           </div>

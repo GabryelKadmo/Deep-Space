@@ -59,14 +59,18 @@ export function isLegacyEmojiIcon(value: string | null | undefined): boolean {
 }
 
 /**
- * Todos os icones do pacote @lucide/svelte (a lista curada acima usa so uns
- * 30), carregados sob demanda por nome (kebab-case, o mesmo mostrado em
- * lucide.dev) — usado pelos icones "extras" que o usuario adiciona em
- * Configuracoes. import.meta.glob resolve os arquivos no build (funciona em
- * dev e produção); um import() dinamico com string simples nao resolveria
- * fora do dev server.
+ * Dados brutos (iconNode) de todo icone do pacote @lucide/svelte instalado
+ * (a lista curada acima usa so uns 30), gerados por
+ * scripts/generate-lucide-icon-data.mjs — usados pelos icones "extras" que
+ * o usuario adiciona em Configuracoes. Importar isso como um JSON so evita
+ * o bundler ter que compilar/gerar um chunk pra cada um dos ~1800
+ * componentes .svelte do pacote so pra permitir a busca por nome; import()
+ * dinamico por nome tambem so resolveria no dev server, nao no build de
+ * producao.
  */
-const dynamicLucideModules = import.meta.glob('/node_modules/@lucide/svelte/dist/icons/*.svelte');
+import lucideIconData from './lucide-icon-data.json';
+
+export type LucideIconNode = Array<[string, Record<string, string>]>;
 
 function toKebabCase(input: string): string {
   return input
@@ -76,22 +80,13 @@ function toKebabCase(input: string): string {
     .toLowerCase();
 }
 
-const dynamicIconResolutionCache = new Map<string, Promise<unknown>>();
-
-/** Resolve um nome de icone lucide arbitrario; null se o nome nao existir. */
-export function resolveDynamicLucideIcon(name: string): Promise<unknown> {
+/** iconNode de um icone lucide arbitrario pelo nome; null se o nome nao existir. */
+export function getLucideIconNode(name: string): LucideIconNode | null {
   const kebab = toKebabCase(name);
-  const cached = dynamicIconResolutionCache.get(kebab);
-  if (cached) return cached;
-  const loader = dynamicLucideModules[`/node_modules/@lucide/svelte/dist/icons/${kebab}.svelte`];
-  const promise = loader
-    ? loader().then((module) => (module as { default: unknown }).default)
-    : Promise.resolve(null);
-  dynamicIconResolutionCache.set(kebab, promise);
-  return promise;
+  return (lucideIconData as Record<string, LucideIconNode>)[kebab] ?? null;
 }
 
-/** Normaliza um nome de icone custom pro mesmo formato usado na resolucao/cache. */
+/** Normaliza um nome de icone custom pro mesmo formato usado na busca acima. */
 export function normalizeCustomIconName(name: string): string {
   return toKebabCase(name);
 }

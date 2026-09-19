@@ -53,7 +53,8 @@
   import WorkspaceSharingDialog from '$lib/components/collaboration/WorkspaceSharingDialog.svelte';
   import WorkspaceIcon from '$lib/components/agent-room/WorkspaceIcon.svelte';
   import { WORKSPACE_ICONS } from '$lib/components/agent-room/workspace-icons.js';
-  import { customIconNames, ensureCustomIconsLoaded, getCustomIconComponent } from '$lib/components/agent-room/workspace-custom-icons.svelte.js';
+  import { customIconNames, ensureCustomIconsLoaded, getCustomIconNode } from '$lib/components/agent-room/workspace-custom-icons.svelte.js';
+  import DynamicLucideIcon from '$lib/components/agent-room/DynamicLucideIcon.svelte';
   import * as Popover from '$lib/components/ui/popover';
   import WorkspaceModeSwitch from '$lib/components/agent-room/WorkspaceModeSwitch.svelte';
   import { setActiveWorkspaceId } from '$lib/components/agent-room/active-workspace.svelte.js';
@@ -302,8 +303,8 @@
   /** Icones extras (Lucide, adicionados em Configuracoes) pra somar aos seletores. */
   const customIconOptions = $derived(
     customIconNames()
-      .map((name) => ({ name, component: getCustomIconComponent(name) }))
-      .filter((option): option is { name: string; component: NonNullable<typeof option.component> } => option.component !== null),
+      .map((name) => ({ name, iconNode: getCustomIconNode(name) }))
+      .filter((option): option is { name: string; iconNode: NonNullable<typeof option.iconNode> } => option.iconNode !== null),
   );
 
   function workspaceGroupErrorText(error: unknown): string {
@@ -2944,7 +2945,6 @@
               </button>
             {/each}
             {#each customIconOptions as option (option.name)}
-              {@const OptionIcon = option.component}
               <button
                 type="button"
                 class={(workspace.icon ?? null) === option.name
@@ -2955,7 +2955,7 @@
                 aria-label={option.name}
                 onclick={() => setWorkspaceIcon(workspace.id, (workspace.icon ?? null) === option.name ? null : option.name)}
               >
-                <OptionIcon size={14} aria-hidden="true" />
+                <DynamicLucideIcon iconNode={option.iconNode} size={14} />
               </button>
             {/each}
           </div>
@@ -3020,7 +3020,6 @@
                 </button>
               {/each}
               {#each customIconOptions as option (option.name)}
-                {@const OptionIcon = option.component}
                 <button
                   type="button"
                   class={(node.group.icon ?? null) === option.name
@@ -3031,7 +3030,7 @@
                   aria-label={option.name}
                   onclick={() => setGroupIcon(node.group.id, (node.group.icon ?? null) === option.name ? null : option.name)}
                 >
-                  <OptionIcon size={14} aria-hidden="true" />
+                  <DynamicLucideIcon iconNode={option.iconNode} size={14} />
                 </button>
               {/each}
             </div>

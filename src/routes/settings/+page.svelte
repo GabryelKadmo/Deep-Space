@@ -16,7 +16,8 @@
   import { normalizeTerminalTheme, TERMINAL_THEMES, TERMINAL_THEME_ORDER } from '$lib/components/agent-room/terminal-themes.js';
   import { DEFAULT_DICTATION_HOTKEY, comboFromEvent, comboLabel } from '$lib/components/agent-room/dictation-hotkey.js';
   import { appSettingsStore, getAppSettings, invalidateAppSettings } from '$lib/components/agent-room/app-settings.svelte.js';
-  import { addCustomIcon, customIconNames, ensureCustomIconsLoaded, getCustomIconComponent, removeCustomIcon } from '$lib/components/agent-room/workspace-custom-icons.svelte.js';
+  import { addCustomIcon, customIconNames, ensureCustomIconsLoaded, getCustomIconNode, removeCustomIcon } from '$lib/components/agent-room/workspace-custom-icons.svelte.js';
+  import DynamicLucideIcon from '$lib/components/agent-room/DynamicLucideIcon.svelte';
   import VoiceConfirmDialog from '$lib/components/agent-room/VoiceConfirmDialog.svelte';
   import {
     DEFAULT_EMBEDDED_TTS_SPEED,
@@ -235,8 +236,8 @@
   let customIconDraft = $state('');
   const customIconOptions = $derived(
     customIconNames()
-      .map((name) => ({ name, component: getCustomIconComponent(name) }))
-      .filter((option): option is { name: string; component: NonNullable<typeof option.component> } => option.component !== null),
+      .map((name) => ({ name, iconNode: getCustomIconNode(name) }))
+      .filter((option): option is { name: string; iconNode: NonNullable<typeof option.iconNode> } => option.iconNode !== null),
   );
 
   async function submitCustomIcon() {
@@ -983,9 +984,8 @@
     {:else}
       <ul class="preset-list">
         {#each customIconOptions as option (option.name)}
-          {@const OptionIcon = option.component}
           <li class="preset-row">
-            <span class="preset-icon"><OptionIcon size={14} /></span>
+            <span class="preset-icon"><DynamicLucideIcon iconNode={option.iconNode} size={14} /></span>
             <span class="preset-name">{option.name}</span>
             <button class="preset-action danger" aria-label={m['settings.custom_icon_remove_named']({ name: option.name })} onclick={() => removeCustomIcon(option.name)}>
               <Trash2 size={12} />
