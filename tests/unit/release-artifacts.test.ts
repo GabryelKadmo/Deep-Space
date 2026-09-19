@@ -112,6 +112,8 @@ describe('release artifact validation', () => {
     expect(workflow.jobs.publish.if).toBe(
       "always() && (github.event_name != 'workflow_dispatch' || !inputs.build_only) && needs.validate.result == 'success' && needs.build-windows.result == 'success' && needs.build-linux.result == 'success'",
     );
+    expect(workflow.jobs['build-macos'].if).toBe("needs.validate.outputs.mac_signing_configured == 'true'");
+    expect(workflow.jobs.validate.outputs.mac_signing_configured).toBe('${{ steps.mac-secrets.outputs.configured }}');
     const script = workflow.jobs.validate.steps.find((step: { id?: string }) => step.id === 'release').run;
     const directory = mkdtempSync(path.join(tmpdir(), 'deepspace-release-source-'));
     temporaryDirectories.push(directory);

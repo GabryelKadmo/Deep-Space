@@ -69,10 +69,13 @@ arquivos referenciados, tamanho e SHA-512 dos manifests `latest-mac.yml`,
 preparados e validados antes da publicação; a partir da `0.1.5`, somente o
 repositório principal recebe releases novas.
 
-O job `publish` não exige mais que `build-macos` tenha sucesso: sem os cinco
-secrets de assinatura (ver Assinatura abaixo), esse job falha de propósito e
-não sobe nenhum artefato, mas Windows e Linux publicam normalmente sozinhos.
-`validate-release-artifacts.mjs` trata os arquivos de macOS como opcionais —
+O job `publish` não exige mais que `build-macos` tenha sucesso, e o job
+`validate` verifica antes se os cinco secrets de assinatura (ver Assinatura
+abaixo) estão configurados: se algum faltar, `build-macos` nem chega a rodar
+(pula direto, sem gastar os ~25min de build só pra falhar no fim), e Windows e
+Linux publicam normalmente sozinhos. Com os cinco presentes, o job roda e
+assina normalmente. `validate-release-artifacts.mjs` trata os arquivos de
+macOS como opcionais —
 se `latest-mac.yml` não existir no diretório baixado, a validação pula
 inteiramente os requisitos de macOS em vez de falhar a release inteira.
 
