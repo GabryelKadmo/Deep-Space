@@ -1202,6 +1202,8 @@
   "roles.error_name_required": "Enter a name.",
   "roles.error_prompt_required": "Enter the instructions.",
   "usage.title": "Provider usage",
+  "usage.scope_hint": "Shows only accounts registered as a Provider Profile — an account logged in elsewhere (a different CLAUDE_CONFIG_DIR, for example) won't show up until it's registered.",
+  "usage.scope_hint_link": "Register in Provider Center",
   "usage.refresh": "Refresh now",
   "usage.close": "Close",
   "usage.no_windows": "No usage windows reported.",
