@@ -950,7 +950,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     "Clicar no ícone de um workspace na barra lateral agora abre o seletor de ícone direto, o mesmo atalho que as pastas já tinham — não precisa mais abrir o diálogo inteiro do workspace só pra trocar o ícone.",
     "Cinco ícones novos: Landing Page, Flor, Prédio, Pessoa e a própria kraken do Deep Space.",
     "Pastas de topo (tipo \"Pessoal\" ou \"Work\") agora aparecem com o nome um pouco maior e mais forte que subpastas e workspaces aninhados, pra árvore da barra lateral ficar com hierarquia mais clara.",
-    "Configurações ganhou uma seção \"Ícones extras\": adicione qualquer ícone da biblioteca Lucide pelo nome — pesquise em lucide.dev, cole o nome — e ele aparece em todo seletor de ícone de workspace e pasta."
+    "Configurações ganhou uma seção \"Ícones extras\": adicione qualquer ícone da biblioteca Lucide pelo nome — pesquise em lucide.dev, cole o nome — e ele aparece em todo seletor de ícone de workspace e pasta.",
+    "O botão de copiar do comando de instalação na Central de Providers ficava colado na borda direita do bloco, sem respiro, com um fundo que destoava do código. Agora tem espaço, fica centralizado e só se destaca no hover."
   ]
 },
 {

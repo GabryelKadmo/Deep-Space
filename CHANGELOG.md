@@ -17,6 +17,10 @@ pt-BR, English, and Spanish translations.
 
 - Top-level workspace folders (e.g. "Personal", "Work") now render with a slightly larger, bolder name than nested subfolders and workspaces, so the sidebar tree reads with a clearer hierarchy.
 
+### Fixed
+
+- Provider Center's copy button for the CLI install command sat flush against the block's right edge with no padding, and its background didn't match the code block behind it. It now has breathing room, sits centered, and blends with the block outside hover.
+
 ## 0.31.1 - 2026-09-18
 
 ### Fixed
