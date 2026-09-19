@@ -13,6 +13,8 @@ pt-BR, English, and Spanish translations.
 - Five new icons: Landing Page, Flower, Building, Person, and the Deep Space kraken mark itself.
 - Settings has a new "Custom icons" section: add any icon from the Lucide library by name (search lucide.dev, paste the name) and it becomes selectable everywhere workspace and folder icons are picked.
 - The canvas zoom controls now show the current zoom percentage. Clicking it, or pressing Ctrl/Cmd+0, resets the zoom to 100%.
+- Kanban cards can now open a full detail view (an expand button on each card): full title, rendered markdown description with a clickable checklist, larger reference images, attachments, and column/assignee/linked-note editing, with Previous/Next navigation between cards in the same column.
+- Settings now guards against losing unsaved changes: trying to leave the page with edits pending shows a Save/Discard/Keep editing dialog, closing or reloading the window shows the browser's own unsaved-changes prompt, and Ctrl/Cmd+S saves immediately.
 
 ### Changed
 

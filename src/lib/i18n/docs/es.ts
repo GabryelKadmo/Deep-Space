@@ -950,7 +950,9 @@ Header: Authorization = Bearer {{accessToken}}`,
     "El botón de copiar del comando de instalación en la Central de Providers quedaba pegado al borde derecho del bloque, sin espacio, con un fondo que no combinaba con el código. Ahora tiene espacio, queda centrado y solo se destaca al pasar el mouse.",
     "El minimapa y los controles de zoom del canvas podían quedar escondidos detrás de un nodo o panel colocado sobre su esquina. Ahora los dos se muestran siempre por encima de cualquier nodo.",
     "Los controles de zoom del canvas ahora muestran el porcentaje de zoom actual. Hacer clic en él, o presionar Ctrl/Cmd+0, restablece el zoom al 100%.",
-    "El panel de Usage ahora explica que solo lista cuentas registradas como Provider Profile, con un enlace directo a la Central de Providers para registrar una. Una cuenta iniciada con un CLAUDE_CONFIG_DIR distinto quedaba invisible sin ninguna explicación."
+    "El panel de Usage ahora explica que solo lista cuentas registradas como Provider Profile, con un enlace directo a la Central de Providers para registrar una. Una cuenta iniciada con un CLAUDE_CONFIG_DIR distinto quedaba invisible sin ninguna explicación.",
+    "El botón de expandir de cada tarjeta del kanban abre un detalle amplio — título completo, descripción en markdown renderizada con checklist clicable, imágenes en tamaño legible, adjuntos y edición directa de responsable, columna y nota vinculada — con Anterior/Siguiente para navegar entre las tarjetas de la misma columna sin cerrarlo.",
+    "Configuración ahora protege contra la pérdida de cambios sin guardar: intentar salir de la página con ediciones pendientes muestra un diálogo Guardar/Descartar/Seguir editando, cerrar o recargar la ventana muestra el aviso nativo del navegador, y Ctrl/Cmd+S guarda al instante."
   ]
 },
 {

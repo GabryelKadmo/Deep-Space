@@ -950,7 +950,9 @@ Header: Authorization = Bearer {{accessToken}}`,
     "The copy button on the install command in Provider Center sat flush against the block's right edge with no padding, and its background clashed with the code behind it. It now has breathing room, sits centered, and only stands out on hover.",
     "The canvas minimap and zoom controls could end up hidden behind a node or panel positioned over their corner. Both now always render above every node.",
     "The canvas zoom controls now show the current zoom percentage. Clicking it, or pressing Ctrl/Cmd+0, resets the zoom to 100%.",
-    "The Usage panel now explains that it only lists accounts registered as a Provider Profile, with a direct link to Provider Center to register one. An account logged in through a different CLAUDE_CONFIG_DIR used to be invisible with no explanation."
+    "The Usage panel now explains that it only lists accounts registered as a Provider Profile, with a direct link to Provider Center to register one. An account logged in through a different CLAUDE_CONFIG_DIR used to be invisible with no explanation.",
+    "Each kanban card's expand button opens a full detail view — complete title, rendered markdown description with a clickable checklist, full-size images, attachments, and direct editing of assignee, column, and linked note — with Previous/Next to move between cards in the same column without closing it.",
+    "Settings now guards against losing unsaved changes: trying to leave the page with edits pending shows a Save/Discard/Keep editing dialog, closing or reloading the window shows the browser's own unsaved-changes prompt, and Ctrl/Cmd+S saves immediately."
   ]
 },
 {
