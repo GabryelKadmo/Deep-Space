@@ -20,6 +20,7 @@ pt-BR, English, and Spanish translations.
 ### Fixed
 
 - Provider Center's copy button for the CLI install command sat flush against the block's right edge with no padding, and its background didn't match the code block behind it. It now has breathing room, sits centered, and blends with the block outside hover.
+- The canvas minimap and zoom controls had no explicit stacking order, so a node or panel positioned over their corner could render on top of them. Both now stay above every node, like the edge-removal control already did.
 
 ## 0.31.1 - 2026-09-18
 

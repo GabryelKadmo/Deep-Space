@@ -951,7 +951,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     "Cinco ícones novos: Landing Page, Flor, Prédio, Pessoa e a própria kraken do Deep Space.",
     "Pastas de topo (tipo \"Pessoal\" ou \"Work\") agora aparecem com o nome um pouco maior e mais forte que subpastas e workspaces aninhados, pra árvore da barra lateral ficar com hierarquia mais clara.",
     "Configurações ganhou uma seção \"Ícones extras\": adicione qualquer ícone da biblioteca Lucide pelo nome — pesquise em lucide.dev, cole o nome — e ele aparece em todo seletor de ícone de workspace e pasta.",
-    "O botão de copiar do comando de instalação na Central de Providers ficava colado na borda direita do bloco, sem respiro, com um fundo que destoava do código. Agora tem espaço, fica centralizado e só se destaca no hover."
+    "O botão de copiar do comando de instalação na Central de Providers ficava colado na borda direita do bloco, sem respiro, com um fundo que destoava do código. Agora tem espaço, fica centralizado e só se destaca no hover.",
+    "O minimapa e os controles de zoom do canvas podiam ficar escondidos atrás de um nó ou painel posicionado por cima deles. Agora os dois ficam sempre acima de qualquer nó."
   ]
 },
 {
