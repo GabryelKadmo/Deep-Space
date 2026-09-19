@@ -276,6 +276,26 @@
     }
   }
 
+  /** Mesmo padrao otimista de setGroupIcon, para o icone de um workspace. */
+  async function setWorkspaceIcon(workspaceId: string, icon: string | null) {
+    const previous = workspaces.find((workspace) => workspace.id === workspaceId)?.icon ?? null;
+    if (previous === icon) return;
+    workspaces = workspaces.map((workspace) => (workspace.id === workspaceId ? { ...workspace, icon } : workspace));
+    writeWorkspaceListCache(workspaces);
+    if (activeWorkspace?.id === workspaceId) activeWorkspace = { ...activeWorkspace, icon };
+    try {
+      await api<Workspace>(`/api/agent-room/workspaces/${workspaceId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ icon }),
+      });
+    } catch (error) {
+      workspaces = workspaces.map((workspace) => (workspace.id === workspaceId ? { ...workspace, icon: previous } : workspace));
+      writeWorkspaceListCache(workspaces);
+      if (activeWorkspace?.id === workspaceId) activeWorkspace = { ...activeWorkspace, icon: previous };
+      toast.error(m['dlg.ws_save_error']());
+    }
+  }
+
   function workspaceGroupErrorText(error: unknown): string {
     const code = error instanceof Error ? error.message : '';
     switch (code) {
@@ -2858,7 +2878,7 @@
           {/if}
         {:else}
           {#each workspaceTree.roots as node (node.group.id)}
-            {@render workspaceGroupNode(node)}
+            {@render workspaceGroupNode(node, 0)}
           {/each}
           {#each workspaceTree.rootWorkspaces as workspace (workspace.id)}
             {@render workspaceListItem(workspace)}
@@ -2892,10 +2912,31 @@
       ondragstart={(event) => handleDragStartWorkspace(event, workspace)}
       ondragend={handleDragEnd}
     >
-      <button class="workspace-item" onclick={() => selectWorkspace(workspace.id)}>
-        <span class="workspace-icon">
+      <Popover.Root>
+        <Popover.Trigger class="workspace-icon-trigger" aria-label={m['canvas.folder_icon']()}>
           <WorkspaceIcon name={workspace.icon} size={14} />
-        </span>
+        </Popover.Trigger>
+        <Popover.Content class="w-56 p-2" align="start">
+          <div class="grid grid-cols-6 gap-1" role="radiogroup" aria-label={m['canvas.folder_icon']()}>
+            {#each WORKSPACE_ICONS as option (option.name)}
+              {@const OptionIcon = option.component}
+              <button
+                type="button"
+                class={(workspace.icon ?? null) === option.name
+                  ? 'flex aspect-square items-center justify-center rounded-lg border border-[var(--app-accent)] bg-[var(--app-accent)] text-[var(--app-accent-contrast)] transition-[color,background-color,border-color] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
+                  : 'flex aspect-square items-center justify-center rounded-lg border border-[var(--app-border)] bg-transparent text-[var(--app-text-muted)] transition-[color,background-color,border-color] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'}
+                role="radio"
+                aria-checked={(workspace.icon ?? null) === option.name}
+                aria-label={option.name}
+                onclick={() => setWorkspaceIcon(workspace.id, (workspace.icon ?? null) === option.name ? null : option.name)}
+              >
+                <OptionIcon size={14} aria-hidden="true" />
+              </button>
+            {/each}
+          </div>
+        </Popover.Content>
+      </Popover.Root>
+      <button class="workspace-item" onclick={() => selectWorkspace(workspace.id)}>
         <span class="workspace-name">{workspace.name}</span>
         {#if workspace.suspendedAt}
           <Power size={11} class="text-[var(--app-text-muted)]" aria-label={m['canvas.ws_suspended']({ name: workspace.name })} />
@@ -2912,7 +2953,7 @@
     </li>
   {/snippet}
 
-  {#snippet workspaceGroupNode(node: WorkspaceGroupNode)}
+  {#snippet workspaceGroupNode(node: WorkspaceGroupNode, depth: number)}
     <li class="ws-group" class:drag-over={dragOverGroupId === node.group.id}>
       <div
         class="ws-group-header"
@@ -2970,6 +3011,7 @@
         {:else}
           <span
             class="ws-group-name"
+            class:ws-group-name-root={depth === 0}
             role="button"
             tabindex="0"
             ondblclick={() => startRenameGroup(node.group)}
@@ -3012,7 +3054,7 @@
             </li>
           {/if}
           {#each node.children as child (child.group.id)}
-            {@render workspaceGroupNode(child)}
+            {@render workspaceGroupNode(child, depth + 1)}
           {/each}
           {#each node.workspaces as workspace (workspace.id)}
             {@render workspaceListItem(workspace)}
@@ -3675,6 +3717,13 @@
     color: var(--app-text);
   }
 
+  /* Pastas de topo (ex.: "Personal", "Work") ficam um pouco maiores pra dar
+     hierarquia visual em relacao a subpastas e workspaces aninhados. */
+  .ws-group-name-root {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
   .ws-group-rename {
     flex: 1;
     min-width: 0;
@@ -3773,7 +3822,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 7px 8px;
+    padding: 7px 8px 7px 2px;
     border: none;
     background: transparent;
     color: inherit;
@@ -3788,6 +3837,28 @@
     color: var(--app-text-muted);
     flex-shrink: 0;
     position: relative;
+  }
+
+  /* Mesmo tratamento do .ws-group-icon-trigger: clicar no icone de um
+     workspace abre o seletor direto, sem precisar do lapis (editar). */
+  .canvas-page :global(.workspace-icon-trigger) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-left: 4px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--app-text-muted);
+    cursor: pointer;
+  }
+
+  .canvas-page :global(.workspace-icon-trigger:hover) {
+    background: var(--app-surface-raised);
+    color: var(--app-text);
   }
 
   /* Bolinha verde = workspace com sessoes vivas em background. */

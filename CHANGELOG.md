@@ -5,6 +5,17 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.32.0 - 2026-09-19
+
+### Added
+
+- Clicking a workspace's icon in the sidebar now opens the icon picker directly, matching the existing behavior for folder icons. Editing the icon no longer requires opening the full workspace dialog.
+- Five new icons: Landing Page, Flower, Building, Person, and the Deep Space kraken mark itself.
+
+### Changed
+
+- Top-level workspace folders (e.g. "Personal", "Work") now render with a slightly larger, bolder name than nested subfolders and workspaces, so the sidebar tree reads with a clearer hierarchy.
+
 ## 0.31.1 - 2026-09-18
 
 ### Fixed

@@ -1,7 +1,9 @@
 import {
-  Bot, Boxes, Briefcase, Cloud, CodeXml, Coffee, Cpu, Database, Flame, Folder, Gamepad2, Gem,
-  Globe, Heart, Home, Leaf, Music, Palette, Plane, Rocket, Shield, ShoppingBag, Star, Wrench, Zap,
+  Bot, Boxes, Briefcase, Building2, Cloud, CodeXml, Coffee, Cpu, Database, Flame, Flower2, Folder,
+  Gamepad2, Gem, Globe, Heart, Home, LayoutTemplate, Leaf, Music, Palette, Plane, Rocket, Shield,
+  ShoppingBag, Star, UserRound, Wrench, Zap,
 } from '@lucide/svelte';
+import KrakenIcon from './KrakenIcon.svelte';
 
 /**
  * Icones de workspace (lucide). O campo Workspace.icon guarda o NOME do icone
@@ -34,6 +36,11 @@ export const WORKSPACE_ICONS = [
   { name: 'shopping', component: ShoppingBag },
   { name: 'wrench', component: Wrench },
   { name: 'boxes', component: Boxes },
+  { name: 'landing', component: LayoutTemplate },
+  { name: 'flower', component: Flower2 },
+  { name: 'building', component: Building2 },
+  { name: 'user', component: UserRound },
+  { name: 'kraken', component: KrakenIcon },
 ] as const;
 
 export type WorkspaceIconName = (typeof WORKSPACE_ICONS)[number]['name'];
