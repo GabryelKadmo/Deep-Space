@@ -36,8 +36,12 @@ const runtimeRoot = app.isPackaged ? appRoot.replace('app.asar', 'app.asar.unpac
 // Sem AppUserModelId o Windows agrupa a janela pela identidade do executavel e
 // ignora o icone da BrowserWindow: a barra de tarefas mostrava o icone do
 // Electron em vez da marca. Tambem e requisito para notificacoes nativas.
+// Hardcoded (nao lido de package.json.build): electron-builder remove o campo
+// "build" do package.json empacotado, entao esse acesso quebra em producao
+// com "Cannot read properties of undefined (reading 'appId')". Deve
+// permanecer igual a build.appId em package.json.
 if (process.platform === 'win32') {
-  app.setAppUserModelId(require('../package.json').build.appId);
+  app.setAppUserModelId('com.deepspace.desktop');
 }
 
 let serverProcess = null;

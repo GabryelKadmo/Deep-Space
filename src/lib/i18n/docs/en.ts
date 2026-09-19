@@ -939,6 +939,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "September 18, 2026 · 0.31.1",
+  "title": "Deep Space 0.31.1: fix a Windows launch crash",
+  "summary": "The app no longer crashes on startup on Windows",
+  "items": [
+    "On Windows, Deep Space failed with a JavaScript error before the window ever appeared, because a startup check relied on data that the packager strips from the installed application. It now starts normally."
+  ]
+},
+{
   "date": "September 13, 2026 · 0.31.0",
   "title": "Deep Space 0.31.0: a new identity",
   "summary": "The application is now called Deep Space",

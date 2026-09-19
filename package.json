@@ -1,6 +1,6 @@
 {
   "name": "deep-space",
-  "version": "0.31.0",
+  "version": "0.31.1",
   "description": "Deep Space — Desenvolvimento com IA em outra profundidade",
   "private": true,
   "license": "Apache-2.0",
@@ -315,7 +315,10 @@
     },
     "rpm": {
       "artifactName": "DeepSpace-${version}.${arch}.${ext}",
-      "fpm": ["--rpm-rpmbuild-define", "_build_id_links none"],
+      "fpm": [
+        "--rpm-rpmbuild-define",
+        "_build_id_links none"
+      ],
       "depends": [
         "gtk3",
         "libnotify",

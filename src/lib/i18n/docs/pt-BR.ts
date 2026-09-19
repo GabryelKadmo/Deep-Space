@@ -943,6 +943,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "18 de setembro de 2026 · 0.31.1",
+  "title": "Deep Space 0.31.1: corrige a abertura no Windows",
+  "summary": "O app deixou de travar ao abrir no Windows",
+  "items": [
+    "No Windows, o Deep Space falhava com um erro de JavaScript antes mesmo de a janela aparecer, porque uma verificação de inicialização dependia de um dado que não existe mais no aplicativo instalado (removido pelo próprio empacotador). Agora abre normalmente."
+  ]
+},
+{
   "date": "13 de setembro de 2026 · 0.31.0",
   "title": "Deep Space 0.31.0: nova identidade",
   "summary": "O aplicativo passa a se chamar Deep Space",
