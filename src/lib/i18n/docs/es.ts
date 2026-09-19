@@ -939,6 +939,17 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "19 de septiembre de 2026 · 0.32.0",
+  "title": "Deep Space 0.32.0: iconos de workspace más rápidos, jerarquía de carpetas más clara",
+  "summary": "Haz clic en el icono del workspace para cambiarlo, cinco iconos nuevos y carpetas raíz destacadas",
+  "items": [
+    "Hacer clic en el icono de un workspace en la barra lateral ahora abre el selector de iconos directamente, el mismo atajo que ya tenían las carpetas — ya no hace falta abrir el diálogo completo del workspace solo para cambiar el icono.",
+    "Cinco iconos nuevos: Landing Page, Flor, Edificio, Persona y la propia kraken de Deep Space.",
+    "Las carpetas raíz (como \"Personal\" o \"Work\") ahora se muestran con un nombre un poco más grande y en negrita que las subcarpetas y workspaces anidados, para que el árbol de la barra lateral tenga una jerarquía más clara.",
+    "Configuración tiene una nueva sección \"Iconos personalizados\": agrega cualquier icono de la biblioteca Lucide por nombre — busca en lucide.dev, pega el nombre — y aparece en todos los selectores de icono de workspace y carpeta."
+  ]
+},
+{
   "date": "18 de septiembre de 2026 · 0.31.1",
   "title": "Deep Space 0.31.1: corrige el arranque en Windows",
   "summary": "La app dejó de fallar al abrir en Windows",

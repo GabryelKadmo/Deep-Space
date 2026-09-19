@@ -16,6 +16,8 @@
   import { onMount } from 'svelte';
   import McpIcon from '../McpIcon.svelte';
   import { isLegacyEmojiIcon, WORKSPACE_ICONS } from '../workspace-icons.js';
+  import { customIconNames, ensureCustomIconsLoaded, getCustomIconNode } from '../workspace-custom-icons.svelte.js';
+  import DynamicLucideIcon from '../DynamicLucideIcon.svelte';
   import type { CodeIntelligenceMode, Workspace, WorkspaceRepositoryRoot } from '$lib/modules/agent-room/domain/types.js';
   import * as m from '$lib/paraglide/messages.js';
 
@@ -222,7 +224,14 @@
   onMount(() => {
     void loadMcps();
     void loadWslAvailability(workspace.workingDir);
+    void ensureCustomIconsLoaded();
   });
+
+  const customIconOptions = $derived(
+    customIconNames()
+      .map((name) => ({ name, iconNode: getCustomIconNode(name) }))
+      .filter((option): option is { name: string; iconNode: NonNullable<typeof option.iconNode> } => option.iconNode !== null),
+  );
 
   async function loadWslAvailability(path = '') {
     try {
@@ -491,6 +500,20 @@
                 onclick={() => ($formData.icon = ($formData.icon ?? null) === option.name ? null : option.name)}
               >
                 <OptionIcon size={15} aria-hidden="true" />
+              </button>
+            {/each}
+            {#each customIconOptions as option (option.name)}
+              <button
+                type="button"
+                class={($formData.icon ?? null) === option.name
+                  ? 'flex aspect-square items-center justify-center rounded-lg border border-[var(--app-accent)] bg-[var(--app-accent)] text-[var(--app-accent-contrast)] transition-[color,background-color,border-color] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
+                  : 'flex aspect-square items-center justify-center rounded-lg border border-[var(--app-border)] bg-transparent text-[var(--app-text-muted)] transition-[color,background-color,border-color] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'}
+                role="radio"
+                aria-checked={($formData.icon ?? null) === option.name}
+                aria-label={option.name}
+                onclick={() => ($formData.icon = ($formData.icon ?? null) === option.name ? null : option.name)}
+              >
+                <DynamicLucideIcon iconNode={option.iconNode} size={15} />
               </button>
             {/each}
           </div>
