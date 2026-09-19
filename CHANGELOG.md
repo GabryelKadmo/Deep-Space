@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.31.1 - 2026-09-18
+
+### Fixed
+
+- The packaged Windows build crashed immediately on launch with `Cannot read properties of undefined (reading 'appId')`. `electron-builder` strips the `build` section from the installed app's `package.json`, and the AppUserModelId setup read `build.appId` from it at runtime — a call that only ever worked in dev, where the source `package.json` still has that field. The value is now a hardcoded constant.
+
 ## 0.31.0 - 2026-09-14
 
 ### Changed
