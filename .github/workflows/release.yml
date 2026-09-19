@@ -39,6 +39,7 @@ jobs:
       tag: ${{ steps.release.outputs.tag }}
       version: ${{ steps.release.outputs.version }}
       source_sha: ${{ steps.release.outputs.source_sha }}
+      mac_signing_configured: ${{ steps.mac-secrets.outputs.configured }}
     steps:
       - name: Checkout tagged source
         uses: actions/checkout@v7
@@ -111,9 +112,28 @@ jobs:
           echo "::error::Timed out waiting for CI on tagged commit $SHA"
           exit 1
 
+      - name: Check macOS signing secrets
+        id: mac-secrets
+        env:
+          MAC_CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          MAC_CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "$MAC_CSC_LINK" && -n "$MAC_CSC_KEY_PASSWORD" && -n "$APPLE_ID" && -n "$APPLE_APP_SPECIFIC_PASSWORD" && -n "$APPLE_TEAM_ID" ]]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::macOS signing secrets are not configured; skipping the macOS build for this release."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+
   build-macos:
     name: Build macOS (Apple Silicon + Intel)
     needs: validate
+    if: needs.validate.outputs.mac_signing_configured == 'true'
     runs-on: macos-15
     steps:
       - name: Checkout tagged source
