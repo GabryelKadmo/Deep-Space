@@ -340,6 +340,7 @@
   "canvas.palette_tidy": "Organizar em grade",
   "canvas.palette_group": "Agrupar seleção",
   "canvas.palette_zoom_sel": "Zoom para a seleção",
+  "canvas.zoom_reset": "Restaurar zoom para 100% (Ctrl/Cmd+0)",
   "canvas.hint_action": "ação",
   "canvas.hint_view": "view",
   "canvas.hint_selection": "seleção",
