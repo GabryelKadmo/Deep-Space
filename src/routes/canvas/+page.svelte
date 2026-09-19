@@ -53,6 +53,8 @@
   import WorkspaceSharingDialog from '$lib/components/collaboration/WorkspaceSharingDialog.svelte';
   import WorkspaceIcon from '$lib/components/agent-room/WorkspaceIcon.svelte';
   import { WORKSPACE_ICONS } from '$lib/components/agent-room/workspace-icons.js';
+  import { customIconNames, ensureCustomIconsLoaded, getCustomIconNode } from '$lib/components/agent-room/workspace-custom-icons.svelte.js';
+  import DynamicLucideIcon from '$lib/components/agent-room/DynamicLucideIcon.svelte';
   import * as Popover from '$lib/components/ui/popover';
   import WorkspaceModeSwitch from '$lib/components/agent-room/WorkspaceModeSwitch.svelte';
   import { setActiveWorkspaceId } from '$lib/components/agent-room/active-workspace.svelte.js';
@@ -295,6 +297,15 @@
       toast.error(m['dlg.ws_save_error']());
     }
   }
+
+  onMount(() => void ensureCustomIconsLoaded());
+
+  /** Icones extras (Lucide, adicionados em Configuracoes) pra somar aos seletores. */
+  const customIconOptions = $derived(
+    customIconNames()
+      .map((name) => ({ name, iconNode: getCustomIconNode(name) }))
+      .filter((option): option is { name: string; iconNode: NonNullable<typeof option.iconNode> } => option.iconNode !== null),
+  );
 
   function workspaceGroupErrorText(error: unknown): string {
     const code = error instanceof Error ? error.message : '';
@@ -2933,6 +2944,20 @@
                 <OptionIcon size={14} aria-hidden="true" />
               </button>
             {/each}
+            {#each customIconOptions as option (option.name)}
+              <button
+                type="button"
+                class={(workspace.icon ?? null) === option.name
+                  ? 'flex aspect-square items-center justify-center rounded-lg border border-[var(--app-accent)] bg-[var(--app-accent)] text-[var(--app-accent-contrast)] transition-[color,background-color,border-color] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
+                  : 'flex aspect-square items-center justify-center rounded-lg border border-[var(--app-border)] bg-transparent text-[var(--app-text-muted)] transition-[color,background-color,border-color] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'}
+                role="radio"
+                aria-checked={(workspace.icon ?? null) === option.name}
+                aria-label={option.name}
+                onclick={() => setWorkspaceIcon(workspace.id, (workspace.icon ?? null) === option.name ? null : option.name)}
+              >
+                <DynamicLucideIcon iconNode={option.iconNode} size={14} />
+              </button>
+            {/each}
           </div>
         </Popover.Content>
       </Popover.Root>
@@ -2992,6 +3017,20 @@
                   onclick={() => setGroupIcon(node.group.id, (node.group.icon ?? null) === option.name ? null : option.name)}
                 >
                   <OptionIcon size={14} aria-hidden="true" />
+                </button>
+              {/each}
+              {#each customIconOptions as option (option.name)}
+                <button
+                  type="button"
+                  class={(node.group.icon ?? null) === option.name
+                    ? 'flex aspect-square items-center justify-center rounded-lg border border-[var(--app-accent)] bg-[var(--app-accent)] text-[var(--app-accent-contrast)] transition-[color,background-color,border-color] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
+                    : 'flex aspect-square items-center justify-center rounded-lg border border-[var(--app-border)] bg-transparent text-[var(--app-text-muted)] transition-[color,background-color,border-color] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'}
+                  role="radio"
+                  aria-checked={(node.group.icon ?? null) === option.name}
+                  aria-label={option.name}
+                  onclick={() => setGroupIcon(node.group.id, (node.group.icon ?? null) === option.name ? null : option.name)}
+                >
+                  <DynamicLucideIcon iconNode={option.iconNode} size={14} />
                 </button>
               {/each}
             </div>

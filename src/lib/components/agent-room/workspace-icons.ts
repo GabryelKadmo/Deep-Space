@@ -57,3 +57,36 @@ export function workspaceIconComponent(name: string | null | undefined) {
 export function isLegacyEmojiIcon(value: string | null | undefined): boolean {
   return Boolean(value) && !BY_NAME.has(value as WorkspaceIconName);
 }
+
+/**
+ * Dados brutos (iconNode) de todo icone do pacote @lucide/svelte instalado
+ * (a lista curada acima usa so uns 30), gerados por
+ * scripts/generate-lucide-icon-data.mjs — usados pelos icones "extras" que
+ * o usuario adiciona em Configuracoes. Importar isso como um JSON so evita
+ * o bundler ter que compilar/gerar um chunk pra cada um dos ~1800
+ * componentes .svelte do pacote so pra permitir a busca por nome; import()
+ * dinamico por nome tambem so resolveria no dev server, nao no build de
+ * producao.
+ */
+import lucideIconData from './lucide-icon-data.json';
+
+export type LucideIconNode = Array<[string, Record<string, string>]>;
+
+function toKebabCase(input: string): string {
+  return input
+    .trim()
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase();
+}
+
+/** iconNode de um icone lucide arbitrario pelo nome; null se o nome nao existir. */
+export function getLucideIconNode(name: string): LucideIconNode | null {
+  const kebab = toKebabCase(name);
+  return (lucideIconData as Record<string, LucideIconNode>)[kebab] ?? null;
+}
+
+/** Normaliza um nome de icone custom pro mesmo formato usado na busca acima. */
+export function normalizeCustomIconName(name: string): string {
+  return toKebabCase(name);
+}
