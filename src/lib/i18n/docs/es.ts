@@ -948,7 +948,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     "Las carpetas raíz (como \"Personal\" o \"Work\") ahora se muestran con un nombre un poco más grande y en negrita que las subcarpetas y workspaces anidados, para que el árbol de la barra lateral tenga una jerarquía más clara.",
     "Configuración tiene una nueva sección \"Iconos personalizados\": agrega cualquier icono de la biblioteca Lucide por nombre — busca en lucide.dev, pega el nombre — y aparece en todos los selectores de icono de workspace y carpeta.",
     "El botón de copiar del comando de instalación en la Central de Providers quedaba pegado al borde derecho del bloque, sin espacio, con un fondo que no combinaba con el código. Ahora tiene espacio, queda centrado y solo se destaca al pasar el mouse.",
-    "El minimapa y los controles de zoom del canvas podían quedar escondidos detrás de un nodo o panel colocado sobre su esquina. Ahora los dos se muestran siempre por encima de cualquier nodo."
+    "El minimapa y los controles de zoom del canvas podían quedar escondidos detrás de un nodo o panel colocado sobre su esquina. Ahora los dos se muestran siempre por encima de cualquier nodo.",
+    "Configuración ahora protege contra la pérdida de cambios sin guardar: intentar salir de la página con ediciones pendientes muestra un diálogo Guardar/Descartar/Seguir editando, cerrar o recargar la ventana muestra el aviso nativo del navegador, y Ctrl/Cmd+S guarda al instante."
   ]
 },
 {
