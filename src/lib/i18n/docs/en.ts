@@ -939,6 +939,15 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "September 20, 2026 · 0.33.2",
+  "title": "Deep Space 0.33.2: Portals accept any address again",
+  "summary": "Portal unlocked from its first site, and a visible error instead of a blank page",
+  "items": [
+    "A Portal stopped accepting any address after it loaded its first page. The host check folded the page currently open into the same list that decides whether the Portal is restricted at all, so an unrestricted Portal — the default, with no allowed hosts configured — locked itself to whatever it opened first. Typing a different address was refused and the Portal stayed on a blank page. An empty allowed-hosts list means unrestricted again; the current host stays permitted so a configured Portal can still navigate inside its own site.",
+    "A Portal that refused to navigate showed a blank white rectangle with no explanation. On the desktop app the page is a native view painted above the whole window, so the error notice underneath it was invisible. The native view now steps aside while there is something to report."
+  ]
+},
+{
   "date": "September 20, 2026 · 0.33.1",
   "title": "Deep Space 0.33.1: the canvas toolbar comes back to the front",
   "summary": "A node dragged over it no longer hides the canvas buttons",

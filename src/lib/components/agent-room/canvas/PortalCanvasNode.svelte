@@ -204,6 +204,11 @@
     readyWaiters.clear();
   }
 
+  // A superficie nativa fica ACIMA de todo o DOM, entao o aviso de erro é
+  // desenhado debaixo dela: sem esconder a superficie, uma navegacao
+  // recusada vira um retangulo branco sem explicacao nenhuma.
+  const surfaceBlocked = $derived(Boolean(isDesktop && data.payload.url && !portalReady && portalError));
+
   function retryLoad() {
     const url = targetUrl();
     const webview = desktopFrame();
@@ -710,7 +715,7 @@
                 <div
                   use:managedPortalSurface={{ workspaceId: data.workspaceId, nodeId: id, ready: (value) => (frame = value), state: updateBrowserState }}
                   class="portal-frame"
-                  class:portal-frame-hidden={reviewOpen}
+                  class:portal-frame-hidden={reviewOpen || surfaceBlocked}
                   class:portal-frame-device={viewport !== null}
                   style={viewport ? `width:${viewport.width}px;height:${viewport.height}px;` : ''}
                 ></div>

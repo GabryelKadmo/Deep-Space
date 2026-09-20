@@ -943,6 +943,15 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "20 de setembro de 2026 · 0.33.2",
+  "title": "Deep Space 0.33.2: Portal volta a aceitar qualquer endereço",
+  "summary": "Portal destravado do primeiro site e com erro visível em vez de tela branca",
+  "items": [
+    "O Portal parava de aceitar qualquer endereço depois de carregar a primeira página. A checagem de host somava a página aberta no momento à mesma lista que decide se o Portal tem restrição, então um Portal sem restrição — o padrão, sem hosts permitidos configurados — se trancava no primeiro site que abrisse. Digitar outro endereço era recusado e o Portal ficava numa página em branco. Lista de hosts vazia volta a significar sem restrição, e o host atual continua permitido para navegar dentro do próprio site.",
+    "Portal que recusava navegar mostrava um retângulo branco sem explicação nenhuma. No app desktop a página é uma view nativa desenhada acima da janela inteira, então o aviso de erro embaixo dela ficava invisível. Agora a view nativa sai da frente enquanto há algo a informar."
+  ]
+},
+{
   "date": "20 de setembro de 2026 · 0.33.1",
   "title": "Deep Space 0.33.1: a barra de ferramentas do canvas volta pra frente",
   "summary": "Nó arrastado por cima não esconde mais os botões do canvas",
