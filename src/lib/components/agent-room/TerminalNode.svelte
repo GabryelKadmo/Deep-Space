@@ -10,7 +10,7 @@
   import HeaderIconButton from './canvas/HeaderIconButton.svelte';
   import VoiceConfirmDialog from './VoiceConfirmDialog.svelte';
   import '@xterm/xterm/css/xterm.css';
-  import { TERMINAL_THEMES, type TerminalThemeName } from './terminal-themes.js';
+  import { DEFAULT_TERMINAL_THEME, TERMINAL_THEMES, type TerminalThemeName } from './terminal-themes.js';
   import { DEFAULT_DICTATION_HOTKEY, comboLabel, matchesCombo } from './dictation-hotkey.js';
   import { appSettingsStore, getAppSettings, updateAppSettings } from './app-settings.svelte.js';
   import { DEFAULT_AUDIO_DEVICE_ID, audioDeviceInventory, classifyAudioCaptureFailure, openPreferredAudioInput } from './audio-devices.js';
@@ -83,7 +83,7 @@
     themeName?: TerminalThemeName;
   };
 
-  let { sessionId, createRequest, provider, sessionStorage, workspaceId, nodeId, sessionLabel, workspaceName, onExit, onSessionCreated, onSessionReady, onOpenPath, onRespawn, onAgentSession, onWorkingDirectoryChange, onTalking, onAgentReply, voiceOn = false, onToggleVoice, themeName = 'dark' }: Props = $props();
+  let { sessionId, createRequest, provider, sessionStorage, workspaceId, nodeId, sessionLabel, workspaceName, onExit, onSessionCreated, onSessionReady, onOpenPath, onRespawn, onAgentSession, onWorkingDirectoryChange, onTalking, onAgentReply, voiceOn = false, onToggleVoice, themeName = DEFAULT_TERMINAL_THEME }: Props = $props();
 
   let container: HTMLDivElement;
   let xtermInstance: Terminal | null = null;
@@ -383,7 +383,7 @@
       cursorBlink: true,
       fontSize,
       fontFamily,
-      theme: TERMINAL_THEMES[themeName]?.theme ?? TERMINAL_THEMES.dark.theme,
+      theme: TERMINAL_THEMES[themeName]?.theme ?? TERMINAL_THEMES[DEFAULT_TERMINAL_THEME].theme,
       scrollback: 5000,
     });
     xtermInstance = terminal;
@@ -789,7 +789,7 @@
     window.visualViewport?.addEventListener('resize', refitForDisplayChange);
 
     $effect(() => {
-      terminal.options.theme = TERMINAL_THEMES[themeName]?.theme ?? TERMINAL_THEMES.dark.theme;
+      terminal.options.theme = TERMINAL_THEMES[themeName]?.theme ?? TERMINAL_THEMES[DEFAULT_TERMINAL_THEME].theme;
     });
 
     return () => {
@@ -828,7 +828,7 @@
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
   class="terminal-node nokey"
-  style:background={TERMINAL_THEMES[themeName]?.theme.background ?? TERMINAL_THEMES.dark.theme.background}
+  style:background={TERMINAL_THEMES[themeName]?.theme.background ?? TERMINAL_THEMES[DEFAULT_TERMINAL_THEME].theme.background}
   onkeydown={handleTerminalKeydown}
   onclick={() => xtermInstance?.focus()}
   role="application"

@@ -5,7 +5,7 @@ const DEFAULTS: Record<string, string> = {
   uiLanguage: 'en',
   appTheme: 'deepspace-dark',
   customAppThemes: '[]',
-  terminalTheme: 'dark',
+  terminalTheme: 'obsidian',
   showMinimap: 'true',
   showControls: 'true',
   canvasEdgeRendering: 'auto',
