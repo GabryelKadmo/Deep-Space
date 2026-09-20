@@ -4012,8 +4012,14 @@
     background: var(--app-canvas);
   }
 
-  .canvas-area :global(.svelte-flow__minimap) {
+  /* Todo Panel do xyflow (toolbar, minimapa, controles, barras de acao) e
+     chrome do canvas: nasce com z-index 5 e ficava atras dos nos, que o
+     xyflow posiciona em 20. Um no arrastado por cima cobria a toolbar. */
+  .canvas-area :global(.svelte-flow__panel) {
     z-index: 2000 !important;
+  }
+
+  .canvas-area :global(.svelte-flow__minimap) {
     background: var(--app-surface);
     border: 1px solid var(--app-border);
     border-radius: 7px;
@@ -4022,7 +4028,6 @@
 
 
   .canvas-area :global(.svelte-flow__controls) {
-    z-index: 2000 !important;
     border: 1px solid var(--app-border);
     border-radius: 7px;
     overflow: hidden;

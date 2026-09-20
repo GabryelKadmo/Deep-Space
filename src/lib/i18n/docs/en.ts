@@ -939,6 +939,15 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "September 20, 2026 · 0.33.1",
+  "title": "Deep Space 0.33.1: the canvas toolbar comes back to the front",
+  "summary": "A node dragged over it no longer hides the canvas buttons",
+  "items": [
+    "The production server exited when a built asset was requested after it had been removed — an auto-update swapping the bundle, or a rebuild while the app is open. The file read had no error handler, so a missing file took down the process and the window it serves. Those requests now answer 404 and the server stays up.",
+    "Canvas nodes rendered on top of the bottom toolbar: dragging a node over it — or opening a Portal near it — hid the node-creation buttons behind the node. Every xyflow panel is canvas chrome and now stacks above nodes, which also covers the selection action bar at the top. The minimap and zoom controls had been fixed one at a time before; the rule now lives on the panel itself, so a new panel inherits it."
+  ]
+},
+{
   "date": "September 20, 2026 · 0.33.0",
   "title": "Deep Space 0.33.0: readable sign-in screens in the dark theme",
   "summary": "Auth screens fixed in dark, terminals in Obsidian, and fewer MCP folders in your project",

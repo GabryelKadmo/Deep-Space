@@ -11,7 +11,7 @@ import http from 'node:http';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { basename, delimiter, dirname, isAbsolute, resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { WebSocketServer } from 'ws';
 import { installDeepSpaceShim, writeDeepSpaceRuntimeFile } from './install-deepspace-shim.mjs';
 import { holdBackgroundStartup } from '../src/lib/modules/agent-room/infrastructure/background-startup.ts';
@@ -184,9 +184,44 @@ const crossOriginIsolationHeaders = {
   'Origin-Agent-Cluster': '?1',
 };
 
+// O sirv do adapter-node indexa os arquivos estaticos ao carregar e depois
+// faz createReadStream(...).pipe(res) sem listener de erro. Se um arquivo
+// sumir entre o indice e a leitura — auto-update trocando o bundle, ou um
+// rebuild com o servidor no ar — o ReadStream emite "error" sem ouvinte e
+// derruba o processo inteiro, levando junto a janela do app. Asset que
+// sumiu e 404, nunca crash.
+const IMMUTABLE_PREFIX = '/_app/immutable/';
+// Ancorado no modulo, como o import do handler: o cwd do processo
+// empacotado nao e garantido, e uma base errada daria 404 em todo asset.
+const clientDir = fileURLToPath(new URL('../build/client', import.meta.url));
+
+function missingImmutableAsset(pathname) {
+  if (!pathname.startsWith(IMMUTABLE_PREFIX)) return false;
+  if (pathname.includes('..')) return true;
+  return !existsSync(resolve(clientDir, pathname.slice(1)));
+}
+
+// Rede de seguranca para qualquer outro arquivo que suma depois de indexado.
+const RECOVERABLE_IO_ERRORS = new Set(['ENOENT', 'EPIPE', 'ECONNRESET', 'ECONNABORTED']);
+process.on('uncaughtException', (error) => {
+  if (RECOVERABLE_IO_ERRORS.has(error?.code)) {
+    console.error('[deepspace] Erro de I/O ignorado ao servir arquivo:', error.code, error.path ?? '');
+    return;
+  }
+  console.error('[deepspace] Excecao nao tratada:', error);
+  process.exit(1);
+});
+
 // The adapter serves immutable assets before SvelteKit hooks run. Set these
 // headers at the HTTP boundary so Monaco/PDF workers are not blocked by COEP.
 const server = http.createServer((request, response) => {
+  const assetPath = new URL(request.url ?? "/", "http://localhost").pathname;
+  if (missingImmutableAsset(assetPath)) {
+    response.statusCode = 404;
+    response.end();
+    return;
+  }
+
   for (const [header, value] of Object.entries(crossOriginIsolationHeaders)) {
     response.setHeader(header, value);
   }
