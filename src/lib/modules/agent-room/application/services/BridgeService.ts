@@ -26,6 +26,33 @@ import { roleService } from './RoleService.js';
 import { providerProfileService } from './ProviderProfileService.js';
 import { agentTerminalDeliveryService } from './AgentTerminalDeliveryService.js';
 
+export type ProviderBridgeTarget = {
+  /** Pasta de skill (relativa ao working dir) que essa CLI descobre por convenção própria. */
+  skillDir?: string;
+  /** Arquivo de MCP (relativo ao working dir) que essa CLI descobre por convenção própria. */
+  mcpPath?: string;
+  figmaFormat?: 'http' | 'url' | null;
+};
+
+/**
+ * Cada CLI só lê skill/MCP no caminho fixo da própria convenção — nenhuma
+ * aceita um caminho customizado. provisionSkill usa este mapa para escrever
+ * apenas os arquivos dos providers já em uso no workspace, em vez de criar
+ * as pastas de todo provider suportado para todo projeto.
+ *
+ * Claude e Kimi ficam de fora deste mapa de proposito: `.claude/skills/` e
+ * `.mcp.json` sao a base que a pagina Skills & MCPs (SkillMarketService,
+ * McpService) le e gerencia pra QUALQUER workspace — sao o estado proprio do
+ * Deep Space, nao uma conveniencia so de quem usa a CLI do Claude — por isso
+ * ficam sempre provisionados, junto com .deepspace/ e AGENTS.md.
+ */
+export const PROVIDER_BRIDGE_TARGETS: Record<string, ProviderBridgeTarget> = {
+  cursor: { mcpPath: '.cursor/mcp.json', figmaFormat: 'url' },
+  cline: { skillDir: '.cline/skills/deepspace', mcpPath: '.cline/mcp.json' },
+  devin: { skillDir: '.devin/skills/deepspace', mcpPath: '.devin/mcp_config.json' },
+  antigravity: { skillDir: '.agents/skills/deepspace', mcpPath: '.agents/mcp_config.json' },
+};
+
 export function resolveAgentReplyText(
   transcriptText: string | null,
   rawTerminalText: string,
@@ -1423,25 +1450,38 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
   }
 
   /**
-   * Provisiona a skill da ponte nos diretórios convencionais dos agentes
-   * de Claude, Cline, Devin, Antigravity e no formato portavel do Deep Space.
+   * Provisiona a skill/MCP da ponte. `.deepspace/`, `.claude/skills/`,
+   * `.mcp.json` e `AGENTS.md` sempre vao (base do Deep Space + o que a pagina
+   * Skills & MCPs gerencia); Cline, Devin, Antigravity, Cursor, OpenCode e o
+   * reparo do Codex so recebem os proprios arquivos quando o provider ja tem
+   * um terminal (`provider`) no workspace.
    */
-  async provisionSkill(workspace: Workspace, token: string, bridgeRuntime?: WorkspaceExecutionRuntime): Promise<void> {
+  async provisionSkill(
+    workspace: Workspace,
+    token: string,
+    bridgeRuntime?: WorkspaceExecutionRuntime,
+    providers: Iterable<string> = [],
+  ): Promise<void> {
     const skill = this.bridgeSkillContent();
+    const usedProviders = new Set(providers);
     const wslRuntime = bridgeRuntime?.kind === 'wsl'
       ? bridgeRuntime
       : workspace.runtimeKind === 'wsl' && workspace.wslDistribution && workspace.wslWorkingDir
         ? { kind: 'wsl' as const, distribution: workspace.wslDistribution, linuxWorkingDir: workspace.wslWorkingDir }
         : null;
     try {
-      const dirs = [
-        resolve(workspace.workingDir, '.claude', 'skills', 'deepspace'),
-        resolve(workspace.workingDir, '.cline', 'skills', 'deepspace'),
-        resolve(workspace.workingDir, '.devin', 'skills', 'deepspace'),
-        resolve(workspace.workingDir, '.agents', 'skills', 'deepspace'),
-        resolve(workspace.workingDir, '.deepspace'),
-      ];
-      for (const dir of dirs) {
+      const deepspaceDir = resolve(workspace.workingDir, '.deepspace');
+      await mkdir(deepspaceDir, { recursive: true });
+      await writeFile(resolve(deepspaceDir, 'SKILL.md'), skill);
+      // .claude/skills/ e a base que a pagina Skills & MCPs le pra todo
+      // workspace — nao e condicionada a provider em uso (ver comentario acima
+      // de PROVIDER_BRIDGE_TARGETS).
+      const claudeSkillDir = resolve(workspace.workingDir, '.claude', 'skills', 'deepspace');
+      await mkdir(claudeSkillDir, { recursive: true });
+      await writeFile(resolve(claudeSkillDir, 'SKILL.md'), skill);
+      for (const [providerId, target] of Object.entries(PROVIDER_BRIDGE_TARGETS)) {
+        if (!usedProviders.has(providerId) || !target.skillDir) continue;
+        const dir = resolve(workspace.workingDir, target.skillDir);
         await mkdir(dir, { recursive: true });
         await writeFile(resolve(dir, 'SKILL.md'), skill);
       }
@@ -1483,18 +1523,16 @@ Se uma tarefa exigir uma habilidade que você não tem, você pode AUTORAR uma s
       }
       // Cada CLI descobre MCP em um caminho proprio. Todos recebem o mesmo
       // launch absoluto (inclusive no Windows) e o merge preserva servidores.
-      for (const [relativePath, figmaFormat] of [
-        ['.mcp.json', 'http'],
-        ['.cursor/mcp.json', 'url'],
-        ['.cline/mcp.json', null],
-        ['.devin/mcp_config.json', null],
-        ['.agents/mcp_config.json', null],
-      ] as const) {
-        await this.provisionStandardMcp(resolve(workspace.workingDir, relativePath), wslRuntime, figmaFormat);
+      // .mcp.json e a base que a pagina Skills & MCPs (McpService) le e
+      // gerencia pra todo workspace, por isso fica sempre provisionado.
+      await this.provisionStandardMcp(resolve(workspace.workingDir, '.mcp.json'), wslRuntime, 'http');
+      for (const [providerId, target] of Object.entries(PROVIDER_BRIDGE_TARGETS)) {
+        if (!usedProviders.has(providerId) || !target.mcpPath) continue;
+        await this.provisionStandardMcp(resolve(workspace.workingDir, target.mcpPath), wslRuntime, target.figmaFormat ?? null);
       }
       await this.provisionAgentsMd(workspace.workingDir);
-      await this.repairLegacyCodexMcp(workspace, wslRuntime);
-      await this.provisionOpenCodeMcp(workspace, wslRuntime);
+      if (usedProviders.has('codex')) await this.repairLegacyCodexMcp(workspace, wslRuntime);
+      if (usedProviders.has('opencode')) await this.provisionOpenCodeMcp(workspace, wslRuntime);
       // Apenas artefatos inequivocamente gerados pela ponte ficam fora do
       // status. Configs e AGENTS.md pertencem ao usuario e devem ser visiveis.
       const gitDir = resolve(workspace.workingDir, '.git');

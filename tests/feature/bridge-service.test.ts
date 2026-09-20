@@ -70,7 +70,7 @@ describe('BridgeService', () => {
         wslWorkingDir: '/home/dev/project',
       });
       const token = await bridgeService.getOrCreateToken(workspace.id);
-      await bridgeService.provisionSkill(workspace, token);
+      await bridgeService.provisionSkill(workspace, token, undefined, ['claude']);
 
       const launcher = await readFile(join(dir, '.deepspace', 'bin', 'deepspace'), 'utf8');
       const mcp = JSON.parse(await readFile(join(dir, '.mcp.json'), 'utf8'));
