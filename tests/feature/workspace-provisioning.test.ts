@@ -73,7 +73,7 @@ describe('WorkspaceService — provisionamento da ponte', () => {
     await first;
   });
 
-  it('provisiona so os arquivos portaveis ao criar o workspace, sem nenhum provider ainda em uso', async () => {
+  it('provisiona a base do Deep Space ao criar o workspace, sem nenhum provider dedicado ainda em uso', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-new-'));
     const workspace = await workspaceService.create({ name: 'novo', workingDir: dir, icon: null, instructions: null });
 
@@ -85,13 +85,17 @@ describe('WorkspaceService — provisionamento da ponte', () => {
     const agentsMd = readFileSync(join(dir, 'AGENTS.md'), 'utf8');
     expect(agentsMd).toContain('<!-- deepspace:begin -->');
     expect(agentsMd).toContain('deepspace ask');
-    // Nenhum provider tem terminal ainda: nada dos arquivos dedicados de CLI nasce de saida.
+    // .claude/skills/ e .mcp.json sao a base que a pagina Skills & MCPs
+    // gerencia pra todo workspace — sempre provisionados, sem depender de provider.
+    expect(existsSync(join(dir, '.claude', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
+    const mcp = JSON.parse(readFileSync(join(dir, '.mcp.json'), 'utf8'));
+    expect(mcp.mcpServers.deepspace.command).toBe(process.execPath);
+    expect(mcp.mcpServers.figma).toEqual({ type: 'http', url: 'https://mcp.figma.com/mcp' });
+    // Nenhum provider exclusivo (Cline, Devin, Antigravity, Cursor, OpenCode) tem terminal ainda.
     for (const path of [
-      '.claude/skills/deepspace/SKILL.md',
       '.cline/skills/deepspace/SKILL.md',
       '.devin/skills/deepspace/SKILL.md',
       '.agents/skills/deepspace/SKILL.md',
-      '.mcp.json',
       '.cursor/mcp.json',
       '.cline/mcp.json',
       '.devin/mcp_config.json',
@@ -102,24 +106,22 @@ describe('WorkspaceService — provisionamento da ponte', () => {
     }
   });
 
-  it('provisiona a skill e o MCP so do provider que ganha um terminal', async () => {
+  it('provisiona a skill e o MCP so do provider exclusivo que ganha um terminal', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'deepspace-prov-provider-'));
-    const workspace = await workspaceService.create({ name: 'com-claude', workingDir: dir, icon: null, instructions: null });
+    const workspace = await workspaceService.create({ name: 'com-cline', workingDir: dir, icon: null, instructions: null });
 
-    await createTerminal(workspace.id, 'claude');
+    await createTerminal(workspace.id, 'cline');
 
-    expect(existsSync(join(dir, '.claude', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
-    const mcp = JSON.parse(readFileSync(join(dir, '.mcp.json'), 'utf8'));
-    expect(mcp.mcpServers.deepspace.command).toBe(process.execPath);
-    expect(mcp.mcpServers.figma).toEqual({ type: 'http', url: 'https://mcp.figma.com/mcp' });
-    // Cline, Devin, Antigravity e OpenCode continuam sem terminal: sem arquivos deles.
+    expect(existsSync(join(dir, '.cline', 'skills', 'deepspace', 'SKILL.md'))).toBe(true);
+    const clineMcp = JSON.parse(readFileSync(join(dir, '.cline', 'mcp.json'), 'utf8'));
+    expect(clineMcp.mcpServers.deepspace.command).toBe(process.execPath);
+    // Devin, Antigravity, Cursor e OpenCode continuam sem terminal: sem arquivos deles.
     for (const path of [
-      '.cline/skills/deepspace/SKILL.md',
       '.devin/skills/deepspace/SKILL.md',
       '.agents/skills/deepspace/SKILL.md',
-      '.cline/mcp.json',
       '.devin/mcp_config.json',
       '.agents/mcp_config.json',
+      '.cursor/mcp.json',
       'opencode.json',
     ]) {
       expect(existsSync(join(dir, path))).toBe(false);

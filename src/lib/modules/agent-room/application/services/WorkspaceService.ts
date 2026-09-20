@@ -170,7 +170,7 @@ export class WorkspaceService {
     const bridgeRuntime = await this.preferredBridgeRuntime(workspace);
     const cliEntry = process.env.DEEPSPACE_CLI_JS ?? resolve(process.cwd(), 'packages', 'deepspace-cli', 'bin', 'deepspace.js');
     const usedProviders = await this.usedProviders(workspace.id);
-    const [skillCurrent, hasConfig, agentsMdCurrent, hasWslLauncher, providerFilesPresent] = await Promise.all([
+    const [skillCurrent, hasConfig, agentsMdCurrent, hasWslLauncher, hasClaudeSkill, hasMcpJson, providerFilesPresent] = await Promise.all([
       readFile(skillPath, 'utf8').then((content) => content === bridgeService.bridgeSkillContent()).catch(() => false),
       access(resolve(workspace.workingDir, '.deepspace', 'workspace.json')).then(() => true).catch(() => false),
       readFile(resolve(workspace.workingDir, 'AGENTS.md'), 'utf8').catch(() => ''),
@@ -179,12 +179,16 @@ export class WorkspaceService {
             .then((content) => content.includes('deepspace:wsl-console-launcher-v2') && content.includes(cliEntry))
             .catch(() => false)
         : Promise.resolve(true),
+      // .claude/skills/ e .mcp.json sao a base da pagina Skills & MCPs pra
+      // todo workspace (nao condicionada a provider) — ver PROVIDER_BRIDGE_TARGETS.
+      access(resolve(workspace.workingDir, '.claude', 'skills', 'deepspace', 'SKILL.md')).then(() => true).catch(() => false),
+      access(resolve(workspace.workingDir, '.mcp.json')).then(() => true).catch(() => false),
       this.providerBridgeFilesPresent(workspace, usedProviders),
     ]);
     // Bloco AGENTS.md (codex/kimi/opencode) entrou depois — workspaces antigos
     // so ganham os arquivos novos se o reparo verificar o marcador tambem.
     const hasAgentsMd = agentsMdCurrent.includes('<!-- deepspace:begin -->');
-    if (skillCurrent && hasConfig && hasAgentsMd && hasWslLauncher && providerFilesPresent) {
+    if (skillCurrent && hasConfig && hasAgentsMd && hasWslLauncher && hasClaudeSkill && hasMcpJson && providerFilesPresent) {
       this.provisionChecked.add(workspace.id);
       return;
     }
