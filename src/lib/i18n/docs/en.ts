@@ -939,14 +939,10 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
-  "date": "September 19, 2026 · 0.32.0",
-  "title": "Deep Space 0.32.0: faster workspace icons, clearer folder hierarchy",
-  "summary": "Click a workspace's icon to change it, five new icons, and bolder top-level folders",
+  "date": "September 20, 2026 · 0.33.0",
+  "title": "Deep Space 0.33.0: readable sign-in screens in the dark theme",
+  "summary": "Auth screens fixed in dark, terminals in Obsidian, and fewer MCP folders in your project",
   "items": [
-    "Clicking a workspace's icon in the sidebar now opens the icon picker directly, the same shortcut folders already had — no need to open the full workspace dialog just to change it.",
-    "Five new icons: Landing Page, Flower, Building, Person, and the Deep Space kraken mark itself.",
-    "Top-level folders (like \"Personal\" or \"Work\") now render with a slightly larger, bolder name than nested subfolders and workspaces, so the sidebar tree reads with a clearer hierarchy.",
-    "Settings has a new \"Custom icons\" section: add any icon from the Lucide library by name — search lucide.dev, paste the name — and it shows up everywhere workspace and folder icons are picked.",
     "The sign-in, sign-up, password-reset, one-time-code, and email-verification screens were unreadable in the default dark theme: the card was locked to a white background by the framework's own UI kit while the text took the app's near-white theme color, so the heading, field labels, button, and link all rendered white on white. Those screens (and the error page) now use the app's own components and follow the active theme. All six pass WCAG AA contrast in both dark and light.",
     "The copy button on the install command in Provider Center sat flush against the block's right edge with no padding, and its background clashed with the code behind it. It now has breathing room, sits centered, and only stands out on hover.",
     "The canvas minimap and zoom controls could end up hidden behind a node or panel positioned over their corner. Both now always render above every node.",
@@ -956,7 +952,19 @@ Header: Authorization = Bearer {{accessToken}}`,
     "Settings now guards against losing unsaved changes: trying to leave the page with edits pending shows a Save/Discard/Keep editing dialog, closing or reloading the window shows the browser's own unsaved-changes prompt, and Ctrl/Cmd+S saves immediately.",
     "The floating dictation (mic) button could drift on its own — it was clamped against the canvas area's own rectangle, which changes when you switch pages or collapse/expand the sidebar. It's now clamped against the viewport, which doesn't change between routes, so it only moves when you drag or reset it.",
     "New terminals now open in the Obsidian theme (pure black) instead of Midnight, matching the near-black app shell. A terminal that already has a theme saved keeps it, and the picker still offers all fifteen themes.",
-    "A workspace's root no longer fills up with skill/MCP files for CLIs that are never actually used. Cline, Devin, Antigravity, Cursor, and OpenCode now get their dedicated folder and MCP config only once a terminal with that provider exists, provisioned on demand when it's created or switched. .claude/skills/, .mcp.json, .deepspace/, and AGENTS.md still provision immediately — they're Deep Space's own state (the Skills & MCPs page manages the first two for every workspace) rather than a convenience for one specific CLI."
+    "A workspace's root no longer fills up with skill/MCP files for CLIs that are never actually used. Cline, Devin, Antigravity, Cursor, and OpenCode now get their dedicated folder and MCP config only once a terminal with that provider exists, provisioned on demand when it's created or switched. .claude/skills/, .mcp.json, .deepspace/, and AGENTS.md still provision immediately — they're Deep Space's own state (the Skills & MCPs page manages the first two for every workspace) rather than a convenience for one specific CLI.",
+    "The Windows titlebar now shows the current git branch for the active workspace on Canvas and Workbench, so you don't have to open the Git panel just to check it. Click it for a quick Git popover (changes, graph, branches, worktrees) without leaving what you're doing."
+  ]
+},
+{
+  "date": "September 19, 2026 · 0.32.0",
+  "title": "Deep Space 0.32.0: faster workspace icons, clearer folder hierarchy",
+  "summary": "Click a workspace's icon to change it, five new icons, and bolder top-level folders",
+  "items": [
+    "Clicking a workspace's icon in the sidebar now opens the icon picker directly, the same shortcut folders already had — no need to open the full workspace dialog just to change it.",
+    "Five new icons: Landing Page, Flower, Building, Person, and the Deep Space kraken mark itself.",
+    "Top-level folders (like \"Personal\" or \"Work\") now render with a slightly larger, bolder name than nested subfolders and workspaces, so the sidebar tree reads with a clearer hierarchy.",
+    "Settings has a new \"Custom icons\" section: add any icon from the Lucide library by name — search lucide.dev, paste the name — and it shows up everywhere workspace and folder icons are picked."
   ]
 },
 {
