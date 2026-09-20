@@ -943,6 +943,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "20 de setembro de 2026 · 0.33.1",
+  "title": "Deep Space 0.33.1: a barra de ferramentas do canvas volta pra frente",
+  "summary": "Nó arrastado por cima não esconde mais os botões do canvas",
+  "items": [
+    "Nós do canvas apareciam por cima da barra de ferramentas de baixo: arrastar um nó sobre ela — ou abrir um Portal por perto — escondia os botões de criar nó atrás do nó. Todo painel do xyflow é chrome do canvas e agora fica acima dos nós, o que também cobre a barra de ação da seleção no topo. O minimapa e os controles de zoom já tinham sido corrigidos um a um; agora a regra vive no próprio painel, então painel novo já nasce certo."
+  ]
+},
+{
   "date": "20 de setembro de 2026 · 0.33.0",
   "title": "Deep Space 0.33.0: telas de entrada legíveis no tema escuro",
   "summary": "Entrar/criar conta legíveis no escuro, terminais em Obsidian e menos pastas de MCP no projeto",
