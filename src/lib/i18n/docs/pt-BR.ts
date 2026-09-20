@@ -943,14 +943,10 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
-  "date": "19 de setembro de 2026 · 0.32.0",
-  "title": "Deep Space 0.32.0: ícones de workspace mais rápidos, hierarquia de pastas mais clara",
-  "summary": "Clique no ícone do workspace pra trocar, cinco ícones novos, e pastas de topo em destaque",
+  "date": "20 de setembro de 2026 · 0.33.0",
+  "title": "Deep Space 0.33.0: telas de entrada legíveis no tema escuro",
+  "summary": "Entrar/criar conta legíveis no escuro, terminais em Obsidian e menos pastas de MCP no projeto",
   "items": [
-    "Clicar no ícone de um workspace na barra lateral agora abre o seletor de ícone direto, o mesmo atalho que as pastas já tinham — não precisa mais abrir o diálogo inteiro do workspace só pra trocar o ícone.",
-    "Cinco ícones novos: Landing Page, Flor, Prédio, Pessoa e a própria kraken do Deep Space.",
-    "Pastas de topo (tipo \"Pessoal\" ou \"Work\") agora aparecem com o nome um pouco maior e mais forte que subpastas e workspaces aninhados, pra árvore da barra lateral ficar com hierarquia mais clara.",
-    "Configurações ganhou uma seção \"Ícones extras\": adicione qualquer ícone da biblioteca Lucide pelo nome — pesquise em lucide.dev, cole o nome — e ele aparece em todo seletor de ícone de workspace e pasta.",
     "As telas de entrar, criar conta, recuperar senha, código de uso único e verificar e-mail ficavam ilegíveis no tema escuro padrão: o cartão vinha travado em fundo branco pelo kit de UI do framework enquanto o texto usava a cor quase branca do tema, então título, rótulos dos campos, botão e link apareciam branco no branco. Essas telas (e a página de erro) passaram a usar os componentes do próprio app e seguem o tema ativo. As seis passam no contraste WCAG AA no escuro e no claro.",
     "O botão de copiar do comando de instalação na Central de Providers ficava colado na borda direita do bloco, sem respiro, com um fundo que destoava do código. Agora tem espaço, fica centralizado e só se destaca no hover.",
     "O minimapa e os controles de zoom do canvas podiam ficar escondidos atrás de um nó ou painel posicionado por cima deles. Agora os dois ficam sempre acima de qualquer nó.",
@@ -960,7 +956,19 @@ Header: Authorization = Bearer {{accessToken}}`,
     "Configurações agora protege contra perda de alterações não salvas: tentar sair da página com edições pendentes mostra um diálogo Salvar/Descartar/Continuar editando, fechar ou recarregar a janela mostra o aviso nativo do navegador, e Ctrl/Cmd+S salva na hora.",
     "O botão flutuante de ditado (mic) podia sair sozinho do lugar — ele era travado contra o retângulo do próprio canvas, que muda ao trocar de tela ou recolher/expandir a barra lateral. Agora é travado contra a janela inteira, que não muda entre rotas, então só se move por ação sua.",
     "Terminais novos passam a abrir no tema Obsidian (preto puro) em vez do Midnight, acompanhando o fundo quase preto do app. Terminal que já tem tema salvo continua como está, e o seletor segue com os quinze temas.",
-    "A raiz do workspace deixou de se enchar de arquivos de skill/MCP de CLIs que você nunca chega a usar. Cline, Devin, Antigravity, Cursor e OpenCode agora só ganham a própria pasta e o próprio MCP quando um terminal desse provider existe, provisionados na hora em que ele é criado ou trocado. .claude/skills/, .mcp.json, .deepspace/ e AGENTS.md continuam chegando de imediato — são estado do próprio Deep Space (a página Skills & MCPs gerencia os dois primeiros pra todo workspace), não uma conveniência de um CLI específico."
+    "A raiz do workspace deixou de se enchar de arquivos de skill/MCP de CLIs que você nunca chega a usar. Cline, Devin, Antigravity, Cursor e OpenCode agora só ganham a própria pasta e o próprio MCP quando um terminal desse provider existe, provisionados na hora em que ele é criado ou trocado. .claude/skills/, .mcp.json, .deepspace/ e AGENTS.md continuam chegando de imediato — são estado do próprio Deep Space (a página Skills & MCPs gerencia os dois primeiros pra todo workspace), não uma conveniência de um CLI específico.",
+    "A titlebar do Windows passou a mostrar a branch do workspace ativo no Canvas e no Workbench, sem precisar abrir o painel Git só pra conferir. Clicar nela abre um popover rápido do Git (mudanças, grafo, branches, worktrees) sem sair do que você estava fazendo."
+  ]
+},
+{
+  "date": "19 de setembro de 2026 · 0.32.0",
+  "title": "Deep Space 0.32.0: ícones de workspace mais rápidos, hierarquia de pastas mais clara",
+  "summary": "Clique no ícone do workspace pra trocar, cinco ícones novos, e pastas de topo em destaque",
+  "items": [
+    "Clicar no ícone de um workspace na barra lateral agora abre o seletor de ícone direto, o mesmo atalho que as pastas já tinham — não precisa mais abrir o diálogo inteiro do workspace só pra trocar o ícone.",
+    "Cinco ícones novos: Landing Page, Flor, Prédio, Pessoa e a própria kraken do Deep Space.",
+    "Pastas de topo (tipo \"Pessoal\" ou \"Work\") agora aparecem com o nome um pouco maior e mais forte que subpastas e workspaces aninhados, pra árvore da barra lateral ficar com hierarquia mais clara.",
+    "Configurações ganhou uma seção \"Ícones extras\": adicione qualquer ícone da biblioteca Lucide pelo nome — pesquise em lucide.dev, cole o nome — e ele aparece em todo seletor de ícone de workspace e pasta."
   ]
 },
 {

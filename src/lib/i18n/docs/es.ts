@@ -939,14 +939,10 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
-  "date": "19 de septiembre de 2026 · 0.32.0",
-  "title": "Deep Space 0.32.0: iconos de workspace más rápidos, jerarquía de carpetas más clara",
-  "summary": "Haz clic en el icono del workspace para cambiarlo, cinco iconos nuevos y carpetas raíz destacadas",
+  "date": "20 de septiembre de 2026 · 0.33.0",
+  "title": "Deep Space 0.33.0: pantallas de acceso legibles en el tema oscuro",
+  "summary": "Pantallas de auth legibles en oscuro, terminales en Obsidian y menos carpetas de MCP en el proyecto",
   "items": [
-    "Hacer clic en el icono de un workspace en la barra lateral ahora abre el selector de iconos directamente, el mismo atajo que ya tenían las carpetas — ya no hace falta abrir el diálogo completo del workspace solo para cambiar el icono.",
-    "Cinco iconos nuevos: Landing Page, Flor, Edificio, Persona y la propia kraken de Deep Space.",
-    "Las carpetas raíz (como \"Personal\" o \"Work\") ahora se muestran con un nombre un poco más grande y en negrita que las subcarpetas y workspaces anidados, para que el árbol de la barra lateral tenga una jerarquía más clara.",
-    "Configuración tiene una nueva sección \"Iconos personalizados\": agrega cualquier icono de la biblioteca Lucide por nombre — busca en lucide.dev, pega el nombre — y aparece en todos los selectores de icono de workspace y carpeta.",
     "Las pantallas de entrar, crear cuenta, recuperar contraseña, código de un solo uso y verificar correo quedaban ilegibles en el tema oscuro por defecto: la tarjeta estaba fijada a fondo blanco por el kit de UI del framework mientras el texto tomaba el color casi blanco del tema, así que título, etiquetas, botón y enlace salían blanco sobre blanco. Esas pantallas (y la página de error) ahora usan los componentes de la propia app y siguen el tema activo. Las seis cumplen el contraste WCAG AA en oscuro y en claro.",
     "El botón de copiar del comando de instalación en la Central de Providers quedaba pegado al borde derecho del bloque, sin espacio, con un fondo que no combinaba con el código. Ahora tiene espacio, queda centrado y solo se destaca al pasar el mouse.",
     "El minimapa y los controles de zoom del canvas podían quedar escondidos detrás de un nodo o panel colocado sobre su esquina. Ahora los dos se muestran siempre por encima de cualquier nodo.",
@@ -956,7 +952,19 @@ Header: Authorization = Bearer {{accessToken}}`,
     "Configuración ahora protege contra la pérdida de cambios sin guardar: intentar salir de la página con ediciones pendientes muestra un diálogo Guardar/Descartar/Seguir editando, cerrar o recargar la ventana muestra el aviso nativo del navegador, y Ctrl/Cmd+S guarda al instante.",
     "El botón flotante de dictado (mic) podía salirse solo de lugar — se ajustaba contra el rectángulo del propio canvas, que cambia al cambiar de página o al colapsar/expandir la barra lateral. Ahora se ajusta contra la ventana completa, que no cambia entre rutas, así que solo se mueve por acción tuya.",
     "Los terminales nuevos ahora abren con el tema Obsidian (negro puro) en lugar de Midnight, a juego con el fondo casi negro de la app. Un terminal que ya tiene tema guardado lo conserva, y el selector sigue ofreciendo los quince temas.",
-    "La raíz de un workspace ya no se llena de archivos de skill/MCP de CLIs que nunca llegas a usar. Cline, Devin, Antigravity, Cursor y OpenCode ahora solo obtienen su propia carpeta y su propio MCP cuando existe un terminal con ese provider, provisionados al momento en que se crea o se cambia. .claude/skills/, .mcp.json, .deepspace/ y AGENTS.md siguen provisionándose de inmediato — son estado propio de Deep Space (la página Skills & MCPs gestiona los dos primeros para todo workspace), no una conveniencia de un CLI específico."
+    "La raíz de un workspace ya no se llena de archivos de skill/MCP de CLIs que nunca llegas a usar. Cline, Devin, Antigravity, Cursor y OpenCode ahora solo obtienen su propia carpeta y su propio MCP cuando existe un terminal con ese provider, provisionados al momento en que se crea o se cambia. .claude/skills/, .mcp.json, .deepspace/ y AGENTS.md siguen provisionándose de inmediato — son estado propio de Deep Space (la página Skills & MCPs gestiona los dos primeros para todo workspace), no una conveniencia de un CLI específico.",
+    "La barra de título de Windows ahora muestra la rama git del workspace activo en Canvas y Workbench, sin tener que abrir el panel Git solo para consultarla. Al hacer clic se abre un popover rápido de Git (cambios, grafo, ramas, worktrees) sin salir de lo que estabas haciendo."
+  ]
+},
+{
+  "date": "19 de septiembre de 2026 · 0.32.0",
+  "title": "Deep Space 0.32.0: iconos de workspace más rápidos, jerarquía de carpetas más clara",
+  "summary": "Haz clic en el icono del workspace para cambiarlo, cinco iconos nuevos y carpetas raíz destacadas",
+  "items": [
+    "Hacer clic en el icono de un workspace en la barra lateral ahora abre el selector de iconos directamente, el mismo atajo que ya tenían las carpetas — ya no hace falta abrir el diálogo completo del workspace solo para cambiar el icono.",
+    "Cinco iconos nuevos: Landing Page, Flor, Edificio, Persona y la propia kraken de Deep Space.",
+    "Las carpetas raíz (como \"Personal\" o \"Work\") ahora se muestran con un nombre un poco más grande y en negrita que las subcarpetas y workspaces anidados, para que el árbol de la barra lateral tenga una jerarquía más clara.",
+    "Configuración tiene una nueva sección \"Iconos personalizados\": agrega cualquier icono de la biblioteca Lucide por nombre — busca en lucide.dev, pega el nombre — y aparece en todos los selectores de icono de workspace y carpeta."
   ]
 },
 {
