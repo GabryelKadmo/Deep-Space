@@ -947,6 +947,7 @@ Header: Authorization = Bearer {{accessToken}}`,
   "title": "Deep Space 0.33.1: a barra de ferramentas do canvas volta pra frente",
   "summary": "Nó arrastado por cima não esconde mais os botões do canvas",
   "items": [
+    "O servidor de produção morria quando alguém pedia um arquivo do build que já tinha sido removido — auto-update trocando o bundle, ou um rebuild com o app aberto. A leitura do arquivo não tinha tratamento de erro, então um arquivo faltando derrubava o processo e a janela que ele serve. Agora essas requisições respondem 404 e o servidor continua de pé.",
     "Nós do canvas apareciam por cima da barra de ferramentas de baixo: arrastar um nó sobre ela — ou abrir um Portal por perto — escondia os botões de criar nó atrás do nó. Todo painel do xyflow é chrome do canvas e agora fica acima dos nós, o que também cobre a barra de ação da seleção no topo. O minimapa e os controles de zoom já tinham sido corrigidos um a um; agora a regra vive no próprio painel, então painel novo já nasce certo."
   ]
 },
