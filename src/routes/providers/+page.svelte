@@ -541,9 +541,9 @@
   .step-copy h3 { margin: 1px 0 3px; font-size: 12px; font-weight: 650; }
   .step-copy p { margin: 0; color: var(--app-text-muted); font-size: 12px; line-height: 1.55; }
   .setup-note { margin-top: 7px !important; color: var(--app-accent) !important; }
-  .command-row { max-width: 700px; margin-top: 8px; display: grid; grid-template-columns: minmax(0, 1fr) 34px; border: 1px solid var(--app-border); border-radius: 6px; background: var(--app-page); overflow: hidden; }
-  .command-row code { padding: 9px 11px; overflow-x: auto; color: var(--app-text-soft); font-size: 11px; white-space: nowrap; }
-  .command-row button { border: 0; border-left: 1px solid var(--app-border); background: transparent; color: var(--app-text-muted); cursor: pointer; }
+  .command-row { max-width: 700px; margin-top: 8px; display: flex; align-items: center; gap: 4px; padding: 4px 6px 4px 0; border: 1px solid var(--app-border); border-radius: 6px; background: var(--app-page); }
+  .command-row code { flex: 1; min-width: 0; padding: 5px 0 5px 11px; overflow-x: auto; color: var(--app-text-soft); font-size: 11px; white-space: nowrap; }
+  .command-row button { flex: 0 0 auto; display: grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 5px; background: transparent; color: var(--app-text-muted); cursor: pointer; }
   .command-row button:hover { color: var(--app-accent); background: var(--app-accent-soft); }
   .guide-link { position: absolute; right: 18px; bottom: 18px; display: inline-flex; align-items: center; gap: 6px; color: var(--app-accent); font-size: 12px; font-weight: 600; text-decoration: none; }
   .guide-link:hover { color: var(--app-accent); }

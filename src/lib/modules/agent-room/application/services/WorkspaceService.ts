@@ -9,7 +9,7 @@ import { workspaceRepository } from '../../infrastructure/repositories/Workspace
 import { defaultShell } from '../../infrastructure/workspace.js';
 import { ptySessionManager } from '../../infrastructure/pty/PtySessionManager.ts';
 import { agentSessionTracker, agentSessionTrackerForRuntime } from '../../infrastructure/pty/AgentSessionTracker.ts';
-import { bridgeService } from './BridgeService.js';
+import { bridgeService, PROVIDER_BRIDGE_TARGETS } from './BridgeService.js';
 import { designDocumentService } from './DesignDocumentService.js';
 import { roleService } from './RoleService.js';
 import { providerProfileService } from './ProviderProfileService.js';
@@ -166,10 +166,11 @@ export class WorkspaceService {
     // Uma unica checagem assincrona deixa threads livres enquanto o dialogo do
     // sistema aguarda o usuario; chamadas concorrentes esgotavam o pool fs.
     await access(workspace.workingDir, fsConstants.R_OK | fsConstants.W_OK);
-    const skillPath = resolve(workspace.workingDir, '.claude', 'skills', 'deepspace', 'SKILL.md');
+    const skillPath = resolve(workspace.workingDir, '.deepspace', 'SKILL.md');
     const bridgeRuntime = await this.preferredBridgeRuntime(workspace);
     const cliEntry = process.env.DEEPSPACE_CLI_JS ?? resolve(process.cwd(), 'packages', 'deepspace-cli', 'bin', 'deepspace.js');
-    const [skillCurrent, hasConfig, agentsMdCurrent, hasWslLauncher] = await Promise.all([
+    const usedProviders = await this.usedProviders(workspace.id);
+    const [skillCurrent, hasConfig, agentsMdCurrent, hasWslLauncher, hasClaudeSkill, hasMcpJson, providerFilesPresent] = await Promise.all([
       readFile(skillPath, 'utf8').then((content) => content === bridgeService.bridgeSkillContent()).catch(() => false),
       access(resolve(workspace.workingDir, '.deepspace', 'workspace.json')).then(() => true).catch(() => false),
       readFile(resolve(workspace.workingDir, 'AGENTS.md'), 'utf8').catch(() => ''),
@@ -178,18 +179,52 @@ export class WorkspaceService {
             .then((content) => content.includes('deepspace:wsl-console-launcher-v2') && content.includes(cliEntry))
             .catch(() => false)
         : Promise.resolve(true),
+      // .claude/skills/ e .mcp.json sao a base da pagina Skills & MCPs pra
+      // todo workspace (nao condicionada a provider) — ver PROVIDER_BRIDGE_TARGETS.
+      access(resolve(workspace.workingDir, '.claude', 'skills', 'deepspace', 'SKILL.md')).then(() => true).catch(() => false),
+      access(resolve(workspace.workingDir, '.mcp.json')).then(() => true).catch(() => false),
+      this.providerBridgeFilesPresent(workspace, usedProviders),
     ]);
     // Bloco AGENTS.md (codex/kimi/opencode) entrou depois — workspaces antigos
     // so ganham os arquivos novos se o reparo verificar o marcador tambem.
     const hasAgentsMd = agentsMdCurrent.includes('<!-- deepspace:begin -->');
-    if (skillCurrent && hasConfig && hasAgentsMd && hasWslLauncher) {
+    if (skillCurrent && hasConfig && hasAgentsMd && hasWslLauncher && hasClaudeSkill && hasMcpJson && providerFilesPresent) {
       this.provisionChecked.add(workspace.id);
       return;
     }
     const token = await bridgeService.getOrCreateToken(workspace.id).catch(() => null);
     if (!token) return;
-    await bridgeService.provisionSkill(workspace, token, bridgeRuntime ?? undefined);
+    await bridgeService.provisionSkill(workspace, token, bridgeRuntime ?? undefined, usedProviders);
     this.provisionChecked.add(workspace.id);
+  }
+
+  /** Providers com ao menos um terminal criado neste workspace — só esses recebem skill/MCP dedicados. */
+  private async usedProviders(workspaceId: string): Promise<Set<string>> {
+    const nodes = await workspaceRepository.listNodes(workspaceId);
+    const providers = new Set<string>();
+    for (const node of nodes) {
+      if (node.type !== 'terminal') continue;
+      const provider = (node.payload as { provider?: unknown } | null)?.provider;
+      if (typeof provider === 'string') providers.add(provider);
+    }
+    return providers;
+  }
+
+  /** Confere so a existencia (nao o conteudo) dos arquivos dedicados de cada provider em uso. */
+  private async providerBridgeFilesPresent(workspace: Workspace, providers: Set<string>): Promise<boolean> {
+    for (const providerId of providers) {
+      const target = PROVIDER_BRIDGE_TARGETS[providerId];
+      if (!target) continue;
+      if (target.skillDir) {
+        const exists = await access(resolve(workspace.workingDir, target.skillDir, 'SKILL.md')).then(() => true).catch(() => false);
+        if (!exists) return false;
+      }
+      if (target.mcpPath) {
+        const exists = await access(resolve(workspace.workingDir, target.mcpPath)).then(() => true).catch(() => false);
+        if (!exists) return false;
+      }
+    }
+    return true;
   }
 
   async create(dto: CreateWorkspaceDto) {
@@ -220,7 +255,7 @@ export class WorkspaceService {
     // qualquer agente criado depois nasce sabendo usar a CLI deepspace,
     // sem o usuario precisar conectar nada antes (fluxo zero-config).
     const token = await bridgeService.getOrCreateToken(workspace.id).catch(() => null);
-    if (token) await bridgeService.provisionSkill(workspace, token, workspaceExecutionRuntime(workspace));
+    if (token) await bridgeService.provisionSkill(workspace, token, workspaceExecutionRuntime(workspace), await this.usedProviders(workspace.id));
     return workspace;
   }
 
@@ -426,8 +461,12 @@ export class WorkspaceService {
       zIndex: dto.zIndex,
       payload,
     });
-    if (node.type === 'terminal' && terminalExecutionRuntime(workspace, node.payload as never).kind === 'wsl') {
-      await this.reprovisionBridge(workspace);
+    if (node.type === 'terminal') {
+      const nodeProvider = (node.payload as { provider?: unknown } | null)?.provider;
+      const usesWsl = terminalExecutionRuntime(workspace, node.payload as never).kind === 'wsl';
+      // Provider novo neste workspace so ganha skill/MCP dedicados agora, sob
+      // demanda — nao ha por que provisionar todo provider suportado de saida.
+      if (typeof nodeProvider === 'string' || usesWsl) await this.reprovisionBridge(workspace);
     }
     this.notifyStructureChanged(dto.workspaceId);
     return node;
@@ -527,6 +566,9 @@ export class WorkspaceService {
     payload = materializeInteractiveAgentCommand(payload, role).payload;
 
     const updated = await workspaceRepository.updateNode(node.id, { payload: payload as never });
+    // Trocar de CLI pode introduzir um provider ainda sem skill/MCP neste
+    // workspace — provisiona sob demanda em vez de esperar o proximo reparo.
+    await this.reprovisionBridge(workspace);
     this.notifyStructureChanged(dto.workspaceId);
     return updated;
   }
@@ -628,7 +670,14 @@ export class WorkspaceService {
     // Conexao com terminal => provisiona a skill da ponte nos agentes.
     if (source.type === 'terminal' || target.type === 'terminal') {
       const token = await bridgeService.getOrCreateToken(workspace.id).catch(() => null);
-      if (token) await bridgeService.provisionSkill(workspace, token, (await this.preferredBridgeRuntime(workspace)) ?? undefined);
+      if (token) {
+        await bridgeService.provisionSkill(
+          workspace,
+          token,
+          (await this.preferredBridgeRuntime(workspace)) ?? undefined,
+          await this.usedProviders(workspace.id),
+        );
+      }
     }
 
     this.notifyStructureChanged(dto.workspaceId);
@@ -804,6 +853,7 @@ export class WorkspaceService {
       workspace,
       token,
       (await this.preferredBridgeRuntime(workspace)) ?? { kind: 'native' },
+      await this.usedProviders(workspace.id),
     );
     this.provisionChecked.add(workspace.id);
   }

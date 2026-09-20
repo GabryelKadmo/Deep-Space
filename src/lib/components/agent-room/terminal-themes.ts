@@ -148,12 +148,15 @@ export const TERMINAL_THEMES: Record<TerminalThemeName, TerminalThemeDefinition>
 
 export const TERMINAL_THEME_ORDER = Object.keys(TERMINAL_THEMES) as TerminalThemeName[];
 
+/** Tema de quem nunca escolheu um: terminal preto puro, igual ao resto do app. */
+export const DEFAULT_TERMINAL_THEME: TerminalThemeName = 'obsidian';
+
 export function isTerminalThemeName(value: string | undefined): value is TerminalThemeName {
   return Boolean(value && value in TERMINAL_THEMES);
 }
 
 export function normalizeTerminalTheme(value: string | undefined): TerminalThemeName {
-  return isTerminalThemeName(value) ? value : 'dark';
+  return isTerminalThemeName(value) ? value : DEFAULT_TERMINAL_THEME;
 }
 
 export function nextTerminalTheme(current?: string): TerminalThemeName {

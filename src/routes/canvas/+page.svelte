@@ -583,7 +583,9 @@
     fitView: (options?: { duration?: number }) => void;
     screenToFlowPosition: (position: { x: number; y: number }) => { x: number; y: number };
     getViewport: () => { x: number; y: number; zoom: number };
+    setZoom: (zoom: number, options?: { duration?: number }) => void;
   } | null>(null);
+  let zoomPercent = $state(100);
   let flowWrapper: HTMLElement;
   const selectedTransferNodeIds = $derived(nodes.filter((node) => node.selected).map((node) => node.id));
   const selectedTransferNodeIdSet = $derived(new Set(selectedTransferNodeIds));
@@ -2529,6 +2531,11 @@
       zoomApi?.fitView({ duration: 200 });
       return;
     }
+    if (mod && event.key === '0') {
+      event.preventDefault();
+      zoomApi?.setZoom(1, { duration: 200 });
+      return;
+    }
     if (mod && event.shiftKey && event.key === '!') {
       event.preventDefault();
       zoomToSelection();
@@ -3124,7 +3131,7 @@
         </div>
       {/if}
       <div class="contents" inert={designModeNodeId !== null} aria-hidden={designModeNodeId ? 'true' : undefined}>
-      <ZoomBridge onReady={(api) => (zoomApi = api)} />
+      <ZoomBridge onReady={(api) => (zoomApi = api)} onZoomChange={(percent) => (zoomPercent = percent)} />
       {#if ghostRect}
         <div
           class="draw-ghost"
@@ -3160,7 +3167,18 @@
           <Background gap={20} variant={backgroundVariant} patternColor="var(--app-grid)" />
         {/if}
         {#if appSettings.showControls !== 'false'}
-          <Controls />
+          <Controls>
+            {#snippet children()}
+              <button
+                type="button"
+                class="zoom-indicator"
+                title={m['canvas.zoom_reset']()}
+                onclick={() => zoomApi?.setZoom(1, { duration: 200 })}
+              >
+                {zoomPercent}%
+              </button>
+            {/snippet}
+          </Controls>
         {/if}
         {#if appSettings.showMinimap !== 'false'}
           <MiniMap bgColor="var(--app-surface)" maskColor="color-mix(in srgb, var(--app-canvas) 72%, transparent)" nodeColor={minimapNodeColor} pannable zoomable />
@@ -3995,6 +4013,7 @@
   }
 
   .canvas-area :global(.svelte-flow__minimap) {
+    z-index: 2000 !important;
     background: var(--app-surface);
     border: 1px solid var(--app-border);
     border-radius: 7px;
@@ -4003,6 +4022,7 @@
 
 
   .canvas-area :global(.svelte-flow__controls) {
+    z-index: 2000 !important;
     border: 1px solid var(--app-border);
     border-radius: 7px;
     overflow: hidden;
@@ -4021,6 +4041,26 @@
 
   .canvas-area :global(.svelte-flow__controls-button svg) {
     fill: var(--app-text-soft);
+  }
+
+  .zoom-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20px;
+    min-width: 26px;
+    padding: 0 4px;
+    border: 0;
+    background: var(--app-surface);
+    color: var(--app-text-soft);
+    font-size: 9px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+
+  .zoom-indicator:hover {
+    background: var(--app-surface-raised);
+    color: var(--app-accent);
   }
 
   .canvas-area :global(.svelte-flow__edge-path) {

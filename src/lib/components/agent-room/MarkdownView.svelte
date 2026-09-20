@@ -6,24 +6,41 @@
     content: string;
     /** compact = tipografia menor (cartoes do kanban). */
     compact?: boolean;
+    /** quando presente, checkboxes de task list (GFM) ficam clicaveis; index e a posicao entre todos os checkboxes, na ordem do documento. */
+    onToggleCheckbox?: (index: number, checked: boolean) => void;
   };
 
-  let { content, compact = false }: Props = $props();
+  let { content, compact = false, onToggleCheckbox }: Props = $props();
+  let container = $state<HTMLDivElement | undefined>();
 
   marked.setOptions({ gfm: true, breaks: true });
 
-  /** markdown -> html sanitizado; links abrem fora, checkboxes editaveis visualmente. */
+  /** markdown -> html sanitizado; links abrem fora, checkboxes editaveis visualmente (e clicaveis de verdade quando onToggleCheckbox e passado). */
   const html = $derived.by(() => {
     const raw = marked.parse(content ?? '', { async: false }) as string;
-    const clean = DOMPurify.sanitize(raw, {
+    let clean = DOMPurify.sanitize(raw, {
       ADD_ATTR: ['target', 'rel', 'checked', 'disabled', 'type', 'class'],
     });
     // Links externos: nova aba, sem referrer (seguranca + UX).
-    return clean.replaceAll('<a href', '<a target="_blank" rel="noopener noreferrer" href');
+    clean = clean.replaceAll('<a href', '<a target="_blank" rel="noopener noreferrer" href');
+    // marked marca os checkboxes de task list como disabled; removemos so quando o caller quer interatividade.
+    if (onToggleCheckbox) clean = clean.replace(/(<input[^>]*type="checkbox"[^>]*)\s+disabled(="")?/g, '$1');
+    return clean;
   });
+
+  function handleClick(event: MouseEvent) {
+    if (!onToggleCheckbox || !container) return;
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement) || target.type !== 'checkbox') return;
+    const boxes = Array.from(container.querySelectorAll('input[type="checkbox"]'));
+    const index = boxes.indexOf(target);
+    if (index !== -1) onToggleCheckbox(index, target.checked);
+  }
 </script>
 
-<div class="md" class:compact>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<div class="md" class:compact class:interactive={Boolean(onToggleCheckbox)} bind:this={container} onclick={handleClick}>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- sanitizado com DOMPurify -->
   {@html html}
 </div>
@@ -127,6 +144,11 @@
   .md :global(li:has(input[type='checkbox'])) {
     list-style: none;
     margin-left: -18px;
+  }
+
+  .md.interactive :global(li input[type='checkbox']) {
+    pointer-events: auto;
+    cursor: pointer;
   }
 
   .md :global(code) {

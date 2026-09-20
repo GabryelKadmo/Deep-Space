@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
+  import { beforeNavigate, goto } from '$app/navigation';
   import { Activity, ArrowLeft, Check, Command, Keyboard, Languages, Layers, Mic, Palette, Pencil, Play, Plus, Power, RefreshCw, RotateCw, Shapes, SquareTerminal, Trash2, Volume2 } from '@lucide/svelte';
   import { isMacPlatform } from '$lib/components/agent-room/platform.js';
   import WorkspaceIcon from '$lib/components/agent-room/WorkspaceIcon.svelte';
@@ -33,9 +34,15 @@
   import { applyAppTheme } from '$lib/components/agent-room/app-themes.js';
 
   let settings = $state<Record<string, string>>({});
+  let savedSnapshot = $state<Record<string, string>>({});
   let loaded = $state(false);
   let saved = $state(false);
   let capturingHotkey = $state(false);
+
+  const isDirty = $derived(loaded && JSON.stringify(settings) !== JSON.stringify(savedSnapshot));
+  let pendingNavigation = $state<{ url: URL; willUnload: boolean } | null>(null);
+  let showUnsavedDialog = $state(false);
+  let savingBeforeLeave = $state(false);
 
   // ssr = false nesta rota — navigator sempre existe aqui.
   const isMac = isMacPlatform();
@@ -76,6 +83,7 @@
     const payload = await response.json();
     settings = payload.data ?? {};
     settings = { ...settings, voiceTtsVoice: normalizeEmbeddedTtsVoice(settings.voiceTtsVoice) };
+    savedSnapshot = { ...settings };
     loaded = true;
     await refreshModelStatus();
     await loadPresets();
@@ -105,8 +113,57 @@
         launchAtLogin: settings.coreLaunchAtLogin === 'true',
       }).catch(() => coreStatus);
     }
+    savedSnapshot = { ...settings };
     saved = true;
     setTimeout(() => (saved = false), 2000);
+  }
+
+  beforeNavigate((navigation) => {
+    if (!isDirty || pendingNavigation || !navigation.to) return;
+    if (navigation.to.url.pathname === window.location.pathname) return;
+    navigation.cancel();
+    pendingNavigation = { url: navigation.to.url, willUnload: navigation.willUnload };
+    showUnsavedDialog = true;
+  });
+
+  function leavePendingNavigation() {
+    const pending = pendingNavigation;
+    pendingNavigation = null;
+    if (!pending) return;
+    if (pending.willUnload) window.location.href = pending.url.href;
+    else void goto(pending.url);
+  }
+
+  async function saveAndLeave() {
+    savingBeforeLeave = true;
+    await save();
+    savingBeforeLeave = false;
+    showUnsavedDialog = false;
+    leavePendingNavigation();
+  }
+
+  function discardAndLeave() {
+    settings = { ...savedSnapshot };
+    showUnsavedDialog = false;
+    leavePendingNavigation();
+  }
+
+  function cancelLeave() {
+    showUnsavedDialog = false;
+    pendingNavigation = null;
+  }
+
+  function handleBeforeUnload(event: BeforeUnloadEvent) {
+    if (!isDirty) return;
+    event.preventDefault();
+    event.returnValue = '';
+  }
+
+  function handleSaveShortcut(event: KeyboardEvent) {
+    if (capturingHotkey) return;
+    if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 's') return;
+    event.preventDefault();
+    if (isDirty) void save();
   }
 
   type VoiceHealth = { ok: boolean; url: string; detail?: string };
@@ -405,7 +462,13 @@
   <title>Deep Space — {m['settings.title']()}</title>
 </svelte:head>
 
-<svelte:window onkeydown={captureHotkey} />
+<svelte:window
+  onkeydown={(event) => {
+    handleSaveShortcut(event);
+    captureHotkey(event);
+  }}
+  onbeforeunload={handleBeforeUnload}
+/>
 
 <main class="settings-page gap-1">
   <header class="settings-header">
@@ -1007,6 +1070,20 @@
       <AlertDialog.Footer>
         <AlertDialog.Cancel>{m['settings.cancel']()}</AlertDialog.Cancel>
         <AlertDialog.Action onclick={deletePreset}>{m['settings.delete']()}</AlertDialog.Action>
+      </AlertDialog.Footer>
+    </AlertDialog.Content>
+  </AlertDialog.Root>
+
+  <AlertDialog.Root open={showUnsavedDialog} onOpenChange={(isOpen) => !isOpen && cancelLeave()}>
+    <AlertDialog.Content>
+      <AlertDialog.Header>
+        <AlertDialog.Title>{m['settings.unsaved_title']()}</AlertDialog.Title>
+        <AlertDialog.Description>{m['settings.unsaved_desc']()}</AlertDialog.Description>
+      </AlertDialog.Header>
+      <AlertDialog.Footer>
+        <AlertDialog.Cancel>{m['settings.unsaved_cancel']()}</AlertDialog.Cancel>
+        <AlertDialog.Action variant="outline" onclick={discardAndLeave}>{m['settings.unsaved_discard']()}</AlertDialog.Action>
+        <AlertDialog.Action disabled={savingBeforeLeave} onclick={saveAndLeave}>{m['settings.unsaved_save']()}</AlertDialog.Action>
       </AlertDialog.Footer>
     </AlertDialog.Content>
   </AlertDialog.Root>

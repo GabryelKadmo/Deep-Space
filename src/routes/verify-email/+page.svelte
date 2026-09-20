@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { Card, CardHeader, CardTitle, CardContent, CardFooter, Alert, Button } from '@beeblock/svelar/ui';
+  import { Button } from '$lib/components/ui/button';
+  import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '$lib/components/ui/card';
+  import { Alert } from '$lib/components/ui/alert';
 
   let { data } = $props();
 </script>

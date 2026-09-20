@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  DEFAULT_TERMINAL_THEME,
   nextTerminalTheme,
   normalizeTerminalTheme,
   TERMINAL_THEMES,
@@ -26,7 +27,10 @@ describe('terminal themes', () => {
 
   it('normalizes legacy values and still supports deterministic cycling', () => {
     expect(normalizeTerminalTheme('tokyo-night')).toBe('tokyo-night');
-    expect(normalizeTerminalTheme('unknown')).toBe('dark');
+    // Sem tema explicito (no antigo, recrutado pela ponte, valor invalido) o
+    // terminal cai no mesmo default que Configuracoes oferece a quem e novo.
+    expect(normalizeTerminalTheme('unknown')).toBe(DEFAULT_TERMINAL_THEME);
+    expect(DEFAULT_TERMINAL_THEME).toBe('obsidian');
     expect(nextTerminalTheme('dark')).toBe('obsidian');
     expect(nextTerminalTheme(TERMINAL_THEME_ORDER.at(-1))).toBe('dark');
   });

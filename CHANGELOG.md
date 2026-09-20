@@ -5,6 +5,29 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.33.0 - 2026-09-20
+
+### Added
+
+- The canvas zoom controls now show the current zoom percentage. Clicking it, or pressing Ctrl/Cmd+0, resets the zoom to 100%.
+- Kanban cards can now open a full detail view (an expand button on each card): full title, rendered markdown description with a clickable checklist, larger reference images, attachments, and column/assignee/linked-note editing, with Previous/Next navigation between cards in the same column.
+- Settings now guards against losing unsaved changes: trying to leave the page with edits pending shows a Save/Discard/Keep editing dialog, closing or reloading the window shows the browser's own unsaved-changes prompt, and Ctrl/Cmd+S saves immediately.
+- The Windows titlebar now shows the current git branch for the active workspace on Canvas and Workbench, so you don't have to open the Git panel just to check it. Click it for a quick Git popover (changes, graph, branches, worktrees) without leaving what you're doing.
+
+### Changed
+
+- The Usage panel now explains that it only lists accounts registered as a Provider Profile, with a direct link to Provider Center to register one. An account logged in through a different `CLAUDE_CONFIG_DIR` (or equivalent) was previously invisible with no explanation.
+- Leader routing (Usage node) now explains that "Monitored limit" decides the switch alone — the provider's other quotas are ignored even at 100%. It also warns when a non-monitored window is at or past the switch threshold while reporting "within policy," and clarifies that a recommended switch only applies to new tasks, not a reply already in progress.
+- New terminals now open in the Obsidian theme (pure black) instead of Midnight, matching the near-black app shell. Terminals that already have a theme saved keep it, and the picker still offers all fifteen themes.
+- A workspace's root no longer fills up with skill/MCP files for CLIs that are never actually used. Cline, Devin, Antigravity, Cursor, and OpenCode now get their dedicated folder and MCP config only once a terminal with that provider exists, provisioned on demand when it's created or switched. `.claude/skills/`, `.mcp.json`, `.deepspace/`, and `AGENTS.md` still provision immediately — they're Deep Space's own state (the Skills & MCPs page manages them for every workspace) rather than a convenience for one specific CLI.
+
+### Fixed
+
+- The sign-in, sign-up, password-reset, one-time-code, and email-verification screens were unreadable in the default dark theme: the card was locked to a white background from the framework's own UI kit while the text took the app's near-white theme color, so headings, field labels, the submit button, and the "Create one" link all rendered white on white. Those screens (and the error page) now use the app's own components, so they follow whatever theme is active. All six pass WCAG AA contrast in both the dark and light themes.
+- Provider Center's copy button for the CLI install command sat flush against the block's right edge with no padding, and its background didn't match the code block behind it. It now has breathing room, sits centered, and blends with the block outside hover.
+- The canvas minimap and zoom controls had no explicit stacking order, so a node or panel positioned over their corner could render on top of them. Both now stay above every node, like the edge-removal control already did.
+- The floating dictation (mic) button could drift to a different spot on its own — clamped against the canvas area's own rectangle, which differs from the plain page bounds used everywhere else (Settings, Provider Center, etc.) and shifts when the sidebar collapses or expands. Its position is now clamped against the viewport, which stays the same across routes and sidebar toggles, so it only moves when the user drags or resets it.
+
 ## 0.32.0 - 2026-09-19
 
 ### Added

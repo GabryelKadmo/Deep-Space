@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { Button } from '@beeblock/svelar/ui';
+  import { Button } from '$lib/components/ui/button';
 </script>
 
 <svelte:head>

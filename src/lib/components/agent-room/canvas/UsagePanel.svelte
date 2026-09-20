@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import { Bot, ExternalLink, PanelTopOpen, RefreshCw, TriangleAlert, X } from '@lucide/svelte';
   import HeaderIconButton from './HeaderIconButton.svelte';
   import { Skeleton } from '$lib/components/ui/skeleton';
@@ -70,6 +71,10 @@
     return m['usage.diagnostic_model_provider']();
   }
 
+  function openProviders() {
+    void goto('/providers');
+  }
+
   // Tick de 5s so para re-renderizar os textos relativos (reseta em / ha Xs).
   let clock = $state(0);
 
@@ -100,6 +105,11 @@
       </HeaderIconButton>
     </div>
   </header>
+
+  <p class="usage-scope-hint">
+    {m['usage.scope_hint']()}
+    <button type="button" onclick={openProviders}>{m['usage.scope_hint_link']()}</button>
+  </p>
 
   {#if loading && !usages.length}
     {#each USAGE_PROVIDERS as provider (provider.id)}
@@ -193,6 +203,32 @@
     display: flex;
     gap: 4px;
   }
+  .usage-scope-hint {
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--app-border);
+    border-radius: 7px;
+    background: var(--app-surface-subtle);
+    color: var(--app-text-muted);
+    font-size: 10.5px;
+    line-height: 1.5;
+  }
+
+  .usage-scope-hint button {
+    display: inline;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--app-accent);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .usage-scope-hint button:hover {
+    text-decoration: underline;
+  }
+
   .usage-skeleton {
     display: flex;
     flex-direction: column;

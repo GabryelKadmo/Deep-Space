@@ -66,8 +66,18 @@
     return { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight, width: window.innerWidth, height: window.innerHeight };
   }
 
+  /** Sempre a viewport inteira, nunca o retangulo do canvas: usada pelo clamp
+      continuo para o botao nao-fixado. Route changes trocam qual elemento
+      existe no DOM (.canvas-area, o dock), o que mudaria os limites do clamp
+      a cada navegacao se ele dependesse do layout da rota atual — o botao
+      "andava sozinho" so por ter ido pra outra tela, sem o usuario arrastar
+      nada. A viewport nao muda entre rotas, entao o clamp fica estavel. */
+  function viewportRect() {
+    return { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight, width: window.innerWidth, height: window.innerHeight };
+  }
+
   function clampPlacement(next = placement) {
-    const rect = availableRect();
+    const rect = viewportRect();
     placement = {
       ...next,
       x: Math.max(rect.left + EDGE_GAP, Math.min(rect.right - BUTTON_SIZE - EDGE_GAP, next.x)),
