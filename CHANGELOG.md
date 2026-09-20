@@ -26,6 +26,7 @@ pt-BR, English, and Spanish translations.
 
 ### Fixed
 
+- The sign-in, sign-up, password-reset, one-time-code, and email-verification screens were unreadable in the default dark theme: the card was locked to a white background from the framework's own UI kit while the text took the app's near-white theme color, so headings, field labels, the submit button, and the "Create one" link all rendered white on white. Those screens (and the error page) now use the app's own components, so they follow whatever theme is active. All six pass WCAG AA contrast in both the dark and light themes.
 - Provider Center's copy button for the CLI install command sat flush against the block's right edge with no padding, and its background didn't match the code block behind it. It now has breathing room, sits centered, and blends with the block outside hover.
 - The canvas minimap and zoom controls had no explicit stacking order, so a node or panel positioned over their corner could render on top of them. Both now stay above every node, like the edge-removal control already did.
 - The floating dictation (mic) button could drift to a different spot on its own — clamped against the canvas area's own rectangle, which differs from the plain page bounds used everywhere else (Settings, Provider Center, etc.) and shifts when the sidebar collapses or expands. Its position is now clamped against the viewport, which stays the same across routes and sidebar toggles, so it only moves when the user drags or resets it.

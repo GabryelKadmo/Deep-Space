@@ -1,6 +1,10 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
-  import { Button, Input, Label, Card, CardHeader, CardTitle, CardDescription, CardContent, Alert } from '@beeblock/svelar/ui';
+  import { Button } from '$lib/components/ui/button';
+  import { Input } from '$lib/components/ui/input';
+  import { Label } from '$lib/components/ui/label';
+  import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '$lib/components/ui/card';
+  import { Alert } from '$lib/components/ui/alert';
 
   let { data } = $props();
 
