@@ -343,7 +343,6 @@
   "canvas.palette_tidy": "Tidy into a grid",
   "canvas.palette_group": "Group selection",
   "canvas.palette_zoom_sel": "Zoom to selection",
-  "canvas.zoom_reset": "Reset zoom to 100% (Ctrl/Cmd+0)",
   "canvas.zoom_in": "Zoom in",
   "canvas.zoom_out": "Zoom out",
   "canvas.zoom_fit": "Fit to screen",

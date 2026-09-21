@@ -343,7 +343,6 @@
   "canvas.palette_tidy": "Organizar en cuadrícula",
   "canvas.palette_group": "Agrupar selección",
   "canvas.palette_zoom_sel": "Zoom a la selección",
-  "canvas.zoom_reset": "Restablecer el zoom al 100% (Ctrl/Cmd+0)",
   "canvas.zoom_in": "Acercar",
   "canvas.zoom_out": "Alejar",
   "canvas.zoom_fit": "Ajustar a la pantalla",
