@@ -803,7 +803,6 @@
   "tasks.desc_aria": "Task description in markdown",
   "tasks.detail_add_desc": "Double-click to add a description",
   "tasks.detail_column_aria": "Move task to another column",
-  "tasks.detail_desc": "Full task detail — edit title, description, assignee, column, and checklist here",
   "tasks.detail_next": "Next card",
   "tasks.detail_prev": "Previous card",
   "tasks.drop_hint": "Drag cards here",
@@ -4255,5 +4254,6 @@
   "canvas.zoom_fit": "Fit to screen",
   "canvas.zoom_level": "Zoom level",
   "canvas.zoom_lock": "Lock the canvas",
-  "canvas.zoom_unlock": "Unlock the canvas"
+  "canvas.zoom_unlock": "Unlock the canvas",
+  "tasks.detail_close": "Back to board"
 }

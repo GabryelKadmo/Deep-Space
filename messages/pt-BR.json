@@ -803,7 +803,6 @@
   "tasks.desc_aria": "Descrição da tarefa em markdown",
   "tasks.detail_add_desc": "Duplo clique para adicionar uma descrição",
   "tasks.detail_column_aria": "Mudar a coluna da tarefa",
-  "tasks.detail_desc": "Detalhe completo da tarefa — edite título, descrição, responsável, coluna e checklist aqui",
   "tasks.detail_next": "Próximo card",
   "tasks.detail_prev": "Card anterior",
   "tasks.drop_hint": "Arraste cartões para cá",
@@ -4255,5 +4254,6 @@
   "canvas.zoom_fit": "Ajustar à tela",
   "canvas.zoom_level": "Nível de zoom",
   "canvas.zoom_lock": "Travar o canvas",
-  "canvas.zoom_unlock": "Destravar o canvas"
+  "canvas.zoom_unlock": "Destravar o canvas",
+  "tasks.detail_close": "Voltar ao quadro"
 }
