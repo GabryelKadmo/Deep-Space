@@ -4249,5 +4249,11 @@
   "automation.tool": "Published tool",
   "automation.tool_input": "Tool input",
   "automation.tool_input_help": "JSON object. Template values may reference trigger paths.",
-  "automation.tools": "Tools"
+  "automation.tools": "Tools",
+  "canvas.zoom_in": "Zoom in",
+  "canvas.zoom_out": "Zoom out",
+  "canvas.zoom_fit": "Fit to screen",
+  "canvas.zoom_level": "Zoom level",
+  "canvas.zoom_lock": "Lock the canvas",
+  "canvas.zoom_unlock": "Unlock the canvas"
 }

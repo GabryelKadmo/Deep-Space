@@ -660,6 +660,18 @@ export class WorkspaceService {
     ]);
     if (!source || source.workspaceId !== dto.workspaceId) throw new Error('No de origem nao encontrado.');
     if (!target || target.workspaceId !== dto.workspaceId) throw new Error('No de destino nao encontrado.');
+
+    // Uma corda so existe entre dois nos distintos, e uma unica vez: soltar a
+    // ponta no proprio no ou refazer um vinculo existente empilhava arestas
+    // sobrepostas que o usuario so conseguia remover uma a uma.
+    if (dto.sourceNodeId === dto.targetNodeId) throw new Error('Um no nao pode ser ligado a si mesmo.');
+    const existing = await workspaceRepository.listEdges(dto.workspaceId);
+    const duplicate = existing.find(
+      (edge) =>
+        (edge.sourceNodeId === dto.sourceNodeId && edge.targetNodeId === dto.targetNodeId) ||
+        (edge.sourceNodeId === dto.targetNodeId && edge.targetNodeId === dto.sourceNodeId),
+    );
+    if (duplicate) return duplicate;
     const edge = await workspaceRepository.createEdge({
       workspaceId: dto.workspaceId,
       sourceNodeId: dto.sourceNodeId,

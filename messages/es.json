@@ -4249,5 +4249,11 @@
   "automation.tool": "Herramienta publicada",
   "automation.tool_input": "Entrada de la herramienta",
   "automation.tool_input_help": "Objeto JSON. Los valores de la plantilla pueden referenciar rutas del disparador.",
-  "automation.tools": "Herramientas"
+  "automation.tools": "Herramientas",
+  "canvas.zoom_in": "Acercar",
+  "canvas.zoom_out": "Alejar",
+  "canvas.zoom_fit": "Ajustar a la pantalla",
+  "canvas.zoom_level": "Nivel de zoom",
+  "canvas.zoom_lock": "Bloquear el canvas",
+  "canvas.zoom_unlock": "Desbloquear el canvas"
 }

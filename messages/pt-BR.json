@@ -4249,5 +4249,11 @@
   "automation.tool": "Ferramenta publicada",
   "automation.tool_input": "Entrada da ferramenta",
   "automation.tool_input_help": "Objeto JSON. Valores do template podem referenciar caminhos do gatilho.",
-  "automation.tools": "Ferramentas"
+  "automation.tools": "Ferramentas",
+  "canvas.zoom_in": "Aumentar zoom",
+  "canvas.zoom_out": "Diminuir zoom",
+  "canvas.zoom_fit": "Ajustar à tela",
+  "canvas.zoom_level": "Nível de zoom",
+  "canvas.zoom_lock": "Travar o canvas",
+  "canvas.zoom_unlock": "Destravar o canvas"
 }
