@@ -57,7 +57,7 @@
   import DynamicLucideIcon from '$lib/components/agent-room/DynamicLucideIcon.svelte';
   import * as Popover from '$lib/components/ui/popover';
   import WorkspaceModeSwitch from '$lib/components/agent-room/WorkspaceModeSwitch.svelte';
-  import { setActiveWorkspaceId } from '$lib/components/agent-room/active-workspace.svelte.js';
+  import { setActiveWorkspaceId, setSharingOpenHandler } from '$lib/components/agent-room/active-workspace.svelte.js';
   import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
   import WorkspaceMemoryDialog from '$lib/components/agent-room/WorkspaceMemoryDialog.svelte';
   import AnnotationCenterDialog from '$lib/components/agent-room/AnnotationCenterDialog.svelte';
@@ -525,7 +525,11 @@
   let activeWorkspace = $state<Workspace | null>(null);
   $effect(() => {
     setActiveWorkspaceId(activeWorkspace?.id ?? null);
-    return () => setActiveWorkspaceId(null);
+    setSharingOpenHandler(() => (sharingOpen = true));
+    return () => {
+      setActiveWorkspaceId(null);
+      setSharingOpenHandler(null);
+    };
   });
   let providers = $state<AgentProviderInfo[]>([]);
   const canChooseAlternateRuntime = typeof navigator !== 'undefined' && navigator.platform.startsWith('Win');
