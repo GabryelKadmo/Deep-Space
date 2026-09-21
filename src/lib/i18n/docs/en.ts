@@ -939,6 +939,31 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "September 21, 2026 · 0.33.4",
+  "title": "Deep Space 0.33.4: canvas controls move out from under the nodes",
+  "summary": "Toolbar and zoom controls get a band of their own, out of reach of any node",
+  "items": [
+    "The canvas toolbar, the zoom controls and the selection action bar moved out of the canvas surface into a band of their own below it. They used to live inside the same area as the nodes, so a node dragged over them hid them — and a Portal hid them for good, because the page inside a Portal is a native layer painted above the whole window, which no stacking order can sit in front of. Outside that area nothing on the canvas can reach them. The canvas loses about 55px of height in exchange. The minimap stays where it was, since it only renders correctly inside the canvas surface; it can still be covered by a Portal, and can be turned off in Settings."
+  ]
+},
+{
+  "date": "September 21, 2026 · 0.33.3",
+  "title": "Deep Space 0.33.3: Portals stop reloading on their own",
+  "summary": "No more reload every few seconds stealing focus from whatever you were typing",
+  "items": [
+    "An open Portal reloaded itself every few seconds and took keyboard focus with it, interrupting whatever was being typed in a terminal. After every load the Portal ran a health check by reading location.href inside the page and treated an empty answer as a failed page — so it reloaded. A single-page app switching routes, a redirect in flight or a subframe still loading all answer empty, and a successful check reset the attempt counter, so the cycle never ended. Only a real load failure reloads now: the page being a Chromium error page, the navigation being rejected, or the load reporting failure. A check that cannot answer is treated as inconclusive and changes nothing."
+  ]
+},
+{
+  "date": "September 20, 2026 · 0.33.2",
+  "title": "Deep Space 0.33.2: Portals accept any address again",
+  "summary": "Portal unlocked from its first site, and a visible error instead of a blank page",
+  "items": [
+    "A Portal stopped accepting any address after it loaded its first page. The host check folded the page currently open into the same list that decides whether the Portal is restricted at all, so an unrestricted Portal — the default, with no allowed hosts configured — locked itself to whatever it opened first. Typing a different address was refused and the Portal stayed on a blank page. An empty allowed-hosts list means unrestricted again; the current host stays permitted so a configured Portal can still navigate inside its own site.",
+    "A Portal that refused to navigate showed a blank white rectangle with no explanation. On the desktop app the page is a native view painted above the whole window, so the error notice underneath it was invisible. The native view now steps aside while there is something to report."
+  ]
+},
+{
   "date": "September 20, 2026 · 0.33.1",
   "title": "Deep Space 0.33.1: the canvas toolbar comes back to the front",
   "summary": "A node dragged over it no longer hides the canvas buttons",

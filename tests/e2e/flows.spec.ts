@@ -69,7 +69,10 @@ test.describe('nó de fluxo (pipeline)', () => {
     await page.getByRole('button', { name: 'Criar' }).click();
     await expect(page.locator('.workspace-list li.active .workspace-item', { hasText: workspaceName })).toBeVisible();
 
-    await createNodeOnCanvas(page, 'Fluxo');
+    // Acima do meio: a faixa de controles abaixo do canvas deixa a area util
+    // mais baixa, e o no de fluxo e alto — nascendo em y=400 o botao Rodar
+    // caia fora da parte visivel.
+    await createNodeOnCanvas(page, 'Fluxo', { x: 600, y: 220 });
     const flow = page.locator('.canvas-flow');
     await expect(flow).toHaveCount(1);
 

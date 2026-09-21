@@ -939,6 +939,31 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "21 de septiembre de 2026 · 0.33.4",
+  "title": "Deep Space 0.33.4: los controles del canvas salen de debajo de los nodos",
+  "summary": "La barra de herramientas y el zoom tienen su propia franja, fuera del alcance de cualquier nodo",
+  "items": [
+    "La barra de herramientas, los controles de zoom y la barra de acción de la selección salieron de la superficie del canvas a una franja propia, debajo de ella. Antes vivían en la misma área que los nodos, así que un nodo arrastrado encima los ocultaba — y un Portal los ocultaba del todo, porque la página dentro de un Portal es una capa nativa dibujada por encima de toda la ventana, delante de la cual ningún orden de apilamiento puede colocarse. Fuera de esa área nada del canvas los alcanza. A cambio el canvas pierde unos 55px de altura. El minimapa se queda donde estaba, porque solo funciona dentro de la superficie del canvas; todavía puede quedar cubierto por un Portal, y puede desactivarse en Configuración."
+  ]
+},
+{
+  "date": "21 de septiembre de 2026 · 0.33.3",
+  "title": "Deep Space 0.33.3: los Portales dejan de recargarse solos",
+  "summary": "Se acabó la recarga cada pocos segundos que robaba el foco mientras escribías",
+  "items": [
+    "Un Portal abierto se recargaba solo cada pocos segundos y se llevaba el foco del teclado, interrumpiendo lo que se estuviera escribiendo en un terminal. Después de cada carga el Portal hacía una comprobación leyendo location.href dentro de la página y trataba una respuesta vacía como página rota — así que recargaba. Una SPA cambiando de ruta, un redirect en curso o un subframe cargando responden vacío, y una comprobación exitosa reiniciaba el contador de intentos, así que el ciclo no terminaba nunca. Ahora solo recarga un fallo real: que la página sea una página de error de Chromium, que la navegación sea rechazada o que la carga acuse error. Una comprobación que no puede responder es inconclusa y no cambia nada."
+  ]
+},
+{
+  "date": "20 de septiembre de 2026 · 0.33.2",
+  "title": "Deep Space 0.33.2: los Portales vuelven a aceptar cualquier dirección",
+  "summary": "Portal liberado de su primer sitio y con error visible en vez de página en blanco",
+  "items": [
+    "El Portal dejaba de aceptar cualquier dirección después de cargar su primera página. La comprobación de host sumaba la página abierta en ese momento a la misma lista que decide si el Portal tiene restricción, así que un Portal sin restricción — el valor por defecto, sin hosts permitidos configurados — se encerraba en el primer sitio que abriera. Escribir otra dirección era rechazado y el Portal se quedaba en una página en blanco. Una lista de hosts vacía vuelve a significar sin restricción, y el host actual sigue permitido para navegar dentro del propio sitio.",
+    "Un Portal que se negaba a navegar mostraba un rectángulo blanco sin ninguna explicación. En la app de escritorio la página es una vista nativa dibujada por encima de toda la ventana, así que el aviso de error debajo quedaba invisible. Ahora la vista nativa se aparta mientras haya algo que informar."
+  ]
+},
+{
   "date": "20 de septiembre de 2026 · 0.33.1",
   "title": "Deep Space 0.33.1: la barra de herramientas del canvas vuelve al frente",
   "summary": "Un nodo arrastrado encima ya no oculta los botones del canvas",

@@ -100,8 +100,14 @@ function createManagedPortalExecutor({ WebContentsView, View, session, diagnosti
     try {
       const url = new URL(candidate);
       const current = currentUrl && isAllowedPortalUrl(currentUrl) ? new URL(currentUrl).hostname.toLowerCase() : '';
-      const allowed = new Set([...(allowedHosts ?? []), current].filter(Boolean).map((host) => String(host).toLowerCase()));
-      return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password && (allowed.size === 0 || allowed.has(url.hostname.toLowerCase()));
+      // A lista configurada e quem decide se ha restricao. O host atual entra
+      // como permissao EXTRA (navegar dentro do proprio site), nunca somado
+      // antes do teste de lista vazia: isso travava um Portal sem restricao
+      // no primeiro host que ele abrisse.
+      const configured = new Set((allowedHosts ?? []).filter(Boolean).map((host) => String(host).toLowerCase()));
+      const host = url.hostname.toLowerCase();
+      const protocolOk = ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password;
+      return protocolOk && (configured.size === 0 || configured.has(host) || host === current);
     } catch { return false; }
   }
 
