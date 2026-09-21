@@ -943,6 +943,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "21 de setembro de 2026 · 0.33.4",
+  "title": "Deep Space 0.33.4: controles do canvas saem de baixo dos nós",
+  "summary": "Barra de ferramentas e zoom ganham faixa própria, fora do alcance de qualquer nó",
+  "items": [
+    "A barra de ferramentas, os controles de zoom e a barra de ação da seleção saíram da superfície do canvas para uma faixa própria, abaixo dela. Antes moravam na mesma área dos nós, então um nó arrastado por cima os escondia — e um Portal os escondia de vez, porque a página dentro de um Portal é uma camada nativa desenhada acima da janela inteira, na frente da qual nenhuma ordem de empilhamento consegue ficar. Fora daquela área, nada no canvas os alcança. Em troca o canvas perde cerca de 55px de altura. O minimapa continua onde estava, porque só funciona dentro da superfície do canvas; ele ainda pode ser coberto por um Portal, e pode ser desligado em Configurações."
+  ]
+},
+{
   "date": "21 de setembro de 2026 · 0.33.3",
   "title": "Deep Space 0.33.3: Portal para de recarregar sozinho",
   "summary": "Fim da recarga a cada poucos segundos que roubava o foco de quem estava digitando",
