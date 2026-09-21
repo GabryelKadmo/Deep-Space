@@ -229,7 +229,6 @@
               <Select.Item value="monthly">{m['usage.window_monthly']()}</Select.Item>
             </Select.Content>
           </Select.Root>
-          <p class="routing-window-hint">{m['usage.routing_window_hint']()}</p>
         </label>
         <label class="threshold-field">
           <span>{m['usage.routing_threshold']({ percent: policy.thresholdPercent })}</span>
@@ -244,6 +243,8 @@
           />
         </label>
       </div>
+
+      <p class="routing-window-hint">{m['usage.routing_window_hint']()}</p>
 
       {#if policy.enabled}
         {@const sourceReport = report.providers.find((provider) => provider.routingId === policy.sourceProvider)}
@@ -518,7 +519,8 @@
   .routing-fields {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
+    gap: 8px 10px;
+    align-items: end;
   }
 
   .routing-fields.disabled {
@@ -578,11 +580,13 @@
     gap: 5px;
   }
 
+  /* Linha inteira abaixo dos campos: dentro da celula do grid ela esticava a
+     coluna do limite monitorado e desalinhava o slider ao lado. */
   .routing-window-hint {
-    margin: 3px 0 0;
+    margin: 8px 0 0;
     color: var(--app-text-muted);
-    font-size: 9.5px;
-    line-height: 1.4;
+    font-size: 10px;
+    line-height: 1.45;
   }
 
   .provider-error.diagnostic {
