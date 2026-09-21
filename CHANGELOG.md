@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.33.4 - 2026-09-21
+
+### Changed
+
+- The canvas toolbar, the zoom controls and the selection action bar moved out of the canvas surface into a band of their own below it. They used to live inside the same area as the nodes, so a node dragged over them hid them — and a Portal hid them for good, because the page inside a Portal is a native layer painted above the whole window, which no stacking order can sit in front of. Outside that area nothing on the canvas can reach them. The canvas loses about 55px of height in exchange. The minimap stays where it was, since it only renders correctly inside the canvas surface; it can still be covered by a Portal, and can be turned off in Settings.
+
 ## 0.33.3 - 2026-09-21
 
 ### Fixed

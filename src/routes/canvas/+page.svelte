@@ -3130,7 +3130,7 @@
           </div>
         </div>
       {/if}
-      <div class="contents" inert={designModeNodeId !== null} aria-hidden={designModeNodeId ? 'true' : undefined}>
+      <div class="canvas-main" inert={designModeNodeId !== null} aria-hidden={designModeNodeId ? 'true' : undefined}>
       <ZoomBridge onReady={(api) => (zoomApi = api)} onZoomChange={(percent) => (zoomPercent = percent)} />
       {#if ghostRect}
         <div
@@ -3163,11 +3163,18 @@
         onpointermove={handlePanePointerMove}
         onpointerup={handlePanePointerUp}
       >
+        {#if appSettings.showMinimap !== 'false'}
+          <MiniMap bgColor="var(--app-surface)" maskColor="color-mix(in srgb, var(--app-canvas) 72%, transparent)" nodeColor={minimapNodeColor} pannable zoomable />
+        {/if}
         {#if backgroundVariant !== 'none'}
           <Background gap={20} variant={backgroundVariant} patternColor="var(--app-grid)" />
         {/if}
+      </SvelteFlow>
+      <div class="canvas-dock">
+        <div class="canvas-dock-row">
+          <div class="canvas-dock-left">
         {#if appSettings.showControls !== 'false'}
-          <Controls>
+          <Controls orientation="horizontal">
             {#snippet children()}
               <button
                 type="button"
@@ -3180,20 +3187,8 @@
             {/snippet}
           </Controls>
         {/if}
-        {#if appSettings.showMinimap !== 'false'}
-          <MiniMap bgColor="var(--app-surface)" maskColor="color-mix(in srgb, var(--app-canvas) 72%, transparent)" nodeColor={minimapNodeColor} pannable zoomable />
-        {/if}
-        {#if selectedTransferNodeIds.length > 0}
-          <Panel position="top-center">
-            <div class="flex h-9 items-center gap-2 rounded-md border border-[var(--app-border)] bg-[var(--app-surface)] px-2 shadow-lg">
-              <span class="whitespace-nowrap text-ui-sm font-medium text-[var(--app-text-muted)]">{m['canvas.transfer_selected']({ count: selectedTransferNodeIds.length })}</span>
-              <Button size="sm" class="h-7 gap-1.5 px-2 text-xs" onclick={() => (transferOpen = true)}>
-                <Copy size={13} />{m['canvas.transfer_open']()}
-              </Button>
-            </div>
-          </Panel>
-        {/if}
-        <Panel position="bottom-center">
+          </div>
+          <div class="canvas-dock-center">
           <div class="toolbar-wrap">
             {#if canScrollLeft}
               <button class="toolbar-arrow" aria-label={m['canvas.scroll_left']()} onclick={() => scrollToolbar(-1)}>
@@ -3353,8 +3348,19 @@
               </button>
             {/if}
           </div>
-        </Panel>
-      </SvelteFlow>
+          </div>
+          <div class="canvas-dock-right">
+        {#if selectedTransferNodeIds.length > 0}
+            <div class="flex h-9 items-center gap-2 rounded-md border border-[var(--app-border)] bg-[var(--app-surface)] px-2 shadow-lg">
+              <span class="whitespace-nowrap text-ui-sm font-medium text-[var(--app-text-muted)]">{m['canvas.transfer_selected']({ count: selectedTransferNodeIds.length })}</span>
+              <Button size="sm" class="h-7 gap-1.5 px-2 text-xs" onclick={() => (transferOpen = true)}>
+                <Copy size={13} />{m['canvas.transfer_open']()}
+              </Button>
+            </div>
+        {/if}
+          </div>
+        </div>
+      </div>
       </div>
     {:else}
       <div class="canvas-empty">
@@ -3997,6 +4003,68 @@
     padding: 8px;
   }
 
+  /* A doca fica FORA do retangulo do flow de proposito: a camada nativa de
+     um Portal e composta acima de todo o DOM e cobriria qualquer controle
+     desenhado dentro do flow, por mais alto que fosse o z-index. Aqui um no
+     nao alcanca. */
+  .canvas-main {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .canvas-main :global(.svelte-flow) {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .canvas-dock {
+    flex-shrink: 0;
+    border-top: 1px solid var(--app-border);
+    background: var(--app-page);
+  }
+
+  .canvas-dock-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+  }
+
+  .canvas-dock-left,
+  .canvas-dock-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .canvas-dock-center {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Controls e MiniMap sao Panel do xyflow (absolutos): na doca eles entram
+     no fluxo normal. */
+  .canvas-dock :global(.svelte-flow__panel) {
+    position: static;
+    margin: 0;
+    transform: none;
+  }
+
+  .canvas-dock :global(.svelte-flow__controls) {
+    box-shadow: none;
+  }
+
+
+
+
+
   .canvas-area {
     flex: 1;
     min-width: 0;
@@ -4122,7 +4190,6 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 12px;
   }
 
   .toolbar-arrow {
