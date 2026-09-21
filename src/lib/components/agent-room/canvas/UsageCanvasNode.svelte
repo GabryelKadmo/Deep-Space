@@ -288,10 +288,13 @@
 
       {#each report.providers as provider (provider.routingId)}
         {@const meta = usageProviderDefinition(provider.provider)}
-        <section class="provider-row">
+        <section class="provider-row" class:profile-row={Boolean(provider.profileId)}>
           <div class="provider-head">
             {#if meta.icon}<img class="app-logo-plate" src={meta.icon} width="18" height="18" alt="" />{:else}<Bot size={18} aria-hidden="true" />{/if}
-            <strong>{meta.name}{#if provider.profileName} · {provider.profileName}{/if}</strong>
+            <span class="provider-name">
+              <strong>{meta.name}</strong>
+              {#if provider.profileName}<span class="profile-tag">{provider.profileName}</span>{/if}
+            </span>
             {#if provider.plan}<span class="plan">{provider.plan}</span>{/if}
             <span class="status" style:color={statusColor(provider.status)}>{statusLabel(provider.status)}</span>
           </div>
@@ -387,6 +390,24 @@
     gap: 8px;
     padding: 9px;
     border-bottom: 1px solid var(--app-border);
+  }
+  .profile-row {
+    background: color-mix(in srgb, var(--app-surface-subtle) 55%, transparent);
+  }
+
+  .provider-name {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .profile-tag {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 9px;
+    color: var(--app-text-soft);
   }
 
   .provider-head,
