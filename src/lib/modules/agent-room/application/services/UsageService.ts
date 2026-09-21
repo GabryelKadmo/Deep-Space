@@ -113,14 +113,19 @@ export class UsageService {
       de credenciais para ler sem rodar a CLI, e configDirPair/unsupported
       nao tem collector). */
   async getAll(forceRefresh = false): Promise<ProviderUsage[]> {
-    const base = await Promise.all(USAGE_PROVIDERS.map((provider) => this.getUsage(provider.id, forceRefresh)));
-    const profileRows = await Promise.all(USAGE_PROVIDERS
-      .filter((provider) => provider.collector)
-      .map(async (provider) => {
-        const profiles = await this.listProfiles(provider.id).catch(() => []);
-        return Promise.all(profiles.map((profile) => this.getUsage(provider.id, forceRefresh, profile)));
-      }));
-    return [...base, ...profileRows.flat()];
+    // Cada perfil sai logo depois do proprio provider: agrupados assim, a
+    // conta de trabalho do Claude fica ao lado da conta principal do Claude,
+    // em vez de todas as contas extras empilhadas no fim da lista.
+    const rows = await Promise.all(USAGE_PROVIDERS.map(async (provider) => {
+      const base = await this.getUsage(provider.id, forceRefresh);
+      if (!provider.collector) return [base];
+      const profiles = await this.listProfiles(provider.id).catch(() => []);
+      const fromProfiles = await Promise.all(
+        profiles.map((profile) => this.getUsage(provider.id, forceRefresh, profile)),
+      );
+      return [base, ...fromProfiles];
+    }));
+    return rows.flat();
   }
 
   cached(): ProviderUsage[] {

@@ -235,4 +235,27 @@ describe('UsageService', () => {
       'https://docs.cline.bot/getting-started/cline-provider',
     );
   });
+
+  it('lists each extra profile right after its own provider', async () => {
+    // Antes as contas extras eram todas concatenadas no fim, entao a conta de
+    // trabalho do Claude aparecia longe da conta principal do Claude.
+    const home = homeWith({});
+    const service = new UsageService(
+      fakeFetch({}),
+      home,
+      async () => null,
+      'linux',
+      async (providerId: string) =>
+        providerId === 'claude'
+          ? ([{ id: 'p1', name: 'Trabalho', provider: 'claude' }] as unknown as ProviderProfile[])
+          : [],
+    );
+
+    const usages = await service.getAll();
+    const claudeRows = usages.filter((usage) => usage.provider === 'claude');
+    expect(claudeRows).toHaveLength(2);
+    const first = usages.indexOf(claudeRows[0]);
+    expect(usages.indexOf(claudeRows[1])).toBe(first + 1);
+    expect(claudeRows[1].profileName).toBe('Trabalho');
+  });
 });

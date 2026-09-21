@@ -32,7 +32,11 @@ describe('WorkspaceService — broadcast de mudancas estruturais', () => {
     const created = await workspaceService.createNode(dtoNode);
     expect(events.at(-1)).toEqual({ type: 'workspaceChanged', workspaceId: workspace.id });
 
-    const edge = await workspaceService.createEdge({ workspaceId: workspace.id, sourceNodeId: created.id, targetNodeId: created.id, style: 'cord' } as never);
+    // Uma corda precisa de dois nos distintos: ligar um no a si mesmo e recusado.
+    const other = await workspaceService.createNode({ ...dtoNode, title: 'M' } as never);
+    expect(events.at(-1)).toEqual({ type: 'workspaceChanged', workspaceId: workspace.id });
+
+    const edge = await workspaceService.createEdge({ workspaceId: workspace.id, sourceNodeId: created.id, targetNodeId: other.id, style: 'cord' } as never);
     expect(events.at(-1)).toEqual({ type: 'workspaceChanged', workspaceId: workspace.id });
 
     await workspaceService.deleteEdge(workspace.id, edge.id);
@@ -40,7 +44,7 @@ describe('WorkspaceService — broadcast de mudancas estruturais', () => {
 
     await workspaceService.deleteNode(workspace.id, created.id);
     expect(events.at(-1)).toEqual({ type: 'workspaceChanged', workspaceId: workspace.id });
-    expect(events).toHaveLength(4);
+    expect(events).toHaveLength(5);
   });
 
   it('updateNode NAO emite (arrastar/redimensionar nao pode recarregar o canvas)', async () => {

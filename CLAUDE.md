@@ -87,6 +87,9 @@
 
 - The canvas (`src/routes/canvas/+page.svelte`) uses @xyflow/svelte with custom node components in `src/lib/components/agent-room/canvas/`. Layout persists per workspace via the workspaces/nodes/edges API.
 - `useSvelteFlow()` only works inside `SvelteFlowProvider` — use the `ZoomBridge` component pattern to expose zoom functions to the page.
+  `setZoom`, `setCenter` and `fitView` work through that bridge, but `zoomIn`/`zoomOut` silently do nothing from outside `<SvelteFlow>` — step the zoom with `setZoom` against `getViewport().zoom` instead.
+- `onconnectend` only reports `toNode` when the rope ends inside a handle’s `connectionRadius`; the middle of a node is far outside every handle, so "drop the rope on the node" has to resolve the target from `document.elementFromPoint` (`handleConnectEnd` in `canvas/+page.svelte`).
+- `WorkspaceService.createEdge` rejects a self link and returns the existing edge for a pair that is already connected, in either direction — tests that rope a node to itself as a shortcut will fail.
 - Canvas page and `/terminal` are client-only (`ssr = false`) — avoids hydration races with xterm/xyflow.
 - e2e tests run against the production build (`npm run build && PORT=5199 node scripts/deepspace-server.mjs`), serial workers. Clean up created workspaces via API at the end of each test.
 
