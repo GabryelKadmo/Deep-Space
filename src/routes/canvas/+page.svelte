@@ -10,6 +10,7 @@
     Panel,
     SvelteFlow,
     type Connection,
+    type OnConnectEnd,
     type Edge,
     type Node,
   } from '@xyflow/svelte';
@@ -2627,6 +2628,26 @@
     toast.success(message);
   }
 
+  // Soltar a corda em cima do quadro de destino tem de ligar, como em qualquer
+  // canvas. O xyflow so preenche o no de destino quando a ponta cai dentro do
+  // raio de um ponto de conexao, e o centro de um no fica longe demais de
+  // qualquer um deles — a corda sumia sem explicacao. Aqui o no vem de quem
+  // esta embaixo do ponteiro quando o arraste termina.
+  const handleConnectEnd: OnConnectEnd = (event, state) => {
+    connecting = false;
+    if (!state || state.toHandle) return;
+    const source = state.fromNode?.id;
+    if (!source) return;
+    const point = event instanceof MouseEvent ? event : event.changedTouches[0];
+    if (!point) return;
+    const target = document
+      .elementFromPoint(point.clientX, point.clientY)
+      ?.closest('.svelte-flow__node')
+      ?.getAttribute('data-id');
+    if (!target) return;
+    void handleConnect({ source, target, sourceHandle: null, targetHandle: null });
+  };
+
   async function handleConnect(connection: Connection) {
     if (!activeWorkspace || !connection.source || !connection.target) return;
     if (connection.source === connection.target) return;
@@ -3175,7 +3196,7 @@
         deleteKey={designModeNodeId ? [] : ['Backspace', 'Delete']}
         onconnect={handleConnect}
         onconnectstart={() => (connecting = true)}
-        onconnectend={() => (connecting = false)}
+        onconnectend={handleConnectEnd}
         onedgeclick={handleEdgeClick}
         onbeforedelete={handleBeforeDelete}
         ondelete={handleDelete}
