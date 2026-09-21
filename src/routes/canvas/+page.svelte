@@ -4060,6 +4060,7 @@
   .canvas-dock :global(.svelte-flow__controls) {
     display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
     box-shadow: none;
   }
 
