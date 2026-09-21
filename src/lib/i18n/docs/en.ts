@@ -939,6 +939,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "September 21, 2026 · 0.33.3",
+  "title": "Deep Space 0.33.3: Portals stop reloading on their own",
+  "summary": "No more reload every few seconds stealing focus from whatever you were typing",
+  "items": [
+    "An open Portal reloaded itself every few seconds and took keyboard focus with it, interrupting whatever was being typed in a terminal. After every load the Portal ran a health check by reading location.href inside the page and treated an empty answer as a failed page — so it reloaded. A single-page app switching routes, a redirect in flight or a subframe still loading all answer empty, and a successful check reset the attempt counter, so the cycle never ended. Only a real load failure reloads now: the page being a Chromium error page, the navigation being rejected, or the load reporting failure. A check that cannot answer is treated as inconclusive and changes nothing."
+  ]
+},
+{
   "date": "September 20, 2026 · 0.33.2",
   "title": "Deep Space 0.33.2: Portals accept any address again",
   "summary": "Portal unlocked from its first site, and a visible error instead of a blank page",
