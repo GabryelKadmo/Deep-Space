@@ -939,6 +939,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "21 de septiembre de 2026 · 0.33.3",
+  "title": "Deep Space 0.33.3: los Portales dejan de recargarse solos",
+  "summary": "Se acabó la recarga cada pocos segundos que robaba el foco mientras escribías",
+  "items": [
+    "Un Portal abierto se recargaba solo cada pocos segundos y se llevaba el foco del teclado, interrumpiendo lo que se estuviera escribiendo en un terminal. Después de cada carga el Portal hacía una comprobación leyendo location.href dentro de la página y trataba una respuesta vacía como página rota — así que recargaba. Una SPA cambiando de ruta, un redirect en curso o un subframe cargando responden vacío, y una comprobación exitosa reiniciaba el contador de intentos, así que el ciclo no terminaba nunca. Ahora solo recarga un fallo real: que la página sea una página de error de Chromium, que la navegación sea rechazada o que la carga acuse error. Una comprobación que no puede responder es inconclusa y no cambia nada."
+  ]
+},
+{
   "date": "20 de septiembre de 2026 · 0.33.2",
   "title": "Deep Space 0.33.2: los Portales vuelven a aceptar cualquier dirección",
   "summary": "Portal liberado de su primer sitio y con error visible en vez de página en blanco",

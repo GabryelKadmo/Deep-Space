@@ -266,10 +266,17 @@
   async function verifyLoadedPage(webview: PortalWebviewElement) {
     try {
       const href = String(await executePortalScript(webview, 'location.href') ?? '');
-      if (href && href !== 'about:blank' && !href.startsWith('chrome-error:')) markReady();
-      else if (targetUrl()) markUnavailable(href.startsWith('chrome-error:') ? 'o servidor ainda não respondeu' : 'a página ainda está vazia');
+      if (href && href !== 'about:blank' && !href.startsWith('chrome-error:')) { markReady(); return; }
+      if (!targetUrl()) return;
+      // So o erro de carregamento do proprio Chromium significa que a pagina
+      // nao subiu (dev server ainda de pe, DNS, conexao recusada) — esse vale
+      // recarregar. Um href vazio e apenas inconclusivo: SPA trocando de rota,
+      // redirect em curso ou subframe carregando devolvem vazio o tempo todo,
+      // e tratar isso como falha recarregava a pagina em loop e roubava o foco.
+      if (href.startsWith('chrome-error:')) markUnavailable('o servidor ainda não respondeu');
     } catch {
-      markUnavailable('a página ainda não está pronta');
+      // Nao deu para inspecionar a pagina. Isso nao diz nada sobre ela ter
+      // carregado, entao nao recarrega: no maximo segue sem marcar pronta.
     }
   }
 

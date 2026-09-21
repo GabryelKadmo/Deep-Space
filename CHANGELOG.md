@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.33.3 - 2026-09-21
+
+### Fixed
+
+- An open Portal reloaded itself every few seconds and took keyboard focus with it, interrupting whatever was being typed in a terminal. After every load the Portal ran a health check by reading `location.href` inside the page, and treated an empty answer as a failed page — so it reloaded. A single-page app switching routes, a redirect in flight or a subframe still loading all answer empty, and a successful check reset the attempt counter, so the cycle never ended. Only a real load failure reloads now: the page being a Chromium error page, the navigation being rejected, or the load reporting failure. A check that cannot answer is treated as inconclusive and changes nothing.
+
 ## 0.33.2 - 2026-09-20
 
 ### Fixed
