@@ -2657,8 +2657,9 @@
     if (connection.source === connection.target) return;
     const alreadyLinked = edges.some(
       (edge) =>
-        (edge.source === connection.source && edge.target === connection.target) ||
-        (edge.source === connection.target && edge.target === connection.source),
+        edge.type === 'deepspace' &&
+        ((edge.source === connection.source && edge.target === connection.target) ||
+          (edge.source === connection.target && edge.target === connection.source)),
     );
     if (alreadyLinked) return;
     const edge = await api<CanvasEdge>(`/api/agent-room/workspaces/${activeWorkspace.id}/edges`, {
@@ -3222,11 +3223,11 @@
           <div class="canvas-dock-left">
             {#if appSettings.showControls !== 'false'}
               <div class="zoom-cluster">
-                <button type="button" class="zoom-btn" title={m['canvas.zoom_out']()} aria-label={m['canvas.zoom_out']()} onclick={() => stepZoom(1 / 1.25)}>
+                <button type="button" class="zoom-btn" data-testid="canvas-zoom-out" title={m['canvas.zoom_out']()} aria-label={m['canvas.zoom_out']()} onclick={() => stepZoom(1 / 1.25)}>
                   <Minus size={14} />
                 </button>
                 <DropdownMenu.Root>
-                  <DropdownMenu.Trigger class="zoom-value" aria-label={m['canvas.zoom_level']()}>
+                  <DropdownMenu.Trigger class="zoom-value" data-testid="canvas-zoom-level" aria-label={m['canvas.zoom_level']()}>
                     {zoomPercent}%<ChevronDown size={11} />
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content align="start" side="top" class="zoom-menu">
@@ -3237,16 +3238,17 @@
                     <DropdownMenu.Item class="zoom-menu-item" onSelect={() => zoomApi?.fitView({ duration: 220 })}>{m['canvas.zoom_fit']()}</DropdownMenu.Item>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
-                <button type="button" class="zoom-btn" title={m['canvas.zoom_in']()} aria-label={m['canvas.zoom_in']()} onclick={() => stepZoom(1.25)}>
+                <button type="button" class="zoom-btn" data-testid="canvas-zoom-in" title={m['canvas.zoom_in']()} aria-label={m['canvas.zoom_in']()} onclick={() => stepZoom(1.25)}>
                   <Plus size={14} />
                 </button>
                 <span class="zoom-sep" aria-hidden="true"></span>
-                <button type="button" class="zoom-btn" title={m['canvas.zoom_fit']()} aria-label={m['canvas.zoom_fit']()} onclick={() => zoomApi?.fitView({ duration: 220 })}>
+                <button type="button" class="zoom-btn" data-testid="canvas-zoom-fit" title={m['canvas.zoom_fit']()} aria-label={m['canvas.zoom_fit']()} onclick={() => zoomApi?.fitView({ duration: 220 })}>
                   <Maximize size={13} />
                 </button>
                 <button
                   type="button"
                   class="zoom-btn"
+                  data-testid="canvas-zoom-lock"
                   aria-pressed={canvasLocked}
                   title={canvasLocked ? m['canvas.zoom_unlock']() : m['canvas.zoom_lock']()}
                   aria-label={canvasLocked ? m['canvas.zoom_unlock']() : m['canvas.zoom_lock']()}

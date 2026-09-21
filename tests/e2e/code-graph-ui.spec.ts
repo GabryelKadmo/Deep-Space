@@ -140,8 +140,8 @@ test.describe('code graph UI', () => {
           // Sigma is nested inside XYFlow's CSS-scaled viewport. Exercise a
           // non-1 outer scale so pointer picking cannot accidentally pass by
           // comparing viewport pixels with unscaled canvas coordinates.
-          await page.locator('.svelte-flow__controls-zoomout').click();
-          await page.locator('.svelte-flow__controls-zoomout').click();
+          await page.getByTestId('canvas-zoom-out').click();
+          await page.getByTestId('canvas-zoom-out').click();
           await expect.poll(() => visualization.evaluate((element) => (
             element.getBoundingClientRect().width / (element as HTMLElement).offsetWidth
           ))).toBeLessThan(0.85);
