@@ -943,6 +943,21 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "21 de setembro de 2026 · 0.33.5",
+  "title": "Deep Space 0.33.5: zoom numa linha só, detalhe da tarefa dentro do quadro",
+  "summary": "Controle de zoom refeito, gaveta no kanban, barra de alterações não salvas e ligação entre nós mais tolerante",
+  "items": [
+    "O controle de zoom do canvas virou uma linha só — menos, a porcentagem atual com menu de presets, mais, um separador, encaixar na tela e uma trava do canvas. O controle do xyflow que ele substitui é uma pilha vertical de botões quadrados e deixava uma faixa vazia embaixo de si dentro da barra nova. O menu de porcentagem pula direto para 50/75/100/150/200% ou encaixa o canvas inteiro, e a trava congela o arraste, o movimento e a seleção para ler um canvas cheio sem mexer nele sem querer.",
+    "O detalhe da tarefa abre como gaveta dentro do próprio nó do kanban, não mais como modal centralizado. O modal cobria o quadro de onde a tarefa saiu, então a coluna a que o cartão pertence — o motivo de estar lendo o cartão — sumia atrás dele. Esc ou a seta de voltar retorna ao quadro, e Anterior/Próxima continuam percorrendo a coluna.",
+    "Configurações mostra uma barra flutuante assim que algo é editado: \"Cuidado — você tem alterações que não foram salvas!\", com Redefinir e Salvar alterações. O diálogo que ela substitui só aparecia na hora de sair da página, então uma edição podia ficar sem salvar por tempo indeterminado sem nada na tela avisando. Tentar sair com alteração pendente continua cancelando a navegação, e agora pisca a barra em vez de abrir um diálogo; salvar ou redefinir por ela completa a navegação que estava barrada.",
+    "No Windows o canvas ficava sem nenhum botão de compartilhar. Lá a barra de título própria assume o compartilhamento e as notificações no lugar da barra lateral, mas só desenhava o compartilhar no Workbench — então no canvas o botão não estava em lugar nenhum. Agora a barra de título mostra o botão nas duas telas, e o canvas registra o mesmo handler que abre o diálogo de compartilhamento.",
+    "Ligar dois nós não depende mais de acertar um alvo de 20px: soltar a corda em qualquer lugar do nó de destino conecta, e o raio em volta de cada bolinha ficou maior. O xyflow só informa um destino quando a ponta cai dentro do raio de uma bolinha, e o meio de um nó está longe de todas elas, então a corda simplesmente sumia. Os pontos de conexão de todos os nós também ficam visíveis enquanto a corda está sendo arrastada — antes o nó de destino não mostrava nada, porque os pontos só apareciam com o mouse em cima e o ponteiro estava preso no arraste.",
+    "Um nó não pode mais ser ligado a si mesmo, e dois nós já ligados não empilham uma segunda corda por cima da primeira. Soltar a corda de volta no próprio nó, ou refazer uma ligação que já existia, criava em silêncio arestas sobrepostas no mesmo lugar, que só saíam uma a uma. A guarda fica no serviço de workspace, então a ponte (deepspace ask, recruit) também está coberta.",
+    "Um Portal se marcava indisponível — e, como o aviso de erro esconde a página, ficava em branco — sempre que uma navegação era substituída por outra. Página que redireciona ao carregar rejeita a primeira navegação com ERR_ABORTED, o que não é falha; o tratamento de erro já ignorava esse código e agora a chamada de carregamento lê do mesmo jeito.",
+    "O Usage lista um perfil adicionado manualmente logo depois do provedor a que ele pertence, em vez de no fim da lista, e cada conta extra leva o próprio nome embaixo do nome do provedor, então duas contas Claude lado a lado se distinguem de relance. O painel de roteamento do líder também perdeu o campo desalinhado: a dica de janela ficava dentro da grade e esticava uma coluna."
+  ]
+},
+{
   "date": "21 de setembro de 2026 · 0.33.4",
   "title": "Deep Space 0.33.4: controles do canvas saem de baixo dos nós",
   "summary": "Barra de ferramentas e zoom ganham faixa própria, fora do alcance de qualquer nó",

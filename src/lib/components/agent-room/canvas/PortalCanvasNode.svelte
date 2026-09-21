@@ -209,11 +209,22 @@
   // recusada vira um retangulo branco sem explicacao nenhuma.
   const surfaceBlocked = $derived(Boolean(isDesktop && data.payload.url && !portalReady && portalError));
 
+  // ERR_ABORTED (-3) nao e falha: a navegacao foi substituida por outra —
+  // um redirect da propria pagina ou uma segunda chamada. O handler de
+  // did-fail-load ja ignora esse codigo; a rejeicao do loadURL precisava da
+  // mesma leitura, senao um redirect comum marca o Portal como indisponivel
+  // e, desde que o aviso passou a esconder a superficie, apaga a pagina.
+  const ABORTED_NAVIGATION = /ERR_ABORTED/;
+
   function retryLoad() {
     const url = targetUrl();
     const webview = desktopFrame();
     if (!url || !webview) return;
-    void webview.loadURL(url).catch((error) => markUnavailable(error instanceof Error ? error.message : String(error)));
+    void webview.loadURL(url).catch((error) => {
+      const detail = error instanceof Error ? error.message : String(error);
+      if (ABORTED_NAVIGATION.test(detail)) return;
+      markUnavailable(detail);
+    });
   }
 
   function scheduleRetry() {

@@ -229,7 +229,6 @@
               <Select.Item value="monthly">{m['usage.window_monthly']()}</Select.Item>
             </Select.Content>
           </Select.Root>
-          <p class="routing-window-hint">{m['usage.routing_window_hint']()}</p>
         </label>
         <label class="threshold-field">
           <span>{m['usage.routing_threshold']({ percent: policy.thresholdPercent })}</span>
@@ -244,6 +243,8 @@
           />
         </label>
       </div>
+
+      <p class="routing-window-hint">{m['usage.routing_window_hint']()}</p>
 
       {#if policy.enabled}
         {@const sourceReport = report.providers.find((provider) => provider.routingId === policy.sourceProvider)}
@@ -287,10 +288,13 @@
 
       {#each report.providers as provider (provider.routingId)}
         {@const meta = usageProviderDefinition(provider.provider)}
-        <section class="provider-row">
+        <section class="provider-row" class:profile-row={Boolean(provider.profileId)}>
           <div class="provider-head">
             {#if meta.icon}<img class="app-logo-plate" src={meta.icon} width="18" height="18" alt="" />{:else}<Bot size={18} aria-hidden="true" />{/if}
-            <strong>{meta.name}{#if provider.profileName} · {provider.profileName}{/if}</strong>
+            <span class="provider-name">
+              <strong>{meta.name}</strong>
+              {#if provider.profileName}<span class="profile-tag">{provider.profileName}</span>{/if}
+            </span>
             {#if provider.plan}<span class="plan">{provider.plan}</span>{/if}
             <span class="status" style:color={statusColor(provider.status)}>{statusLabel(provider.status)}</span>
           </div>
@@ -386,6 +390,24 @@
     gap: 8px;
     padding: 9px;
     border-bottom: 1px solid var(--app-border);
+  }
+  .profile-row {
+    background: color-mix(in srgb, var(--app-surface-subtle) 55%, transparent);
+  }
+
+  .provider-name {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .profile-tag {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 9px;
+    color: var(--app-text-soft);
   }
 
   .provider-head,
@@ -518,7 +540,8 @@
   .routing-fields {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
+    gap: 8px 10px;
+    align-items: end;
   }
 
   .routing-fields.disabled {
@@ -578,11 +601,13 @@
     gap: 5px;
   }
 
+  /* Linha inteira abaixo dos campos: dentro da celula do grid ela esticava a
+     coluna do limite monitorado e desalinhava o slider ao lado. */
   .routing-window-hint {
-    margin: 3px 0 0;
+    margin: 8px 0 0;
     color: var(--app-text-muted);
-    font-size: 9.5px;
-    line-height: 1.4;
+    font-size: 10px;
+    line-height: 1.45;
   }
 
   .provider-error.diagnostic {

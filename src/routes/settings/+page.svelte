@@ -41,8 +41,8 @@
 
   const isDirty = $derived(loaded && JSON.stringify(settings) !== JSON.stringify(savedSnapshot));
   let pendingNavigation = $state<{ url: URL; willUnload: boolean } | null>(null);
-  let showUnsavedDialog = $state(false);
   let savingBeforeLeave = $state(false);
+  let barAlert = $state(false);
 
   // ssr = false nesta rota — navigator sempre existe aqui.
   const isMac = isMacPlatform();
@@ -123,7 +123,8 @@
     if (navigation.to.url.pathname === window.location.pathname) return;
     navigation.cancel();
     pendingNavigation = { url: navigation.to.url, willUnload: navigation.willUnload };
-    showUnsavedDialog = true;
+    barAlert = true;
+    setTimeout(() => (barAlert = false), 600);
   });
 
   function leavePendingNavigation() {
@@ -138,19 +139,12 @@
     savingBeforeLeave = true;
     await save();
     savingBeforeLeave = false;
-    showUnsavedDialog = false;
     leavePendingNavigation();
   }
 
   function discardAndLeave() {
     settings = { ...savedSnapshot };
-    showUnsavedDialog = false;
     leavePendingNavigation();
-  }
-
-  function cancelLeave() {
-    showUnsavedDialog = false;
-    pendingNavigation = null;
   }
 
   function handleBeforeUnload(event: BeforeUnloadEvent) {
@@ -1074,19 +1068,6 @@
     </AlertDialog.Content>
   </AlertDialog.Root>
 
-  <AlertDialog.Root open={showUnsavedDialog} onOpenChange={(isOpen) => !isOpen && cancelLeave()}>
-    <AlertDialog.Content>
-      <AlertDialog.Header>
-        <AlertDialog.Title>{m['settings.unsaved_title']()}</AlertDialog.Title>
-        <AlertDialog.Description>{m['settings.unsaved_desc']()}</AlertDialog.Description>
-      </AlertDialog.Header>
-      <AlertDialog.Footer>
-        <AlertDialog.Cancel>{m['settings.unsaved_cancel']()}</AlertDialog.Cancel>
-        <AlertDialog.Action variant="outline" onclick={discardAndLeave}>{m['settings.unsaved_discard']()}</AlertDialog.Action>
-        <AlertDialog.Action disabled={savingBeforeLeave} onclick={saveAndLeave}>{m['settings.unsaved_save']()}</AlertDialog.Action>
-      </AlertDialog.Footer>
-    </AlertDialog.Content>
-  </AlertDialog.Root>
 
   <section class={settingsSectionClasses} id="updates">
     <header class="section-head">
@@ -1133,9 +1114,82 @@
   {/if}
     </div>
   </div>
+  {#if isDirty}
+    <div class="unsaved-bar" class:alert={barAlert} role="status">
+      <span class="unsaved-text">{m['settings.unsaved_bar']()}</span>
+      <button type="button" class="unsaved-reset" onclick={discardAndLeave}>{m['settings.unsaved_reset']()}</button>
+      <Button size="sm" disabled={savingBeforeLeave} onclick={saveAndLeave}>{m['settings.unsaved_save_changes']()}</Button>
+    </div>
+  {/if}
 </main>
 
 <style>
+  /* Alteracao pendente nao merece um modal na saida: a barra fica visivel
+     desde a primeira edicao e so chama atencao quando a navegacao e barrada. */
+  .unsaved-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    z-index: 60;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(660px, calc(100vw - 32px));
+    padding: 10px 10px 10px 16px;
+    border: 1px solid var(--app-border);
+    border-radius: 10px;
+    background: var(--app-surface-raised);
+    box-shadow: var(--app-shadow-overlay);
+    animation: unsaved-rise 160ms ease-out;
+  }
+
+  .unsaved-bar.alert {
+    border-color: var(--app-danger);
+    animation: unsaved-shake 420ms ease;
+  }
+
+  .unsaved-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--app-text);
+  }
+
+  .unsaved-reset {
+    border: 0;
+    background: transparent;
+    color: var(--app-text-soft);
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+
+  .unsaved-reset:hover {
+    color: var(--app-text);
+    text-decoration: underline;
+  }
+
+  @keyframes unsaved-rise {
+    from {
+      opacity: 0;
+      transform: translate(-50%, 12px);
+    }
+  }
+
+  @keyframes unsaved-shake {
+    0%, 100% { transform: translateX(-50%); }
+    25% { transform: translate(calc(-50% - 6px), 0); }
+    75% { transform: translate(calc(-50% + 6px), 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .unsaved-bar,
+    .unsaved-bar.alert {
+      animation: none;
+    }
+  }
   .settings-page {
     min-height: 100vh;
     background: var(--app-page);

@@ -6,11 +6,11 @@
   import {
     Background,
     ConnectionMode,
-    Controls,
     MiniMap,
     Panel,
     SvelteFlow,
     type Connection,
+    type OnConnectEnd,
     type Edge,
     type Node,
   } from '@xyflow/svelte';
@@ -57,7 +57,7 @@
   import DynamicLucideIcon from '$lib/components/agent-room/DynamicLucideIcon.svelte';
   import * as Popover from '$lib/components/ui/popover';
   import WorkspaceModeSwitch from '$lib/components/agent-room/WorkspaceModeSwitch.svelte';
-  import { setActiveWorkspaceId } from '$lib/components/agent-room/active-workspace.svelte.js';
+  import { setActiveWorkspaceId, setSharingOpenHandler } from '$lib/components/agent-room/active-workspace.svelte.js';
   import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
   import WorkspaceMemoryDialog from '$lib/components/agent-room/WorkspaceMemoryDialog.svelte';
   import AnnotationCenterDialog from '$lib/components/agent-room/AnnotationCenterDialog.svelte';
@@ -122,7 +122,7 @@
     setAgentProviderPinned,
   } from '$lib/components/agent-room/provider-toolbar.js';
   import { BackgroundVariant, SvelteFlowProvider } from '@xyflow/svelte';
-  import { BadgeCheck, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
+  import { BadgeCheck, ChevronDown, Lock, LockOpen, Maximize, Minus, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
   import ZoomBridge from '$lib/components/agent-room/canvas/ZoomBridge.svelte';
   import type {
     AgentProviderInfo,
@@ -525,7 +525,11 @@
   let activeWorkspace = $state<Workspace | null>(null);
   $effect(() => {
     setActiveWorkspaceId(activeWorkspace?.id ?? null);
-    return () => setActiveWorkspaceId(null);
+    setSharingOpenHandler(() => (sharingOpen = true));
+    return () => {
+      setActiveWorkspaceId(null);
+      setSharingOpenHandler(null);
+    };
   });
   let providers = $state<AgentProviderInfo[]>([]);
   const canChooseAlternateRuntime = typeof navigator !== 'undefined' && navigator.platform.startsWith('Win');
@@ -586,6 +590,17 @@
     setZoom: (zoom: number, options?: { duration?: number }) => void;
   } | null>(null);
   let zoomPercent = $state(100);
+  let connecting = $state(false);
+  let canvasLocked = $state(false);
+  const ZOOM_LEVELS = [0.5, 0.75, 1, 1.5, 2];
+  const ZOOM_MIN = 0.05;
+  const ZOOM_MAX = 4;
+
+  function stepZoom(factor: number) {
+    const current = zoomApi?.getViewport().zoom ?? 1;
+    const next = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, current * factor));
+    zoomApi?.setZoom(next, { duration: 160 });
+  }
   let flowWrapper: HTMLElement;
   const selectedTransferNodeIds = $derived(nodes.filter((node) => node.selected).map((node) => node.id));
   const selectedTransferNodeIdSet = $derived(new Set(selectedTransferNodeIds));
@@ -2617,8 +2632,36 @@
     toast.success(message);
   }
 
+  // Soltar a corda em cima do quadro de destino tem de ligar, como em qualquer
+  // canvas. O xyflow so preenche o no de destino quando a ponta cai dentro do
+  // raio de um ponto de conexao, e o centro de um no fica longe demais de
+  // qualquer um deles — a corda sumia sem explicacao. Aqui o no vem de quem
+  // esta embaixo do ponteiro quando o arraste termina.
+  const handleConnectEnd: OnConnectEnd = (event, state) => {
+    connecting = false;
+    if (!state || state.toHandle) return;
+    const source = state.fromNode?.id;
+    if (!source) return;
+    const point = event instanceof MouseEvent ? event : event.changedTouches[0];
+    if (!point) return;
+    const target = document
+      .elementFromPoint(point.clientX, point.clientY)
+      ?.closest('.svelte-flow__node')
+      ?.getAttribute('data-id');
+    if (!target) return;
+    void handleConnect({ source, target, sourceHandle: null, targetHandle: null });
+  };
+
   async function handleConnect(connection: Connection) {
     if (!activeWorkspace || !connection.source || !connection.target) return;
+    if (connection.source === connection.target) return;
+    const alreadyLinked = edges.some(
+      (edge) =>
+        edge.type === 'deepspace' &&
+        ((edge.source === connection.source && edge.target === connection.target) ||
+          (edge.source === connection.target && edge.target === connection.source)),
+    );
+    if (alreadyLinked) return;
     const edge = await api<CanvasEdge>(`/api/agent-room/workspaces/${activeWorkspace.id}/edges`, {
       method: 'POST',
       body: JSON.stringify({ sourceNodeId: connection.source, targetNodeId: connection.target }),
@@ -3114,7 +3157,7 @@
   {/snippet}
   </aside>
 
-  <section class="canvas-area" class:drawing={drawTool !== null}>
+  <section class="canvas-area" class:drawing={drawTool !== null} class:connecting>
     <SvelteFlowProvider>
     {#if activeWorkspace}
       {#if designModeNodeId}
@@ -3147,13 +3190,18 @@
         {nodeTypes}
         {edgeTypes}
         connectionMode={ConnectionMode.Loose}
+        connectionRadius={38}
         zIndexMode="manual"
         proOptions={{ hideAttribution: true }}
         minZoom={0.05}
         maxZoom={4}
-        panOnDrag={drawTool === null ? true : [1, 2]}
+        panOnDrag={canvasLocked ? false : drawTool === null ? true : [1, 2]}
+        nodesDraggable={!canvasLocked}
+        elementsSelectable={!canvasLocked}
         deleteKey={designModeNodeId ? [] : ['Backspace', 'Delete']}
         onconnect={handleConnect}
+        onconnectstart={() => (connecting = true)}
+        onconnectend={handleConnectEnd}
         onedgeclick={handleEdgeClick}
         onbeforedelete={handleBeforeDelete}
         ondelete={handleDelete}
@@ -3173,20 +3221,43 @@
       <div class="canvas-dock">
         <div class="canvas-dock-row">
           <div class="canvas-dock-left">
-        {#if appSettings.showControls !== 'false'}
-          <Controls orientation="horizontal">
-            {#snippet children()}
-              <button
-                type="button"
-                class="zoom-indicator"
-                title={m['canvas.zoom_reset']()}
-                onclick={() => zoomApi?.setZoom(1, { duration: 200 })}
-              >
-                {zoomPercent}%
-              </button>
-            {/snippet}
-          </Controls>
-        {/if}
+            {#if appSettings.showControls !== 'false'}
+              <div class="zoom-cluster">
+                <button type="button" class="zoom-btn" data-testid="canvas-zoom-out" title={m['canvas.zoom_out']()} aria-label={m['canvas.zoom_out']()} onclick={() => stepZoom(1 / 1.25)}>
+                  <Minus size={14} />
+                </button>
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger class="zoom-value" data-testid="canvas-zoom-level" aria-label={m['canvas.zoom_level']()}>
+                    {zoomPercent}%<ChevronDown size={11} />
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content align="start" side="top" class="zoom-menu">
+                    {#each ZOOM_LEVELS as level (level)}
+                      <DropdownMenu.Item class="zoom-menu-item" onSelect={() => zoomApi?.setZoom(level, { duration: 200 })}>{Math.round(level * 100)}%</DropdownMenu.Item>
+                    {/each}
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item class="zoom-menu-item" onSelect={() => zoomApi?.fitView({ duration: 220 })}>{m['canvas.zoom_fit']()}</DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+                <button type="button" class="zoom-btn" data-testid="canvas-zoom-in" title={m['canvas.zoom_in']()} aria-label={m['canvas.zoom_in']()} onclick={() => stepZoom(1.25)}>
+                  <Plus size={14} />
+                </button>
+                <span class="zoom-sep" aria-hidden="true"></span>
+                <button type="button" class="zoom-btn" data-testid="canvas-zoom-fit" title={m['canvas.zoom_fit']()} aria-label={m['canvas.zoom_fit']()} onclick={() => zoomApi?.fitView({ duration: 220 })}>
+                  <Maximize size={13} />
+                </button>
+                <button
+                  type="button"
+                  class="zoom-btn"
+                  data-testid="canvas-zoom-lock"
+                  aria-pressed={canvasLocked}
+                  title={canvasLocked ? m['canvas.zoom_unlock']() : m['canvas.zoom_lock']()}
+                  aria-label={canvasLocked ? m['canvas.zoom_unlock']() : m['canvas.zoom_lock']()}
+                  onclick={() => (canvasLocked = !canvasLocked)}
+                >
+                  {#if canvasLocked}<Lock size={13} />{:else}<LockOpen size={13} />{/if}
+                </button>
+              </div>
+            {/if}
           </div>
           <div class="canvas-dock-center">
           <div class="toolbar-wrap">
@@ -4031,7 +4102,89 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 6px 10px;
+    padding: 4px 10px;
+  }
+
+  /* Dentro da faixa a moldura flutuante nao faz sentido: a propria faixa ja e
+     a superficie, e as duas caixas com borda, sombra e blur pareciam dois
+     objetos soltos com folga sobrando em volta. */
+  .canvas-dock .toolbar {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    backdrop-filter: none;
+    overflow: visible;
+  }
+
+  .canvas-dock .toolbar {
+    padding: 0;
+  }
+
+  /* Controle de zoom proprio: − 50%⌄ + │ ⛶. O <Controls> do xyflow vinha com
+     orientacao, moldura e borda por botao pensadas para flutuar sobre o
+     canvas, e brigava com a faixa. */
+  .zoom-cluster {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .zoom-btn {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--app-text-soft);
+    cursor: pointer;
+  }
+
+  .zoom-btn:hover,
+  .zoom-btn[aria-pressed='true'] {
+    background: var(--app-surface-raised);
+    color: var(--app-text);
+  }
+
+  :global(.zoom-value) {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    height: 26px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--app-text);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+
+  :global(.zoom-value:hover) {
+    background: var(--app-surface-raised);
+  }
+
+  :global(.zoom-menu) {
+    min-width: 7rem;
+  }
+
+  :global(.zoom-menu .zoom-menu-item) {
+    font-size: 12px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+  .zoom-sep {
+    width: 1px;
+    height: 16px;
+    margin: 0 4px;
+    background: var(--app-border);
+  }
+  .canvas-dock-left {
+    padding-right: 10px;
+    border-right: 1px solid var(--app-border);
   }
 
   .canvas-dock-left,
@@ -4056,14 +4209,6 @@
     margin: 0;
     transform: none;
   }
-
-  .canvas-dock :global(.svelte-flow__controls) {
-    box-shadow: none;
-  }
-
-
-
-
 
   .canvas-area {
     flex: 1;
@@ -4092,48 +4237,6 @@
     border: 1px solid var(--app-border);
     border-radius: 7px;
     overflow: hidden;
-  }
-
-
-  .canvas-area :global(.svelte-flow__controls) {
-    border: 1px solid var(--app-border);
-    border-radius: 7px;
-    overflow: hidden;
-    box-shadow: var(--app-shadow-panel);
-  }
-
-  .canvas-area :global(.svelte-flow__controls-button) {
-    background: var(--app-surface);
-    border-bottom: 1px solid var(--app-border);
-    color: var(--app-text-soft);
-  }
-
-  .canvas-area :global(.svelte-flow__controls-button:hover) {
-    background: var(--app-surface-raised);
-  }
-
-  .canvas-area :global(.svelte-flow__controls-button svg) {
-    fill: var(--app-text-soft);
-  }
-
-  .zoom-indicator {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 20px;
-    min-width: 26px;
-    padding: 0 4px;
-    border: 0;
-    background: var(--app-surface);
-    color: var(--app-text-soft);
-    font-size: 9px;
-    font-variant-numeric: tabular-nums;
-    cursor: pointer;
-  }
-
-  .zoom-indicator:hover {
-    background: var(--app-surface-raised);
-    color: var(--app-accent);
   }
 
   .canvas-area :global(.svelte-flow__edge-path) {
@@ -4171,6 +4274,15 @@
     border: none;
     box-shadow: none;
     pointer-events: none !important;
+  }
+
+  /* Enquanto uma conexao esta sendo arrastada o ponteiro fica capturado pelo
+     no de origem, entao o no de destino nunca recebe :hover e suas bolinhas
+     ficavam invisiveis e sem pointer-events — nao havia onde soltar. Durante
+     o arraste todos os nos mostram seus pontos de conexao. */
+  .canvas-area.connecting :global(.node-handle) {
+    opacity: 0.95;
+    pointer-events: auto;
   }
 
   .canvas-area.drawing :global(.svelte-flow__pane) {

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import type { NodeProps } from '@xyflow/svelte';
-  import { Archive, ArchiveRestore, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Columns3, History, Link2, Maximize2, Paperclip, Plus, Scale, SquareKanban, StickyNote, Trash2, X } from '@lucide/svelte';
+  import { Archive, ArchiveRestore, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Columns3, History, Link2, Maximize2, Paperclip, Plus, Scale, SquareKanban, StickyNote, Trash2, X } from '@lucide/svelte';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import * as Dialog from '$lib/components/ui/dialog';
   import NodeShell from './NodeShell.svelte';
@@ -467,10 +467,12 @@
 
   // -- Detalhe do card (visao ampla) --------------------------------------------
   let detailTaskId = $state<string | null>(null);
+  let sheetElement = $state<HTMLElement | null>(null);
   const detailTask = $derived(detailTaskId ? (tasks.find((task) => task.id === detailTaskId) ?? null) : null);
 
   function openDetail(task: BoardTask) {
     detailTaskId = task.id;
+    void tick().then(() => sheetElement?.focus());
   }
 
   function closeDetail() {
@@ -828,6 +830,113 @@
     {/each}
   </div>
   {/if}
+{#if detailTask}
+      {@const current = detailTask}
+      <aside
+        class="tb-sheet nodrag nowheel"
+        role="dialog"
+        aria-label={current.title}
+        tabindex="-1"
+        bind:this={sheetElement}
+        onkeydown={(event) => { if (event.key === 'Escape') { event.stopPropagation(); closeDetail(); } }}
+      >
+        <header class="tb-sheet-head">
+          <HeaderIconButton label={m['tasks.detail_close']()} class="tb-icon-btn subtle" side="top" onclick={closeDetail}>
+            <ArrowLeft size={15} />
+          </HeaderIconButton>
+          {#if editingId === current.id}
+            <input
+              class="tb-detail-title-edit"
+              bind:value={editDraft}
+              aria-label={m['tasks.edit_task']()}
+              spellcheck="false"
+              onkeydown={(event) => {
+                if (event.key === 'Enter') commitEdit();
+                if (event.key === 'Escape') editingId = null;
+              }}
+              onblur={commitEdit}
+            />
+          {:else}
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <h3 class="tb-detail-title" ondblclick={() => startEdit(current)}>{current.title}</h3>
+          {/if}
+          <HeaderIconButton label={m['tasks.detail_prev']()} class="tb-icon-btn subtle" side="top" onclick={() => detailNav(-1)}>
+            <ChevronLeft size={15} />
+          </HeaderIconButton>
+          <HeaderIconButton label={m['tasks.detail_next']()} class="tb-icon-btn subtle" side="top" onclick={() => detailNav(1)}>
+            <ChevronRight size={15} />
+          </HeaderIconButton>
+        </header>
+
+        <div class="tb-detail-meta">
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger class="tb-detail-chip" aria-label={m['tasks.detail_column_aria']()}>
+              <Columns3 size={11} />{COLUMNS.find((column) => column.status === current.status)?.label ?? current.status}
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content class="w-44">
+              {#each COLUMNS as column (column.id)}
+                <DropdownMenu.Item onclick={() => patchTask(current.id, { status: column.status })}>{column.label}</DropdownMenu.Item>
+              {/each}
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger class="tb-detail-chip" aria-label={m['tasks.assign_aria']()}>
+              {current.assigneeTitle ?? m['tasks.assign_fallback']()}
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content class="w-44">
+              <DropdownMenu.Item onclick={() => patchTask(current.id, { assigneeNodeId: null })}>{m['tasks.no_assignee']()}</DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              {#each agents as agent (agent.id)}
+                <DropdownMenu.Item onclick={() => patchTask(current.id, { assigneeNodeId: agent.id })}>{agent.title}</DropdownMenu.Item>
+              {/each}
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+          {#if current.noteId}
+            <button class="tb-detail-chip" onclick={() => openLinkedNote(current.noteId!, true)}>
+              <StickyNote size={11} />{current.noteTitle ?? m['tasks.note_fallback']()}
+            </button>
+          {/if}
+        </div>
+
+        <div class="tb-detail-body">
+          {#if current.images?.length}
+            <div class="tb-detail-images">
+              {#each current.images as path, index (path)}
+                <button class="tb-detail-thumb-btn" aria-label={m['tasks.view_image']({ index: index + 1, total: current.images.length })} onclick={() => openViewer(current, index)}>
+                  <img class="tb-detail-thumb" src={imageUrl(path)} alt="" loading="lazy" />
+                </button>
+              {/each}
+            </div>
+          {/if}
+
+          {#if editingDescId === current.id}
+            <textarea
+              class="tb-detail-desc-edit"
+              bind:value={editDescDraft}
+              aria-label={m['tasks.edit_desc']()}
+              rows="10"
+              spellcheck="false"
+              onkeydown={(event) => { if (event.key === 'Escape') editingDescId = null; }}
+              onblur={commitDescEdit}
+            ></textarea>
+          {:else if current.description?.trim()}
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div class="tb-detail-desc" ondblclick={() => startDescEdit(current)}>
+              <MarkdownView content={current.description} onToggleCheckbox={(index, checked) => toggleChecklistItem(current, index, checked)} />
+            </div>
+          {:else}
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <p class="tb-detail-empty" ondblclick={() => startDescEdit(current)}>{m['tasks.detail_add_desc']()}</p>
+          {/if}
+
+          <AttachmentList
+            workspaceId={data.workspaceId}
+            attachments={(current.attachments ?? []).filter((attachment) => !attachment.path || !current.images.includes(attachment.path))}
+            onRemove={(attachment) => removeTaskAttachment(current, attachment)}
+          />
+        </div>
+      </aside>
+  {/if}
 </NodeShell>
 
 <CouncilDialog bind:open={councilOpen} workspaceId={data.workspaceId} source={councilSource} />
@@ -866,109 +975,6 @@
       </Dialog.Header>
       <div class="tb-note-viewer-body nodrag nowheel">
         <MarkdownView content={noteViewer.content} />
-      </div>
-    </Dialog.Content>
-  </Dialog.Root>
-{/if}
-
-{#if detailTask}
-  {@const current = detailTask}
-  <Dialog.Root open={detailTask !== null} onOpenChange={(open: boolean) => !open && closeDetail()}>
-    <Dialog.Content class="tb-detail-content nodrag nowheel">
-      <Dialog.Header>
-        <div class="tb-detail-head">
-          <HeaderIconButton label={m['tasks.detail_prev']()} class="tb-icon-btn subtle" side="top" onclick={() => detailNav(-1)}>
-            <ChevronLeft size={15} />
-          </HeaderIconButton>
-          {#if editingId === current.id}
-            <input
-              class="tb-detail-title-edit"
-              bind:value={editDraft}
-              aria-label={m['tasks.edit_task']()}
-              spellcheck="false"
-              onkeydown={(event) => {
-                if (event.key === 'Enter') commitEdit();
-                if (event.key === 'Escape') editingId = null;
-              }}
-              onblur={commitEdit}
-            />
-          {:else}
-            <!-- svelte-ignore a11y_no_static_element_interactions -->
-            <Dialog.Title class="tb-detail-title" ondblclick={() => startEdit(current)}>{current.title}</Dialog.Title>
-          {/if}
-          <HeaderIconButton label={m['tasks.detail_next']()} class="tb-icon-btn subtle" side="top" onclick={() => detailNav(1)}>
-            <ChevronRight size={15} />
-          </HeaderIconButton>
-        </div>
-        <Dialog.Description class="tb-detail-subtitle">{m['tasks.detail_desc']()}</Dialog.Description>
-      </Dialog.Header>
-
-      <div class="tb-detail-meta">
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger class="tb-detail-chip" aria-label={m['tasks.detail_column_aria']()}>
-            <Columns3 size={11} />{COLUMNS.find((column) => column.status === current.status)?.label ?? current.status}
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content class="w-44">
-            {#each COLUMNS as column (column.id)}
-              <DropdownMenu.Item onclick={() => patchTask(current.id, { status: column.status })}>{column.label}</DropdownMenu.Item>
-            {/each}
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger class="tb-detail-chip" aria-label={m['tasks.assign_aria']()}>
-            {current.assigneeTitle ?? m['tasks.assign_fallback']()}
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content class="w-44">
-            <DropdownMenu.Item onclick={() => patchTask(current.id, { assigneeNodeId: null })}>{m['tasks.no_assignee']()}</DropdownMenu.Item>
-            <DropdownMenu.Separator />
-            {#each agents as agent (agent.id)}
-              <DropdownMenu.Item onclick={() => patchTask(current.id, { assigneeNodeId: agent.id })}>{agent.title}</DropdownMenu.Item>
-            {/each}
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
-        {#if current.noteId}
-          <button class="tb-detail-chip" onclick={() => openLinkedNote(current.noteId!, true)}>
-            <StickyNote size={11} />{current.noteTitle ?? m['tasks.note_fallback']()}
-          </button>
-        {/if}
-      </div>
-
-      <div class="tb-detail-body">
-        {#if current.images?.length}
-          <div class="tb-detail-images">
-            {#each current.images as path, index (path)}
-              <button class="tb-detail-thumb-btn" aria-label={m['tasks.view_image']({ index: index + 1, total: current.images.length })} onclick={() => openViewer(current, index)}>
-                <img class="tb-detail-thumb" src={imageUrl(path)} alt="" loading="lazy" />
-              </button>
-            {/each}
-          </div>
-        {/if}
-
-        {#if editingDescId === current.id}
-          <textarea
-            class="tb-detail-desc-edit"
-            bind:value={editDescDraft}
-            aria-label={m['tasks.edit_desc']()}
-            rows="10"
-            spellcheck="false"
-            onkeydown={(event) => { if (event.key === 'Escape') editingDescId = null; }}
-            onblur={commitDescEdit}
-          ></textarea>
-        {:else if current.description?.trim()}
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <div class="tb-detail-desc" ondblclick={() => startDescEdit(current)}>
-            <MarkdownView content={current.description} onToggleCheckbox={(index, checked) => toggleChecklistItem(current, index, checked)} />
-          </div>
-        {:else}
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <p class="tb-detail-empty" ondblclick={() => startDescEdit(current)}>{m['tasks.detail_add_desc']()}</p>
-        {/if}
-
-        <AttachmentList
-          workspaceId={data.workspaceId}
-          attachments={(current.attachments ?? []).filter((attachment) => !attachment.path || !current.images.includes(attachment.path))}
-          onRemove={(attachment) => removeTaskAttachment(current, attachment)}
-        />
       </div>
     </Dialog.Content>
   </Dialog.Root>
@@ -1402,14 +1408,36 @@
   }
 
   /* ---- Detalhe amplo do card --------------------------------------------- */
-  :global(.tb-detail-content) {
-    max-width: min(680px, 92vw) !important;
-    max-height: 88vh;
+  /* O detalhe da tarefa e uma gaveta do proprio quadro: um modal centralizado
+     tirava a tarefa do contexto da coluna de onde ela saiu. */
+  .tb-sheet {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    padding: 10px 12px 12px;
+    background: var(--app-surface);
+    border-radius: 0 0 7px 7px;
+    outline: none;
+    animation: tb-sheet-in 140ms ease-out;
   }
 
-  .tb-detail-head {
+  @keyframes tb-sheet-in {
+    from {
+      opacity: 0;
+      transform: translateX(14px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tb-sheet {
+      animation: none;
+    }
+  }
+
+  .tb-sheet-head {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -1418,7 +1446,10 @@
   .tb-detail-title {
     flex: 1;
     min-width: 0;
-    font-size: 16px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 650;
+    color: var(--app-text);
     overflow-wrap: break-word;
     cursor: text;
   }
@@ -1434,10 +1465,6 @@
     font-weight: 650;
     padding: 4px 8px;
     outline: none;
-  }
-
-  .tb-detail-subtitle {
-    font-size: 11px;
   }
 
   .tb-detail-meta {
@@ -1468,6 +1495,8 @@
   }
 
   .tb-detail-body {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 10px;

@@ -92,9 +92,7 @@
     {#if isCanvas || isWorkbench}
       <div class="context-actions">
         <GitBranchIndicator />
-        {#if isWorkbench}
-          <WorkspaceSharingButton variant="titlebar" workspaceId={activeWorkspaceStore.id} onOpen={requestOpenSharing} />
-        {/if}
+        <WorkspaceSharingButton variant="titlebar" workspaceId={activeWorkspaceStore.id} onOpen={requestOpenSharing} />
         <AttentionCenter workspaceId={activeWorkspaceStore.id} />
       </div>
     {/if}
