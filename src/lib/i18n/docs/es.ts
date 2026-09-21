@@ -939,6 +939,20 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "21 de septiembre de 2026 · 0.33.5",
+  "title": "Deep Space 0.33.5: zoom en una sola fila, detalle de la tarea dentro del tablero",
+  "summary": "Control de zoom rehecho, panel deslizante en el kanban, barra de cambios sin guardar y enlace entre nodos más tolerante",
+  "items": [
+    "El control de zoom del canvas pasó a ser una sola fila: menos, el porcentaje actual con menú de presets, más, un separador, ajustar a la pantalla y un bloqueo del canvas. El control de xyflow al que sustituye es una pila vertical de botones cuadrados y dejaba una franja vacía debajo de sí mismo dentro de la barra nueva. El menú de porcentaje salta directo a 50/75/100/150/200% o ajusta el canvas entero, y el bloqueo congela el desplazamiento, el arrastre y la selección para leer un canvas lleno sin moverlo sin querer.",
+    "El detalle de la tarea se abre como panel deslizante dentro del propio nodo del kanban, ya no como modal centrado. El modal tapaba el tablero del que salió la tarea, así que la columna a la que pertenece la tarjeta — el motivo por el que se está leyendo — desaparecía detrás. Esc o la flecha de volver regresa al tablero, y Anterior/Siguiente siguen recorriendo la columna.",
+    "Configuración muestra una barra flotante en cuanto se edita algo: \"Cuidado — tienes cambios sin guardar!\", con Restablecer y Guardar cambios. El diálogo al que sustituye solo aparecía al salir de la página, así que una edición podía quedarse sin guardar indefinidamente sin nada en pantalla que lo avisara. Intentar salir con cambios pendientes sigue cancelando la navegación, y ahora hace parpadear la barra en vez de abrir un diálogo; guardar o restablecer desde ella completa la navegación bloqueada.",
+    "Enlazar dos nodos ya no depende de acertar un objetivo de 20px: se amplió el radio de conexión, así que soltar la cuerda cerca del nodo de destino lo conecta. Los puntos de conexión de todos los nodos también permanecen visibles mientras se arrastra una cuerda — antes el nodo de destino no mostraba nada, porque sus puntos solo aparecían al pasar el ratón y el puntero estaba capturado por el arrastre.",
+    "Un nodo ya no puede enlazarse consigo mismo, y dos nodos ya enlazados no apilan una segunda cuerda sobre la primera. Soltar la cuerda de vuelta en su propio nodo, o rehacer un enlace ya existente, creaba en silencio aristas superpuestas en el mismo lugar que había que borrar una a una. La guarda vive en el servicio de workspace, así que el puente (deepspace ask, recruit) también queda cubierto.",
+    "Un Portal se marcaba como no disponible — y, como el aviso de error oculta la página, quedaba en blanco — cada vez que una navegación era sustituida por otra. Una página que redirige al cargar rechaza la primera navegación con ERR_ABORTED, que no es un fallo; el manejador de errores ya ignoraba ese código y ahora la llamada de carga lo lee igual.",
+    "Usage lista un perfil añadido manualmente justo después del proveedor al que pertenece, en vez de al final de la lista. El panel de enrutamiento del líder también perdió el campo desalineado: la pista de ventana estaba dentro de la cuadrícula y estiraba una columna."
+  ]
+},
+{
   "date": "21 de septiembre de 2026 · 0.33.4",
   "title": "Deep Space 0.33.4: los controles del canvas salen de debajo de los nodos",
   "summary": "La barra de herramientas y el zoom tienen su propia franja, fuera del alcance de cualquier nodo",
