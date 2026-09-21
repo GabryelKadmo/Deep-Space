@@ -5,6 +5,13 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.33.2 - 2026-09-20
+
+### Fixed
+
+- A Portal stopped accepting any address after it loaded its first page. The host check folded the page currently open into the same list that decides whether the Portal is restricted at all, so an unrestricted Portal — the default, with no allowed hosts configured — locked itself to whatever it opened first. Typing a different address was refused and the Portal stayed on a blank page. An empty allowed-hosts list means unrestricted again; the current host stays permitted so a configured Portal can still navigate inside its own site.
+- A Portal that refused to navigate showed a blank white rectangle with no explanation. On the desktop app the page is a native view painted above the whole window, so the error notice underneath it was invisible. The native view now steps aside while there is something to report.
+
 ## 0.33.1 - 2026-09-20
 
 ### Fixed

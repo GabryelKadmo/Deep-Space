@@ -62,8 +62,12 @@ export function assertAllowedPortalUrl(candidate: string, allowedHosts: string[]
   }
   let baseline = '';
   try { baseline = currentUrl ? new URL(currentUrl).hostname.toLowerCase() : ''; } catch { baseline = ''; }
-  const allowed = new Set([...allowedHosts, baseline].filter(Boolean).map((host) => host.toLowerCase()));
-  if (allowed.size > 0 && !allowed.has(url.hostname.toLowerCase())) {
+  // Lista vazia significa Portal sem restricao de host, como a UI promete. O
+  // host atual e permissao extra para navegar dentro do proprio site, e nao
+  // pode ligar a restricao sozinho.
+  const configured = new Set(allowedHosts.filter(Boolean).map((host) => host.toLowerCase()));
+  const host = url.hostname.toLowerCase();
+  if (configured.size > 0 && !configured.has(host) && host !== baseline) {
     throw new Error(`Host ${url.hostname} is not allowed by this Portal.`);
   }
   return url;
