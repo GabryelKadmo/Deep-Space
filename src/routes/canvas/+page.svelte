@@ -3174,7 +3174,7 @@
         <div class="canvas-dock-row">
           <div class="canvas-dock-left">
         {#if appSettings.showControls !== 'false'}
-          <Controls>
+          <Controls orientation="horizontal">
             {#snippet children()}
               <button
                 type="button"
@@ -4058,9 +4058,6 @@
   }
 
   .canvas-dock :global(.svelte-flow__controls) {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
     box-shadow: none;
   }
 
