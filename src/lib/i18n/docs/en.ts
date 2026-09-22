@@ -939,6 +939,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "September 22, 2026 · 0.33.6",
+  "title": "Deep Space 0.33.6: the toolbar sits in the middle of the band",
+  "summary": "The canvas icons stop drifting to the right",
+  "items": [
+    "The canvas toolbar was not centered: it sat 92px to the right of the middle of the band, with the sidebar open or collapsed. The row centered the toolbar inside the space left over by the zoom cluster rather than inside the band itself, so the zoom cluster pushed it sideways. The band is now a three-column grid whose middle column is pinned to the center, and the toolbar shrinks and scrolls on its own instead of guessing its width from the viewport, which kept it from overlapping the zoom cluster in a narrow window."
+  ]
+},
+{
   "date": "September 21, 2026 · 0.33.5",
   "title": "Deep Space 0.33.5: zoom in a single row, task detail inside the board",
   "summary": "Rebuilt zoom control, a kanban drawer, an unsaved-changes bar and more forgiving node linking",

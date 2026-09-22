@@ -943,6 +943,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "22 de setembro de 2026 · 0.33.6",
+  "title": "Deep Space 0.33.6: barra de ferramentas no centro da faixa",
+  "summary": "Os ícones do canvas deixam de ficar deslocados para a direita",
+  "items": [
+    "A barra de ferramentas do canvas não estava centralizada: ficava 92px à direita do meio da faixa, com a barra lateral aberta ou recolhida. A linha centralizava a barra no espaço que sobrava do cluster de zoom, e não na faixa inteira, então o zoom a empurrava para o lado. Agora a faixa é uma grade de três colunas com a coluna do meio presa ao centro, e a barra encolhe e rola por conta própria em vez de adivinhar a largura a partir do viewport — o que a fazia passar por cima do zoom em janela estreita."
+  ]
+},
+{
   "date": "21 de setembro de 2026 · 0.33.5",
   "title": "Deep Space 0.33.5: zoom numa linha só, detalhe da tarefa dentro do quadro",
   "summary": "Controle de zoom refeito, gaveta no kanban, barra de alterações não salvas e ligação entre nós mais tolerante",

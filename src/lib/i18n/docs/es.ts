@@ -939,6 +939,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "22 de septiembre de 2026 · 0.33.6",
+  "title": "Deep Space 0.33.6: la barra de herramientas en el centro de la franja",
+  "summary": "Los iconos del canvas dejan de quedar desplazados a la derecha",
+  "items": [
+    "La barra de herramientas del canvas no estaba centrada: quedaba 92px a la derecha del medio de la franja, con la barra lateral abierta o plegada. La fila centraba la barra en el espacio que sobraba del grupo de zoom, y no en la franja entera, así que el zoom la empujaba hacia un lado. Ahora la franja es una cuadrícula de tres columnas con la columna central fijada al centro, y la barra se encoge y se desplaza por sí misma en vez de adivinar su ancho a partir del viewport, que era lo que la hacía montarse sobre el grupo de zoom en una ventana estrecha."
+  ]
+},
+{
   "date": "21 de septiembre de 2026 · 0.33.5",
   "title": "Deep Space 0.33.5: zoom en una sola fila, detalle de la tarea dentro del tablero",
   "summary": "Control de zoom rehecho, panel deslizante en el kanban, barra de cambios sin guardar y enlace entre nodos más tolerante",

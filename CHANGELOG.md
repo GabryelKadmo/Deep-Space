@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.33.6 - 2026-09-22
+
+### Fixed
+
+- The canvas toolbar was not centered: it sat 92px to the right of the middle of the band, with the sidebar open or collapsed. The row centered the toolbar inside the space left over by the zoom cluster rather than inside the band itself, so the zoom cluster pushed it sideways. The band is now a three-column grid whose middle column is pinned to the center, and the toolbar shrinks and scrolls on its own instead of guessing its width from the viewport, which kept it from overlapping the zoom cluster in a narrow window.
+
 ## 0.33.5 - 2026-09-21
 
 ### Changed

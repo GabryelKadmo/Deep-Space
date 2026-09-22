@@ -323,6 +323,34 @@ test.describe('canvas de workspaces', () => {
     await request.delete(`/api/agent-room/workspaces/${created.id}`);
   });
 
+  test('barra de ferramentas fica centralizada na faixa, com a barra lateral aberta ou recolhida', async ({ page, request }) => {
+    const response = await request.post('/api/agent-room/workspaces', {
+      data: { name: `E2E dock ${Date.now()}`, workingDir: '/tmp' },
+    });
+    const workspace = (await response.json()).data as { id: string };
+
+    try {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.goto(`/canvas?workspace=${workspace.id}`);
+      await expect(page.locator('.canvas-dock')).toBeVisible();
+
+      // A faixa e uma grade de tres colunas: centralizar no espaco que sobra
+      // do cluster de zoom deixava os icones 92px a direita do centro.
+      const offset = async () => page.evaluate(() => {
+        const dock = document.querySelector('.canvas-dock')!.getBoundingClientRect();
+        const toolbar = document.querySelector('.canvas-dock .toolbar')!.getBoundingClientRect();
+        return Math.abs((toolbar.x + toolbar.width / 2) - (dock.x + dock.width / 2));
+      });
+
+      expect(await offset()).toBeLessThanOrEqual(1);
+
+      await page.getByRole('button', { name: 'Recolher barra lateral' }).click();
+      await page.waitForTimeout(400);
+      expect(await offset()).toBeLessThanOrEqual(1);
+    } finally {
+      await request.delete(`/api/agent-room/workspaces/${workspace.id}`);
+    }
+  });
   test('conecta dois nos arrastando do handle (regressao: handles clicaveis)', async ({ page, request }) => {
     const workspaceName = `E2E drag ${Date.now()}`;
 

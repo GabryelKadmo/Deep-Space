@@ -4099,7 +4099,8 @@
   }
 
   .canvas-dock-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(auto, 1fr) minmax(0, auto) minmax(auto, 1fr);
     align-items: center;
     gap: 10px;
     padding: 4px 10px;
@@ -4109,6 +4110,8 @@
      a superficie, e as duas caixas com borda, sombra e blur pareciam dois
      objetos soltos com folga sobrando em volta. */
   .canvas-dock .toolbar {
+    max-width: 100%;
+    min-width: 0;
     border: 0;
     border-radius: 0;
     box-shadow: none;
@@ -4195,10 +4198,17 @@
     flex-shrink: 0;
   }
 
+  .canvas-dock-left {
+    justify-self: start;
+  }
+
+  .canvas-dock-right {
+    justify-self: end;
+  }
+
   .canvas-dock-center {
     display: flex;
     min-width: 0;
-    flex: 1;
     justify-content: center;
   }
 
@@ -4301,6 +4311,7 @@
   .toolbar-wrap {
     display: flex;
     align-items: center;
+    min-width: 0;
     gap: 6px;
   }
 
