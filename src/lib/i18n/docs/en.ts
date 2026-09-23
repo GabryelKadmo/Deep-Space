@@ -945,6 +945,16 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "September 23, 2026 · 0.35.0",
+  "title": "Deep Space 0.35.0: hibernate from the right-click menu",
+  "summary": "A context menu on the workspace, the Hibernate name, and Remote Control in new terminals",
+  "items": [
+    "Right-clicking a workspace in the sidebar opens a menu that acts on that workspace: hibernate, edit or delete. Hibernating was already a per-workspace operation on the server, but the only way in was the header menu, which always targeted the workspace currently open — so putting another one to sleep meant opening it first.",
+    "\"Unload workspace\" is now called Hibernate, in the three languages: the menu entry, the confirmation and the sidebar badge. The behaviour is the same — live terminals end, the layout and the agent conversations stay, and task dispatch and background automations stop until the workspace is opened again.",
+    "Every new Claude terminal starts with Remote Control on (--rc next to --dangerously-skip-permissions), so the canvas session also answers from another device without being recreated. Terminals that already exist keep the arguments they were created with."
+  ]
+},
+{
   "date": "September 23, 2026 · 0.34.0",
   "title": "Deep Space 0.34.0: the Console node",
   "summary": "The project commands saved, grouped, and each running in a process of its own",

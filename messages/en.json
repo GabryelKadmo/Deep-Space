@@ -310,7 +310,7 @@
   "canvas.unload_done_one": "{count} terminal stopped. The workspace will stay paused until you open it again.",
   "canvas.unload_done_many": "{count} terminals stopped. The workspace will stay paused until you open it again.",
   "canvas.unload_none": "Workspace paused. It will stay idle until you open it again.",
-  "canvas.ws_suspended": "{name} — paused; open to resume",
+  "canvas.ws_suspended": "{name} — hibernating; open it to resume",
   "canvas.default_shell": "Shell",
   "canvas.default_files": "Files",
   "canvas.default_editor": "editor",
@@ -4281,5 +4281,14 @@
   "ph.console_name": "Start",
   "ph.console_command": "npm run dev",
   "ph.console_folder": "React/Next",
-  "settings.dictation_button": "Microphone"
+  "settings.dictation_button": "Microphone",
+  "canvas.hibernate_done_one": "{count} terminal closed. The workspace hibernates until you open it again.",
+  "canvas.hibernate_done_many": "{count} terminals closed. The workspace hibernates until you open it again.",
+  "canvas.hibernate_none": "Workspace hibernating. It stays idle until you open it again.",
+  "canvas.hibernate_tooltip": "Hibernate (closes the live terminals, keeps the layout)",
+  "canvas.hibernate_title": "Hibernate {name}?",
+  "canvas.hibernate_desc": "This closes every terminal and keeps the workspace hibernating — task dispatch and background automations included — until you open it again. The canvas layout and the agent conversations stay saved.",
+  "canvas.hibernating": "Hibernating…",
+  "canvas.hibernate_action": "Hibernate",
+  "canvas.ws_menu_aria": "Actions for {name}"
 }

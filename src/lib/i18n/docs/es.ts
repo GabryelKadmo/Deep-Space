@@ -945,6 +945,16 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "23 de septiembre de 2026 · 0.35.0",
+  "title": "Deep Space 0.35.0: hibernar con el botón derecho",
+  "summary": "Menú contextual en el workspace, el nombre Hibernar y Remote Control en las terminales nuevas",
+  "items": [
+    "Hacer clic derecho en un workspace de la barra lateral abre un menú que actúa sobre ese workspace: hibernar, editar o eliminar. Hibernar ya era una operación por workspace en el servidor, pero la única puerta era el menú de la cabecera, que siempre apuntaba al workspace abierto — así que dormir otro exigía abrirlo antes.",
+    "\"Descargar workspace\" pasó a llamarse Hibernar, en los tres idiomas: la entrada del menú, la confirmación y la insignia de la barra lateral. El comportamiento es el mismo — las terminales vivas se cierran, el diseño y las conversaciones de los agentes se quedan, y el reparto de tareas y las automatizaciones en segundo plano paran hasta que el workspace se abra de nuevo.",
+    "Cada terminal Claude nueva arranca con Remote Control activo (--rc junto a --dangerously-skip-permissions), así que la sesión del canvas también responde desde otro dispositivo sin recrearla. Las terminales que ya existen conservan los argumentos con los que nacieron."
+  ]
+},
+{
   "date": "23 de septiembre de 2026 · 0.34.0",
   "title": "Deep Space 0.34.0: el nodo Console",
   "summary": "Los comandos del proyecto guardados, agrupados y cada uno en su propio proceso",

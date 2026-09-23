@@ -366,6 +366,37 @@ test.describe('canvas de workspaces', () => {
       await request.delete(`/api/agent-room/workspaces/${workspace.id}`);
     }
   });
+
+  test('botao direito hiberna o workspace clicado, nao o que esta aberto', async ({ page, request }) => {
+    const stamp = Date.now();
+    const create = async (name: string) => (await (await request.post('/api/agent-room/workspaces', {
+      data: { name, workingDir: '/tmp' },
+    })).json()).data as { id: string; name: string };
+
+    const target = await create(`E2E hibernar ${stamp}`);
+    const open = await create(`E2E aberto ${stamp}`);
+
+    try {
+      await page.goto(`/canvas?workspace=${open.id}`);
+      await expect(page.locator('.workspace-list li.active')).toContainText(open.name);
+
+      await page.locator('.workspace-list li', { hasText: target.name }).first().click({ button: 'right' });
+      await page.getByRole('menuitem', { name: 'Hibernar' }).click();
+      await page.getByRole('alertdialog').getByRole('button', { name: 'Hibernar' }).click();
+
+      // O alvo dorme e o workspace aberto continua aberto.
+      await expect.poll(async () => {
+        const rows = (await (await request.get('/api/agent-room/workspaces')).json()).data as Array<{ id: string; suspendedAt: string | null }>;
+        return Boolean(rows.find((workspace) => workspace.id === target.id)?.suspendedAt);
+      }).toBe(true);
+      const rows = (await (await request.get('/api/agent-room/workspaces')).json()).data as Array<{ id: string; suspendedAt: string | null }>;
+      expect(rows.find((workspace) => workspace.id === open.id)?.suspendedAt ?? null).toBeNull();
+      await expect(page.locator('.workspace-list li.active')).toContainText(open.name);
+    } finally {
+      await request.delete(`/api/agent-room/workspaces/${target.id}`);
+      await request.delete(`/api/agent-room/workspaces/${open.id}`);
+    }
+  });
   test('conecta dois nos arrastando do handle (regressao: handles clicaveis)', async ({ page, request }) => {
     const workspaceName = `E2E drag ${Date.now()}`;
 
