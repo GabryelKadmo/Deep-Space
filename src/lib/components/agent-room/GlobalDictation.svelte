@@ -45,6 +45,8 @@
   let placement = $state({ x: 0, y: 56, pinned: true });
   let dockPosition = $state<{ x: number; y: number } | null>(null);
   let hiddenBySurface = $state(false);
+  /** Configuracoes > Terminal pode esconder so o botao: o atalho continua. */
+  const buttonHidden = $derived(appSettingsStore.values.showDictationButton === 'false');
   let placementReady = $state(false);
   let placementMenuOpen = $state(false);
   let placementModifier = $state('Ctrl');
@@ -446,7 +448,7 @@
   });
 </script>
 
-{#if supported && placementReady && !hiddenBySurface}
+{#if supported && placementReady && !hiddenBySurface && !buttonHidden}
   <div
     class="fixed z-30 size-12"
     data-dictation-trigger

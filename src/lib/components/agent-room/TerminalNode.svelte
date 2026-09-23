@@ -45,6 +45,10 @@
     profileId?: string | null;
     runtime?: WorkspaceExecutionRuntime;
     workspaceRoot?: string;
+    /** Console: varias sessoes convivem sob o mesmo no, uma por comando. */
+    multiSession?: boolean;
+    /** Console: o comando e uma linha de shell, resolvida no servidor. */
+    shellLine?: boolean;
   };
 
   type Props = {
@@ -81,9 +85,11 @@
     onToggleVoice?: () => void;
     /** Tema do terminal (payload.theme). */
     themeName?: TerminalThemeName;
+    /** O Console e um painel de execucao: ditar num build nao faz sentido. */
+    voiceControls?: boolean;
   };
 
-  let { sessionId, createRequest, provider, sessionStorage, workspaceId, nodeId, sessionLabel, workspaceName, onExit, onSessionCreated, onSessionReady, onOpenPath, onRespawn, onAgentSession, onWorkingDirectoryChange, onTalking, onAgentReply, voiceOn = false, onToggleVoice, themeName = DEFAULT_TERMINAL_THEME }: Props = $props();
+  let { sessionId, createRequest, provider, sessionStorage, workspaceId, nodeId, sessionLabel, workspaceName, onExit, onSessionCreated, onSessionReady, onOpenPath, onRespawn, onAgentSession, onWorkingDirectoryChange, onTalking, onAgentReply, voiceOn = false, onToggleVoice, themeName = DEFAULT_TERMINAL_THEME, voiceControls = true }: Props = $props();
 
   let container: HTMLDivElement;
   let xtermInstance: Terminal | null = null;
@@ -106,6 +112,7 @@
   let audioRecorder: PcmAudioRecorder | null = null;
   let mediaStream: MediaStream | null = null;
   let sendInput: ((data: string) => void) | null = null;
+  let sendKill: (() => void) | null = null;
   let recSeconds = $state(0);
   let recTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -343,6 +350,10 @@
     sendInput?.(data);
   }
 
+  export function kill() {
+    sendKill?.();
+  }
+
   async function copyTerminalSelection(terminal: Terminal) {
     const selection = terminal.getSelection();
     if (!selection) return false;
@@ -565,6 +576,10 @@
 
     let createdSessionId: string | undefined;
     const currentSessionId = () => createdSessionId ?? sessionId;
+    sendKill = () => {
+      const id = currentSessionId();
+      if (id) send({ type: 'kill', sessionId: id });
+    };
     const sendTerminalInput = (data: string) => {
       const id = currentSessionId();
       if (!id || socket?.readyState !== WebSocket.OPEN) {
@@ -867,7 +882,7 @@
     <p class="terminal-status">{m['term.process_exited']({ code: exited })}</p>
   {/if}
   <div class="terminal-container" bind:this={container} style:--terminal-padding="{terminalPaddingPx}px"></div>
-  {#if dictationSupported}
+  {#if dictationSupported && voiceControls}
     <div class="dictate-controls">
       {#if dictating}
         <span class="dictate-rec" aria-live="polite">● {recSeconds}s</span>
