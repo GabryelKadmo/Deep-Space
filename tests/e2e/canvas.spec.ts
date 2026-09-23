@@ -354,6 +354,14 @@ test.describe('canvas de workspaces', () => {
       await item.hover();
       await item.locator('.console-action.stop').click();
       await expect(item.locator('.console-dot.on')).toHaveCount(0);
+
+      // "Rodar ao abrir o workspace": o comando sobe sozinho quando o no monta.
+      const auto = await request.post(`/api/agent-room/workspaces/${workspace.id}/console-commands`, {
+        data: { name: 'Auto', command: "node -e \"console.log('AUTOSTART_OK')\"", runOnOpen: true },
+      });
+      expect(auto.status()).toBe(201);
+      await page.reload();
+      await expect(node).toContainText('AUTOSTART_OK', { timeout: 20_000 });
     } finally {
       await request.delete(`/api/agent-room/workspaces/${workspace.id}`);
     }
