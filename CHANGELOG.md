@@ -5,6 +5,16 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.35.0 - 2026-09-23
+
+### Added
+
+- Right-clicking a workspace in the sidebar opens a menu that acts on **that** workspace: hibernate, edit or delete. Hibernating was already a per-workspace operation on the server, but the only way in was the header menu, which always targeted the workspace currently open — so putting another one to sleep meant opening it first.
+- Every new Claude terminal starts with Remote Control on (`--rc` next to `--dangerously-skip-permissions`), so the canvas session also answers from another device without being recreated. Terminals that already exist keep the arguments they were created with.
+
+### Changed
+
+- "Unload workspace" is now called **Hibernate**, in the three languages: the menu entry, the confirmation and the sidebar badge. The behaviour is the same — live terminals end, the layout and the agent conversations stay, and task dispatch and background automations stop until the workspace is opened again.
 ## 0.34.0 - 2026-09-23
 
 ### Added

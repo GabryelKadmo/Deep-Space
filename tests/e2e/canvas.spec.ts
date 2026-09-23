@@ -364,6 +364,9 @@ test.describe('canvas de workspaces', () => {
       await expect(node).toContainText('AUTOSTART_OK', { timeout: 20_000 });
     } finally {
       await request.delete(`/api/agent-room/workspaces/${workspace.id}`);
+    }
+  });
+
   test('botao direito hiberna o workspace clicado, nao o que esta aberto', async ({ page, request }) => {
     const stamp = Date.now();
     const create = async (name: string) => (await (await request.post('/api/agent-room/workspaces', {
