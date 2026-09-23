@@ -310,7 +310,7 @@
   "canvas.unload_done_one": "{count} terminal detenida. El workspace permanecerá en pausa hasta que lo abras de nuevo.",
   "canvas.unload_done_many": "{count} terminales detenidas. El workspace permanecerá en pausa hasta que lo abras de nuevo.",
   "canvas.unload_none": "Workspace en pausa. Permanecerá inactivo hasta que lo abras de nuevo.",
-  "canvas.ws_suspended": "{name} — en pausa; abre para reanudar",
+  "canvas.ws_suspended": "{name} — hibernando; ábrelo para retomar",
   "canvas.default_shell": "Shell",
   "canvas.default_files": "Archivos",
   "canvas.default_editor": "editor",
@@ -4281,5 +4281,14 @@
   "ph.console_name": "Start",
   "ph.console_command": "npm run dev",
   "ph.console_folder": "React/Next",
-  "settings.dictation_button": "Micrófono"
+  "settings.dictation_button": "Micrófono",
+  "canvas.hibernate_done_one": "{count} terminal cerrada. El workspace queda hibernando hasta que lo abras de nuevo.",
+  "canvas.hibernate_done_many": "{count} terminales cerradas. El workspace queda hibernando hasta que lo abras de nuevo.",
+  "canvas.hibernate_none": "Workspace hibernando. Queda inactivo hasta que lo abras de nuevo.",
+  "canvas.hibernate_tooltip": "Hibernar (cierra las terminales vivas, mantiene el diseño)",
+  "canvas.hibernate_title": "¿Hibernar {name}?",
+  "canvas.hibernate_desc": "Esto cierra todas las terminales y mantiene el workspace hibernando, incluido el reparto de tareas y las automatizaciones en segundo plano, hasta que lo abras de nuevo. El diseño del canvas y las conversaciones de los agentes siguen guardados.",
+  "canvas.hibernating": "Hibernando…",
+  "canvas.hibernate_action": "Hibernar",
+  "canvas.ws_menu_aria": "Acciones de {name}"
 }
