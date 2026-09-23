@@ -22,6 +22,7 @@
   import CanvasNodeTransferDialog from '$lib/components/agent-room/canvas/CanvasNodeTransferDialog.svelte';
   import * as AlertDialog from '$lib/components/ui/alert-dialog';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+  import * as ContextMenu from '$lib/components/ui/context-menu';
   import * as Tooltip from '$lib/components/ui/tooltip';
   import { Button } from '$lib/components/ui/button';
   import { Skeleton } from '$lib/components/ui/skeleton';
@@ -31,6 +32,7 @@
   import EditorCanvasNode from '$lib/components/agent-room/canvas/EditorCanvasNode.svelte';
   import DiffCanvasNode from '$lib/components/agent-room/canvas/DiffCanvasNode.svelte';
   import PortalCanvasNode from '$lib/components/agent-room/canvas/PortalCanvasNode.svelte';
+  import ConsoleCanvasNode from '$lib/components/agent-room/canvas/ConsoleCanvasNode.svelte';
   import ApiClientCanvasNode from '$lib/components/agent-room/canvas/ApiClientCanvasNode.svelte';
   import LoopCanvasNode from '$lib/components/agent-room/canvas/LoopCanvasNode.svelte';
   import GroupCanvasNode from '$lib/components/agent-room/canvas/GroupCanvasNode.svelte';
@@ -122,7 +124,7 @@
     setAgentProviderPinned,
   } from '$lib/components/agent-room/provider-toolbar.js';
   import { BackgroundVariant, SvelteFlowProvider } from '@xyflow/svelte';
-  import { BadgeCheck, ChevronDown, Lock, LockOpen, Maximize, Minus, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
+  import { BadgeCheck, ChevronDown, Terminal, Lock, LockOpen, Maximize, Minus, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
   import ZoomBridge from '$lib/components/agent-room/canvas/ZoomBridge.svelte';
   import type {
     AgentProviderInfo,
@@ -147,6 +149,7 @@
     editor: EditorCanvasNode,
     diff: DiffCanvasNode,
     portal: PortalCanvasNode,
+    console: ConsoleCanvasNode,
     apiClient: ApiClientCanvasNode,
     loop: LoopCanvasNode,
     group: GroupCanvasNode,
@@ -671,11 +674,11 @@
   }
 
   // Modo "desenhar no": clique na ferramenta e arraste o retangulo no canvas.
-  type DrawTool = 'terminal' | 'note' | 'fileTree' | 'git' | 'diff' | 'portal' | 'apiClient' | 'device' | 'computer' | 'toolWorkshop' | 'loop' | 'shape' | 'tasks' | 'flow' | 'image' | 'imageWorkflow' | 'usage' | 'codeGraph' | 'design';
+  type DrawTool = 'terminal' | 'console' | 'note' | 'fileTree' | 'git' | 'diff' | 'portal' | 'apiClient' | 'device' | 'computer' | 'toolWorkshop' | 'loop' | 'shape' | 'tasks' | 'flow' | 'image' | 'imageWorkflow' | 'usage' | 'codeGraph' | 'design';
   // Ordem canonica de todo item da barra inferior (nos de canvas + acoes +
   // paineis laterais), usada tanto pra decidir o que fica fixo na barra
   // quanto pra ordenar a lista do dropdown "mais ferramentas".
-  const TOOLBAR_ITEM_IDS = ['terminal', 'note', 'tasks', 'files', 'git', 'image', 'device', 'usage', 'design', 'diff', 'codeGraph', 'portal', 'flow', 'shape', 'council', 'huddle', 'computer', 'apiClient', 'toolWorkshop', 'loop', 'roles', 'routines', 'floors', 'presets', 'ports', 'organize'] as const;
+  const TOOLBAR_ITEM_IDS = ['terminal', 'console', 'note', 'tasks', 'files', 'git', 'image', 'device', 'usage', 'design', 'diff', 'codeGraph', 'portal', 'flow', 'shape', 'council', 'huddle', 'computer', 'apiClient', 'toolWorkshop', 'loop', 'roles', 'routines', 'floors', 'presets', 'ports', 'organize'] as const;
   let drawTool = $state<DrawTool | null>(null);
   let drawStart = $state<{ x: number; y: number } | null>(null);
   let drawCurrent = $state<{ x: number; y: number } | null>(null);
@@ -700,6 +703,7 @@
     note: async (rect) => { await addNote(rect); },
     fileTree: async (rect) => { await addFileTree(rect); },
     git: async (rect) => { await addGit(rect); },
+    console: async (rect) => { await addConsole(rect); },
     diff: async (rect) => { await addDiff(rect); },
     portal: async (rect) => { await addPortal(rect); },
     apiClient: async (rect) => { await addApiClient(rect); },
@@ -1605,17 +1609,18 @@
     toolbarEl?.scrollBy({ left: direction * 220, behavior: 'smooth' });
   }
 
-  // -- Descarregar workspace (encerra terminais vivos, mantem o layout) ---------
-  let confirmUnload = $state(false);
+  // -- Hibernar workspace (encerra terminais vivos, mantem o layout) -----------
+  // O endpoint sempre foi por workspace; so a UI vivia presa ao ativo.
+  let hibernatingWorkspace = $state<Workspace | null>(null);
   let unloading = $state(false);
   let unloadMessage = $state('');
   let workspacesLoaded = $state(false);
 
-  async function unloadActiveWorkspace() {
-    if (!activeWorkspace) return;
+  async function hibernateWorkspace(target: Workspace | null) {
+    if (!target) return;
     unloading = true;
     try {
-      const workspaceId = activeWorkspace.id;
+      const workspaceId = target.id;
       const result = await api<{ killedSessions: number; workspace: Workspace }>(`/api/agent-room/workspaces/${workspaceId}/unload`, {
         method: 'POST',
       });
@@ -1623,21 +1628,23 @@
       workspaces = workspaces.map((workspace) => workspace.id === workspaceId ? result.workspace : workspace);
       writeWorkspaceListCache(workspaces);
       clearWorkspaceViewCache(workspaceId);
-      activeWorkspace = null;
-      nodes = [];
-      edges = [];
-      floors = [];
-      localStorage.removeItem('deepspace.activeWorkspaceId');
-      history.replaceState(null, '', '/canvas');
+      if (activeWorkspace?.id === workspaceId) {
+        activeWorkspace = null;
+        nodes = [];
+        edges = [];
+        floors = [];
+        localStorage.removeItem('deepspace.activeWorkspaceId');
+        history.replaceState(null, '', '/canvas');
+      }
       const count = result?.killedSessions ?? 0;
       unloadMessage = count > 0
         ? count === 1
-          ? m['canvas.unload_done_one']({ count })
-          : m['canvas.unload_done_many']({ count })
-        : m['canvas.unload_none']();
+          ? m['canvas.hibernate_done_one']({ count })
+          : m['canvas.hibernate_done_many']({ count })
+        : m['canvas.hibernate_none']();
     } finally {
       unloading = false;
-      confirmUnload = false;
+      hibernatingWorkspace = null;
       setTimeout(() => (unloadMessage = ''), 5_000);
     }
   }
@@ -1788,6 +1795,15 @@
     nodes = [...nodes, toFlowNode(node)];
   }
 
+  async function addConsole(rect?: { x: number; y: number; width: number; height: number }) {
+    if (!activeWorkspace) return;
+    const position = rect ? { x: rect.x, y: rect.y } : nextFreePosition(620, 360);
+    const node = await api<CanvasNode>(`/api/agent-room/workspaces/${activeWorkspace.id}/nodes`, {
+      method: 'POST',
+      body: JSON.stringify({ type: 'console', title: m['console.title'](), ...position, ...nodeSize(rect, 480, 280, 620, 360), payload: {}, floorId: visibleFloorId }),
+    });
+    nodes = [...nodes, toFlowNode(node)];
+  }
   async function addGit(rect?: { x: number; y: number; width: number; height: number }) {
     if (!activeWorkspace) return;
     const position = rect ? { x: rect.x, y: rect.y } : nextFreePosition(620, 500);
@@ -2773,6 +2789,8 @@
         return { id, label: m['canvas.default_files'](), icon: { kind: 'lucide', component: FolderTree }, onSelect: () => toggleDrawTool('fileTree') };
       case 'git':
         return { id, label: m['canvas.default_git'](), icon: { kind: 'lucide', component: GitFork }, onSelect: () => toggleDrawTool('git') };
+      case 'console':
+        return { id, label: m['console.title'](), icon: { kind: 'lucide', component: Terminal }, onSelect: () => toggleDrawTool('console') };
       case 'codeGraph':
         return { id, label: m['code_graph.title'](), icon: { kind: 'lucide', component: Waypoints }, onSelect: () => toggleDrawTool('codeGraph') };
       case 'diff':
@@ -2861,7 +2879,7 @@
               <DropdownMenu.Item onclick={() => importInput.click()}><Upload size={14} />{m['canvas.import_ws']()}</DropdownMenu.Item>
               {#if activeWorkspace}
                 <DropdownMenu.Item onclick={exportActiveWorkspace}><Download size={14} />{m['canvas.export_ws']()}</DropdownMenu.Item>
-                <DropdownMenu.Item onclick={() => (confirmUnload = true)}><Power size={14} />{m['canvas.unload_tooltip']()}</DropdownMenu.Item>
+                <DropdownMenu.Item disabled={!activeWorkspace} onclick={() => (hibernatingWorkspace = activeWorkspace)}><Power size={14} />{m['canvas.hibernate_tooltip']()}</DropdownMenu.Item>
               {/if}
             </DropdownMenu.Content>
           </DropdownMenu.Root>
@@ -3011,14 +3029,30 @@
           </div>
         </Popover.Content>
       </Popover.Root>
-      <button class="workspace-item" onclick={() => selectWorkspace(workspace.id)}>
-        <span class="workspace-name">{workspace.name}</span>
-        {#if workspace.suspendedAt}
-          <Power size={11} class="text-[var(--app-text-muted)]" aria-label={m['canvas.ws_suspended']({ name: workspace.name })} />
-        {:else if activity[workspace.id]}
-          <span class="live-dot" role="status" aria-label={m['canvas.active_sessions_aria']({ count: activity[workspace.id] })}></span>
-        {/if}
-      </button>
+      <ContextMenu.Root>
+        <ContextMenu.Trigger class="workspace-item-trigger">
+          <button class="workspace-item" onclick={() => selectWorkspace(workspace.id)}>
+            <span class="workspace-name">{workspace.name}</span>
+            {#if workspace.suspendedAt}
+              <Power size={11} class="text-[var(--app-text-muted)]" aria-label={m['canvas.ws_suspended']({ name: workspace.name })} />
+            {:else if activity[workspace.id]}
+              <span class="live-dot" role="status" aria-label={m['canvas.active_sessions_aria']({ count: activity[workspace.id] })}></span>
+            {/if}
+          </button>
+        </ContextMenu.Trigger>
+        <ContextMenu.Content class="w-56" aria-label={m['canvas.ws_menu_aria']({ name: workspace.name })}>
+          <ContextMenu.Item disabled={Boolean(workspace.suspendedAt)} onclick={() => (hibernatingWorkspace = workspace)}>
+            <Power size={14} />{m['canvas.hibernate_action']()}
+          </ContextMenu.Item>
+          <ContextMenu.Separator />
+          <ContextMenu.Item onclick={() => (editingWorkspace = workspace)}>
+            <Pencil size={14} />{m['canvas.edit_ws']()}
+          </ContextMenu.Item>
+          <ContextMenu.Item variant="destructive" onclick={() => (deletingWorkspace = workspace)}>
+            <X size={14} />{m['canvas.delete_ws']()}
+          </ContextMenu.Item>
+        </ContextMenu.Content>
+      </ContextMenu.Root>
       <HeaderIconButton label={m['canvas.edit_ws']()} side="right" onclick={() => (editingWorkspace = workspace)}>
         <Pencil size={13} />
       </HeaderIconButton>
@@ -3587,18 +3621,18 @@
       </AlertDialog.Content>
     </AlertDialog.Root>
 
-    <AlertDialog.Root open={confirmUnload} onOpenChange={(isOpen) => !isOpen && (confirmUnload = false)}>
+    <AlertDialog.Root open={hibernatingWorkspace !== null} onOpenChange={(isOpen) => !isOpen && (hibernatingWorkspace = null)}>
       <AlertDialog.Content>
         <AlertDialog.Header>
-          <AlertDialog.Title>{m['canvas.unload_title']()}</AlertDialog.Title>
+          <AlertDialog.Title>{m['canvas.hibernate_title']({ name: hibernatingWorkspace?.name ?? '' })}</AlertDialog.Title>
           <AlertDialog.Description>
-            {m['canvas.unload_desc']()}
+            {m['canvas.hibernate_desc']()}
           </AlertDialog.Description>
         </AlertDialog.Header>
         <AlertDialog.Footer>
           <AlertDialog.Cancel>{m['settings.cancel']()}</AlertDialog.Cancel>
-          <AlertDialog.Action disabled={unloading} onclick={unloadActiveWorkspace}>
-            {unloading ? m['canvas.unloading']() : m['canvas.unload_action']()}
+          <AlertDialog.Action disabled={unloading} onclick={() => hibernateWorkspace(hibernatingWorkspace)}>
+            {unloading ? m['canvas.hibernating']() : m['canvas.hibernate_action']()}
           </AlertDialog.Action>
         </AlertDialog.Footer>
       </AlertDialog.Content>
@@ -3736,6 +3770,12 @@
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
+  }
+
+  .workspace-item-trigger {
+    display: flex;
+    min-width: 0;
+    flex: 1;
   }
 
   .workspace-list li {

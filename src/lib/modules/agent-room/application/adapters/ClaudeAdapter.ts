@@ -89,6 +89,9 @@ export const claudeAdapter: AgentAdapter = {
       command: 'claude',
       args: [
         '--dangerously-skip-permissions',
+        // Remote Control ligado de saida: o terminal do canvas tambem
+        // responde do celular sem precisar recriar a sessao.
+        '--rc',
         ...(options?.model ? ['--model', options.model] : []),
         ...(options?.effort ? ['--effort', options.effort] : []),
       ],

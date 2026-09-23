@@ -174,6 +174,8 @@ describe('PresetService', () => {
       return (terminal?.payload as { args?: string[] } | undefined)?.args;
     };
     expect(argsFor('claude')).toContain('--dangerously-skip-permissions');
+    // Remote Control entra junto: o terminal do canvas responde tambem de fora.
+    expect(argsFor('claude')).toContain('--rc');
     expect(argsFor('codex')).toContain('--dangerously-bypass-approvals-and-sandbox');
     expect(argsFor('kimi')).toContain('--auto');
 

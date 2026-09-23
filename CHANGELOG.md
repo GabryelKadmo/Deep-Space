@@ -5,6 +5,27 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.35.0 - 2026-09-23
+
+### Added
+
+- Right-clicking a workspace in the sidebar opens a menu that acts on **that** workspace: hibernate, edit or delete. Hibernating was already a per-workspace operation on the server, but the only way in was the header menu, which always targeted the workspace currently open — so putting another one to sleep meant opening it first.
+- Every new Claude terminal starts with Remote Control on (`--rc` next to `--dangerously-skip-permissions`), so the canvas session also answers from another device without being recreated. Terminals that already exist keep the arguments they were created with.
+
+### Changed
+
+- "Unload workspace" is now called **Hibernate**, in the three languages: the menu entry, the confirmation and the sidebar badge. The behaviour is the same — live terminals end, the layout and the agent conversations stay, and task dispatch and background automations stop until the workspace is opened again.
+## 0.34.0 - 2026-09-23
+
+### Added
+
+- A **Console** node runs the commands of the workspace. Saved commands live in folders with a name and the line they run, and each one starts a process of its own: the dot turns green while it lives, the button becomes stop, and the output sits beside the list. Switching between commands drops nothing — every log comes back where it was, so a dev server keeps running while another command is inspected. A command can be set to run when the workspace opens, and collapsing the list turns the node into a plain terminal, which is what replaces the old shell node.
+- Settings gained **Microphone: Show / Hide**, next to Minimap and Zoom controls. Hiding removes the floating dictation button from the canvas; the dictation shortcut keeps working, and the button comes back from the same setting.
+
+### Changed
+
+- The saved commands that lived behind a button in the terminal header — one list per terminal plus a global one — moved into the Console. They are imported once, with the terminal title as the folder, and cleared from where they were, so a command deleted in the Console does not come back. Running one no longer types its text into whatever shell happens to be open.
+
 ## 0.33.5 - 2026-09-21
 
 ### Changed

@@ -54,7 +54,7 @@ test.describe('canvas de workspaces', () => {
       await terminal.locator('.node-header').click({ position: { x: 48, y: 12 } });
       await expect(page.locator('.svelte-flow__node-terminal')).toHaveClass(/selected/);
       await terminal.getByTestId('terminal-actions-menu').click();
-      await expect(page.getByRole('menuitem', { name: 'Comandos salvos' })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: 'Recarregar terminal' })).toBeVisible();
       expect(pageErrors).toEqual([]);
     } finally {
       await request.delete(`/api/agent-room/workspaces/${workspace.id}`);
@@ -323,6 +323,80 @@ test.describe('canvas de workspaces', () => {
     await request.delete(`/api/agent-room/workspaces/${created.id}`);
   });
 
+  test('Console salva um comando, roda num processo proprio e encerra', async ({ page, request }) => {
+    const response = await request.post('/api/agent-room/workspaces', {
+      data: { name: `E2E console ${Date.now()}`, workingDir: '/tmp' },
+    });
+    const workspace = (await response.json()).data as { id: string };
+
+    try {
+      await request.post(`/api/agent-room/workspaces/${workspace.id}/nodes`, {
+        data: { type: 'console', title: 'Console', x: 120, y: 120, width: 700, height: 420, payload: {} },
+      });
+      const created = await request.post(`/api/agent-room/workspaces/${workspace.id}/console-commands`, {
+        data: { name: 'Tick', command: "node -e \"setInterval(() => console.log('tick'), 400)\"", folder: 'Projeto' },
+      });
+      expect(created.status()).toBe(201);
+
+      await page.goto(`/canvas?workspace=${workspace.id}`);
+      const node = page.locator('.canvas-console');
+      await expect(node).toBeVisible();
+      await expect(node.locator('.console-folder')).toContainText('Projeto');
+
+      const item = node.locator('.console-item', { hasText: 'Tick' });
+      await item.hover();
+      await item.locator('.console-action.run').click();
+
+      // O processo vive no PTY: ponto verde na lista e saida no terminal.
+      await expect(item.locator('.console-dot.on')).toBeVisible();
+      await expect(node).toContainText('tick', { timeout: 15_000 });
+
+      await item.hover();
+      await item.locator('.console-action.stop').click();
+      await expect(item.locator('.console-dot.on')).toHaveCount(0);
+
+      // "Rodar ao abrir o workspace": o comando sobe sozinho quando o no monta.
+      const auto = await request.post(`/api/agent-room/workspaces/${workspace.id}/console-commands`, {
+        data: { name: 'Auto', command: "node -e \"console.log('AUTOSTART_OK')\"", runOnOpen: true },
+      });
+      expect(auto.status()).toBe(201);
+      await page.reload();
+      await expect(node).toContainText('AUTOSTART_OK', { timeout: 20_000 });
+    } finally {
+      await request.delete(`/api/agent-room/workspaces/${workspace.id}`);
+    }
+  });
+
+  test('botao direito hiberna o workspace clicado, nao o que esta aberto', async ({ page, request }) => {
+    const stamp = Date.now();
+    const create = async (name: string) => (await (await request.post('/api/agent-room/workspaces', {
+      data: { name, workingDir: '/tmp' },
+    })).json()).data as { id: string; name: string };
+
+    const target = await create(`E2E hibernar ${stamp}`);
+    const open = await create(`E2E aberto ${stamp}`);
+
+    try {
+      await page.goto(`/canvas?workspace=${open.id}`);
+      await expect(page.locator('.workspace-list li.active')).toContainText(open.name);
+
+      await page.locator('.workspace-list li', { hasText: target.name }).first().click({ button: 'right' });
+      await page.getByRole('menuitem', { name: 'Hibernar' }).click();
+      await page.getByRole('alertdialog').getByRole('button', { name: 'Hibernar' }).click();
+
+      // O alvo dorme e o workspace aberto continua aberto.
+      await expect.poll(async () => {
+        const rows = (await (await request.get('/api/agent-room/workspaces')).json()).data as Array<{ id: string; suspendedAt: string | null }>;
+        return Boolean(rows.find((workspace) => workspace.id === target.id)?.suspendedAt);
+      }).toBe(true);
+      const rows = (await (await request.get('/api/agent-room/workspaces')).json()).data as Array<{ id: string; suspendedAt: string | null }>;
+      expect(rows.find((workspace) => workspace.id === open.id)?.suspendedAt ?? null).toBeNull();
+      await expect(page.locator('.workspace-list li.active')).toContainText(open.name);
+    } finally {
+      await request.delete(`/api/agent-room/workspaces/${target.id}`);
+      await request.delete(`/api/agent-room/workspaces/${open.id}`);
+    }
+  });
   test('conecta dois nos arrastando do handle (regressao: handles clicaveis)', async ({ page, request }) => {
     const workspaceName = `E2E drag ${Date.now()}`;
 

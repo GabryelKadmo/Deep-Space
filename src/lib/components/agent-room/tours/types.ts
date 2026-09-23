@@ -9,6 +9,8 @@ export type TourAction =
   | { kind: 'createUsage'; title: string }
   | { kind: 'createApiClient'; title: string }
   | { kind: 'createGit'; title: string }
+  | { kind: 'createConsole'; title: string }
+  | { kind: 'createConsoleCommand'; name: string; command: string; folder?: string }
   | { kind: 'createCodeGraph'; title: string }
   | { kind: 'indexCodeGraph' }
   | {

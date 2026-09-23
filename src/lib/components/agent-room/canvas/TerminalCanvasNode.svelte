@@ -26,16 +26,8 @@
   } from '../workspace-attachments.js';
   import CouncilDialog from '../CouncilDialog.svelte';
   import TerminalRuntimeDialog from './TerminalRuntimeDialog.svelte';
-  import TerminalCommandsDialog from './TerminalCommandsDialog.svelte';
   import AgentRuntimeDialog from './AgentRuntimeDialog.svelte';
   import type { AgentRuntimeData } from '$lib/modules/agent-room/contracts/schemas/agent-runtime.schema.js';
-  import {
-    normalizeSavedTerminalCommands,
-    resumeTerminalCommandInput,
-    savedTerminalCommandInput,
-    terminalCommandFingerprint,
-    type SavedTerminalCommand,
-  } from '$lib/modules/agent-room/domain/terminal-commands.js';
   import { safeAgentRespawn } from '$lib/modules/agent-room/domain/terminal-session-launch.js';
 
   export type MentionTarget = { id: string; title: string; type: string };
@@ -87,7 +79,6 @@
   let runtimeOpen = $state(false);
   let agentRuntimeOpen = $state(false);
   let agentRuntimeBusy = $state(false);
-  let commandsOpen = $state(false);
   let actionsOpen = $state(false);
   let runtimeProviders = $state<AgentProviderInfo[]>([]);
   let providerRequest = 0;
@@ -165,49 +156,11 @@
     if (selected) requestAnimationFrame(() => requestAnimationFrame(() => terminalNode?.focus()));
   }
 
-  function terminalCommands(): SavedTerminalCommand[] {
-    return normalizeSavedTerminalCommands((data.payload as TerminalNodePayload).savedCommands);
-  }
-
-  function globalCommands(): SavedTerminalCommand[] {
-    return normalizeSavedTerminalCommands(appSettingsStore.values.terminalGlobalCommands);
-  }
-
-  async function openSavedCommands() {
-    commandsOpen = true;
-    await getAppSettings(true);
-  }
-
-  async function saveTerminalCommands(commands: SavedTerminalCommand[]) {
-    await data.onPayloadChange?.(id, { savedCommands: normalizeSavedTerminalCommands(commands) });
-  }
-
-  async function saveGlobalCommands(commands: SavedTerminalCommand[]) {
-    await updateAppSettings({ terminalGlobalCommands: JSON.stringify(normalizeSavedTerminalCommands(commands)) });
-  }
-
-  function runSavedCommand(command: SavedTerminalCommand) {
-    terminalNode?.write(savedTerminalCommandInput(command.command));
-    toast.success(m['term.commands_executed']());
-    requestAnimationFrame(() => terminalNode?.focus());
-  }
 
   async function handleSessionReady(sessionId: string) {
-    if (!isPureShell || !sessionId || !terminalNode) return;
-    await getAppSettings();
-    const input = resumeTerminalCommandInput(
-      [...globalCommands(), ...terminalCommands()],
-      data.payload.command ?? '',
-    );
-    if (!input) return;
-    const marker = `deepspace.terminal-autoexec:${id}:${terminalCommandFingerprint(input)}`;
-    try {
-      if (sessionStorage.getItem(marker)) return;
-      sessionStorage.setItem(marker, '1');
-    } catch {
-      // A sessão do terminal ainda executa; só perde a proteção entre views.
-    }
-    terminalNode.write(input);
+    // Os comandos salvos (e o "rodar ao abrir") moraram aqui ate virarem o no
+    // Console, que roda cada um no proprio processo.
+    if (!isPureShell || !sessionId) return;
   }
 
   // -- Recarregar terminal (reinicia a sessao COM o contexto) -------------------
@@ -759,41 +712,6 @@
             </DropdownMenu.RadioGroup>
           </DropdownMenu.SubContent>
         </DropdownMenu.Sub>
-        <DropdownMenu.Sub>
-          <DropdownMenu.SubTrigger>
-            <ListRestart size={14} />
-            <span class="min-w-0 flex-1">{m['term.commands']()}</span>
-            <span class="text-ui-xs tabular-nums text-[var(--app-text-muted)]">{terminalCommands().length + globalCommands().length}</span>
-          </DropdownMenu.SubTrigger>
-          <DropdownMenu.SubContent sideOffset={6} class="max-h-80 w-64 overflow-y-auto">
-            <DropdownMenu.Label>{m['term.commands_scope_terminal']()}</DropdownMenu.Label>
-            {#each terminalCommands() as command (command.id)}
-              <DropdownMenu.Item onclick={() => runSavedCommand(command)}>
-                <SquareTerminal size={13} />
-                <span class="min-w-0 flex-1"><span class="block truncate">{command.name}</span><code class="block truncate text-ui-xs text-[var(--app-text-muted)]">{command.command}</code></span>
-                {#if command.runOnResume}<History size={12} aria-label={m['term.commands_resume']()} />{/if}
-              </DropdownMenu.Item>
-            {:else}
-              <DropdownMenu.Item disabled>{m['term.commands_empty_terminal']()}</DropdownMenu.Item>
-            {/each}
-            <DropdownMenu.Separator />
-            <DropdownMenu.Label>{m['term.commands_scope_global']()}</DropdownMenu.Label>
-            {#each globalCommands() as command (command.id)}
-              <DropdownMenu.Item onclick={() => runSavedCommand(command)}>
-                <Globe2 size={13} />
-                <span class="min-w-0 flex-1"><span class="block truncate">{command.name}</span><code class="block truncate text-ui-xs text-[var(--app-text-muted)]">{command.command}</code></span>
-                {#if command.runOnResume}<History size={12} aria-label={m['term.commands_resume']()} />{/if}
-              </DropdownMenu.Item>
-            {:else}
-              <DropdownMenu.Item disabled>{m['term.commands_empty_global']()}</DropdownMenu.Item>
-            {/each}
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item onclick={() => void openSavedCommands()}>
-              <ListRestart size={14} />
-              {m['term.commands_manage']()}
-            </DropdownMenu.Item>
-          </DropdownMenu.SubContent>
-        </DropdownMenu.Sub>
         <DropdownMenu.Separator />
         {#if data.payload.maestro}
           <DropdownMenu.Item onclick={() => (councilOpen = true)}>
@@ -927,17 +845,6 @@
     nodeId={id}
     onChanged={applyAgentRuntime}
     onClose={() => (agentRuntimeOpen = false)}
-  />
-  <TerminalCommandsDialog
-    open={commandsOpen}
-    terminalTitle={data.title}
-    pureShell={isPureShell}
-    terminalCommands={terminalCommands()}
-    globalCommands={globalCommands()}
-    onSaveTerminal={saveTerminalCommands}
-    onSaveGlobal={saveGlobalCommands}
-    onRun={runSavedCommand}
-    onClose={() => (commandsOpen = false)}
   />
 
   <div
