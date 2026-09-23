@@ -8,6 +8,7 @@ const DEFAULTS: Record<string, string> = {
   terminalTheme: 'obsidian',
   showMinimap: 'true',
   showControls: 'true',
+  showDictationButton: 'true',
   canvasEdgeRendering: 'auto',
   terminalFontSize: '13',
   terminalFontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',

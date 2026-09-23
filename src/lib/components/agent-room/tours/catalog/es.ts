@@ -3,6 +3,38 @@ import type { Tour } from '../types.js';
 /** Catalogo de tours en español — espejo de pt-BR.js (mismos ids y estructura). */
 export const TOURS_ES: Tour[] = [
   {
+    id: 'console-commands',
+    icon: 'Terminal',
+    title: 'Los comandos del proyecto en un solo lugar',
+    tagline: 'Guarda npm run dev y compañía, y ejecuta cada uno con un clic.',
+    steps: [
+      {
+        id: 'node',
+        title: 'Crea el Console',
+        body: 'El Console guarda los comandos del workspace y ejecuta cada uno en su propio proceso, con la salida al lado de la lista. Voy a crear el nodo por ti.',
+        action: { kind: 'createConsole', title: 'Console' },
+        check: { kind: 'nodeExists', nodeType: 'console', titleIncludes: 'Console' },
+      },
+      {
+        id: 'dev',
+        title: 'Guarda el comando que más usas',
+        body: 'Cada comando tiene nombre, la línea que ejecuta y una carpeta opcional para agrupar. Voy a guardar "Start" con npm run dev en la carpeta Proyecto.',
+        action: { kind: 'createConsoleCommand', name: 'Start', command: 'npm run dev', folder: 'Proyecto' },
+      },
+      {
+        id: 'build',
+        title: 'Agrupa el resto en la misma carpeta',
+        body: 'Los comandos del mismo frente quedan juntos y la carpeta se pliega. También guardo "Build" para que veas la agrupación.',
+        action: { kind: 'createConsoleCommand', name: 'Build', command: 'npm run build', folder: 'Proyecto' },
+      },
+      {
+        id: 'run',
+        title: 'Ejecútalo y sigue la salida',
+        body: 'Pasa el ratón por un comando y pulsa ▷. El punto queda verde mientras el proceso vive, ■ lo termina, y cambiar de comando no tira nada: el log vuelve donde estaba. Marca "ejecutar al abrir el workspace" en lo que deba arrancar solo.',
+      },
+    ],
+  },
+  {
     id: 'team-leader',
     icon: 'Users',
     title: 'Equipo con líder (zero-config)',

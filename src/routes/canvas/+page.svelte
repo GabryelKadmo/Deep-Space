@@ -31,6 +31,7 @@
   import EditorCanvasNode from '$lib/components/agent-room/canvas/EditorCanvasNode.svelte';
   import DiffCanvasNode from '$lib/components/agent-room/canvas/DiffCanvasNode.svelte';
   import PortalCanvasNode from '$lib/components/agent-room/canvas/PortalCanvasNode.svelte';
+  import ConsoleCanvasNode from '$lib/components/agent-room/canvas/ConsoleCanvasNode.svelte';
   import ApiClientCanvasNode from '$lib/components/agent-room/canvas/ApiClientCanvasNode.svelte';
   import LoopCanvasNode from '$lib/components/agent-room/canvas/LoopCanvasNode.svelte';
   import GroupCanvasNode from '$lib/components/agent-room/canvas/GroupCanvasNode.svelte';
@@ -122,7 +123,7 @@
     setAgentProviderPinned,
   } from '$lib/components/agent-room/provider-toolbar.js';
   import { BackgroundVariant, SvelteFlowProvider } from '@xyflow/svelte';
-  import { BadgeCheck, ChevronDown, Lock, LockOpen, Maximize, Minus, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
+  import { BadgeCheck, ChevronDown, Terminal, Lock, LockOpen, Maximize, Minus, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
   import ZoomBridge from '$lib/components/agent-room/canvas/ZoomBridge.svelte';
   import type {
     AgentProviderInfo,
@@ -147,6 +148,7 @@
     editor: EditorCanvasNode,
     diff: DiffCanvasNode,
     portal: PortalCanvasNode,
+    console: ConsoleCanvasNode,
     apiClient: ApiClientCanvasNode,
     loop: LoopCanvasNode,
     group: GroupCanvasNode,
@@ -671,11 +673,11 @@
   }
 
   // Modo "desenhar no": clique na ferramenta e arraste o retangulo no canvas.
-  type DrawTool = 'terminal' | 'note' | 'fileTree' | 'git' | 'diff' | 'portal' | 'apiClient' | 'device' | 'computer' | 'toolWorkshop' | 'loop' | 'shape' | 'tasks' | 'flow' | 'image' | 'imageWorkflow' | 'usage' | 'codeGraph' | 'design';
+  type DrawTool = 'terminal' | 'console' | 'note' | 'fileTree' | 'git' | 'diff' | 'portal' | 'apiClient' | 'device' | 'computer' | 'toolWorkshop' | 'loop' | 'shape' | 'tasks' | 'flow' | 'image' | 'imageWorkflow' | 'usage' | 'codeGraph' | 'design';
   // Ordem canonica de todo item da barra inferior (nos de canvas + acoes +
   // paineis laterais), usada tanto pra decidir o que fica fixo na barra
   // quanto pra ordenar a lista do dropdown "mais ferramentas".
-  const TOOLBAR_ITEM_IDS = ['terminal', 'note', 'tasks', 'files', 'git', 'image', 'device', 'usage', 'design', 'diff', 'codeGraph', 'portal', 'flow', 'shape', 'council', 'huddle', 'computer', 'apiClient', 'toolWorkshop', 'loop', 'roles', 'routines', 'floors', 'presets', 'ports', 'organize'] as const;
+  const TOOLBAR_ITEM_IDS = ['terminal', 'console', 'note', 'tasks', 'files', 'git', 'image', 'device', 'usage', 'design', 'diff', 'codeGraph', 'portal', 'flow', 'shape', 'council', 'huddle', 'computer', 'apiClient', 'toolWorkshop', 'loop', 'roles', 'routines', 'floors', 'presets', 'ports', 'organize'] as const;
   let drawTool = $state<DrawTool | null>(null);
   let drawStart = $state<{ x: number; y: number } | null>(null);
   let drawCurrent = $state<{ x: number; y: number } | null>(null);
@@ -700,6 +702,7 @@
     note: async (rect) => { await addNote(rect); },
     fileTree: async (rect) => { await addFileTree(rect); },
     git: async (rect) => { await addGit(rect); },
+    console: async (rect) => { await addConsole(rect); },
     diff: async (rect) => { await addDiff(rect); },
     portal: async (rect) => { await addPortal(rect); },
     apiClient: async (rect) => { await addApiClient(rect); },
@@ -1788,6 +1791,15 @@
     nodes = [...nodes, toFlowNode(node)];
   }
 
+  async function addConsole(rect?: { x: number; y: number; width: number; height: number }) {
+    if (!activeWorkspace) return;
+    const position = rect ? { x: rect.x, y: rect.y } : nextFreePosition(620, 360);
+    const node = await api<CanvasNode>(`/api/agent-room/workspaces/${activeWorkspace.id}/nodes`, {
+      method: 'POST',
+      body: JSON.stringify({ type: 'console', title: m['console.title'](), ...position, ...nodeSize(rect, 480, 280, 620, 360), payload: {}, floorId: visibleFloorId }),
+    });
+    nodes = [...nodes, toFlowNode(node)];
+  }
   async function addGit(rect?: { x: number; y: number; width: number; height: number }) {
     if (!activeWorkspace) return;
     const position = rect ? { x: rect.x, y: rect.y } : nextFreePosition(620, 500);
@@ -2773,6 +2785,8 @@
         return { id, label: m['canvas.default_files'](), icon: { kind: 'lucide', component: FolderTree }, onSelect: () => toggleDrawTool('fileTree') };
       case 'git':
         return { id, label: m['canvas.default_git'](), icon: { kind: 'lucide', component: GitFork }, onSelect: () => toggleDrawTool('git') };
+      case 'console':
+        return { id, label: m['console.title'](), icon: { kind: 'lucide', component: Terminal }, onSelect: () => toggleDrawTool('console') };
       case 'codeGraph':
         return { id, label: m['code_graph.title'](), icon: { kind: 'lucide', component: Waypoints }, onSelect: () => toggleDrawTool('codeGraph') };
       case 'diff':

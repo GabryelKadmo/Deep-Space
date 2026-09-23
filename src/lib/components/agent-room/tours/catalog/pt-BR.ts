@@ -7,6 +7,38 @@ import type { Tour } from '../types.js';
  */
 export const TOURS_PT: Tour[] = [
   {
+    id: 'console-commands',
+    icon: 'Terminal',
+    title: 'Comandos do projeto num lugar só',
+    tagline: 'Salve npm run dev e companhia, e rode cada um com um clique.',
+    steps: [
+      {
+        id: 'node',
+        title: 'Crie o Console',
+        body: 'O Console guarda os comandos do workspace e roda cada um no próprio processo, com a saída ao lado da lista. Vou criar o nó para você.',
+        action: { kind: 'createConsole', title: 'Console' },
+        check: { kind: 'nodeExists', nodeType: 'console', titleIncludes: 'Console' },
+      },
+      {
+        id: 'dev',
+        title: 'Salve o comando que você mais usa',
+        body: 'Cada comando tem nome, a linha que roda e uma pasta opcional para agrupar. Vou salvar "Start" com npm run dev na pasta Projeto.',
+        action: { kind: 'createConsoleCommand', name: 'Start', command: 'npm run dev', folder: 'Projeto' },
+      },
+      {
+        id: 'build',
+        title: 'Agrupe o resto na mesma pasta',
+        body: 'Comandos da mesma frente ficam juntos e a pasta recolhe. Salvo também o "Build" para você ver o agrupamento.',
+        action: { kind: 'createConsoleCommand', name: 'Build', command: 'npm run build', folder: 'Projeto' },
+      },
+      {
+        id: 'run',
+        title: 'Rode e acompanhe',
+        body: 'Passe o mouse num comando e clique em ▷. O ponto fica verde enquanto o processo vive, o ■ encerra, e trocar de comando não derruba nada: o log volta de onde parou. Marque "rodar ao abrir o workspace" no que precisa subir sozinho.',
+      },
+    ],
+  },
+  {
     id: 'team-leader',
     icon: 'Users',
     title: 'Time com líder (zero-config)',

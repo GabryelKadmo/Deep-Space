@@ -592,6 +592,18 @@
         </Select.Root>
       </div>
       <div class="field">
+        <span class="field-label">{m['settings.dictation_button']()}</span>
+        <Select.Root type="single" value={settings.showDictationButton} onValueChange={(value: string) => (settings = { ...settings, showDictationButton: value })}>
+          <Select.Trigger data-slot="select-trigger">
+            {settings.showDictationButton === 'false' ? m['settings.hide']() : m['settings.show']()}
+          </Select.Trigger>
+          <Select.Content>
+            <Select.Item value="true">{m['settings.show']()}</Select.Item>
+            <Select.Item value="false">{m['settings.hide']()}</Select.Item>
+          </Select.Content>
+        </Select.Root>
+      </div>
+      <div class="field">
         <span class="field-label">{m['settings.controls']()}</span>
         <Select.Root type="single" value={settings.showControls} onValueChange={(value: string) => (settings = { ...settings, showControls: value })}>
           <Select.Trigger data-slot="select-trigger">

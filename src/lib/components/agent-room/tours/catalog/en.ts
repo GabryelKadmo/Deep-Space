@@ -3,6 +3,38 @@ import type { Tour } from '../types.js';
 /** Tour catalog in English — mirror of pt-BR.js (same ids and structure). */
 export const TOURS_EN: Tour[] = [
   {
+    id: 'console-commands',
+    icon: 'Terminal',
+    title: 'Every project command in one place',
+    tagline: 'Save npm run dev and friends, then run each with one click.',
+    steps: [
+      {
+        id: 'node',
+        title: 'Create the Console',
+        body: 'The Console keeps the workspace commands and runs each one in a process of its own, with the output beside the list. I will create the node for you.',
+        action: { kind: 'createConsole', title: 'Console' },
+        check: { kind: 'nodeExists', nodeType: 'console', titleIncludes: 'Console' },
+      },
+      {
+        id: 'dev',
+        title: 'Save the command you run the most',
+        body: 'Each command has a name, the line it runs and an optional folder to group it. I will save "Start" with npm run dev under the Project folder.',
+        action: { kind: 'createConsoleCommand', name: 'Start', command: 'npm run dev', folder: 'Project' },
+      },
+      {
+        id: 'build',
+        title: 'Group the rest in the same folder',
+        body: 'Commands from the same front stay together and the folder collapses. I am also saving "Build" so you can see the grouping.',
+        action: { kind: 'createConsoleCommand', name: 'Build', command: 'npm run build', folder: 'Project' },
+      },
+      {
+        id: 'run',
+        title: 'Run it and watch',
+        body: 'Hover a command and hit ▷. The dot stays green while the process lives, ■ ends it, and switching commands drops nothing: the log comes back where it was. Tick "run when the workspace opens" on whatever should start by itself.',
+      },
+    ],
+  },
+  {
     id: 'team-leader',
     icon: 'Users',
     title: 'Team with a leader (zero-config)',

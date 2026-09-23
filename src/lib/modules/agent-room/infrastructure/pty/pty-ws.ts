@@ -27,6 +27,7 @@ import { ptySessionManager } from './PtySessionManager.ts';
 import { agentSessionTracker, agentSessionTrackerForRuntime, type AgentSessionTracker } from './AgentSessionTracker.ts';
 import type { WorkspaceExecutionRuntime } from '../../domain/types.ts';
 import { executionRuntimeKey } from '../../domain/runtime.ts';
+import { consoleShellInvocation } from '../../domain/console-commands.ts';
 import { preflightWslLaunch, WslLaunchError, type WslTrackingContext } from '../WslRuntime.ts';
 import {
   codexMcpLaunchForRuntime,
@@ -37,7 +38,7 @@ import {
 export const PTY_WS_PATH = '/ws/agent-room/pty';
 
 type ClientMessage =
-  | { type: 'create'; command: string; args?: string[]; conversationArgs?: string[]; freshSessionArgs?: string[]; agentSessionId?: string; cwd: string; cols?: number; rows?: number; env?: Record<string, string>; provider?: string; profileId?: string | null; sessionStorage?: string; label?: string; workspace?: string; workspaceId?: string; nodeId?: string; runtime?: WorkspaceExecutionRuntime; workspaceRoot?: string }
+  | { type: 'create'; command: string; args?: string[]; conversationArgs?: string[]; freshSessionArgs?: string[]; agentSessionId?: string; cwd: string; cols?: number; rows?: number; env?: Record<string, string>; provider?: string; profileId?: string | null; sessionStorage?: string; label?: string; workspace?: string; workspaceId?: string; nodeId?: string; runtime?: WorkspaceExecutionRuntime; workspaceRoot?: string; multiSession?: boolean; shellLine?: boolean }
   | { type: 'attach'; sessionId: string; cols?: number; rows?: number }
   | { type: 'input'; sessionId: string; data: string }
   | { type: 'resize'; sessionId: string; cols: number; rows: number }
@@ -150,6 +151,16 @@ export function handlePtyConnection(socket: WebSocket): void {
             }
           }
 
+          // O no Console mantem um processo por comando salvo: varias sessoes
+          // vivem sob o mesmo nodeId, e quem reata e o cliente, pelo sessionId
+          // que ele guarda. Reusar/derrubar por nodeId aqui mataria os outros.
+          const multiSession = message.multiSession === true;
+          if (message.shellLine === true) {
+            const invocation = consoleShellInvocation(message.command, process.platform);
+            message.command = invocation.command;
+            message.args = invocation.args;
+          }
+
           const reuseLiveNodeSession = () => {
             if (typeof message.workspaceId !== 'string' || typeof message.nodeId !== 'string') return false;
             const expectedCommand = message.command.trim();
@@ -187,7 +198,7 @@ export function handlePtyConnection(socket: WebSocket): void {
 
           // Page remounts and reconnects must reattach to the PTY already
           // owned by this node instead of starting the same conversation twice.
-          if (reuseLiveNodeSession()) break;
+          if (!multiSession && reuseLiveNodeSession()) break;
 
           const trackingStartedAt = Date.now();
           const resolvedCwd = resolveCwd(message.cwd);
@@ -229,7 +240,7 @@ export function handlePtyConnection(socket: WebSocket): void {
 
           // A concurrent renderer may have created the PTY while preflight or
           // secure profile resolution was awaiting I/O.
-          if (reuseLiveNodeSession()) break;
+          if (!multiSession && reuseLiveNodeSession()) break;
 
           const freshSessionId = Array.isArray(message.freshSessionArgs) && message.freshSessionArgs.length
             ? randomUUID()
