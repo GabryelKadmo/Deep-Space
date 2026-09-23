@@ -4261,6 +4261,7 @@
   "console.loading": "Loading commands…",
   "console.empty": "No saved commands yet.",
   "console.pick_command": "Pick a command to see its output.",
+  "console.stopped": "Stopped. Hit ▷ to run it again.",
   "console.run": "Run",
   "console.stop": "Stop",
   "console.edit": "Edit",

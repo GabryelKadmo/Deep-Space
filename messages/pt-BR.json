@@ -4261,6 +4261,7 @@
   "console.loading": "Carregando comandos…",
   "console.empty": "Nenhum comando salvo ainda.",
   "console.pick_command": "Escolha um comando para ver a saída.",
+  "console.stopped": "Parado. Clique em ▷ para rodar de novo.",
   "console.run": "Rodar",
   "console.stop": "Parar",
   "console.edit": "Editar",

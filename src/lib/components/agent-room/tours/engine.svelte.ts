@@ -287,6 +287,26 @@ async function runAction(action: TourAction): Promise<void> {
         });
         break;
       }
+      case 'createConsole': {
+        const nodes = await api<WorkspaceSnapshot['nodes']>(`/api/agent-room/workspaces/${workspaceId}/nodes`);
+        if (!nodes?.some((node) => node.type === 'console')) {
+          await api(`/api/agent-room/workspaces/${workspaceId}/nodes`, {
+            method: 'POST',
+            body: JSON.stringify({ type: 'console', title: action.title, ...nextPosition(), width: 620, height: 360, payload: {} }),
+          });
+        }
+        break;
+      }
+      case 'createConsoleCommand': {
+        const commands = await api<Array<{ name: string }>>(`/api/agent-room/workspaces/${workspaceId}/console-commands`);
+        if (!commands?.some((command) => command.name === action.name)) {
+          await api(`/api/agent-room/workspaces/${workspaceId}/console-commands`, {
+            method: 'POST',
+            body: JSON.stringify({ name: action.name, command: action.command, folder: action.folder ?? '' }),
+          });
+        }
+        break;
+      }
       case 'createGit': {
         const nodes = await api<WorkspaceSnapshot['nodes']>(`/api/agent-room/workspaces/${workspaceId}/nodes`);
         if (!nodes?.some((node) => node.type === 'git')) {

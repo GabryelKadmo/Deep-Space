@@ -509,6 +509,12 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   useCases: [
     {
+      id: 'console-commands',
+      title: 'Rode os comandos do projeto sem sair do Canvas',
+      body: 'Crie um nó Console e salve os comandos que você repete todo dia — npm run dev, build, git pull, o script de lint — cada um com nome e uma pasta para agrupar. Clicar em ▷ sobe um processo só daquele comando, com a saída ao lado da lista e o ponto verde enquanto ele vive; ■ encerra. Trocar de comando não derruba nada: o log de cada um volta de onde parou, e o dev server continua de pé enquanto você olha outro. Marque "rodar ao abrir o workspace" no que precisa subir sozinho. Recolhendo a lista, o nó vira um terminal comum para um comando avulso.',
+      tags: ['Console', 'um processo por comando', 'pastas'],
+    },
+    {
       id: 'leader-team',
       title: 'Time de desenvolvimento com líder (zero-config)',
       body: 'Crie um Claude e diga: “orquestra pra mim a feature X”. Ele propõe o time, você aprova, e ele recruta, conecta e distribui via kanban. Cada consulta por ask só vale após confirmação explícita da ponte; quando um agente usa task done, o líder recebe o handoff automaticamente para revisar e coordenar o próximo passo.',
@@ -942,6 +948,16 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+{
+  "date": "23 de setembro de 2026 · 0.34.0",
+  "title": "Deep Space 0.34.0: o nó Console",
+  "summary": "Os comandos do projeto salvos, agrupados e rodando cada um no próprio processo",
+  "items": [
+    "O nó Console roda os comandos do workspace. Os comandos salvos ficam em pastas, com nome e a linha que executam, e cada um sobe um processo próprio: o ponto fica verde enquanto ele vive, o botão vira encerrar, e a saída fica ao lado da lista. Trocar de comando não derruba nada — cada log volta de onde parou, então o dev server continua de pé enquanto você olha outro. Dá para marcar um comando como \"rodar ao abrir o workspace\", e recolher a lista transforma o nó num terminal comum, que é o que substitui o antigo nó de shell.",
+    "Os comandos salvos que viviam atrás de um botão no cabeçalho do terminal — uma lista por terminal mais uma global — passaram para o Console. Eles são importados uma vez, com o título do terminal virando a pasta, e limpos de onde estavam, então um comando apagado no Console não volta. Rodar um deles não digita mais o texto no shell que estiver aberto.",
+    "Configurações ganhou Microfone: Mostrar / Ocultar, ao lado de Minimapa e Controles de zoom. Ocultar tira o botão flutuante de ditado do canvas; o atalho continua funcionando, e o botão volta pela mesma configuração."
+  ]
+},
 {
   "date": "21 de setembro de 2026 · 0.33.5",
   "title": "Deep Space 0.33.5: zoom numa linha só, detalhe da tarefa dentro do quadro",

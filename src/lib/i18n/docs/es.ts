@@ -505,6 +505,12 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   useCases: [
     {
+      id: 'console-commands',
+      title: 'Ejecuta los comandos del proyecto sin salir del Canvas',
+      body: 'Crea un nodo Console y guarda los comandos que repites cada día — npm run dev, build, git pull, el script de lint — cada uno con nombre y una carpeta opcional. Pulsar ▷ levanta un proceso solo para ese comando, con la salida al lado de la lista y el punto verde mientras vive; ■ lo termina. Cambiar de comando no tira nada: el log de cada uno vuelve donde estaba, y el dev server sigue en pie mientras miras otro. Marca "ejecutar al abrir el workspace" en lo que deba arrancar solo. Al plegar la lista, el nodo se vuelve una terminal normal para un comando suelto.',
+      tags: ['Console', 'un proceso por comando', 'carpetas'],
+    },
+    {
       id: 'leader-team',
       title: 'Equipo de desarrollo con líder (zero-config)',
       body: 'Crea un Claude y dile: "orquesta para mí la feature X". Él propone el equipo, tú apruebas, y él recluta, conecta y distribuye mediante kanban. Cada consulta por ask solo cuenta tras la confirmación explícita del puente; cuando un agente usa task done, el líder recibe automáticamente el handoff para revisar y coordinar el siguiente paso.',
@@ -938,6 +944,16 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+{
+  "date": "23 de septiembre de 2026 · 0.34.0",
+  "title": "Deep Space 0.34.0: el nodo Console",
+  "summary": "Los comandos del proyecto guardados, agrupados y cada uno en su propio proceso",
+  "items": [
+    "El nodo Console ejecuta los comandos del workspace. Los comandos guardados viven en carpetas, con nombre y la línea que ejecutan, y cada uno levanta un proceso propio: el punto queda verde mientras vive, el botón pasa a detener, y la salida queda al lado de la lista. Cambiar de comando no tira nada — cada log vuelve donde estaba, así que el dev server sigue en pie mientras miras otro. Un comando puede marcarse para ejecutarse al abrir el workspace, y al plegar la lista el nodo se vuelve una terminal normal, que es lo que sustituye al antiguo nodo de shell.",
+    "Los comandos guardados que vivían detrás de un botón en la cabecera de la terminal — una lista por terminal más una global — pasaron al Console. Se importan una vez, con el título de la terminal como carpeta, y se limpian de donde estaban, así que un comando borrado en el Console no vuelve. Ejecutar uno ya no escribe su texto en la terminal que esté abierta.",
+    "Configuración ganó Micrófono: Mostrar / Ocultar, al lado de Minimapa y Controles de zoom. Ocultar quita el botón flotante de dictado del canvas; el atajo sigue funcionando, y el botón vuelve desde la misma configuración."
+  ]
+},
 {
   "date": "21 de septiembre de 2026 · 0.33.5",
   "title": "Deep Space 0.33.5: zoom en una sola fila, detalle de la tarea dentro del tablero",

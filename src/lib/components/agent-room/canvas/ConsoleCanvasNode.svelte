@@ -250,7 +250,7 @@
     {/if}
 
     <div class="console-output">
-      {#if selected_}
+      {#if selected_ && (sessions[selected_.id] || running[selected_.id])}
         {#key selected_.id}
           <TerminalNode
             sessionId={sessions[selected_.id]}
@@ -272,6 +272,8 @@
             onOpenPath={(path) => data.onOpenFile?.(path)}
           />
         {/key}
+      {:else if selected_}
+        <p class="console-placeholder">{m['console.stopped']()}</p>
       {:else}
         <p class="console-placeholder">{m['console.pick_command']()}</p>
       {/if}
