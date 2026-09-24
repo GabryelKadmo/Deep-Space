@@ -49,6 +49,8 @@
     multiSession?: boolean;
     /** Console: o comando e uma linha de shell, resolvida no servidor. */
     shellLine?: boolean;
+    /** Console: id do shell escolhido nas configuracoes (`consoleShell`). */
+    shell?: string;
   };
 
   type Props = {

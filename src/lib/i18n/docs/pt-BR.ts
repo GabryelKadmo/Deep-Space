@@ -511,7 +511,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'console-commands',
       title: 'Rode os comandos do projeto sem sair do Canvas',
-      body: 'Crie um nó Console e salve os comandos que você repete todo dia — npm run dev, build, git pull, o script de lint — cada um com nome e uma pasta para agrupar. Clicar em ▷ sobe um processo só daquele comando, com a saída ao lado da lista e o ponto verde enquanto ele vive; ■ encerra. Trocar de comando não derruba nada: o log de cada um volta de onde parou, e o dev server continua de pé enquanto você olha outro. Marque "rodar ao abrir o workspace" no que precisa subir sozinho. Recolhendo a lista, o nó vira um terminal comum para um comando avulso.',
+      body: 'Crie um nó Console e salve os comandos que você repete todo dia — npm run dev, build, git pull, o script de lint — cada um com nome e uma pasta para agrupar. Clicar em ▷ sobe um processo só daquele comando, com a saída ao lado da lista e o ponto verde enquanto ele vive; ■ encerra. Trocar de comando não derruba nada: o log de cada um volta de onde parou, e o dev server continua de pé enquanto você olha outro. Marque "rodar ao abrir o workspace" no que precisa subir sozinho. Recolhendo a lista, o nó vira um terminal comum para um comando avulso. Em qual shell esses comandos rodam é escolha sua: Configurações > Terminal > Shell dos comandos do Console (Automático, Git Bash, WSL, CMD no Windows; bash, zsh, sh nos demais).',
       tags: ['Console', 'um processo por comando', 'pastas'],
     },
     {
@@ -948,6 +948,17 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '24 de setembro de 2026 · 0.35.3',
+      title: 'Deep Space 0.35.3: o Console roda de verdade',
+      summary: 'Console fixado na barra, escolha do shell dos comandos e o selo de estado entre o ícone e o nome',
+      items: [
+        'Fixar o Console na barra de baixo não fazia nada. O menu guardava o pino e mostrava o item marcado, mas a barra não tinha um botão de Console para desenhar, então ele sumia e sobrava só o Shell antigo. Agora o Console aparece onde foi fixado — e já vem fixado numa instalação nova.',
+        'Os comandos do Console falhavam no Windows antes mesmo de rodar a linha. O PowerShell recusa os wrappers .ps1 dos gerenciadores de pacote na política de execução padrão, então "npm run dev" morria com "a execução de scripts foi desabilitada neste sistema" e código 1. O Console agora sobe o shell com essa política liberada para o processo que ele cria, e para nada mais na máquina.',
+        'Configurações ganhou Shell dos comandos do Console, em Terminal. Automático mantém o que cada sistema já usava — PowerShell no Windows, o shell de login no macOS e no Linux — e a lista oferece os outros shells que existem na máquina: Git Bash, WSL e CMD no Windows, bash, zsh e sh nos demais. A escolha é um id resolvido no servidor, nunca um caminho enviado pela interface.',
+        'O selo de estado do workspace saiu do canto do ícone e entrou na linha, entre o ícone e o nome: ícone, estado, identificação. O espaço continua reservado quando o workspace não tem selo, então todos os nomes começam na mesma coluna, e os botões de editar e excluir seguem na coluna única que a 0.35.2 deu a eles.',
+      ],
+    },
 {
   "date": "24 de setembro de 2026 · 0.35.2",
   "title": "Deep Space 0.35.2: a lista de workspaces com uma linha só",

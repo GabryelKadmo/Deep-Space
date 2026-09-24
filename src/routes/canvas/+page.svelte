@@ -2957,11 +2957,6 @@
       <Popover.Root>
         <Popover.Trigger class="workspace-icon-trigger" aria-label={m['canvas.folder_icon']()}>
           <WorkspaceIcon name={workspace.icon} size={14} />
-          {#if workspace.suspendedAt}
-            <span class="ws-state hibernating" role="img" aria-label={m['canvas.ws_suspended']({ name: workspace.name })}><Power size={9} /></span>
-          {:else if activity[workspace.id]}
-            <span class="ws-state live" role="status" aria-label={m['canvas.active_sessions_aria']({ count: activity[workspace.id] })}></span>
-          {/if}
         </Popover.Trigger>
         <Popover.Content class="w-56 p-2" align="start">
           <div class="grid grid-cols-6 gap-1" role="radiogroup" aria-label={m['canvas.folder_icon']()}>
@@ -2997,6 +2992,13 @@
           </div>
         </Popover.Content>
       </Popover.Root>
+      <span class="ws-state-slot">
+        {#if workspace.suspendedAt}
+          <span class="ws-state hibernating" role="img" aria-label={m['canvas.ws_suspended']({ name: workspace.name })}><Power size={9} /></span>
+        {:else if activity[workspace.id]}
+          <span class="ws-state live" role="status" aria-label={m['canvas.active_sessions_aria']({ count: activity[workspace.id] })}></span>
+        {/if}
+      </span>
       <ContextMenu.Root>
         <ContextMenu.Trigger class="workspace-item-trigger">
           <button class="workspace-item" onclick={() => selectWorkspace(workspace.id)}>
@@ -3279,6 +3281,11 @@
                 onTogglePin={togglePinnedProvider}
                 onOpenProviderCenter={() => void goto('/providers')}
               />
+            {/if}
+            {#if pinnedToolbarSet.has('console')}
+              <ToolbarButton label={m['tool.console']()} active={drawTool === 'console'} onclick={() => toggleDrawTool('console')}>
+                <Terminal size={15} class="tool-icon-svg" /> {m['console.title']()}
+              </ToolbarButton>
             {/if}
             {#if pinnedToolbarSet.has('note')}
               <ToolbarButton label={m['tool.note']()} active={drawTool === 'note'} onclick={() => toggleDrawTool('note')}>
@@ -3981,13 +3988,18 @@
     color: var(--app-text);
   }
 
-  /* Bolinha verde = workspace com sessoes vivas em background. */
-  /* Selo de estado do workspace: mora no canto do icone, em cima, para nao
-     disputar espaco com o nome nem deslocar as acoes da linha. */
+  /* Selo de estado do workspace: entre o icone e o nome — icone, estado,
+     identificacao. O espaco e reservado mesmo sem selo, senao o nome comeca
+     numa coluna diferente conforme o workspace dorme ou acorda. */
+  .ws-state-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    flex-shrink: 0;
+  }
+
   .ws-state {
-    position: absolute;
-    top: -3px;
-    right: -3px;
     display: grid;
     place-items: center;
     border-radius: 999px;
@@ -4004,7 +4016,6 @@
 
   .ws-state.hibernating {
     color: var(--app-text-muted);
-    background: var(--app-surface);
   }
 
   .workspace-row-actions {
