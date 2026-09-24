@@ -945,6 +945,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "September 23, 2026 · 0.35.1",
+  "title": "Deep Space 0.35.1: the app opens again",
+  "summary": "Fix for a Windows install of 0.35.0 that failed to start",
+  "items": [
+    "Deep Space 0.35.0 would not start on Windows: the internal server crashed with a \"module not found\" error looking for a file the Console node needs at runtime, because that version's installer never shipped it. The installer now includes it."
+  ]
+},
+{
   "date": "September 23, 2026 · 0.35.0",
   "title": "Deep Space 0.35.0: hibernate from the right-click menu",
   "summary": "A context menu on the workspace, the Hibernate name, and Remote Control in new terminals",
