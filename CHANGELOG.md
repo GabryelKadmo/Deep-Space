@@ -5,6 +5,17 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.35.3 - 2026-09-24
+
+### Added
+
+- **Console command shell**, in Terminal settings. Automatic keeps what each system already used — PowerShell on Windows, the login shell on macOS and Linux — and the list offers the other shells that exist on the machine: Git Bash, WSL and CMD on Windows, bash, zsh and sh elsewhere. The choice is an id resolved on the server, never a path sent by the interface.
+
+### Fixed
+
+- Pinning **Console** to the bottom bar did nothing. The menu recorded the pin and showed it ticked, but the bar had no Console button to draw, so the entry vanished and only the old Shell was left. Console now draws where it was pinned, and it comes pinned on a new installation.
+- Console commands failed on Windows before running a line. PowerShell refuses the `.ps1` wrappers of the package managers under the default execution policy, so `npm run dev` died with "running scripts is disabled on this system" and code 1. The Console now launches its shell with that policy released for the process it starts, and for nothing else on the machine.
+- The workspace state marker moved out of the corner of the icon and into the row, between the icon and the name: icon, state, name. The space stays reserved when a workspace has no marker, so every name still starts in the same column, and the edit and delete buttons stay in the single column 0.35.2 gave them.
 ## 0.35.2 - 2026-09-24
 
 ### Fixed
