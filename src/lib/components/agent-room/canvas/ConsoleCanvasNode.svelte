@@ -7,7 +7,7 @@
   import NodeShell, { type NodeConnection } from './NodeShell.svelte';
   import HeaderIconButton from './HeaderIconButton.svelte';
   import ConsoleCommandDialog from './ConsoleCommandDialog.svelte';
-  import { groupConsoleCommands, type ConsoleCommand } from '$lib/modules/agent-room/domain/console-commands.js';
+  import { groupConsoleCommands, normalizeConsoleShell, type ConsoleCommand, type ConsoleShell } from '$lib/modules/agent-room/domain/console-commands.js';
   import { DEFAULT_TERMINAL_THEME, normalizeTerminalTheme } from '../terminal-themes.js';
   import { getAppSettings } from '../app-settings.svelte.js';
   import * as m from '$lib/paraglide/messages.js';
@@ -47,6 +47,7 @@
   let editing = $state<ConsoleCommand | null>(null);
   let creating = $state(false);
   let terminalTheme = $state(DEFAULT_TERMINAL_THEME);
+  let consoleShell = $state<ConsoleShell>('auto');
 
   const groups = $derived(groupConsoleCommands(commands));
   const selected_ = $derived(commands.find((command) => command.id === selectedId) ?? null);
@@ -96,6 +97,7 @@
   $effect(() => {
     void getAppSettings().then((settings) => {
       terminalTheme = normalizeTerminalTheme(settings.terminalTheme);
+      consoleShell = normalizeConsoleShell(settings.consoleShell);
     });
   });
 
@@ -260,6 +262,7 @@
               workspaceRoot: data.workspaceRoot,
               multiSession: true,
               shellLine: true,
+              shell: consoleShell,
             }}
             workspaceId={data.workspaceId}
             nodeId={id}

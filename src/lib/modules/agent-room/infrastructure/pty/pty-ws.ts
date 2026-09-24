@@ -38,7 +38,7 @@ import {
 export const PTY_WS_PATH = '/ws/agent-room/pty';
 
 type ClientMessage =
-  | { type: 'create'; command: string; args?: string[]; conversationArgs?: string[]; freshSessionArgs?: string[]; agentSessionId?: string; cwd: string; cols?: number; rows?: number; env?: Record<string, string>; provider?: string; profileId?: string | null; sessionStorage?: string; label?: string; workspace?: string; workspaceId?: string; nodeId?: string; runtime?: WorkspaceExecutionRuntime; workspaceRoot?: string; multiSession?: boolean; shellLine?: boolean }
+  | { type: 'create'; command: string; args?: string[]; conversationArgs?: string[]; freshSessionArgs?: string[]; agentSessionId?: string; cwd: string; cols?: number; rows?: number; env?: Record<string, string>; provider?: string; profileId?: string | null; sessionStorage?: string; label?: string; workspace?: string; workspaceId?: string; nodeId?: string; runtime?: WorkspaceExecutionRuntime; workspaceRoot?: string; multiSession?: boolean; shellLine?: boolean; shell?: string }
   | { type: 'attach'; sessionId: string; cols?: number; rows?: number }
   | { type: 'input'; sessionId: string; data: string }
   | { type: 'resize'; sessionId: string; cols: number; rows: number }
@@ -156,7 +156,9 @@ export function handlePtyConnection(socket: WebSocket): void {
           // que ele guarda. Reusar/derrubar por nodeId aqui mataria os outros.
           const multiSession = message.multiSession === true;
           if (message.shellLine === true) {
-            const invocation = consoleShellInvocation(message.command, process.platform);
+            // `shell` e um id fechado (normalizeConsoleShell), nunca um caminho
+            // vindo do cliente: quem escolhe o binario aqui e o servidor.
+            const invocation = consoleShellInvocation(message.command, process.platform, message.shell);
             message.command = invocation.command;
             message.args = invocation.args;
           }

@@ -507,7 +507,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'console-commands',
       title: 'Run the project commands without leaving the Canvas',
-      body: 'Create a Console node and save the commands you repeat every day — npm run dev, build, git pull, the lint script — each with a name and an optional folder. Hitting ▷ starts a process for that command alone, with the output beside the list and a green dot while it lives; ■ ends it. Switching commands drops nothing: each log comes back where it was, and the dev server stays up while you look at another one. Tick "run when the workspace opens" on whatever should start by itself. Collapse the list and the node becomes a plain terminal for a one-off command.',
+      body: 'Create a Console node and save the commands you repeat every day — npm run dev, build, git pull, the lint script — each with a name and an optional folder. Hitting ▷ starts a process for that command alone, with the output beside the list and a green dot while it lives; ■ ends it. Switching commands drops nothing: each log comes back where it was, and the dev server stays up while you look at another one. Tick "run when the workspace opens" on whatever should start by itself. Collapse the list and the node becomes a plain terminal for a one-off command. Which shell runs those commands is your call: Settings > Terminal > Console command shell (Automatic, Git Bash, WSL, CMD on Windows; bash, zsh, sh elsewhere).',
       tags: ['Console', 'a process per command', 'folders'],
     },
     {
@@ -944,6 +944,17 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: 'September 24, 2026 · 0.35.3',
+      title: 'Deep Space 0.35.3: the Console actually runs',
+      summary: 'Console pinned to the bar, a shell for its commands, and the state marker between icon and name',
+      items: [
+        'Pinning Console to the bottom bar did nothing. The menu recorded the pin and showed it ticked, but the bar had no Console button to draw, so the entry vanished and only the old Shell was left. Console now draws where it was pinned, and it comes pinned on a new installation.',
+        'Console commands failed on Windows before running a line. PowerShell refuses the .ps1 wrappers of the package managers under the default execution policy, so "npm run dev" died with "running scripts is disabled on this system" and code 1. The Console now launches its shell with that policy released for the process it starts, and for nothing else on the machine.',
+        'Settings gained Console command shell, under Terminal. Automatic keeps what each system already used — PowerShell on Windows, the login shell on macOS and Linux — and the list offers the other shells that exist on the machine: Git Bash, WSL and CMD on Windows, bash, zsh and sh elsewhere. The choice is an id resolved on the server, never a path sent by the interface.',
+        'The workspace state marker moved out of the corner of the icon and into the row, between the icon and the name: icon, state, name. The space stays reserved when a workspace has no marker, so every name still starts in the same column, and the edit and delete buttons stay in the single column 0.35.2 gave them.',
+      ],
+    },
 {
   "date": "September 24, 2026 · 0.35.2",
   "title": "Deep Space 0.35.2: one shape for the workspace list",

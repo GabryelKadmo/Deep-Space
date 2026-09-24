@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { consoleShellInvocation, groupConsoleCommands, type ConsoleCommand } from '$lib/modules/agent-room/domain/console-commands.js';
+import { consoleShellInvocation, consoleShellOptions, groupConsoleCommands, normalizeConsoleShell, type ConsoleCommand } from '$lib/modules/agent-room/domain/console-commands.js';
 
 function command(overrides: Partial<ConsoleCommand> = {}): ConsoleCommand {
   return {
@@ -31,6 +31,27 @@ describe('comandos do Console', () => {
 
     expect(groups).toHaveLength(1);
     expect(groups[0].folder).toBe('');
+  });
+
+  it('libera a politica de execucao no PowerShell, senao npm.ps1 nao roda', () => {
+    const windows = consoleShellInvocation('npm run dev', 'win32');
+    expect(windows.command).toBe('powershell.exe');
+    expect(windows.args).toContain('Bypass');
+  });
+
+  it('respeita o shell escolhido e ignora um id desconhecido', () => {
+    expect(consoleShellInvocation('npm run dev', 'win32', 'cmd').args).toEqual(['/d', '/s', '/c', 'npm run dev']);
+    expect(consoleShellInvocation('npm run dev', 'win32', 'wsl')).toEqual({ command: 'wsl.exe', args: ['--', 'bash', '-lc', 'npm run dev'] });
+    expect(consoleShellInvocation('npm run dev', 'win32', 'gitbash').command.endsWith('\\Git\\bin\\bash.exe')).toBe(true);
+    expect(consoleShellInvocation('npm run dev', 'linux', 'bash').command).toBe('/bin/bash');
+
+    expect(normalizeConsoleShell('C:/evil.exe')).toBe('auto');
+    expect(consoleShellInvocation('npm run dev', 'win32', 'C:/evil.exe').command).toBe('powershell.exe');
+  });
+
+  it('oferece so os shells que existem na plataforma', () => {
+    expect(consoleShellOptions('win32')).not.toContain('zsh');
+    expect(consoleShellOptions('darwin')).not.toContain('powershell');
   });
 
   it('entrega a linha inteira ao shell do sistema, e nao um executavel avulso', () => {

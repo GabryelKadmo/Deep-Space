@@ -4289,5 +4289,9 @@
   "canvas.hibernate_action": "Hibernar",
   "canvas.ws_menu_aria": "Ações de {name}",
   "settings.dictation_enabled": "Ditado por voz",
-  "settings.dictation_enabled_desc": "Desligado, o microfone some do canvas e dos terminais, e o atalho deixa de gravar."
+  "settings.dictation_enabled_desc": "Desligado, o microfone some do canvas e dos terminais, e o atalho deixa de gravar.",
+  "tool.console": "Comandos salvos do workspace, um processo por comando",
+  "settings.console_shell": "Shell dos comandos do Console",
+  "settings.console_shell_auto": "Automático",
+  "settings.console_shell_hint": "Em qual shell os comandos do nó Console rodam. Automático usa o PowerShell no Windows e o seu shell de login no macOS/Linux."
 }
