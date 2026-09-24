@@ -359,8 +359,6 @@
   "canvas.export_ws": "Exportar workspace",
   "canvas.unload_tooltip": "Descarregar (encerra os terminais vivos, mantém o layout)",
   "canvas.new_ws": "Novo workspace",
-  "canvas.sidebar_expand": "Expandir barra lateral",
-  "canvas.sidebar_collapse": "Recolher barra lateral",
   "canvas.filter_ws_aria": "Filtrar workspaces",
   "canvas.ws_active_sessions": "{name} — {count} sessão(ões) ativa(s)",
   "canvas.active_sessions_aria": "{count} sessão(ões) ativa(s)",
@@ -4281,7 +4279,6 @@
   "ph.console_name": "Start",
   "ph.console_command": "npm run dev",
   "ph.console_folder": "React/Next",
-  "settings.dictation_button": "Microfone",
   "canvas.hibernate_done_one": "{count} terminal encerrado. O workspace fica hibernando até você abri-lo novamente.",
   "canvas.hibernate_done_many": "{count} terminais encerrados. O workspace fica hibernando até você abri-lo novamente.",
   "canvas.hibernate_none": "Workspace hibernando. Ele fica inativo até você abri-lo novamente.",
@@ -4290,5 +4287,7 @@
   "canvas.hibernate_desc": "Isso encerra todos os terminais e mantém o workspace hibernando, inclusive o despacho de tarefas e as automações em background, até você abri-lo novamente. O layout do canvas e as conversas dos agentes permanecem salvos.",
   "canvas.hibernating": "Hibernando...",
   "canvas.hibernate_action": "Hibernar",
-  "canvas.ws_menu_aria": "Ações de {name}"
+  "canvas.ws_menu_aria": "Ações de {name}",
+  "settings.dictation_enabled": "Ditado por voz",
+  "settings.dictation_enabled_desc": "Desligado, o microfone some do canvas e dos terminais, e o atalho deixa de gravar."
 }

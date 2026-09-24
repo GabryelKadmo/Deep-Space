@@ -949,6 +949,16 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "24 de setembro de 2026 · 0.35.2",
+  "title": "Deep Space 0.35.2: a lista de workspaces com uma linha só",
+  "summary": "Selo de estado no ícone e os botões de editar e excluir sempre na mesma coluna",
+  "items": [
+    "As linhas da lista de workspaces não tinham um desenho comum: o selo de estado (hibernando, ou o ponto de sessão viva) ficava dentro do nome e empurrava os botões de editar e excluir, então cada linha terminava num lugar diferente. O selo passou para o canto do ícone do workspace, e as duas ações ficam num par fixo, na mesma coluna em todas as linhas. Nome comprido agora corta com reticências em vez de empurrar os botões.",
+    "O ditado por voz pode ser desligado. O interruptor fica no topo das configurações de Ditado por voz, e desligado é desligado: o microfone sai do canvas e do cabeçalho dos terminais, e o atalho para de gravar, devolvendo o Alt+Espaço para quem não dita. O resto da seção fica esmaecido enquanto ele está desligado, em vez de oferecer ajustes que não valem mais. Isso substitui o Mostrar/Ocultar que a 0.34.0 tinha arquivado em Terminal, que só escondia o botão flutuante e deixava o atalho vivo — e que ninguém achava, porque microfone não é configuração de terminal.",
+    "A barra lateral não recolhe mais. A faixa estreita em que ela virava era uma segunda versão, pior, da mesma lista — só ícones, sem filtro, sem pastas, com problemas de alinhamento próprios — mantida viva por um botão. O botão, a faixa e os estilos por trás dela saíram, e a barra lateral é sempre a lista."
+  ]
+},
+{
   "date": "23 de setembro de 2026 · 0.35.1",
   "title": "Deep Space 0.35.1: o app voltava a abrir",
   "summary": "Correção que impedia o Deep Space 0.35.0 de iniciar no Windows",
