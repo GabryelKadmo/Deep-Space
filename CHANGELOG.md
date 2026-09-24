@@ -5,6 +5,14 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.35.2 - 2026-09-24
+
+### Fixed
+
+- The workspace rows in the sidebar had no shared shape: the state marker (hibernating, or the dot for live sessions) sat inside the name, so it pushed the edit and delete buttons around and every row ended them at a different place. The marker moved to the corner of the workspace icon, and the two actions now sit in a fixed pair, in the same column on every row — measured at a single x across all of them, against seven before. Long names truncate instead of shoving the buttons out.
+- Voice dictation can be turned off. The switch lives at the top of the Voice dictation settings, and off means off: the microphone leaves the canvas and the terminal headers, and the shortcut stops recording, so Alt+Space is free again for whoever does not dictate. The rest of the section dims while it is off, instead of offering settings that no longer apply. This replaces the Show/Hide control that 0.34.0 filed under Terminal, which only hid the floating button and left the shortcut live — and which nobody found, because the microphone is not a terminal setting.
+- The sidebar no longer collapses. The narrow rail it turned into was a second, worse version of the same list — icons only, no filter, no folders, its own alignment bugs — kept alive by one button. The button, the rail and the styles behind it are gone, and the sidebar is always the list.
+
 ## 0.35.1 - 2026-09-23
 
 ### Fixed
