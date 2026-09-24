@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.35.1 - 2026-09-23
+
+### Fixed
+
+- Deep Space 0.35.0 would not start on Windows. The Console feature added `domain/console-commands.ts`, imported at runtime by the PTY server, but the installer's file list never included it, so the internal server crashed with `ERR_MODULE_NOT_FOUND` and the window never opened. The installer now ships that file.
+
 ## 0.35.0 - 2026-09-23
 
 ### Added
