@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { beforeNavigate, goto } from '$app/navigation';
   import { Activity, ArrowLeft, Check, Command, Keyboard, Languages, Layers, Mic, Palette, Pencil, Play, Plus, Power, RefreshCw, RotateCw, Shapes, SquareTerminal, Trash2, Volume2 } from '@lucide/svelte';
-  import { isMacPlatform } from '$lib/components/agent-room/platform.js';
+  import { isMacPlatform, isWindowsPlatform } from '$lib/components/agent-room/platform.js';
   import WorkspaceIcon from '$lib/components/agent-room/WorkspaceIcon.svelte';
   import * as m from '$lib/paraglide/messages.js';
   import { Button } from '$lib/components/ui/button';
@@ -16,6 +16,7 @@
   import { terminalThemeLabel } from '$lib/components/agent-room/terminal-theme-label.js';
   import { normalizeTerminalTheme, TERMINAL_THEMES, TERMINAL_THEME_ORDER } from '$lib/components/agent-room/terminal-themes.js';
   import { DEFAULT_DICTATION_HOTKEY, comboFromEvent, comboLabel } from '$lib/components/agent-room/dictation-hotkey.js';
+  import { consoleShellOptions, normalizeConsoleShell, type ConsoleShell } from '$lib/modules/agent-room/domain/console-commands.js';
   import { appSettingsStore, getAppSettings, invalidateAppSettings } from '$lib/components/agent-room/app-settings.svelte.js';
   import { addCustomIcon, customIconNames, ensureCustomIconsLoaded, getCustomIconNode, removeCustomIcon } from '$lib/components/agent-room/workspace-custom-icons.svelte.js';
   import DynamicLucideIcon from '$lib/components/agent-room/DynamicLucideIcon.svelte';
@@ -58,6 +59,23 @@
   }
 
   const previewTheme = $derived(TERMINAL_THEMES[normalizeTerminalTheme(settings.terminalTheme)].theme);
+
+  // Shell dos comandos do Console. So faz sentido oferecer o que existe na
+  // plataforma; o app e o PTY rodam no mesmo host, entao o navigator serve.
+  const shellOptions = consoleShellOptions(isWindowsPlatform() ? 'win32' : 'linux');
+  const SHELL_LABELS: Record<Exclude<ConsoleShell, 'auto'>, string> = {
+    powershell: 'PowerShell',
+    gitbash: 'Git Bash',
+    wsl: 'WSL',
+    cmd: 'CMD',
+    bash: 'bash',
+    zsh: 'zsh',
+    sh: 'sh',
+  };
+
+  function shellLabel(shell: ConsoleShell): string {
+    return shell === 'auto' ? m['settings.console_shell_auto']() : SHELL_LABELS[shell];
+  }
 
   const hotkeyLabel = $derived(comboLabel(settings.dictationHotkey || DEFAULT_DICTATION_HOTKEY));
   const ttsSpeed = $derived(normalizeEmbeddedTtsSpeed(settings.voiceTtsSpeed));
@@ -623,6 +641,23 @@
             {/each}
           </Select.Content>
         </Select.Root>
+      </div>
+    </div>
+
+    <div class="grid-fields">
+      <div class="field span-2">
+        <span class="field-label">{m['settings.console_shell']()}</span>
+        <Select.Root type="single" value={normalizeConsoleShell(settings.consoleShell)} onValueChange={(value: string) => (settings = { ...settings, consoleShell: value })}>
+          <Select.Trigger data-slot="select-trigger">
+            {shellLabel(normalizeConsoleShell(settings.consoleShell))}
+          </Select.Trigger>
+          <Select.Content>
+            {#each shellOptions as shell (shell)}
+              <Select.Item value={shell}>{shellLabel(shell)}</Select.Item>
+            {/each}
+          </Select.Content>
+        </Select.Root>
+        <p class="field-hint">{m['settings.console_shell_hint']()}</p>
       </div>
     </div>
 

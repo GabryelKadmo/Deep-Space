@@ -33,6 +33,7 @@ const DEFAULTS: Record<string, string> = {
   voiceSidecarTtsVoice: 'pf_dora',
   pinnedAgentProviders: '[]',
   terminalGlobalCommands: '[]',
+  consoleShell: 'auto',
   coreRunInBackground: 'false',
   coreLaunchAtLogin: 'false',
 };
