@@ -124,7 +124,7 @@
     setAgentProviderPinned,
   } from '$lib/components/agent-room/provider-toolbar.js';
   import { BackgroundVariant, SvelteFlowProvider } from '@xyflow/svelte';
-  import { BadgeCheck, ChevronDown, Terminal, Lock, LockOpen, Maximize, Minus, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, PanelLeftClose, PanelLeftOpen, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
+  import { BadgeCheck, ChevronDown, Terminal, Lock, LockOpen, Maximize, Minus, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
   import ZoomBridge from '$lib/components/agent-room/canvas/ZoomBridge.svelte';
   import type {
     AgentProviderInfo,
@@ -804,7 +804,6 @@
   let showPresetPanel = $state(false);
   let leaderDictationState = $state<LeaderDictationStatus>('idle');
   let leaderDictationNodeId = $state<string | null>(null);
-  let sidebarCollapsed = $state(false);
   let importInput: HTMLInputElement;
   let visibleFloorId = $state<string | null>(null);
   let floors = $state<Floor[]>([]);
@@ -2840,7 +2839,6 @@
 
 <main class="canvas-page">
   <aside class="sidebar" inert={designModeNodeId !== null} aria-hidden={designModeNodeId ? 'true' : undefined}>
-    {#if !sidebarCollapsed}
       <div class="sidebar-tabs">
         <WorkspaceModeSwitch
           active="canvas"
@@ -2848,17 +2846,13 @@
           nodeId={nodes.find((node) => node.selected)?.id ?? canvasRouteNodeId()}
         />
       </div>
-    {/if}
       <div class="sidebar-header">
-        {#if !sidebarCollapsed}
-          <h2>{m['canvas.workspaces']()}</h2>
-        {/if}
+        <h2>{m['canvas.workspaces']()}</h2>
         <div class="sidebar-header-actions">
           {#if !windowsDesktop}
             <WorkspaceSharingButton variant="icon" workspaceId={activeWorkspace?.id ?? null} onOpen={() => (sharingOpen = true)} />
             <AttentionCenter workspaceId={activeWorkspace?.id ?? null} />
           {/if}
-          {#if !sidebarCollapsed}
           <HeaderIconButton label={m['tool.presets']()} side="bottom" onclick={() => toggleSidePanel('presets')}>
             <LayoutTemplate size={14} />
           </HeaderIconButton>
@@ -2883,19 +2877,10 @@
               {/if}
             </DropdownMenu.Content>
           </DropdownMenu.Root>
-        {/if}
-        <HeaderIconButton
-          label={sidebarCollapsed ? m['canvas.sidebar_expand']() : m['canvas.sidebar_collapse']()}
-          side={sidebarCollapsed ? 'right' : 'bottom'}
-          onclick={() => (sidebarCollapsed = !sidebarCollapsed)}
-        >
-          {#if sidebarCollapsed}<PanelLeftOpen size={14} />{:else}<PanelLeftClose size={14} />{/if}
-        </HeaderIconButton>
       </div>
     </div>
     <input bind:this={importInput} type="file" accept=".json" class="hidden-input" onchange={importWorkspaceFile} />
 
-    {#if !sidebarCollapsed}
       <label class="workspace-filter">
         <Search size={13} aria-hidden="true" />
         <input
@@ -2906,7 +2891,6 @@
           spellcheck="false"
         />
       </label>
-    {/if}
 
     <WorkspaceCreateDialog
       open={showWorkspaceForm}
@@ -2917,26 +2901,6 @@
       onClose={() => { showWorkspaceForm = false; initialPresetId = ''; pendingWorkspaceGroupId = null; }}
     />
 
-    {#if sidebarCollapsed}
-      <ul class="workspace-list collapsed">
-        {#if !workspacesLoaded}
-          {#each [0, 1] as index (index)}
-            <li class="ws-skeleton collapsed"><Skeleton class="h-6 w-6 bg-[var(--app-surface-raised)]" /></li>
-          {/each}
-        {:else}
-        {#each visibleWorkspaces as workspace (workspace.id)}
-          <li class:active={activeWorkspace?.id === workspace.id}>
-            <HeaderIconButton label={workspace.suspendedAt ? m['canvas.ws_suspended']({ name: workspace.name }) : activity[workspace.id] ? m['canvas.ws_active_sessions']({ name: workspace.name, count: activity[workspace.id] }) : workspace.name} side="right" class="workspace-item" onclick={() => selectWorkspace(workspace.id)}>
-              <span class="workspace-icon">
-                {#if workspace.suspendedAt}<Power size={10} class="text-[var(--app-text-muted)]" aria-hidden="true" />{:else if activity[workspace.id]}<span class="live-dot rail" aria-hidden="true"></span>{/if}
-                <WorkspaceIcon name={workspace.icon} size={14} />
-              </span>
-            </HeaderIconButton>
-          </li>
-        {/each}
-        {/if}
-      </ul>
-    {:else}
       <ul
         class="workspace-list"
         class:drag-over-root={dragOverRoot}
@@ -2982,7 +2946,6 @@
           <Plus size={13} />
         </HeaderIconButton>
       </div>
-    {/if}
 
     {#snippet workspaceListItem(workspace: Workspace)}
     <li
@@ -2994,6 +2957,11 @@
       <Popover.Root>
         <Popover.Trigger class="workspace-icon-trigger" aria-label={m['canvas.folder_icon']()}>
           <WorkspaceIcon name={workspace.icon} size={14} />
+          {#if workspace.suspendedAt}
+            <span class="ws-state hibernating" role="img" aria-label={m['canvas.ws_suspended']({ name: workspace.name })}><Power size={9} /></span>
+          {:else if activity[workspace.id]}
+            <span class="ws-state live" role="status" aria-label={m['canvas.active_sessions_aria']({ count: activity[workspace.id] })}></span>
+          {/if}
         </Popover.Trigger>
         <Popover.Content class="w-56 p-2" align="start">
           <div class="grid grid-cols-6 gap-1" role="radiogroup" aria-label={m['canvas.folder_icon']()}>
@@ -3033,11 +3001,6 @@
         <ContextMenu.Trigger class="workspace-item-trigger">
           <button class="workspace-item" onclick={() => selectWorkspace(workspace.id)}>
             <span class="workspace-name">{workspace.name}</span>
-            {#if workspace.suspendedAt}
-              <Power size={11} class="text-[var(--app-text-muted)]" aria-label={m['canvas.ws_suspended']({ name: workspace.name })} />
-            {:else if activity[workspace.id]}
-              <span class="live-dot" role="status" aria-label={m['canvas.active_sessions_aria']({ count: activity[workspace.id] })}></span>
-            {/if}
           </button>
         </ContextMenu.Trigger>
         <ContextMenu.Content class="w-56" aria-label={m['canvas.ws_menu_aria']({ name: workspace.name })}>
@@ -3053,12 +3016,14 @@
           </ContextMenu.Item>
         </ContextMenu.Content>
       </ContextMenu.Root>
-      <HeaderIconButton label={m['canvas.edit_ws']()} side="right" onclick={() => (editingWorkspace = workspace)}>
-        <Pencil size={13} />
-      </HeaderIconButton>
-      <HeaderIconButton label={m['canvas.delete_ws']()} side="right" danger onclick={() => (deletingWorkspace = workspace)}>
-        <X size={13} />
-      </HeaderIconButton>
+      <span class="workspace-row-actions">
+        <HeaderIconButton label={m['canvas.edit_ws']()} side="right" onclick={() => (editingWorkspace = workspace)}>
+          <Pencil size={13} />
+        </HeaderIconButton>
+        <HeaderIconButton label={m['canvas.delete_ws']()} side="right" danger onclick={() => (deletingWorkspace = workspace)}>
+          <X size={13} />
+        </HeaderIconButton>
+      </span>
     </li>
   {/snippet}
 
@@ -3663,19 +3628,6 @@
     color: var(--app-text);
   }
 
-  .sidebar:has(.workspace-list.collapsed) {
-    width: 54px;
-  }
-
-  /* Colapsada: so o botao de expandir, centralizado. */
-  .sidebar:has(.workspace-list.collapsed) .sidebar-header {
-    justify-content: center;
-  }
-
-  .sidebar:has(.workspace-list.collapsed) .sidebar-header-actions {
-    margin-left: 0;
-  }
-
   .sidebar {
     width: 288px;
     flex-shrink: 0;
@@ -3772,10 +3724,13 @@
     overflow-x: hidden;
   }
 
-  .workspace-item-trigger {
+  /* :global — a classe viaja para dentro do ContextMenu.Trigger, que e outro
+     componente; sem isso a linha ficava com a largura do texto e as acoes
+     flutuavam em vez de formarem uma coluna. */
+  .canvas-page :global(.workspace-item-trigger) {
     display: flex;
     min-width: 0;
-    flex: 1;
+    flex: 1 1 auto;
   }
 
   .workspace-list li {
@@ -3792,18 +3747,8 @@
     box-shadow: inset 2px 0 0 var(--app-accent);
   }
 
-  .workspace-list.collapsed li {
-    justify-content: center;
-  }
-
   .ws-skeleton {
     padding: 3px 6px;
-  }
-
-  .ws-skeleton.collapsed {
-    display: flex;
-    justify-content: center;
-    padding: 3px 0;
   }
 
   .workspace-list.drag-over-root {
@@ -4016,6 +3961,7 @@
   /* Mesmo tratamento do .ws-group-icon-trigger: clicar no icone de um
      workspace abre o seletor direto, sem precisar do lapis (editar). */
   .canvas-page :global(.workspace-icon-trigger) {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -4036,25 +3982,36 @@
   }
 
   /* Bolinha verde = workspace com sessoes vivas em background. */
-  .live-dot {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
+  /* Selo de estado do workspace: mora no canto do icone, em cima, para nao
+     disputar espaco com o nome nem deslocar as acoes da linha. */
+  .ws-state {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    line-height: 0;
+  }
+
+  .ws-state.live {
+    width: 6px;
+    height: 6px;
     background: var(--app-success);
     box-shadow: 0 0 6px color-mix(in srgb, var(--app-success) 80%, transparent);
-    margin-left: 6px;
-    flex-shrink: 0;
     animation: live-pulse 2s ease-in-out infinite;
   }
 
-  .live-dot.rail {
-    position: absolute;
-    top: -3px;
-    right: -4px;
-    margin-left: 0;
-    width: 6px;
-    height: 6px;
+  .ws-state.hibernating {
+    color: var(--app-text-muted);
+    background: var(--app-surface);
+  }
+
+  .workspace-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
   }
 
   @keyframes live-pulse {
@@ -4068,7 +4025,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .live-dot {
+    .ws-state.live {
       animation: none;
     }
   }
@@ -4078,6 +4035,8 @@
   }
 
   .canvas-page :global(.workspace-name) {
+    flex: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

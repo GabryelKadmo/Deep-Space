@@ -116,6 +116,7 @@
 - `electron/main.cjs` spawns the adapter-node server (`build/index.js`) as a child process with `ELECTRON_RUN_AS_NODE=1` and loads it in a BrowserWindow.
 - After changing native deps (better-sqlite3, node-pty), run `npm run electron:rebuild` to rebuild them for the Electron ABI.
 - Dev: `npm run electron:dev` (build + launch).
+- **A new file that the server imports at runtime must be added to `build.files` in `package.json`.** `pty-ws.ts` and what it pulls in are run from source by Node's type-stripping loader, not bundled, so the installer only ships what that allowlist names. 0.35.0 shipped without `domain/console-commands.ts` and the packaged app never opened (`ERR_MODULE_NOT_FOUND` inside the internal server) — a failure no test caught, because the suite and `npm run build` both run from the source tree. After touching those imports, install the built package and open it before tagging.
 - Packaging: `asar` is OFF on purpose — the production server (`scripts/deepspace-server.mjs`) is ESM and Node's ESM loader cannot resolve packages inside an asar; with asar enabled the app only worked because the source repo's `node_modules` happened to be nearby. Do not re-enable it.
 - Electron is pinned to v42 (ABI 146) because better-sqlite3 only publishes Electron prebuilds up to ABI 146 — upgrading Electron means compiling better-sqlite3 for every target (mac needs `electron:rebuild`; Linux/Windows cross-builds break).
 - macOS: `npm run package:mac -- --arm64` (and/or `--x64` for Intel). The wrapper applies a complete ad-hoc signature and disables the macOS update rollout when Apple signing secrets are absent; never call electron-builder directly for a distributable Mac package. Linux/Windows locally via Docker: `scripts/package-cross.sh linux|linux-rpm|windows|windows-zip|clean` (official electronuserland images, staging without host `node_modules`, npm pinned to the host version). Native Windows build (recommended for the NSIS installer): see `docs/build-windows.md` — no MSVC needed, prebuilds cover everything.
@@ -138,6 +139,7 @@
 
 ## Verification
 
+- **A visual change is never pushed to `dev` or `main` before the owner sees a preview.** Anything that alters what the app looks like — layout, spacing, colour, an icon, a new or rearranged control, a node, a dialog — is built, served from an isolated instance (own port and `DEEPSPACE_DATA_DIR`, never the real canvas) and captured with Playwright, and those screenshots go to the owner *before* the pull request is opened. Wait for the reply. Measure whatever the change claims to fix (alignment, offsets, overflow) and report the numbers with the image: "it looks right" is not evidence. This applies to a one-line CSS fix as much as to a new screen.
 - Before shipping meaningful changes, run focused tests and `npm run build` when feasible.
 - For queue or scheduler behavior, run `npm run dev:worker` and `npm run dev:scheduler` locally with Redis available.
 - Do not revert unrelated user changes in the working tree.

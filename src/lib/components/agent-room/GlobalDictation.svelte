@@ -46,7 +46,9 @@
   let dockPosition = $state<{ x: number; y: number } | null>(null);
   let hiddenBySurface = $state(false);
   /** Configuracoes > Terminal pode esconder so o botao: o atalho continua. */
-  const buttonHidden = $derived(appSettingsStore.values.showDictationButton === 'false');
+  /** Desligado em Configuracoes: nem o botao, nem o atalho — quem nao dita
+      nao precisa de um microfone no canvas nem de Alt+Espaco reservado. */
+  const dictationOff = $derived(appSettingsStore.values.dictationEnabled === 'false');
   let placementReady = $state(false);
   let placementMenuOpen = $state(false);
   let placementModifier = $state('Ctrl');
@@ -398,6 +400,7 @@
     };
     const selectionChange = () => rememberSelection();
     const keyDown = (event: KeyboardEvent) => {
+      if (dictationOff) return;
       if (!matchesCombo(event, hotkey)) return;
       event.preventDefault();
       toggle();
@@ -448,7 +451,7 @@
   });
 </script>
 
-{#if supported && placementReady && !hiddenBySurface && !buttonHidden}
+{#if supported && placementReady && !hiddenBySurface && !dictationOff}
   <div
     class="fixed z-30 size-12"
     data-dictation-trigger
