@@ -4289,5 +4289,9 @@
   "canvas.hibernate_action": "Hibernate",
   "canvas.ws_menu_aria": "Actions for {name}",
   "settings.dictation_enabled": "Voice dictation",
-  "settings.dictation_enabled_desc": "Turned off, the microphone leaves the canvas and the terminals, and the shortcut stops recording."
+  "settings.dictation_enabled_desc": "Turned off, the microphone leaves the canvas and the terminals, and the shortcut stops recording.",
+  "tool.console": "Saved workspace commands, one process per command",
+  "settings.console_shell": "Console command shell",
+  "settings.console_shell_auto": "Automatic",
+  "settings.console_shell_hint": "Which shell runs the Console node commands. Automatic uses PowerShell on Windows and your login shell on macOS/Linux."
 }

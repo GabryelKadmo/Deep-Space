@@ -1,6 +1,6 @@
 export const PINNED_TOOLBAR_ITEMS_SETTING = 'pinnedToolbarItems';
 export const MIN_PINNED_TOOLBAR_ITEMS = 4;
-export const DEFAULT_PINNED_TOOLBAR_ITEMS = ['terminal', 'note', 'tasks', 'files', 'git', 'image', 'device', 'usage'];
+export const DEFAULT_PINNED_TOOLBAR_ITEMS = ['terminal', 'console', 'note', 'tasks', 'files', 'git', 'image', 'device', 'usage'];
 
 export function parsePinnedToolbarItems(value: unknown, validIds: readonly string[]): string[] {
   let candidate: unknown = value;
