@@ -592,18 +592,6 @@
         </Select.Root>
       </div>
       <div class="field">
-        <span class="field-label">{m['settings.dictation_button']()}</span>
-        <Select.Root type="single" value={settings.showDictationButton} onValueChange={(value: string) => (settings = { ...settings, showDictationButton: value })}>
-          <Select.Trigger data-slot="select-trigger">
-            {settings.showDictationButton === 'false' ? m['settings.hide']() : m['settings.show']()}
-          </Select.Trigger>
-          <Select.Content>
-            <Select.Item value="true">{m['settings.show']()}</Select.Item>
-            <Select.Item value="false">{m['settings.hide']()}</Select.Item>
-          </Select.Content>
-        </Select.Root>
-      </div>
-      <div class="field">
         <span class="field-label">{m['settings.controls']()}</span>
         <Select.Root type="single" value={settings.showControls} onValueChange={(value: string) => (settings = { ...settings, showControls: value })}>
           <Select.Trigger data-slot="select-trigger">
@@ -779,7 +767,19 @@
       </div>
     </header>
 
-    <div class="field">
+    <div class="flex min-h-11 items-center justify-between gap-4 pb-3.5">
+      <div class="flex min-w-0 flex-col gap-1">
+        <span class="field-label">{m['settings.dictation_enabled']()}</span>
+        <p class="field-hint">{m['settings.dictation_enabled_desc']()}</p>
+      </div>
+      <Switch
+        checked={settings.dictationEnabled !== 'false'}
+        aria-label={m['settings.dictation_enabled']()}
+        onCheckedChange={(checked: boolean) => (settings = { ...settings, dictationEnabled: String(checked) })}
+      />
+    </div>
+
+    <div class="field" class:dictation-off={settings.dictationEnabled === 'false'}>
       <span class="field-label">{m['settings.hotkey']()}</span>
       <div class="hotkey-row">
         <Button
@@ -801,7 +801,7 @@
       </p>
     </div>
 
-    <div class="flex min-h-11 items-center justify-between gap-4 border-t border-[var(--app-border)] pt-3.5">
+    <div class="flex min-h-11 items-center justify-between gap-4 border-t border-[var(--app-border)] pt-3.5" class:dictation-off={settings.dictationEnabled === 'false'}>
       <div class="flex min-w-0 flex-col gap-1">
         <span class="field-label">{m['settings.dictation_auto_submit']()}</span>
         <p class="field-hint">{m['settings.dictation_auto_submit_desc']()}</p>
@@ -1136,6 +1136,13 @@
 </main>
 
 <style>
+  /* Ditado desligado: o que configura o ditado para de aceitar clique, em vez
+     de continuar oferecendo escolhas que nao valem mais. */
+  .dictation-off {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
   /* Alteracao pendente nao merece um modal na saida: a barra fica visivel
      desde a primeira edicao e so chama atencao quando a navegacao e barrada. */
   .unsaved-bar {

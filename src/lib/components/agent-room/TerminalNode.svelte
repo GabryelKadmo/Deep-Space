@@ -109,6 +109,7 @@
   /** Atalho REATIVO da store global (mudanca em Configuracoes aplica na hora). */
   const dictateHotkey = $derived(appSettingsStore.values.dictationHotkey || DEFAULT_DICTATION_HOTKEY);
   const dictationAutoSubmit = $derived(appSettingsStore.values.dictationAutoSubmit === 'true');
+  const dictationOff = $derived(appSettingsStore.values.dictationEnabled === 'false');
   let audioRecorder: PcmAudioRecorder | null = null;
   let mediaStream: MediaStream | null = null;
   let sendInput: ((data: string) => void) | null = null;
@@ -308,7 +309,7 @@
   let searchAddon: SearchAddon | null = null;
 
   function handleTerminalKeydown(event: KeyboardEvent) {
-    if (matchesCombo(event, dictateHotkey)) {
+    if (!dictationOff && matchesCombo(event, dictateHotkey)) {
       event.preventDefault();
       toggleDictation();
       event.stopPropagation();
@@ -882,7 +883,7 @@
     <p class="terminal-status">{m['term.process_exited']({ code: exited })}</p>
   {/if}
   <div class="terminal-container" bind:this={container} style:--terminal-padding="{terminalPaddingPx}px"></div>
-  {#if dictationSupported && voiceControls}
+  {#if dictationSupported && voiceControls && !dictationOff}
     <div class="dictate-controls">
       {#if dictating}
         <span class="dictate-rec" aria-live="polite">● {recSeconds}s</span>
