@@ -945,6 +945,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
 {
+  "date": "23 de septiembre de 2026 · 0.35.1",
+  "title": "Deep Space 0.35.1: la app vuelve a abrir",
+  "summary": "Corrección para una instalación de Windows de 0.35.0 que no iniciaba",
+  "items": [
+    "Deep Space 0.35.0 no abría en Windows: el servidor interno fallaba con un error de \"módulo no encontrado\" al buscar un archivo que el nodo Console necesita en tiempo de ejecución, porque el instalador de esa versión nunca lo incluyó. El instalador ya lo incluye ahora."
+  ]
+},
+{
   "date": "23 de septiembre de 2026 · 0.35.0",
   "title": "Deep Space 0.35.0: hibernar con el botón derecho",
   "summary": "Menú contextual en el workspace, el nombre Hibernar y Remote Control en las terminales nuevas",

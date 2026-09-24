@@ -1,6 +1,6 @@
 {
   "name": "deep-space",
-  "version": "0.35.0",
+  "version": "0.35.1",
   "description": "Deep Space — Desenvolvimento com IA em outra profundidade",
   "private": true,
   "license": "Apache-2.0",
@@ -217,6 +217,7 @@
       "src/lib/modules/agent-room/infrastructure/codex-mcp-config.ts",
       "src/lib/modules/agent-room/infrastructure/WslRuntime.ts",
       "src/lib/modules/agent-room/domain/runtime.ts",
+      "src/lib/modules/agent-room/domain/console-commands.ts",
       "packages/deepspace-cli/**",
       "packages/deepspace-figma-plugin/**",
       "LICENSE",
