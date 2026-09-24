@@ -359,8 +359,6 @@
   "canvas.export_ws": "Export workspace",
   "canvas.unload_tooltip": "Unload (stops live terminals, keeps the layout)",
   "canvas.new_ws": "New workspace",
-  "canvas.sidebar_expand": "Expand sidebar",
-  "canvas.sidebar_collapse": "Collapse sidebar",
   "canvas.filter_ws_aria": "Filter workspaces",
   "canvas.ws_active_sessions": "{name} — {count} active session(s)",
   "canvas.active_sessions_aria": "{count} active session(s)",
@@ -4281,7 +4279,6 @@
   "ph.console_name": "Start",
   "ph.console_command": "npm run dev",
   "ph.console_folder": "React/Next",
-  "settings.dictation_button": "Microphone",
   "canvas.hibernate_done_one": "{count} terminal closed. The workspace hibernates until you open it again.",
   "canvas.hibernate_done_many": "{count} terminals closed. The workspace hibernates until you open it again.",
   "canvas.hibernate_none": "Workspace hibernating. It stays idle until you open it again.",
@@ -4290,5 +4287,7 @@
   "canvas.hibernate_desc": "This closes every terminal and keeps the workspace hibernating — task dispatch and background automations included — until you open it again. The canvas layout and the agent conversations stay saved.",
   "canvas.hibernating": "Hibernating…",
   "canvas.hibernate_action": "Hibernate",
-  "canvas.ws_menu_aria": "Actions for {name}"
+  "canvas.ws_menu_aria": "Actions for {name}",
+  "settings.dictation_enabled": "Voice dictation",
+  "settings.dictation_enabled_desc": "Turned off, the microphone leaves the canvas and the terminals, and the shortcut stops recording."
 }
