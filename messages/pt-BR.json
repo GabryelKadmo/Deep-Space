@@ -287,7 +287,6 @@
   "ph.floor_name": "Nome do andar",
   "ph.palette": "Buscar nós e ações...",
   "ph.task_title": "Título da tarefa…",
-  "ph.task_desc": "Descrição em markdown (opcional) — checklists, links, código...",
   "ph.routine_prompt": "Prompt (&& na linha para etapas)",
   "ph.agent_title": "Ex.: Backend, Reviewer, Ops...",
   "ph.file_search": "Buscar nome... (> conteúdo)",
@@ -801,7 +800,6 @@
   "tasks.col_doing": "Fazendo",
   "tasks.col_done": "Feito",
   "tasks.col_todo": "A fazer",
-  "tasks.desc_aria": "Descrição da tarefa em markdown",
   "tasks.detail_add_desc": "Duplo clique para adicionar uma descrição",
   "tasks.detail_column_aria": "Mudar a coluna da tarefa",
   "tasks.detail_close": "Voltar ao quadro",
@@ -1664,7 +1662,6 @@
   "attachment.error": "Não foi possível adicionar o anexo.",
   "attachment.remove_error": "Não foi possível remover o anexo.",
   "attachment.agent_drop_target": "Solte arquivos ou links para adicioná-los ao prompt do agente",
-  "attachment.task_drop_target": "Solte arquivos ou links para adicioná-los à tarefa",
   "workbench.usage_footer_label": "Uso dos providers",
   "workbench.usage_loading": "Carregando uso…",
   "workbench.usage_unavailable": "Uso indisponível",
@@ -4293,5 +4290,11 @@
   "tool.console": "Comandos salvos do workspace, um processo por comando",
   "settings.console_shell": "Shell dos comandos do Console",
   "settings.console_shell_auto": "Automático",
-  "settings.console_shell_hint": "Em qual shell os comandos do nó Console rodam. Automático usa o PowerShell no Windows e o seu shell de login no macOS/Linux."
+  "settings.console_shell_hint": "Em qual shell os comandos do nó Console rodam. Automático usa o PowerShell no Windows e o seu shell de login no macOS/Linux.",
+  "tasks.add_short": "Adicionar",
+  "tasks.new_in_column": "Nova tarefa em {column}",
+  "canvas.zoom_pin_on": "Travar o zoom em {percent}%",
+  "canvas.zoom_pin_off": "Destravar o zoom",
+  "canvas.zoom_lock_save_error": "Não foi possível salvar a trava do zoom.",
+  "canvas.create_menu": "Novo"
 }

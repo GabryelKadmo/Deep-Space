@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { clickToolbarOrOverflow, createNodeOnCanvas } from './helpers.js';
+import { clickToolbarOrOverflow, createNodeOnCanvas, openNewWorkspaceDialog } from './helpers.js';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -7,7 +7,7 @@ import { join } from 'node:path';
 async function createWorkspaceIn(page: import('@playwright/test').Page, name: string) {
   const dir = mkdtempSync(join(tmpdir(), 'deepspace-e2e-polish-'));
   await page.goto('/canvas');
-  await page.getByRole('button', { name: 'Novo workspace' }).click();
+  await openNewWorkspaceDialog(page);
   await page.getByPlaceholder('Nome', { exact: true }).fill(name);
   await page.getByPlaceholder('Diretório de trabalho').fill(dir);
   await page.getByRole('button', { name: 'Criar' }).click();

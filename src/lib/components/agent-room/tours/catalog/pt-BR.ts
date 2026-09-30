@@ -39,6 +39,29 @@ export const TOURS_PT: Tour[] = [
     ],
   },
   {
+    id: 'zoom-lock',
+    icon: 'Lock',
+    title: 'Zoom travado no ponto certo',
+    tagline: 'Deixe o canvas em 100% e pare de sair do zoom sem querer.',
+    steps: [
+      {
+        id: 'level',
+        title: 'Escolha o nível',
+        body: 'Abra o seletor de % no canto inferior esquerdo e escolha 100% — é o zoom em que a seleção de texto dos terminais fica exata.',
+      },
+      {
+        id: 'lock',
+        title: 'Trave no cadeado do lado',
+        body: 'Clique no cadeado colado ao número. A pílula ganha moldura, − e + apagam, e a roda do mouse passa a mover o canvas em vez de mudar o zoom.',
+      },
+      {
+        id: 'unlock',
+        title: 'Solte quando quiser',
+        body: 'A trava vale para todos os workspaces e continua depois de reiniciar. Clique no mesmo cadeado para voltar a dar zoom.',
+      },
+    ],
+  },
+  {
     id: 'team-leader',
     icon: 'Users',
     title: 'Time com líder (zero-config)',
@@ -1762,7 +1785,7 @@ export const TOURS_PT: Tour[] = [
     tagline: 'Agrupe projetos por cliente, time ou ambiente na barra lateral.',
     steps: [
       { id: 'open-canvas-sidebar', title: 'Abra a barra lateral', body: 'Expanda a barra lateral do Canvas (o botão de recolher no cabeçalho dela) pra ver a lista completa de workspaces.', action: { kind: 'openPage', path: '/canvas?workspace={workspace}' } },
-      { id: 'create-workspace-folder', title: 'Crie uma pasta', body: 'Digite um nome em Nova pasta no fim da lista e confirme. Ela aparece na raiz, pronta pra receber workspaces.' },
+      { id: 'create-workspace-folder', title: 'Crie uma pasta', body: 'No "+" do topo da barra lateral, escolha Nova pasta, digite o nome e confirme. Ela aparece na raiz, pronta pra receber workspaces.' },
       { id: 'file-workspace-into-folder', title: 'Guarde um workspace nela', body: 'Arraste qualquer workspace pro cabeçalho da pasta pra movê-lo pra lá; arraste pro espaço vazio da lista pra mandar de volta pra raiz.' },
       { id: 'create-workspace-in-folder', title: 'Crie um workspace já dentro de uma pasta', body: 'Passe o mouse no cabeçalho de uma pasta e use o ícone de mais pra abrir o Novo workspace com essa pasta pré-selecionada como destino, ou escolha qualquer pasta no campo Pasta do próprio diálogo — sem precisar arrastar depois.' },
       { id: 'nest-workspace-folders', title: 'Aninhe e gerencie pastas', body: 'Arraste uma pasta sobre outra pra transformá-la em subpasta, ou use o ícone de "nova subpasta" no cabeçalho de uma pasta pra criar uma já dentro dela — sem limite de profundidade. Renomeie com o ícone de lápis ou duplo-clique, e apague com o ícone de lixeira: workspaces e subpastas dentro sempre sobem pra raiz em vez de serem removidos.' },
@@ -1963,7 +1986,7 @@ export const TOURS_PT: Tour[] = [
     tagline: 'Distinga seus grupos de workspace de relance.',
     steps: [
       { id: 'open', title: 'Abra a barra lateral do canvas', body: 'Grupos de workspace vivem na árvore da barra lateral da página Canvas, uma linha por pasta junto dos workspaces que ela contém.', action: { kind: 'openPage', path: '/canvas' } },
-      { id: 'find', title: 'Encontre um grupo (pasta)', body: 'Quando você tiver mais de um par de projetos, agrupe-os em pastas — por cliente, por time ou por ambiente — usando "Nova pasta" no fim da lista da barra lateral.' },
+      { id: 'find', title: 'Encontre um grupo (pasta)', body: 'Quando você tiver mais de um par de projetos, agrupe-os em pastas — por cliente, por time ou por ambiente — usando o "+" do topo da barra lateral → "Nova pasta".' },
       { id: 'pick', title: 'Escolha um ícone', body: 'Clique no ícone da pasta ao lado do nome pra abrir o mesmo seletor que workspaces e projetos já usam, e escolha um. Ele fica salvo pra próxima vez que você abrir o app.' },
     ],
   },

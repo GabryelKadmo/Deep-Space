@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { chmodSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { resolve } from 'node:path';
 
@@ -67,24 +67,50 @@ export function installDeepSpaceShim() {
   }
 }
 
+/** true quando o runtime.json atual pertence a outro processo ainda vivo. */
+function runtimeFileHeldByLiveInstance(file) {
+  let pid;
+  try {
+    pid = Number(JSON.parse(readFileSync(file, 'utf8'))?.pid);
+  } catch {
+    return false; // sem arquivo, ilegivel ou sem pid: livre
+  }
+  if (!Number.isInteger(pid) || pid <= 0 || pid === process.pid) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    // EPERM = existe, mas de outro dono; ESRCH = morreu e o posto esta vago.
+    return error?.code === 'EPERM';
+  }
+}
+
 /**
  * Anuncia a URL atual da API em ~/.deepspace/runtime.json: a porta do app
  * empacotado e LIVRE (muda a cada execucao), entao o apiUrl gravado no
  * workspace.json pode ficar obsoleto — a CLI le este arquivo primeiro.
+ *
+ * O arquivo e da maquina inteira, entao quem chegou primeiro e continua vivo
+ * fica com ele: subir o servidor de dev (ou um preview) enquanto o app esta
+ * aberto apontava a CLI de TODOS os agentes para a instancia nova, e cada
+ * comando da ponte morria com "token de bridge invalido". Para forcar o
+ * anuncio mesmo assim: DEEPSPACE_ANNOUNCE_RUNTIME=1.
  */
 export function writeDeepSpaceRuntimeFile(apiUrlOrMetadata) {
   try {
     const dir = resolve(homedir(), '.deepspace');
     mkdirSync(dir, { recursive: true, mode: 0o700 });
+    const file = resolve(dir, 'runtime.json');
+    if (process.env.DEEPSPACE_ANNOUNCE_RUNTIME !== '1' && runtimeFileHeldByLiveInstance(file)) return;
     const metadata = typeof apiUrlOrMetadata === 'string'
       ? { apiUrl: apiUrlOrMetadata }
       : { ...apiUrlOrMetadata };
     writeFileSync(
-      resolve(dir, 'runtime.json'),
+      file,
       JSON.stringify({ ...metadata, updatedAt: new Date().toISOString() }, null, 2),
       { mode: 0o600 },
     );
-    chmodSync(resolve(dir, 'runtime.json'), 0o600);
+    chmodSync(file, 0o600);
   } catch (error) {
     console.warn('[deepspace] falha ao gravar runtime.json:', error?.message ?? error);
   }

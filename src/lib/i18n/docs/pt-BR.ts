@@ -22,7 +22,7 @@ export const DOCS_PT: DocsCatalog = {
     {
       id: 'workspace-folders',
       title: 'Organize workspaces em pastas',
-      body: `Agrupe workspaces em pastas na barra lateral quando tiver vários projetos (por cliente, por time, por ambiente). Digite um nome em "Nova pasta" no fim da lista pra criar uma na raiz; arraste um workspace pro cabeçalho de uma pasta pra guardá-lo lá, ou arraste pro espaço vazio da lista pra mandar de volta pra raiz. Um workspace novo também pode nascer já dentro de uma pasta: use o ícone de mais no cabeçalho dela, ou escolha qualquer pasta no campo Pasta do próprio diálogo de novo workspace. Pastas aninham dentro de outras pastas do mesmo jeito, sem limite de profundidade — arraste uma pasta sobre outra pra transformá-la em subpasta, ou use o ícone de "nova subpasta" no cabeçalho de qualquer pasta pra criar uma já dentro dela; uma pasta nunca pode ser solta dentro dela mesma ou de uma subpasta sua. Dê duplo-clique no nome da pasta ou use o ícone de lápis pra renomear, e cada pasta lembra se está recolhida entre reinícios. Apagar uma pasta (ícone de lixeira, com confirmação) nunca é destrutivo: todo workspace e subpasta dentro dela sobe pra raiz em vez de ser removido.`,
+      body: `Agrupe workspaces em pastas na barra lateral quando tiver vários projetos (por cliente, por time, por ambiente). Use o "+" no topo da barra lateral e escolha "Nova pasta" pra criar uma na raiz; arraste um workspace pro cabeçalho de uma pasta pra guardá-lo lá, ou arraste pro espaço vazio da lista pra mandar de volta pra raiz. Um workspace novo também pode nascer já dentro de uma pasta: use o ícone de mais no cabeçalho dela, ou escolha qualquer pasta no campo Pasta do próprio diálogo de novo workspace. Pastas aninham dentro de outras pastas do mesmo jeito, sem limite de profundidade — arraste uma pasta sobre outra pra transformá-la em subpasta, ou use o ícone de "nova subpasta" no cabeçalho de qualquer pasta pra criar uma já dentro dela; uma pasta nunca pode ser solta dentro dela mesma ou de uma subpasta sua. Dê duplo-clique no nome da pasta ou use o ícone de lápis pra renomear, e cada pasta lembra se está recolhida entre reinícios. Apagar uma pasta (ícone de lixeira, com confirmação) nunca é destrutivo: todo workspace e subpasta dentro dela sobe pra raiz em vez de ser removido.`,
     },
     {
       id: 'workspace-node-transfer',
@@ -515,6 +515,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Console', 'um processo por comando', 'pastas'],
     },
     {
+      id: 'zoom-lock',
+      title: 'Trave o zoom onde o texto fica nítido',
+      body: 'Fora de 100% a seleção de texto dentro dos terminais desalinha, e uma rodada sem querer da roda do mouse já tira o canvas do zoom. Escolha o nível no seletor de % no canto inferior esquerdo e clique no cadeado colado ao número: a pílula ganha moldura, − e + apagam, e roda, pinça, duplo clique e atalhos não mudam mais o zoom — a roda passa a mover o canvas. A trava vale para todos os workspaces e sobrevive a reinícios; clique no cadeado de novo para soltar. Ela é independente do cadeado do canvas, que trava arrastar e selecionar nós.',
+      tags: ['zoom', 'cadeado', 'terminais'],
+    },
+    {
       id: 'leader-team',
       title: 'Time de desenvolvimento com líder (zero-config)',
       body: 'Crie um Claude e diga: “orquestra pra mim a feature X”. Ele propõe o time, você aprova, e ele recruta, conecta e distribui via kanban. Cada consulta por ask só vale após confirmação explícita da ponte; quando um agente usa task done, o líder recebe o handoff automaticamente para revisar e coordenar o próximo passo.',
@@ -931,7 +937,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'group-icons',
       title: 'Dê um ícone próprio pra uma pasta',
-      body: 'Abra a barra lateral do canvas e encontre um grupo (pasta) entre seus workspaces — agrupe-os com "Nova pasta" no fim da lista quando tiver vários projetos pra organizar por cliente, por time ou por ambiente. Clique no ícone de um grupo pra abrir o mesmo seletor que workspaces e projetos já usam, e escolha um. Ele fica salvo pra próxima vez que você abrir o app, então pastas com tipos diferentes de trabalho ficam fáceis de distinguir de relance.',
+      body: 'Abra a barra lateral do canvas e encontre um grupo (pasta) entre seus workspaces — agrupe-os com o "+" do topo da barra lateral → "Nova pasta" quando tiver vários projetos pra organizar por cliente, por time ou por ambiente. Clique no ícone de um grupo pra abrir o mesmo seletor que workspaces e projetos já usam, e escolha um. Ele fica salvo pra próxima vez que você abrir o app, então pastas com tipos diferentes de trabalho ficam fáceis de distinguir de relance.',
       tags: ['Grupos de workspace', 'barra lateral', 'seletor de ícone'],
     },
     {
@@ -948,6 +954,21 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '30 de setembro de 2026 · 0.36.0',
+      title: 'Deep Space 0.36.0: zoom travado, tarefa na coluna e cordas no seu lado',
+      summary: 'Cadeado no zoom, criar tarefa direto na coluna, um "+" para workspace e pasta, e cordas que saem cada uma pelo seu lado',
+      items: [
+        'Trava de zoom. Um cadeado fica colado ao seletor de %, formando um controle só: travado, o canvas fica no zoom escolhido — roda, pinça, duplo clique e atalhos não mudam mais, e a roda passa a mover o canvas. Fora de 100% a seleção de texto nos terminais desalinha, e uma rodada sem querer já tirava o canvas do zoom. A trava vale para todos os workspaces, sobrevive a reinícios e é independente do cadeado do canvas, que trava arrastar e selecionar nós. Travada, a pílula ganha moldura e − e + apagam, então dá para ler o estado em qualquer tema, não só pela cor de destaque.',
+        'A tarefa nasce na coluna. Toda coluna do quadro termina no seu próprio "+ Adicionar tarefa", que abre um cartão ali mesmo: Enter cria naquela coluna e deixa o cartão aberto para a próxima, Esc fecha, e clicar fora nunca joga fora o que foi digitado. Antes, uma barra no topo do quadro abria um formulário grande que sempre criava em "A fazer". A descrição foi para o detalhe da tarefa, onde já tinha lugar; colar imagem e o clipe continuam funcionando na criação.',
+        'Um "+" para tudo que a barra lateral guarda. O "+" do topo da barra lateral abre um menu com Novo workspace e Nova pasta. O campo do nome da pasta não fica mais fixo no pé da lista: aparece no topo, já com foco, só enquanto a pasta está sendo criada.',
+        'Criar agente não depende mais do pino do Shell. O menu dos providers morava dentro do bloco do botão Shell na barra, então desafixar o Shell levava junto o único caminho para criar um agente — e, com o Console substituindo o nó de shell, desafixar é justamente o que dá vontade de fazer. Agora o menu se sustenta sozinho, com ou sem o Shell fixado.',
+        'As cordas ancoram por conexão, não por nó. Toda corda saía do mesmo ponto, o virado para o vizinho mais próximo, então um quadro à direita e uma nota embaixo puxavam as duas cordas para baixo e a única forma de deixar o canvas legível era amontoar os nós. Agora cada corda sai pelo lado virado para o seu próprio vizinho, com uma bolinha pequena só dela, a 5 px daquele lado e nunca num canto arredondado, e as duas acompanham quando um nó é movido. A corda sai reta do lado, como cabo saindo de uma porta, em vez de dobrar num gancho ao lado da bolinha; uma corda quase vertical não pende mais reta para dar um degrau no fim; nós quase encostados ganham um traço reto em vez de ziguezague; e um lado que já tem corda não mostra mais uma segunda bolinha de hover ao lado dela.',
+        'Os títulos das tarefas quebravam no meio das palavras ("Deplo / y de / stagin / g") em colunas estreitas, espremidos pelas três ações do cartão ao lado deles. O título usa a largura toda agora, e as ações aparecem por cima, no canto, com hover ou foco.',
+        'Subir o servidor de dev do próprio projeto — inclusive pelo nó Console — ou qualquer outro servidor Deep Space com o app aberto tomava o ~/.deepspace/runtime.json, o arquivo que a CLI deepspace lê para achar o app, e todo comando da ponte dos agentes falhava com "token de bridge inválido". O arquivo agora fica com a instância que já está rodando; DEEPSPACE_ANNOUNCE_RUNTIME=1 força a troca quando ela é mesmo desejada.',
+        'O tour do Console mostrava o ícone genérico no onboarding, porque o ícone dele faltava na lista que o onboarding resolve.',
+      ],
+    },
     {
       date: '24 de setembro de 2026 · 0.35.3',
       title: 'Deep Space 0.35.3: o Console roda de verdade',

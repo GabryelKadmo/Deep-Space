@@ -3,15 +3,15 @@
   import { EdgeLabel, useEdges, useNodes, useViewport, type EdgeProps } from '@xyflow/svelte';
   import { X } from '@lucide/svelte';
   import * as m from '$lib/paraglide/messages.js';
-  import { floatingAnchorFor, nodeIndexFor } from './floating-anchor.js';
+  import { edgeAnchorFor, nodeIndexFor, type AnchorSide } from './floating-anchor.js';
   import { edgeIntersectsViewport, edgePerformanceProfile, normalizeEdgeRenderingPreference, staticEdgePath } from './edge-performance.js';
   import { canvasEdgeRuntime, retainCanvasEdgeRuntime } from './edge-performance-runtime.svelte.js';
 
   /**
    * Aresta do Deep Space: corda com fisica verlet (segmentos com gravidade e
-   * restricao de comprimento). As duas pontas convergem para a bolinha do
-   * handle flutuante de cada no (floatingAnchorFor) — com varias conexoes no
-   * mesmo no, todas as cordas saem do mesmo ponto, como no Maestri.
+   * restricao de comprimento). Cada ponta ancora no lado do no virado para o
+   * no do outro lado desta corda (edgeAnchorFor): duas conexoes no mesmo no
+   * saem por lados diferentes em vez de se amontoarem num ponto so.
    */
   let { id, source, target, data, selected }: EdgeProps = $props();
 
@@ -48,11 +48,29 @@
     return { x: node.position.x + width / 2, y: node.position.y + height / 2, halfW: width / 2, halfH: height / 2 };
   }
 
-  function anchors(): { ax: number; ay: number; bx: number; by: number } | null {
-    const a = floatingAnchorFor(source, nodesStore.current, edgesStore.current) ?? centerOf(source);
-    const b = floatingAnchorFor(target, nodesStore.current, edgesStore.current) ?? centerOf(target);
-    if (!a || !b) return null;
-    return { ax: a.x, ay: a.y, bx: b.x, by: b.y };
+  type Normal = { x: number; y: number };
+  const NORMALS: Record<AnchorSide, Normal> = {
+    top: { x: 0, y: -1 },
+    right: { x: 1, y: 0 },
+    bottom: { x: 0, y: 1 },
+    left: { x: -1, y: 0 },
+  };
+  const NO_NORMAL: Normal = { x: 0, y: 0 };
+
+  function anchors(): { ax: number; ay: number; bx: number; by: number; na: Normal; nb: Normal } | null {
+    const a = edgeAnchorFor(source, target, nodesStore.current);
+    const b = edgeAnchorFor(target, source, nodesStore.current);
+    const pa = a ?? centerOf(source);
+    const pb = b ?? centerOf(target);
+    if (!pa || !pb) return null;
+    return {
+      ax: pa.x,
+      ay: pa.y,
+      bx: pb.x,
+      by: pb.y,
+      na: a ? NORMALS[a.side] : NO_NORMAL,
+      nb: b ? NORMALS[b.side] : NO_NORMAL,
+    };
   }
 
   /**
@@ -96,6 +114,30 @@
     const sourceBox = currentSourceBox;
     const targetBox = currentTargetBox;
 
+    const span = Math.hypot(current.bx - current.ax, current.by - current.ay);
+    // A corda sai reta do lado, como um cabo saindo de uma porta: o segundo
+    // ponto de cada ponta fica preso na perpendicular, fora da margem de
+    // repulsao. Solto, ele caia dentro dessa margem (a ancora fica a 5px da
+    // borda, a margem e de 12px), era empurrado para fora e a ultima volta
+    // dobrava num gancho ao lado da bolinha. Nos colados encurtam o trecho
+    // reto para as duas pontas nao se cruzarem.
+    const lead = Math.min(BOX_MARGIN + 4, span / 3);
+    const leadA = { x: current.ax + current.na.x * lead, y: current.ay + current.na.y * lead };
+    const leadB = { x: current.bx + current.nb.x * lead, y: current.by + current.nb.y * lead };
+    const last = segments - 1;
+    const pinned = (index: number) => index <= 1 || index >= last;
+
+    // Folga e gravidade so onde elas viram barriga: numa corda deitada a
+    // gravidade desenha a curva no meio; numa corda quase em pe ela pende
+    // reta e so vira para o lado no fim, como uma corrente — um degrau junto
+    // da ponta de baixo. O cubo zera as duas depressa conforme a corda
+    // levanta (vertical: esticada; 45 graus: pouca barriga; deitada: toda).
+    // Medidas no trecho livre entre as duas saidas retas.
+    const gap = Math.hypot(leadB.x - leadA.x, leadB.y - leadA.y);
+    const lying = gap ? (Math.abs(leadB.x - leadA.x) / gap) ** 3 : 0;
+    const segLength = (gap / (segments - 2)) * (1 + 0.06 * lying);
+    const gravity = GRAVITY * lying;
+
     // Verlet: gravidade + inercia
     let movement = 0;
     for (const point of rope) {
@@ -105,15 +147,16 @@
       point.px = point.x;
       point.py = point.y;
       point.x += vx;
-      point.y += vy + GRAVITY;
+      point.y += vy + gravity;
     }
 
-    const segLength = Math.hypot(current.bx - current.ax, current.by - current.ay) / segments * 1.06;
-
     for (let iter = 0; iter < profile.iterations; iter += 1) {
-      // Pinos nas ancoras (flutuantes)
       rope[0].x = current.ax;
       rope[0].y = current.ay;
+      rope[1].x = leadA.x;
+      rope[1].y = leadA.y;
+      rope[last].x = leadB.x;
+      rope[last].y = leadB.y;
       rope[segments].x = current.bx;
       rope[segments].y = current.by;
 
@@ -126,18 +169,18 @@
         const diff = (dist - segLength) / dist;
         const offsetX = dx * 0.5 * diff;
         const offsetY = dy * 0.5 * diff;
-        if (i !== 0) {
+        if (!pinned(i)) {
           p1.x += offsetX;
           p1.y += offsetY;
         }
-        if (i + 1 !== segments) {
+        if (!pinned(i + 1)) {
           p2.x -= offsetX;
           p2.y -= offsetY;
         }
       }
 
       // Corda contorna as caixas dos nos (exceto os pinos, que ficam na borda)
-      for (let i = 1; i < segments; i += 1) {
+      for (let i = 2; i < last; i += 1) {
         if (sourceBox) pushOutOfBox(rope[i], sourceBox);
         if (targetBox) pushOutOfBox(rope[i], targetBox);
       }
@@ -145,6 +188,28 @@
 
     rope = [...rope];
     return movement > 0.05;
+  }
+
+  /**
+   * Curva pelos pontos da corda (Catmull-Rom convertido em Bezier cubica). A
+   * polilinha de 12 segmentos transformava cada dobra da fisica numa quina —
+   * duas pontas desalinhadas por poucos pixels viravam um degrau. Nas pontas a
+   * tangente segue o primeiro segmento, entao a saida reta do lado se mantem.
+   */
+  function smoothRopePath(points: readonly RopePoint[]): string {
+    let d = `M ${points[0].x},${points[0].y}`;
+    for (let i = 0; i < points.length - 1; i += 1) {
+      const p0 = points[i - 1] ?? points[i];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = points[i + 2] ?? p2;
+      const c1x = p1.x + (p2.x - p0.x) / 6;
+      const c1y = p1.y + (p2.y - p0.y) / 6;
+      const c2x = p2.x - (p3.x - p1.x) / 6;
+      const c2y = p2.y - (p3.y - p1.y) / 6;
+      d += ` C ${c1x},${c1y} ${c2x},${c2y} ${p2.x},${p2.y}`;
+    }
+    return d;
   }
 
   let settleFrames = 0;
@@ -216,13 +281,20 @@
     };
   });
 
+  // Nos quase encostados: uma dezena de segmentos espremida em poucos pixels
+  // so sabe ziguezaguear. Com as duas saidas perpendiculares, o traco reto
+  // entre as bolinhas ja e o desenho certo.
+  const MIN_ROPE_SPAN_PX = 48;
+
   const path = $derived.by(() => {
+    if (currentAnchors && Math.hypot(currentAnchors.bx - currentAnchors.ax, currentAnchors.by - currentAnchors.ay) < MIN_ROPE_SPAN_PX) {
+      return staticEdgePath(currentAnchors, 'line');
+    }
     if (profile.mode !== 'physics' || rope.length === 0) {
       return currentAnchors ? staticEdgePath(currentAnchors, profile.mode === 'line' ? 'line' : 'curve') : { path: '', midX: 0, midY: 0 };
     }
-    const pathD = rope.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x},${point.y}`).join(' ');
     const mid = rope[Math.floor((rope.length - 1) / 2)];
-    return { path: pathD, midX: mid.x, midY: mid.y };
+    return { path: smoothRopePath(rope), midX: mid.x, midY: mid.y };
   });
 
   const stroke = $derived(talking ? 'var(--app-success)' : pinned ? 'var(--app-accent)' : 'var(--app-edge)');

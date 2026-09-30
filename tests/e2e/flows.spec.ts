@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas } from './helpers';
+import { createNodeOnCanvas, openNewWorkspaceDialog } from './helpers';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -63,7 +63,7 @@ test.describe('nó de fluxo (pipeline)', () => {
     const workspaceName = `E2E fluxo ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -103,7 +103,7 @@ test.describe('nó de fluxo (pipeline)', () => {
     const workspaceName = `E2E fluxo-spawn ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -157,7 +157,7 @@ test.describe('nó de fluxo (pipeline)', () => {
     const workspaceName = `E2E fluxo-sync ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();

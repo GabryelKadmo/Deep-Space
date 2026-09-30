@@ -1,16 +1,25 @@
 import type { Edge, Node } from '@xyflow/svelte';
 
 /**
- * Ancora flutuante do handle de um no: o ponto da borda (+ respiro) mais
- * proximo do centro do vizinho conectado mais perto. Compartilhada por
- * NodeShell (posiciona a bolinha do handle) e DeepSpaceEdge (ponta da corda)
- * para que corda e bolinha coincidam sempre — mesmo com varias conexoes no
- * mesmo no (todas as cordas convergem para a unica bolinha).
+ * Ancoras das cordas na borda de um no. Cada corda tem a sua: o ponto da
+ * borda virado para o no do outro lado daquela corda. Antes havia uma unica
+ * ancora por no, a do vizinho mais proximo, e todas as cordas saiam dali —
+ * um Kanban a direita e uma nota embaixo puxavam as duas cordas para baixo,
+ * e a unica forma de arrumar o desenho era amontoar os nos. NodeShell
+ * (bolinha) e DeepSpaceEdge (ponta da corda) usam a mesma funcao, entao
+ * ponta e bolinha continuam coincidindo.
  */
 
-/** A bolinha (13px + anel de 3px) tem ~9-10px de raio visual; um respiro de
-    apenas 4px deixava mais da metade dela pisando pra dentro do no. */
-const HANDLE_BREATHING_ROOM_PX = 10;
+export type AnchorSide = 'top' | 'right' | 'bottom' | 'left';
+export type RopeAnchor = { x: number; y: number; side: AnchorSide };
+
+/** A bolinha da corda (9px + anel de 2px) tem ~6px de raio visual: a 5px da
+    borda ela encosta no no, sem flutuar solta nem pisar no conteudo. */
+const ROPE_ANCHOR_OFFSET_PX = 5;
+
+/** Distancia minima dos cantos: no canto arredondado a bolinha parecia
+    descolada do no. */
+const CORNER_MARGIN_PX = 16;
 
 type NodeLike = Pick<Node, 'id' | 'position'> & {
   measured?: { width?: number; height?: number };
@@ -65,34 +74,49 @@ function rectOf(node: NodeLike): Rect {
   };
 }
 
-/** Ancora absoluta (coordenadas de flow) do handle flutuante, ou null sem conexoes. */
-export function floatingAnchorFor(nodeId: string, nodes: readonly NodeLike[], edges: readonly Pick<Edge, 'source' | 'target'>[]): { x: number; y: number } | null {
-  const links = connectedEdgesFor(nodeId, edges);
-  if (!links.length) return null;
+function clamp(value: number, limit: number): number {
+  return Math.min(Math.max(value, -limit), limit);
+}
+
+/**
+ * Ponto da borda na direcao (dx, dy), afastado do lado na perpendicular. A
+ * conta antiga projetava num retangulo inflado: perto dos cantos a bolinha
+ * caia na diagonal, fora de qualquer lado.
+ */
+function borderPoint(rect: Rect, dx: number, dy: number): RopeAnchor | null {
+  if (dx === 0 && dy === 0) return null;
+  if (Math.abs(dx) / rect.halfW >= Math.abs(dy) / rect.halfH) {
+    const along = clamp(dy * (rect.halfW / Math.abs(dx)), Math.max(rect.halfH - CORNER_MARGIN_PX, 0));
+    const side = dx > 0 ? 'right' : 'left';
+    return { x: rect.cx + Math.sign(dx) * (rect.halfW + ROPE_ANCHOR_OFFSET_PX), y: rect.cy + along, side };
+  }
+  const along = clamp(dx * (rect.halfH / Math.abs(dy)), Math.max(rect.halfW - CORNER_MARGIN_PX, 0));
+  const side = dy > 0 ? 'bottom' : 'top';
+  return { x: rect.cx + along, y: rect.cy + Math.sign(dy) * (rect.halfH + ROPE_ANCHOR_OFFSET_PX), side };
+}
+
+/** Ancora absoluta da corda entre dois nos, no lado de `nodeId` virado para `otherId`. */
+export function edgeAnchorFor(nodeId: string, otherId: string, nodes: readonly NodeLike[]): RopeAnchor | null {
   const nodesById = nodeIndexFor(nodes);
   const self = nodesById.get(nodeId);
-  if (!self) return null;
+  const other = nodesById.get(otherId);
+  if (!self || !other) return null;
   const rect = rectOf(self);
+  const otherRect = rectOf(other);
+  return borderPoint(rect, otherRect.cx - rect.cx, otherRect.cy - rect.cy);
+}
 
-  let best: { dx: number; dy: number } | null = null;
-  let bestDist = Infinity;
-  for (const link of links) {
+/** Uma ancora por corda conectada ao no — o que a bolinha de cada corda segue. */
+export function edgeAnchorsFor(
+  nodeId: string,
+  nodes: readonly NodeLike[],
+  edges: readonly (Pick<Edge, 'source' | 'target'> & { id: string })[],
+): Array<RopeAnchor & { edgeId: string }> {
+  const anchors: Array<RopeAnchor & { edgeId: string }> = [];
+  for (const link of connectedEdgesFor(nodeId, edges)) {
     const otherId = link.source === nodeId ? link.target : link.source;
-    const other = nodesById.get(otherId);
-    if (!other) continue;
-    const otherRect = rectOf(other);
-    const dx = otherRect.cx - rect.cx;
-    const dy = otherRect.cy - rect.cy;
-    const dist = Math.hypot(dx, dy);
-    if (dist < bestDist) {
-      bestDist = dist;
-      best = { dx, dy };
-    }
+    const anchor = edgeAnchorFor(nodeId, otherId, nodes);
+    if (anchor) anchors.push({ edgeId: link.id, ...anchor });
   }
-  if (!best || (best.dx === 0 && best.dy === 0)) return null;
-  const scale = Math.max(
-    Math.abs(best.dx) / (rect.halfW + HANDLE_BREATHING_ROOM_PX),
-    Math.abs(best.dy) / (rect.halfH + HANDLE_BREATHING_ROOM_PX)
-  );
-  return { x: rect.cx + best.dx / scale, y: rect.cy + best.dy / scale };
+  return anchors;
 }

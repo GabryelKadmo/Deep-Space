@@ -32,7 +32,7 @@ function ptyWebSocketPlugin(): Plugin {
       server.httpServer?.on('listening', () => {
         const address = server.httpServer?.address();
         if (address && typeof address === 'object' && address.port) {
-          writeDeepSpaceRuntimeFile(`http://127.0.0.1:${address.port}`);
+          writeDeepSpaceRuntimeFile({ apiUrl: `http://127.0.0.1:${address.port}`, pid: process.pid });
         }
       });
     },

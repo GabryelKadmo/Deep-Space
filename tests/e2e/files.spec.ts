@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas } from './helpers.js';
+import { createNodeOnCanvas, openNewWorkspaceDialog } from './helpers.js';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -16,7 +16,7 @@ test.describe('arquivos e editor do workspace', () => {
 
     try {
       await page.goto('/canvas');
-      await page.getByRole('button', { name: 'Novo workspace' }).click();
+      await openNewWorkspaceDialog(page);
       await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
       await page.getByPlaceholder('Diretório de trabalho').fill(dir);
       await page.getByRole('button', { name: 'Criar' }).click();
@@ -74,7 +74,7 @@ test.describe('arquivos e editor do workspace', () => {
     let workspaceId: string | undefined;
     try {
       await page.goto('/canvas');
-      await page.getByRole('button', { name: 'Novo workspace' }).click();
+      await openNewWorkspaceDialog(page);
       await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
       await page.getByPlaceholder('Diretório de trabalho').fill(dir);
       await page.getByRole('button', { name: 'Criar' }).click();
@@ -111,7 +111,7 @@ test.describe('arquivos e editor do workspace', () => {
     let workspaceId: string | undefined;
     try {
       await page.goto('/canvas');
-      await page.getByRole('button', { name: 'Novo workspace' }).click();
+      await openNewWorkspaceDialog(page);
       await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
       await page.getByPlaceholder('Diretório de trabalho').fill(dir);
       await page.getByRole('button', { name: 'Criar' }).click();

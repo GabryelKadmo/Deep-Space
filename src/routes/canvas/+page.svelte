@@ -340,9 +340,26 @@
       });
       workspaceGroups = [...workspaceGroups, created];
       newFolderName = '';
+      creatingFolder = false;
     } catch (error) {
       toast.error(workspaceGroupErrorText(error));
     }
+  }
+
+  // Nova pasta vem do menu do "+": o campo do nome aparece no topo da lista
+  // so enquanto a pasta esta sendo criada.
+  let creatingFolder = $state(false);
+  let newFolderInput = $state<HTMLInputElement>();
+
+  // O campo so existe depois que o menu fecha e o DOM atualiza — focar no
+  // clique do item mirava um elemento que ainda nao estava la.
+  $effect(() => {
+    if (creatingFolder && newFolderInput) newFolderInput.focus();
+  });
+
+  function cancelCreateFolder() {
+    creatingFolder = false;
+    newFolderName = '';
   }
 
   let creatingSubfolderParentId = $state<string | null>(null);
@@ -603,6 +620,39 @@
     const current = zoomApi?.getViewport().zoom ?? 1;
     const next = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, current * factor));
     zoomApi?.setZoom(next, { duration: 160 });
+  }
+
+  // Zoom travado: fora de 100% a selecao de texto nos terminais desalinha,
+  // e a roda do mouse tirava o canvas do zoom sem querer. Travar faz minimo =
+  // maximo = o zoom escolhido, entao TODO caminho que muda zoom (roda, pinca,
+  // duplo clique, atalhos, ajustar a tela) fica preso nele de uma vez.
+  const ZOOM_LOCK_SETTING = 'canvasZoomLock';
+  const lockedZoom = $derived.by(() => {
+    const value = Number(appSettings[ZOOM_LOCK_SETTING]);
+    return appSettings[ZOOM_LOCK_SETTING] && Number.isFinite(value) && value >= ZOOM_MIN && value <= ZOOM_MAX ? value : null;
+  });
+
+  async function toggleZoomLock() {
+    const previous = appSettings[ZOOM_LOCK_SETTING] ?? '';
+    let next = '';
+    if (lockedZoom === null) {
+      const current = zoomApi?.getViewport().zoom ?? 1;
+      // 99% ou 101% de um arrasto vira o nivel redondo mais perto.
+      const level = ZOOM_LEVELS.find((candidate) => Math.abs(candidate - current) < 0.02) ?? Math.round(current * 100) / 100;
+      zoomApi?.setZoom(level, { duration: 0 });
+      next = String(level);
+    }
+    appSettings = { ...appSettings, [ZOOM_LOCK_SETTING]: next };
+    try {
+      await api<Record<string, string>>('/api/agent-room/settings', {
+        method: 'PUT',
+        body: JSON.stringify({ [ZOOM_LOCK_SETTING]: next }),
+      });
+      invalidateAppSettings();
+    } catch {
+      appSettings = { ...appSettings, [ZOOM_LOCK_SETTING]: previous };
+      toast.error(m['canvas.zoom_lock_save_error']());
+    }
   }
   let flowWrapper: HTMLElement;
   const selectedTransferNodeIds = $derived(nodes.filter((node) => node.selected).map((node) => node.id));
@@ -2856,9 +2906,26 @@
           <HeaderIconButton label={m['tool.presets']()} side="bottom" onclick={() => toggleSidePanel('presets')}>
             <LayoutTemplate size={14} />
           </HeaderIconButton>
-          <HeaderIconButton class="icon-btn !bg-[var(--app-accent)] !text-[var(--app-accent-contrast)] hover:!brightness-110" label={m['canvas.new_ws']()} side="bottom" onclick={() => { initialPresetId = ''; showWorkspaceForm = !showWorkspaceForm; }}>
-            <Plus size={15} />
-          </HeaderIconButton>
+          <!-- O "+" cria as duas coisas que a lista guarda: workspace e pasta. A
+               pasta tinha um campo proprio fixo no pe da lista, sempre ocupando
+               espaco para uma acao rara. -->
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger class="grid size-7 cursor-pointer place-items-center rounded-md border-0 bg-[var(--app-accent)] text-[var(--app-accent-contrast)] hover:brightness-110" data-testid="sidebar-create" aria-label={m['canvas.create_menu']()}>
+              <Plus size={15} />
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content
+              align="end"
+              class="min-w-[180px]"
+              onCloseAutoFocus={(event: Event) => {
+                // O menu devolve o foco ao "+" ao fechar; na pasta ele tem de
+                // ficar com o campo do nome (que se foca ao montar).
+                if (creatingFolder) event.preventDefault();
+              }}
+            >
+              <DropdownMenu.Item onclick={() => { initialPresetId = ''; showWorkspaceForm = true; }}><LayoutGrid size={14} />{m['canvas.new_ws']()}</DropdownMenu.Item>
+              <DropdownMenu.Item onclick={() => (creatingFolder = true)}><FolderPlus size={14} />{m['canvas.new_folder']()}</DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
           <DropdownMenu.Root>
             <DropdownMenu.Trigger class="grid size-7 cursor-pointer place-items-center rounded-md border-0 bg-transparent text-[var(--app-text-muted)] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)] data-[state=open]:bg-[var(--app-surface-raised)] data-[state=open]:text-[var(--app-text)]" aria-label={m['canvas.workspace_actions']()}>
               <MoreHorizontal size={15} />
@@ -2891,6 +2958,31 @@
           spellcheck="false"
         />
       </label>
+
+    {#if creatingFolder}
+      <!-- Some sozinho ao perder o foco se nada foi digitado. -->
+      <div class="new-folder-row">
+        <FolderPlus size={13} aria-hidden="true" />
+        <input
+          bind:this={newFolderInput}
+          bind:value={newFolderName}
+          placeholder={m['canvas.folder_name_placeholder']()}
+          aria-label={m['canvas.new_folder']()}
+          autocomplete="off"
+          spellcheck="false"
+          onkeydown={(event) => {
+            if (event.key === 'Enter') void createWorkspaceGroup();
+            if (event.key === 'Escape') cancelCreateFolder();
+          }}
+          onblur={() => {
+            if (!newFolderName.trim()) cancelCreateFolder();
+          }}
+        />
+        <HeaderIconButton label={m['canvas.new_folder']()} side="bottom" onclick={createWorkspaceGroup}>
+          <Plus size={13} />
+        </HeaderIconButton>
+      </div>
+    {/if}
 
     <WorkspaceCreateDialog
       open={showWorkspaceForm}
@@ -2931,21 +3023,6 @@
           {/if}
         {/if}
       </ul>
-
-      <div class="new-folder-row">
-        <FolderPlus size={13} aria-hidden="true" />
-        <input
-          bind:value={newFolderName}
-          placeholder={m['canvas.folder_name_placeholder']()}
-          aria-label={m['canvas.new_folder']()}
-          autocomplete="off"
-          spellcheck="false"
-          onkeydown={(event) => event.key === 'Enter' && createWorkspaceGroup()}
-        />
-        <HeaderIconButton label={m['canvas.new_folder']()} side="bottom" onclick={createWorkspaceGroup}>
-          <Plus size={13} />
-        </HeaderIconButton>
-      </div>
 
     {#snippet workspaceListItem(workspace: Workspace)}
     <li
@@ -3194,8 +3271,12 @@
         connectionRadius={38}
         zIndexMode="manual"
         proOptions={{ hideAttribution: true }}
-        minZoom={0.05}
-        maxZoom={4}
+        minZoom={lockedZoom ?? ZOOM_MIN}
+        maxZoom={lockedZoom ?? ZOOM_MAX}
+        zoomOnScroll={lockedZoom === null}
+        zoomOnPinch={lockedZoom === null}
+        zoomOnDoubleClick={lockedZoom === null}
+        panOnScroll={lockedZoom !== null}
         panOnDrag={canvasLocked ? false : drawTool === null ? true : [1, 2]}
         nodesDraggable={!canvasLocked}
         elementsSelectable={!canvasLocked}
@@ -3224,22 +3305,37 @@
           <div class="canvas-dock-left">
             {#if appSettings.showControls !== 'false'}
               <div class="zoom-cluster">
-                <button type="button" class="zoom-btn" data-testid="canvas-zoom-out" title={m['canvas.zoom_out']()} aria-label={m['canvas.zoom_out']()} onclick={() => stepZoom(1 / 1.25)}>
+                <button type="button" class="zoom-btn" data-testid="canvas-zoom-out" title={m['canvas.zoom_out']()} aria-label={m['canvas.zoom_out']()} disabled={lockedZoom !== null} onclick={() => stepZoom(1 / 1.25)}>
                   <Minus size={14} />
                 </button>
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger class="zoom-value" data-testid="canvas-zoom-level" aria-label={m['canvas.zoom_level']()}>
-                    {zoomPercent}%<ChevronDown size={11} />
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Content align="start" side="top" class="zoom-menu">
-                    {#each ZOOM_LEVELS as level (level)}
-                      <DropdownMenu.Item class="zoom-menu-item" onSelect={() => zoomApi?.setZoom(level, { duration: 200 })}>{Math.round(level * 100)}%</DropdownMenu.Item>
-                    {/each}
-                    <DropdownMenu.Separator />
-                    <DropdownMenu.Item class="zoom-menu-item" onSelect={() => zoomApi?.fitView({ duration: 220 })}>{m['canvas.zoom_fit']()}</DropdownMenu.Item>
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
-                <button type="button" class="zoom-btn" data-testid="canvas-zoom-in" title={m['canvas.zoom_in']()} aria-label={m['canvas.zoom_in']()} onclick={() => stepZoom(1.25)}>
+                <!-- Numero e cadeado sao um controle so: o cadeado trava ESTE zoom,
+                     e colado ao numero nao se confunde com o cadeado do canvas. -->
+                <div class="zoom-pill" class:locked={lockedZoom !== null}>
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger class="zoom-value" data-testid="canvas-zoom-level" aria-label={m['canvas.zoom_level']()} disabled={lockedZoom !== null}>
+                      {zoomPercent}%<ChevronDown size={11} />
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content align="start" side="top" class="zoom-menu">
+                      {#each ZOOM_LEVELS as level (level)}
+                        <DropdownMenu.Item class="zoom-menu-item" onSelect={() => zoomApi?.setZoom(level, { duration: 200 })}>{Math.round(level * 100)}%</DropdownMenu.Item>
+                      {/each}
+                      <DropdownMenu.Separator />
+                      <DropdownMenu.Item class="zoom-menu-item" onSelect={() => zoomApi?.fitView({ duration: 220 })}>{m['canvas.zoom_fit']()}</DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+                  <button
+                    type="button"
+                    class="zoom-btn zoom-pin"
+                    data-testid="canvas-zoom-pin"
+                    aria-pressed={lockedZoom !== null}
+                    title={lockedZoom !== null ? m['canvas.zoom_pin_off']() : m['canvas.zoom_pin_on']({ percent: zoomPercent })}
+                    aria-label={lockedZoom !== null ? m['canvas.zoom_pin_off']() : m['canvas.zoom_pin_on']({ percent: zoomPercent })}
+                    onclick={toggleZoomLock}
+                  >
+                    {#if lockedZoom !== null}<Lock size={11} />{:else}<LockOpen size={11} />{/if}
+                  </button>
+                </div>
+                <button type="button" class="zoom-btn" data-testid="canvas-zoom-in" title={m['canvas.zoom_in']()} aria-label={m['canvas.zoom_in']()} disabled={lockedZoom !== null} onclick={() => stepZoom(1.25)}>
                   <Plus size={14} />
                 </button>
                 <span class="zoom-sep" aria-hidden="true"></span>
@@ -3272,16 +3368,19 @@
               <ToolbarButton label={m['tool.shell']()} active={drawTool === 'terminal' && !drawProvider} onclick={() => toggleDrawTool('terminal')}>
                 <img src="/images/cli.svg" width="15" height="15" alt="" class="tool-icon" /> {m['canvas.default_shell']()}
               </ToolbarButton>
-              <AgentToolbarMenu
-                {providers}
-                {pinnedProviderIds}
-                activeProviderId={drawTool === 'terminal' ? (drawProvider?.id ?? null) : null}
-                allowUnavailableSelection={canChooseAlternateRuntime}
-                onSelect={(provider) => toggleDrawTool('terminal', provider)}
-                onTogglePin={togglePinnedProvider}
-                onOpenProviderCenter={() => void goto('/providers')}
-              />
             {/if}
+            <!-- Fora de qualquer pino: criar um agente e a razao de ser do
+                 canvas, e o menu morava dentro do bloco do Shell — quem
+                 desafixava o Shell perdia o unico caminho para criar um. -->
+            <AgentToolbarMenu
+              {providers}
+              {pinnedProviderIds}
+              activeProviderId={drawTool === 'terminal' ? (drawProvider?.id ?? null) : null}
+              allowUnavailableSelection={canChooseAlternateRuntime}
+              onSelect={(provider) => toggleDrawTool('terminal', provider)}
+              onTogglePin={togglePinnedProvider}
+              onOpenProviderCenter={() => void goto('/providers')}
+            />
             {#if pinnedToolbarSet.has('console')}
               <ToolbarButton label={m['tool.console']()} active={drawTool === 'console'} onclick={() => toggleDrawTool('console')}>
                 <Terminal size={15} class="tool-icon-svg" /> {m['console.title']()}
@@ -4175,6 +4274,59 @@
 
   :global(.zoom-value:hover) {
     background: var(--app-surface-raised);
+  }
+
+  /* Zoom travado: −, + e o seletor ficam inertes, e o numero ganha a cor de
+     destaque junto com o cadeado — da pra ler que esta preso sem hover. */
+  .zoom-btn:disabled,
+  :global(.zoom-value:disabled) {
+    cursor: default;
+    background: transparent;
+  }
+
+  .zoom-btn:disabled {
+    opacity: 0.35;
+  }
+
+  /* Numero e cadeado formam uma pilula, com um fio entre as duas metades: o
+     cadeado pertence ao seletor, nao e mais uma ferramenta da faixa (e nao se
+     confunde com o cadeado do canvas). Travada, ela ganha moldura e fundo
+     elevado: no tema escuro padrao a cor de destaque e quase branca, entao
+     so pintar de destaque nao mudava nada na tela. */
+  .zoom-pill {
+    display: flex;
+    align-items: center;
+    height: 26px;
+    border-radius: 6px;
+    transition: background 120ms ease, box-shadow 120ms ease;
+  }
+
+  .zoom-pill :global(.zoom-value) {
+    border-radius: 6px 0 0 6px;
+  }
+
+  .zoom-pin {
+    width: 22px;
+    border-left: 1px solid var(--app-border);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .zoom-pill .zoom-pin[aria-pressed='true'] {
+    background: transparent;
+  }
+
+  .zoom-pill.locked {
+    background: var(--app-surface-raised);
+    box-shadow: inset 0 0 0 1px var(--app-border-strong);
+  }
+
+  .zoom-pill.locked :global(.zoom-value),
+  .zoom-pill.locked .zoom-pin {
+    color: var(--app-accent);
+  }
+
+  .zoom-pill.locked .zoom-pin {
+    border-left-color: color-mix(in srgb, var(--app-accent) 35%, transparent);
   }
 
   :global(.zoom-menu) {

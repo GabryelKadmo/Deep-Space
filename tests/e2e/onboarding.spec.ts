@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openNewWorkspaceDialog } from './helpers';
 
 test.describe('onboarding guiado', () => {
   test('sempre abre nas boas-vindas e guia para criar workspace novo', async ({ page, request }) => {
@@ -7,7 +8,7 @@ test.describe('onboarding guiado', () => {
 
     // Cria e seleciona um workspace — o wizard NAO pode pular direto pros tours
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -40,7 +41,7 @@ test.describe('onboarding guiado', () => {
     await request.put('/api/agent-room/settings', { data: { uiLanguage: 'pt-BR' } });
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -101,7 +102,7 @@ test.describe('onboarding guiado', () => {
     await request.put('/api/agent-room/settings', { data: { uiLanguage: 'pt-BR' } });
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();

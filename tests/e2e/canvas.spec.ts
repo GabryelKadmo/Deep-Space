@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas, dragConnectHandles } from './helpers.js';
+import { createNodeOnCanvas, dragConnectHandles, openNewWorkspaceDialog } from './helpers.js';
 
 test.describe('canvas de workspaces', () => {
   test('ignora atalhos globais cujo alvo não é um elemento', async ({ page }) => {
@@ -187,7 +187,7 @@ test.describe('canvas de workspaces', () => {
     const workspaceName = `E2E flow ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -247,7 +247,7 @@ test.describe('canvas de workspaces', () => {
     const workspaceName = `E2E ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -288,7 +288,7 @@ test.describe('canvas de workspaces', () => {
     const workspaceName = `E2E edges ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -401,7 +401,7 @@ test.describe('canvas de workspaces', () => {
     const workspaceName = `E2E drag ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -454,7 +454,7 @@ test.describe('canvas de workspaces', () => {
     const workspaceName = `E2E rename ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -483,7 +483,7 @@ test.describe('canvas de workspaces', () => {
     const workspaceName = `E2E edit ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();

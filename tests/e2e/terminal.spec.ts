@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { mockInstalledProvider, selectAgentTool } from './helpers.js';
+import { mockInstalledProvider, selectAgentTool, openNewWorkspaceDialog } from './helpers.js';
 
 test.describe('terminais PTY', () => {
   test('entrega Escape a TUIs sem perder o foco do terminal no Canvas', async ({ page, request }) => {
@@ -212,7 +212,7 @@ test.describe('terminais PTY', () => {
     let workspace: { id: string; name: string } | undefined;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -353,7 +353,7 @@ test.describe('terminais PTY', () => {
 
     await mockInstalledProvider(page, 'claude');
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
