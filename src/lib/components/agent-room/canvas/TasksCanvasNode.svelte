@@ -1585,7 +1585,10 @@
   /* As tres acoes do cartao ficavam ao lado do titulo e, numa coluna estreita,
      sobravam ~40px para ele: "Deploy de staging" quebrava no meio das
      palavras. Agora o titulo usa a largura toda e as acoes aparecem por cima,
-     no canto, so com o cartao em hover ou com foco dentro dele. */
+     no canto, so com o cartao em hover ou com foco dentro dele. Escondidas
+     so pela opacidade, sem desligar o clique: para chegar ali o mouse ja
+     passou pelo cartao, e com pointer-events desligado a automacao (e quem
+     chega pelo teclado) esperava um botao que nunca aceitava o clique. */
   .tb-card-actions {
     position: absolute;
     top: -3px;
@@ -1597,14 +1600,12 @@
     border-radius: 6px;
     background: linear-gradient(to right, transparent, var(--app-surface) 8px);
     opacity: 0;
-    pointer-events: none;
     transition: opacity 120ms ease;
   }
 
   .tb-card:hover .tb-card-actions,
   .tb-card:focus-within .tb-card-actions {
     opacity: 1;
-    pointer-events: auto;
   }
 
   .tb-title {
