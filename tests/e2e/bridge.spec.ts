@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas, dragConnectHandles } from './helpers';
+import { createNodeOnCanvas, dragConnectHandles, openNewWorkspaceDialog } from './helpers';
 
 /**
  * A CLI `deepspace` autentica com `Authorization: Bearer <token>` e NAO envia
@@ -117,7 +117,7 @@ test.describe('ponte CLI (bridge)', () => {
     await page.setViewportSize({ width: 1600, height: 900 });
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();
@@ -164,7 +164,7 @@ test.describe('ponte CLI (bridge)', () => {
     const workspaceName = `E2E live ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill('/tmp');
     await page.getByRole('button', { name: 'Criar' }).click();

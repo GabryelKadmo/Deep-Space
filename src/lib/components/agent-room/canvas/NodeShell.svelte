@@ -4,7 +4,7 @@
   import * as Popover from '$lib/components/ui/popover';
   import { Link2, X } from '@lucide/svelte';
   import * as m from '$lib/paraglide/messages.js';
-  import { floatingAnchorFor } from './floating-anchor.js';
+  import { edgeAnchorsFor } from './floating-anchor.js';
 
   export type NodeConnection = {
     edgeId: string;
@@ -75,26 +75,32 @@
   const nodesStore = useNodes();
   const edgesStore = useEdges();
 
-  // Handle flutuante: a bolinha desliza pela borda do no ate o ponto mais
-  // proximo do vizinho conectado mais perto — a mesma matematica da ancora
-  // da corda (DeepSpaceEdge), entao a ponta da corda sempre toca a bolinha.
-  const floatingAnchor = $derived.by(() => {
-    const absolute = floatingAnchorFor(id, nodesStore.current, edgesStore.current);
-    if (!absolute) return null;
+  // Uma bolinha por corda, no lado virado para o vizinho daquela corda — e
+  // a mesma ancora que DeepSpaceEdge usa para a ponta, entao bolinha e
+  // corda coincidem sem obrigar as duas a sairem do mesmo ponto.
+  const ropeAnchors = $derived.by(() => {
     const self = nodesStore.current.find((node) => node.id === id);
-    if (!self) return null;
-    return { x: absolute.x - self.position.x, y: absolute.y - self.position.y };
+    if (!self) return [];
+    return edgeAnchorsFor(id, nodesStore.current, edgesStore.current).map((anchor) => ({
+      edgeId: anchor.edgeId,
+      side: anchor.side,
+      x: anchor.x - self.position.x,
+      y: anchor.y - self.position.y,
+    }));
   });
 
-  const handleStyle = $derived(
-    floatingAnchor
-      ? `left: ${floatingAnchor.x}px; top: ${floatingAnchor.y}px; right: auto; transform: translate(-50%, -50%);`
-      : undefined
-  );
-  // Com conexao ja feita a bolinha fica visivel sempre (e a ancora da corda);
-  // sem conexao ela só aparece perto do hover, pra nao poluir 4 bolinhas por
-  // no o tempo todo.
-  const handleClass = $derived(floatingAnchor ? 'node-handle connected' : 'node-handle');
+  // A corda nova sempre para no lado virado para o vizinho, entao o lado de
+  // onde ela e puxada nao importa: num lado que ja tem corda, o handle so
+  // desenhava uma segunda bolinha ao lado da primeira. Com os quatro lados
+  // ocupados todos voltam, senao nao haveria de onde puxar.
+  const occupiedSides = $derived.by(() => {
+    const sides = new Set(ropeAnchors.map((anchor) => anchor.side));
+    return sides.size === 4 ? new Set<string>() : sides;
+  });
+
+  function handleClass(side: string): string {
+    return occupiedSides.has(side) ? 'node-handle occupied' : 'node-handle';
+  }
 </script>
 
 <div class={`node-shell nowheel ${klass}`} class:selected style:--accent={accent}>
@@ -106,15 +112,22 @@
     lineStyle="border-color: var(--accent)"
     handleStyle="background: var(--accent)"
   />
-  <!-- Quatro handles bidirecionais (connectionMode Loose), um por lado, para
-       conectar sem precisar navegar ate a lateral direita do vizinho. Sem
-       conexoes cada um fica no seu lado; com conexoes todos flutuam juntos
-       ate a mesma ancora na borda mais proxima da corda (floatingAnchor
-       acima) — na pratica vira uma unica bolinha visivel. -->
-  <Handle id="top" type="source" position={Position.Top} class={handleClass} style={handleStyle} />
-  <Handle id="right" type="source" position={Position.Right} class={handleClass} style={handleStyle} />
-  <Handle id="bottom" type="source" position={Position.Bottom} class={handleClass} style={handleStyle} />
-  <Handle id="left" type="source" position={Position.Left} class={handleClass} style={handleStyle} />
+  <!-- Quatro handles bidirecionais (connectionMode Loose), um por lado: sao o
+       ponto de partida de uma conexao nova e aparecem no hover do no. A
+       ancora das cordas ja existentes e outra coisa (as bolinhas abaixo),
+       uma por corda. -->
+  <Handle id="top" type="source" position={Position.Top} class={handleClass('top')} />
+  <Handle id="right" type="source" position={Position.Right} class={handleClass('right')} />
+  <Handle id="bottom" type="source" position={Position.Bottom} class={handleClass('bottom')} />
+  <Handle id="left" type="source" position={Position.Left} class={handleClass('left')} />
+
+  {#if ropeAnchors.length}
+    <div class="rope-anchors" aria-hidden="true">
+      {#each ropeAnchors as anchor (anchor.edgeId)}
+        <span class="rope-anchor" style={`left: ${anchor.x}px; top: ${anchor.y}px;`}></span>
+      {/each}
+    </div>
+  {/if}
 
   <header class="node-header">
     <span class="node-icon">{@render icon()}</span>
@@ -173,13 +186,14 @@
 
 <style>
   .node-shell {
+    --shell-border: 1px;
     position: relative;
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
     border-radius: 8px;
-    border: 1px solid var(--app-border);
+    border: var(--shell-border) solid var(--app-border);
     background: var(--app-surface);
     box-shadow: var(--app-shadow-card);
     /* overflow visivel: os handles ficam a cavalo da borda (estilo Maestri)
@@ -367,18 +381,47 @@
     /* O anel nao e elevacao: e um recorte na cor do fundo para a bolinha
        nao encostar nas cordas que passam por baixo. */
     box-shadow: 0 0 0 3px var(--app-canvas), 0 0 8px var(--accent);
-    /* Sem conexao a bolinha so aparece perto do mouse (hover do no) — com
-       4 bolinhas por no, ficarem sempre visiveis poluia o canvas. Ja
-       conectada fica sempre visivel: e a ancora da corda existente. */
+    /* So aparece perto do mouse (hover do no) — com 4 bolinhas por no,
+       ficarem sempre visiveis poluia o canvas. */
     opacity: 0;
     pointer-events: none;
     transition: opacity 130ms ease, transform 130ms ease, box-shadow 130ms ease;
   }
 
-  .node-shell:hover :global(.node-handle),
-  .node-shell :global(.node-handle.connected) {
+  .node-shell:hover :global(.node-handle) {
     opacity: 0.95;
     pointer-events: auto;
+  }
+
+  /* Lado que ja tem corda: a bolinha da corda ocupa o lugar. visibility (e
+     nao opacity) porque o modo "conectando" do canvas liga a opacidade de
+     todos os handles, e um handle escondido nao pode reaparecer ali. */
+  .node-shell :global(.node-handle.occupied) {
+    visibility: hidden;
+  }
+
+  /* As ancoras vem em coordenadas do no (canto externo da borda), mas um
+     filho absoluto conta a partir de DENTRO da borda: sem esta camada
+     recuada, toda bolinha saia deslocada pela espessura da borda. */
+  .rope-anchors {
+    position: absolute;
+    inset: calc(-1 * var(--shell-border));
+    z-index: 20;
+    pointer-events: none;
+  }
+
+  /* Bolinha de uma corda existente: menor que o handle, porque so marca onde
+     a corda encosta — nao recebe clique, quem inicia conexao e o handle. */
+  .node-shell .rope-anchor {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--app-accent-contrast);
+    box-shadow: 0 0 0 2px var(--app-canvas), 0 0 6px var(--accent);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
   }
 
   /* Posicao de repouso (sem conexao) empurrada pra fora da borda — o padrao

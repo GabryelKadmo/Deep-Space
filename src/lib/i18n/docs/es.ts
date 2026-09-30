@@ -18,7 +18,7 @@ export const DOCS_ES: DocsCatalog = {
     {
       id: 'workspace-folders',
       title: 'Organiza workspaces en carpetas',
-      body: `Agrupa workspaces en carpetas en la barra lateral cuando tengas varios proyectos (por cliente, por equipo, por entorno). Escribe un nombre en "Nueva carpeta" al final de la lista para crear una en la raíz; arrastra un workspace sobre el encabezado de una carpeta para guardarlo ahí, o arrástralo al espacio vacío de la lista para devolverlo a la raíz. Un workspace nuevo también puede empezar ya dentro de una carpeta: usa el ícono de más en su encabezado, o elige cualquier carpeta en el campo Carpeta del propio diálogo de nuevo workspace. Las carpetas se anidan dentro de otras carpetas de la misma forma, sin límite de profundidad — arrastra una carpeta sobre otra para convertirla en subcarpeta, o usa el ícono de "nueva subcarpeta" en el encabezado de cualquier carpeta para crear una ya dentro de ella; una carpeta nunca puede soltarse dentro de sí misma o de una subcarpeta suya. Haz doble clic en el nombre de la carpeta o usa su ícono de lápiz para renombrarla, y cada carpeta recuerda si está colapsada entre reinicios. Eliminar una carpeta (ícono de papelera, con confirmación) nunca es destructivo: cada workspace y subcarpeta dentro de ella sube a la raíz en lugar de eliminarse.`,
+      body: `Agrupa workspaces en carpetas en la barra lateral cuando tengas varios proyectos (por cliente, por equipo, por entorno). Usa el "+" en la parte superior de la barra lateral y elige "Nueva carpeta" para crear una en la raíz; arrastra un workspace sobre el encabezado de una carpeta para guardarlo ahí, o arrástralo al espacio vacío de la lista para devolverlo a la raíz. Un workspace nuevo también puede empezar ya dentro de una carpeta: usa el ícono de más en su encabezado, o elige cualquier carpeta en el campo Carpeta del propio diálogo de nuevo workspace. Las carpetas se anidan dentro de otras carpetas de la misma forma, sin límite de profundidad — arrastra una carpeta sobre otra para convertirla en subcarpeta, o usa el ícono de "nueva subcarpeta" en el encabezado de cualquier carpeta para crear una ya dentro de ella; una carpeta nunca puede soltarse dentro de sí misma o de una subcarpeta suya. Haz doble clic en el nombre de la carpeta o usa su ícono de lápiz para renombrarla, y cada carpeta recuerda si está colapsada entre reinicios. Eliminar una carpeta (ícono de papelera, con confirmación) nunca es destructivo: cada workspace y subcarpeta dentro de ella sube a la raíz en lugar de eliminarse.`,
     },
     {
       id: 'workspace-node-transfer',
@@ -511,6 +511,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Console', 'un proceso por comando', 'carpetas'],
     },
     {
+      id: 'zoom-lock',
+      title: 'Bloquea el zoom donde el texto se ve nítido',
+      body: 'Fuera del 100 % la selección de texto dentro de las terminales se desalinea, y un giro accidental de la rueda del ratón ya saca el canvas de su zoom. Elige el nivel en el selector de % abajo a la izquierda y haz clic en el candado junto al número: la píldora gana marco, − y + se atenúan, y la rueda, el pellizco, el doble clic y los atajos ya no cambian el zoom — la rueda mueve el canvas. El bloqueo vale para todos los workspaces y sobrevive a los reinicios; haz clic de nuevo en el candado para soltarlo. Es independiente del candado del canvas, que bloquea arrastrar y seleccionar nodos.',
+      tags: ['zoom', 'candado', 'terminales'],
+    },
+    {
       id: 'leader-team',
       title: 'Equipo de desarrollo con líder (zero-config)',
       body: 'Crea un Claude y dile: "orquesta para mí la feature X". Él propone el equipo, tú apruebas, y él recluta, conecta y distribuye mediante kanban. Cada consulta por ask solo cuenta tras la confirmación explícita del puente; cuando un agente usa task done, el líder recibe automáticamente el handoff para revisar y coordinar el siguiente paso.',
@@ -927,7 +933,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'group-icons',
       title: 'Dale un icono propio a una carpeta',
-      body: 'Abre la barra lateral del canvas y busca un grupo (carpeta) entre tus workspaces — agrúpalos con "Nueva carpeta" al final de la lista cuando tengas varios proyectos que organizar por cliente, por equipo o por entorno. Haz clic en el icono de un grupo para abrir el mismo selector que ya usan workspaces y proyectos, y elige uno. Se recuerda la próxima vez que abras la app, así que las carpetas con distintos tipos de trabajo son fáciles de distinguir de un vistazo.',
+      body: 'Abre la barra lateral del canvas y busca un grupo (carpeta) entre tus workspaces — agrúpalos con el "+" de la parte superior de la barra lateral → "Nueva carpeta" cuando tengas varios proyectos que organizar por cliente, por equipo o por entorno. Haz clic en el icono de un grupo para abrir el mismo selector que ya usan workspaces y proyectos, y elige uno. Se recuerda la próxima vez que abras la app, así que las carpetas con distintos tipos de trabajo son fáciles de distinguir de un vistazo.',
       tags: ['Grupos de workspace', 'barra lateral', 'selector de icono'],
     },
     {
@@ -944,6 +950,21 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '30 de septiembre de 2026 · 0.36.0',
+      title: 'Deep Space 0.36.0: zoom bloqueado, tareas en su columna y cuerdas por su lado',
+      summary: 'Candado en el zoom, crear una tarea directo en su columna, un "+" para workspace y carpeta, y cuerdas que salen cada una por su lado',
+      items: [
+        'Bloqueo de zoom. Un candado queda junto al selector de %, como un único control: bloqueado, el canvas se queda en el zoom elegido — la rueda, el pellizco, el doble clic y los atajos ya no lo cambian, y la rueda mueve el canvas. Fuera del 100 % la selección de texto en las terminales se desalinea, y un giro accidental de la rueda bastaba para salir de él. El bloqueo vale para todos los workspaces, sobrevive a los reinicios y es independiente del candado del canvas, que bloquea arrastrar y seleccionar nodos. Bloqueada, la píldora gana marco y − y + se atenúan, así que el estado se lee en cualquier tema, no solo por el color de acento.',
+        'La tarea nace en su columna. Cada columna del tablero termina en su propio "+ Añadir tarea", que abre una tarjeta ahí mismo: Enter la crea en esa columna y deja la tarjeta abierta para la siguiente, Esc la cierra, y hacer clic fuera nunca tira lo escrito. Antes, una barra en la parte superior del tablero abría un formulario grande que siempre creaba en "Por hacer". La descripción pasó al detalle de la tarea, donde ya tenía lugar; pegar una imagen y el clip siguen funcionando al crear.',
+        'Un "+" para todo lo que guarda la barra lateral. El "+" de la parte superior de la barra lateral abre un menú con Nuevo workspace y Nueva carpeta. El campo del nombre de la carpeta ya no queda fijo al final de la lista: aparece arriba, con el foco, solo mientras se crea la carpeta.',
+        'Crear un agente ya no depende del pin del Shell. El menú de los providers vivía dentro del bloque del botón Shell en la barra, así que quitar el pin del Shell se llevaba el único camino para crear un agente — y, con la Console sustituyendo al nodo de shell, quitarlo es justo lo que apetece hacer. Ahora el menú se sostiene solo, con o sin el Shell fijado.',
+        'Las cuerdas anclan por conexión, no por nodo. Cada cuerda salía del mismo punto, el que miraba al vecino más cercano, así que un tablero a la derecha y una nota abajo tiraban de las dos cuerdas hacia abajo y la única forma de hacer legible el canvas era amontonar los nodos. Ahora cada cuerda sale por el lado que mira a su propio vecino, con un punto pequeño propio, a 5 px de ese lado y nunca en una esquina redondeada, y ambas acompañan cuando se mueve un nodo. La cuerda sale recta de su lado, como un cable saliendo de un puerto, en lugar de doblarse en un gancho junto al punto; una cuerda casi vertical ya no cuelga recta para dar un escalón al final; los nodos casi pegados reciben un trazo recto en lugar de un zigzag; y un lado que ya tiene cuerda ya no muestra un segundo punto de hover a su lado.',
+        'Los títulos de las tareas se partían en mitad de las palabras ("Deplo / y de / stagin / g") en columnas estrechas, apretados por las tres acciones de la tarjeta a su lado. El título usa todo el ancho ahora, y las acciones aparecen encima, en la esquina, con hover o foco.',
+        'Levantar el servidor de desarrollo del propio proyecto — incluso desde el nodo Console — o cualquier otro servidor Deep Space con la app abierta se quedaba con ~/.deepspace/runtime.json, el archivo que la CLI deepspace lee para encontrar la app, y cada comando del puente de los agentes fallaba con "token de bridge inválido". El archivo ahora se queda con la instancia que ya está en marcha; DEEPSPACE_ANNOUNCE_RUNTIME=1 fuerza el cambio cuando de verdad se quiere.',
+        'El tour de la Console mostraba el icono genérico en el onboarding, porque su icono faltaba en la lista que resuelve el onboarding.',
+      ],
+    },
     {
       date: '24 de septiembre de 2026 · 0.35.3',
       title: 'Deep Space 0.35.3: la Console ejecuta de verdad',

@@ -35,6 +35,29 @@ export const TOURS_ES: Tour[] = [
     ],
   },
   {
+    id: 'zoom-lock',
+    icon: 'Lock',
+    title: 'Zoom bloqueado en su punto',
+    tagline: 'Deja el canvas al 100 % y deja de salirte del zoom sin querer.',
+    steps: [
+      {
+        id: 'level',
+        title: 'Elige el nivel',
+        body: 'Abre el selector de % abajo a la izquierda y elige 100 % — el zoom en el que la selección de texto de las terminales es exacta.',
+      },
+      {
+        id: 'lock',
+        title: 'Bloquéalo con el candado de al lado',
+        body: 'Haz clic en el candado junto al número. La píldora gana marco, − y + se atenúan, y la rueda del ratón mueve el canvas en lugar de cambiar el zoom.',
+      },
+      {
+        id: 'unlock',
+        title: 'Suéltalo cuando quieras',
+        body: 'El bloqueo vale para todos los workspaces y sigue tras reiniciar. Haz clic en el mismo candado para volver a hacer zoom.',
+      },
+    ],
+  },
+  {
     id: 'team-leader',
     icon: 'Users',
     title: 'Equipo con líder (zero-config)',
@@ -1758,7 +1781,7 @@ export const TOURS_ES: Tour[] = [
     tagline: 'Agrupa proyectos por cliente, equipo o entorno en la barra lateral.',
     steps: [
       { id: 'open-canvas-sidebar', title: 'Abre la barra lateral', body: 'Expande la barra lateral del Canvas (el botón de colapsar en su encabezado) para ver la lista completa de workspaces.', action: { kind: 'openPage', path: '/canvas?workspace={workspace}' } },
-      { id: 'create-workspace-folder', title: 'Crea una carpeta', body: 'Escribe un nombre en Nueva carpeta al final de la lista y confirma. Aparece en la raíz, lista para recibir workspaces.' },
+      { id: 'create-workspace-folder', title: 'Crea una carpeta', body: 'En el "+" de la parte superior de la barra lateral, elige Nueva carpeta, escribe el nombre y confirma. Aparece en la raíz, lista para recibir workspaces.' },
       { id: 'file-workspace-into-folder', title: 'Archiva un workspace en ella', body: 'Arrastra cualquier workspace sobre el encabezado de la carpeta para moverlo ahí; arrástralo al espacio vacío de la lista para devolverlo a la raíz.' },
       { id: 'create-workspace-in-folder', title: 'Crea un workspace ya dentro de una carpeta', body: 'Pasa el mouse sobre el encabezado de una carpeta y usa el ícono de más para abrir Nuevo workspace con esa carpeta preseleccionada como destino, o elige cualquier carpeta en el campo Carpeta del propio diálogo, sin necesidad de arrastrar después.' },
       { id: 'nest-workspace-folders', title: 'Anida y administra carpetas', body: 'Arrastra una carpeta sobre otra para convertirla en subcarpeta, o usa el ícono de "nueva subcarpeta" en el encabezado de una carpeta para crear una ya dentro de ella — sin límite de profundidad. Renombra con el ícono de lápiz o doble clic, y elimina con el ícono de papelera: los workspaces y subcarpetas dentro siempre suben a la raíz en lugar de eliminarse.' },
@@ -1959,7 +1982,7 @@ export const TOURS_ES: Tour[] = [
     tagline: 'Distingue tus grupos de workspace de un vistazo.',
     steps: [
       { id: 'open', title: 'Abre la barra lateral del canvas', body: 'Los grupos de workspace viven en el árbol de la barra lateral de la página Canvas, una fila por carpeta junto a los workspaces que contiene.', action: { kind: 'openPage', path: '/canvas' } },
-      { id: 'find', title: 'Encuentra un grupo (carpeta)', body: 'Cuando tengas más de un par de proyectos, agrúpalos en carpetas — por cliente, por equipo o por entorno — con "Nueva carpeta" al final de la lista de la barra lateral.' },
+      { id: 'find', title: 'Encuentra un grupo (carpeta)', body: 'Cuando tengas más de un par de proyectos, agrúpalos en carpetas — por cliente, por equipo o por entorno — con el "+" de la parte superior de la barra lateral → "Nueva carpeta".' },
       { id: 'pick', title: 'Elige un icono', body: 'Haz clic en el icono de la carpeta junto a su nombre para abrir el mismo selector que ya usan workspaces y proyectos, y elige uno. Se recuerda la próxima vez que abras la app.' },
     ],
   },

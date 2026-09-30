@@ -35,6 +35,29 @@ export const TOURS_EN: Tour[] = [
     ],
   },
   {
+    id: 'zoom-lock',
+    icon: 'Lock',
+    title: 'Zoom locked at the right level',
+    tagline: 'Keep the canvas at 100% and stop drifting off it by accident.',
+    steps: [
+      {
+        id: 'level',
+        title: 'Pick the level',
+        body: 'Open the % selector at the bottom left and pick 100% — the zoom where text selection in terminals is exact.',
+      },
+      {
+        id: 'lock',
+        title: 'Lock it with the padlock beside it',
+        body: 'Click the padlock next to the number. The pill gets a frame, − and + dim, and the mouse wheel pans the canvas instead of changing the zoom.',
+      },
+      {
+        id: 'unlock',
+        title: 'Release it whenever you want',
+        body: 'The lock applies to every workspace and stays after a restart. Click the same padlock to zoom again.',
+      },
+    ],
+  },
+  {
     id: 'team-leader',
     icon: 'Users',
     title: 'Team with a leader (zero-config)',
@@ -1758,7 +1781,7 @@ export const TOURS_EN: Tour[] = [
     tagline: 'Group projects by client, team, or environment in the sidebar.',
     steps: [
       { id: 'open-canvas-sidebar', title: 'Open the sidebar', body: 'Expand the Canvas sidebar (the panel toggle in its header) to see the full workspace list.', action: { kind: 'openPage', path: '/canvas?workspace={workspace}' } },
-      { id: 'create-workspace-folder', title: 'Create a folder', body: 'Type a name in New folder at the bottom of the list and confirm. It appears at the root, ready to receive workspaces.' },
+      { id: 'create-workspace-folder', title: 'Create a folder', body: 'From the "+" at the top of the sidebar, pick New folder, type the name and confirm. It appears at the root, ready to receive workspaces.' },
       { id: 'file-workspace-into-folder', title: 'File a workspace into it', body: 'Drag any workspace onto the folder header to move it there; drag it onto empty space in the list to send it back to the root.' },
       { id: 'create-workspace-in-folder', title: 'Create a workspace already inside a folder', body: 'Hover a folder\'s header and use the plus icon to open New workspace with that folder pre-selected as the destination, or pick any folder from the Folder field in the dialog itself — no dragging needed afterward.' },
       { id: 'nest-workspace-folders', title: 'Nest and manage folders', body: 'Drag one folder onto another to make it a subfolder, or use the "new subfolder" icon in a folder\'s header to create one already inside it — there\'s no depth limit. Rename with the pencil icon or a double-click, and delete with the trash icon: workspaces and subfolders inside always move up to the root instead of being removed.' },
@@ -1959,7 +1982,7 @@ export const TOURS_EN: Tour[] = [
     tagline: 'Tell your workspace groups apart at a glance.',
     steps: [
       { id: 'open', title: 'Open the canvas sidebar', body: 'Workspace groups live in the sidebar tree on the Canvas page, one row per folder alongside the workspaces inside it.', action: { kind: 'openPage', path: '/canvas' } },
-      { id: 'find', title: 'Find a group folder', body: 'Once you have more than a couple of projects, group them into folders — per client, per team, or per environment — using "New folder" at the bottom of the sidebar list.' },
+      { id: 'find', title: 'Find a group folder', body: 'Once you have more than a couple of projects, group them into folders — per client, per team, or per environment — using the "+" at the top of the sidebar → "New folder".' },
       { id: 'pick', title: 'Pick an icon', body: 'Click the folder icon next to its name to open the same picker workspaces and projects already use, and choose one. It is remembered the next time you open the app.' },
     ],
   },

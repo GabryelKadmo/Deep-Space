@@ -287,7 +287,6 @@
   "ph.floor_name": "Floor name",
   "ph.palette": "Search nodes and actions...",
   "ph.task_title": "Task title…",
-  "ph.task_desc": "Markdown description (optional) — checklists, links, code...",
   "ph.routine_prompt": "Prompt (&& on the line for steps)",
   "ph.agent_title": "E.g.: Backend, Reviewer, Ops...",
   "ph.file_search": "Search name... (> content)",
@@ -801,7 +800,6 @@
   "tasks.col_doing": "Doing",
   "tasks.col_done": "Done",
   "tasks.col_todo": "To do",
-  "tasks.desc_aria": "Task description in markdown",
   "tasks.detail_add_desc": "Double-click to add a description",
   "tasks.detail_column_aria": "Move task to another column",
   "tasks.detail_close": "Back to board",
@@ -1664,7 +1662,6 @@
   "attachment.error": "The attachment could not be added.",
   "attachment.remove_error": "The attachment could not be removed.",
   "attachment.agent_drop_target": "Drop files or links to add them to the agent prompt",
-  "attachment.task_drop_target": "Drop files or links to add them to the task",
   "workbench.usage_footer_label": "Provider usage",
   "workbench.usage_loading": "Loading usage…",
   "workbench.usage_unavailable": "Usage unavailable",
@@ -4293,5 +4290,11 @@
   "tool.console": "Saved workspace commands, one process per command",
   "settings.console_shell": "Console command shell",
   "settings.console_shell_auto": "Automatic",
-  "settings.console_shell_hint": "Which shell runs the Console node commands. Automatic uses PowerShell on Windows and your login shell on macOS/Linux."
+  "settings.console_shell_hint": "Which shell runs the Console node commands. Automatic uses PowerShell on Windows and your login shell on macOS/Linux.",
+  "tasks.add_short": "Add",
+  "tasks.new_in_column": "New task in {column}",
+  "canvas.zoom_pin_on": "Lock zoom at {percent}%",
+  "canvas.zoom_pin_off": "Unlock zoom",
+  "canvas.zoom_lock_save_error": "Could not save the zoom lock.",
+  "canvas.create_menu": "New"
 }
