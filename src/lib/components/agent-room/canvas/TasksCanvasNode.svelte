@@ -238,26 +238,46 @@
     return () => clearInterval(timer);
   });
 
+  // A tarefa nasce na coluna onde o "+" foi clicado, como um cartao a mais no
+  // fim dela — antes era um formulario no topo do quadro que sempre criava em
+  // "A fazer". Enter cria e deixa o cartao aberto para a proxima; a descricao
+  // fica para o detalhe da tarefa.
+  let composerStatus = $state<string | null>(null);
+  let composerInput = $state<HTMLInputElement>();
+
+  function openComposer(status: string) {
+    if (composerStatus !== status) {
+      draft = '';
+      clearStaged();
+    }
+    composerStatus = status;
+    void tick().then(() => composerInput?.focus());
+  }
+
+  function closeComposer() {
+    composerStatus = null;
+    draft = '';
+    clearStaged();
+  }
+
   async function addTask() {
     const title = draft.trim();
-    if (!title) return;
-    const description = draftDescription.trim();
+    if (!title || !composerStatus) return;
     const task = await api<BoardTask>(`/api/agent-room/workspaces/${data.workspaceId}/tasks`, {
       method: 'POST',
-      body: JSON.stringify({ title, description: description || undefined, attachments: stagedAttachments }),
+      body: JSON.stringify({ title, status: composerStatus, attachments: stagedAttachments }),
     });
     if (!task) return;
     imageError = '';
     draft = '';
-    draftDescription = '';
     clearStaged();
-    composerOpen = false;
     await refresh();
+    await tick();
+    composerInput?.closest('.tb-column')?.querySelector('.tb-cards')?.scrollTo({ top: Number.MAX_SAFE_INTEGER });
+    composerInput?.focus();
   }
 
   // -- Anexos no composer (anexar ANTES de criar a tarefa) ----------------------
-  let composerOpen = $state(false);
-  let draftDescription = $state('');
   let stagedAttachments = $state<WorkspaceAttachment[]>([]);
 
   function stageAttachments(attachments: WorkspaceAttachment[]) {
@@ -624,61 +644,6 @@
       {#if columnError}<p class="mt-1.5 text-ui-xs text-destructive" role="alert">{columnError}</p>{/if}
     </div>
   {/if}
-  <div class="tb-add nodrag">
-    {#if composerOpen}
-      <div
-        class="tb-composer"
-        class:attachment-drop-active={attachmentDropTaskId === 'composer'}
-        role="group"
-        aria-label={m['attachment.task_drop_target']()}
-        ondragover={(event) => onAttachmentDragOver(event)}
-        ondragleave={() => (attachmentDropTaskId = null)}
-        ondrop={(event) => onAttachmentDrop(event)}
-      >
-        <input
-          bind:value={draft}
-          placeholder={m['ph.task_title']()}
-          aria-label={m['tasks.title_aria']()}
-          autocomplete="off"
-          spellcheck="false"
-          onpaste={onComposerPaste}
-          onkeydown={(event) => {
-            if (event.key === 'Enter') addTask();
-            if (event.key === 'Escape') composerOpen = false;
-          }}
-        />
-        <textarea
-          bind:value={draftDescription}
-          placeholder={m['ph.task_desc']()}
-          aria-label={m['tasks.desc_aria']()}
-          rows="3"
-          spellcheck="false"
-          onpaste={onComposerPaste}
-        ></textarea>
-        <AttachmentList
-          workspaceId={data.workspaceId}
-          attachments={stagedAttachments}
-          compact
-          onRemove={unstageAttachment}
-        />
-        <div class="tb-composer-actions">
-          <HeaderIconButton label={m['attachment.add']()} class="tb-icon-btn subtle" side="top" disabled={attachmentBusy} onclick={() => { attachmentTargetId = null; fileInput.click(); }}>
-            <Paperclip size={13} />
-          </HeaderIconButton>
-          <span class="tb-spacer"></span>
-          <button class="tb-cancel" onclick={() => { composerOpen = false; clearStaged(); }}>{m['tasks.cancel']()}</button>
-          <HeaderIconButton label={m['tasks.add_task']()} class="tb-add-btn" side="top" onclick={addTask} disabled={!draft.trim()}>
-            <Plus size={14} />
-          </HeaderIconButton>
-        </div>
-      </div>
-    {:else}
-      <button class="tb-add-open" onclick={() => (composerOpen = true)}>
-        <Plus size={14} /> {m['tasks.add_task']()}
-      </button>
-    {/if}
-  </div>
-
   <div class="tb-board nodrag nowheel">
     {#each COLUMNS as column (column.id)}
       <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -736,7 +701,7 @@
                   <!-- svelte-ignore a11y_no_static_element_interactions -->
                   <span class="tb-title" title={undefined} ondblclick={() => startEdit(task)}>{task.title}</span>
                 {/if}
-                <div class="flex shrink-0 items-center gap-0.5">
+                <div class="tb-card-actions">
                   <HeaderIconButton label={m['tasks.open_detail']()} class="tb-icon-btn subtle" side="top" onclick={() => openDetail(task)}>
                     <Maximize2 size={11} />
                   </HeaderIconButton>
@@ -826,6 +791,58 @@
             <span class="tb-empty">{m['tasks.drop_hint']()}</span>
           {/each}
         </div>
+
+        {#if composerStatus === column.status}
+          <!-- Fecha sozinho ao perder o foco so quando nao ha nada digitado
+               nem anexado — clicar fora nao pode jogar texto fora. -->
+          <div
+            class="tb-composer"
+            class:attachment-drop-active={attachmentDropTaskId === 'composer'}
+            role="group"
+            aria-label={m['tasks.new_in_column']({ column: column.label })}
+            ondragover={(event) => onAttachmentDragOver(event)}
+            ondragleave={() => (attachmentDropTaskId = null)}
+            ondrop={(event) => onAttachmentDrop(event)}
+            onfocusout={(event) => {
+              if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
+              if (!draft.trim() && !stagedAttachments.length) closeComposer();
+            }}
+          >
+            <input
+              bind:this={composerInput}
+              bind:value={draft}
+              placeholder={m['ph.task_title']()}
+              aria-label={m['tasks.title_aria']()}
+              autocomplete="off"
+              spellcheck="false"
+              onpaste={onComposerPaste}
+              onkeydown={(event) => {
+                if (event.key === 'Enter') addTask();
+                if (event.key === 'Escape') closeComposer();
+              }}
+            />
+            <AttachmentList
+              workspaceId={data.workspaceId}
+              attachments={stagedAttachments}
+              compact
+              onRemove={unstageAttachment}
+            />
+            <div class="tb-composer-actions">
+              <HeaderIconButton label={m['attachment.add']()} class="tb-icon-btn subtle" side="top" disabled={attachmentBusy} onclick={() => { attachmentTargetId = null; fileInput.click(); }}>
+                <Paperclip size={12} />
+              </HeaderIconButton>
+              <span class="tb-spacer"></span>
+              <HeaderIconButton label={m['tasks.cancel']()} class="tb-icon-btn subtle" side="top" onclick={closeComposer}>
+                <X size={12} />
+              </HeaderIconButton>
+              <button class="tb-composer-submit" disabled={!draft.trim()} onclick={addTask}>{m['tasks.add_short']()}</button>
+            </div>
+          </div>
+        {:else}
+          <button class="tb-column-add" onclick={() => openComposer(column.status)}>
+            <Plus size={12} /> {m['tasks.add_task']()}
+          </button>
+        {/if}
       </section>
     {/each}
   </div>
@@ -1093,35 +1110,39 @@
     padding: 4px 2px;
   }
 
-  /* ---- Composer estilo Trello ---------------------------------------------- */
-  .tb-add-open {
+  /* ---- Criar tarefa na propria coluna ---------------------------------------- */
+  .tb-column-add {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     width: 100%;
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px dashed var(--app-border-strong);
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 7px;
     background: transparent;
     color: var(--app-text-muted);
-    font-size: 11.5px;
+    font-size: 11px;
+    text-align: left;
     cursor: pointer;
-    transition: color 120ms ease, border-color 120ms ease;
+    transition: color 120ms ease, background 120ms ease;
   }
 
-  .tb-add-open:hover {
+  .tb-column-add:hover,
+  .tb-column-add:focus-visible {
     color: var(--app-text);
-    border-color: var(--app-text-muted);
+    background: var(--app-surface);
   }
 
+  /* O cartao de criacao tem o desenho de um cartao do quadro: e o cartao que
+     vai existir, ainda sem titulo. */
   .tb-composer {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid color-mix(in srgb, var(--app-accent) 42%, var(--app-border));
-    background: color-mix(in srgb, var(--app-accent) 7%, var(--app-surface));
+    gap: 6px;
+    padding: 7px;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--app-accent) 45%, var(--app-border));
+    background: var(--app-surface);
   }
 
   .tb-composer.attachment-drop-active,
@@ -1131,8 +1152,17 @@
     background: color-mix(in srgb, var(--app-accent) 9%, var(--app-surface));
   }
 
-  .tb-composer input,
-  .tb-composer textarea,
+  .tb-composer input {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--app-text);
+    font-size: 12px;
+    font-family: inherit;
+    padding: 2px 3px;
+    outline: none;
+  }
+
   .tb-desc-edit {
     width: 100%;
     border: 1px solid var(--app-border);
@@ -1146,8 +1176,6 @@
     resize: vertical;
   }
 
-  .tb-composer input:focus,
-  .tb-composer textarea:focus,
   .tb-desc-edit:focus {
     border-color: var(--app-accent);
   }
@@ -1155,26 +1183,29 @@
   .tb-composer-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 2px;
   }
 
   .tb-spacer {
     flex: 1;
   }
 
-  .tb-cancel {
-    border: none;
-    background: transparent;
-    color: var(--app-text-muted);
-    font-size: 11px;
-    cursor: pointer;
-    padding: 4px 8px;
+  .tb-composer-submit {
+    height: 22px;
+    margin-left: 2px;
+    padding: 0 9px;
+    border: 0;
     border-radius: 6px;
+    background: var(--app-accent);
+    color: var(--app-accent-contrast);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
   }
 
-  .tb-cancel:hover {
-    color: var(--app-text);
-    background: var(--app-border);
+  .tb-composer-submit:disabled {
+    opacity: 0.4;
+    cursor: default;
   }
 
   /* ---- Descricao markdown no cartao ------------------------------------------ */
@@ -1186,28 +1217,6 @@
     max-height: 130px;
     overflow-y: auto;
     cursor: text;
-  }
-
-  .tb-add {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--app-border);
-  }
-
-  .tb-add input {
-    flex: 1;
-    min-width: 0;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: var(--app-text);
-    font-size: 12px;
-  }
-
-  .tb-add input:focus-visible {
-    outline: none;
   }
 
   .tb-board {
@@ -1567,9 +1576,35 @@
   }
 
   .tb-card-top {
+    position: relative;
     display: flex;
     align-items: flex-start;
     gap: 6px;
+  }
+
+  /* As tres acoes do cartao ficavam ao lado do titulo e, numa coluna estreita,
+     sobravam ~40px para ele: "Deploy de staging" quebrava no meio das
+     palavras. Agora o titulo usa a largura toda e as acoes aparecem por cima,
+     no canto, so com o cartao em hover ou com foco dentro dele. */
+  .tb-card-actions {
+    position: absolute;
+    top: -3px;
+    right: -4px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 1px 2px 1px 8px;
+    border-radius: 6px;
+    background: linear-gradient(to right, transparent, var(--app-surface) 8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease;
+  }
+
+  .tb-card:hover .tb-card-actions,
+  .tb-card:focus-within .tb-card-actions {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .tb-title {
@@ -1632,34 +1667,6 @@
 
   .tb-board :global(.tb-icon-btn.subtle:hover) {
     color: var(--app-secondary);
-  }
-
-  .tb-board :global(.tb-add-btn) {
-    display: inline-flex;
-    border: none;
-    background: transparent;
-    color: var(--app-success);
-    cursor: pointer;
-    padding: 2px;
-  }
-
-  .tb-board :global(.tb-add-btn:disabled) {
-    opacity: 0.3;
-    cursor: default;
-  }
-
-  .tb-add :global(.tb-add-btn) {
-    display: inline-flex;
-    border: none;
-    background: transparent;
-    color: var(--app-success);
-    cursor: pointer;
-    padding: 2px;
-  }
-
-  .tb-add :global(.tb-add-btn:disabled) {
-    opacity: 0.3;
-    cursor: default;
   }
 
   @media (prefers-reduced-motion: reduce) {
