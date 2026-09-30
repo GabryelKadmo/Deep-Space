@@ -18,7 +18,7 @@ export const DOCS_EN: DocsCatalog = {
     {
       id: 'workspace-folders',
       title: 'Organize workspaces into folders',
-      body: `Group workspaces into folders in the sidebar once you have several projects (per client, per team, per environment). Type a name in "New folder" at the bottom of the list to create one at the root; drag a workspace onto a folder's header to file it there, or drag it onto empty space in the list to send it back to the root. A new workspace can start inside a folder right away too: use the plus icon in that folder's header, or pick any folder from the Folder field in the New workspace dialog itself. Folders nest inside other folders the same way, with no depth limit — drag one folder onto another to make it a subfolder, or use the "new subfolder" icon in any folder's header to create one already inside it; a folder can never be dropped into itself or into one of its own subfolders. Double-click a folder's name or use its pencil icon to rename it, and each folder remembers whether it's collapsed across restarts. Deleting a folder (trash icon, with confirmation) is never destructive: every workspace and subfolder inside it moves up to the root instead of being removed.`,
+      body: `Group workspaces into folders in the sidebar once you have several projects (per client, per team, per environment). Use the "+" at the top of the sidebar and pick "New folder" to create one at the root; drag a workspace onto a folder's header to file it there, or drag it onto empty space in the list to send it back to the root. A new workspace can start inside a folder right away too: use the plus icon in that folder's header, or pick any folder from the Folder field in the New workspace dialog itself. Folders nest inside other folders the same way, with no depth limit — drag one folder onto another to make it a subfolder, or use the "new subfolder" icon in any folder's header to create one already inside it; a folder can never be dropped into itself or into one of its own subfolders. Double-click a folder's name or use its pencil icon to rename it, and each folder remembers whether it's collapsed across restarts. Deleting a folder (trash icon, with confirmation) is never destructive: every workspace and subfolder inside it moves up to the root instead of being removed.`,
     },
     {
       id: 'workspace-node-transfer',
@@ -511,6 +511,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Console', 'a process per command', 'folders'],
     },
     {
+      id: 'zoom-lock',
+      title: 'Lock the zoom where text stays sharp',
+      body: 'Away from 100%, text selection inside terminals drifts, and one accidental turn of the mouse wheel already takes the canvas off its zoom. Pick the level in the % selector at the bottom left and click the padlock next to the number: the pill gets a frame, − and + dim, and the wheel, pinch, double-click and shortcuts no longer change the zoom — the wheel pans the canvas instead. The lock applies to every workspace and survives restarts; click the padlock again to release it. It is separate from the canvas padlock, which locks dragging and selecting nodes.',
+      tags: ['zoom', 'padlock', 'terminals'],
+    },
+    {
       id: 'leader-team',
       title: 'Dev team with a leader (zero-config)',
       body: 'Create a Claude and say: "orchestrate feature X for me". It proposes the team, you approve, and it recruits, connects and distributes through kanban. Each ask consultation counts only after explicit bridge confirmation; when an agent uses task done, the leader receives the handoff automatically to review and coordinate the next step.',
@@ -927,7 +933,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'group-icons',
       title: 'Give a folder its own icon',
-      body: 'Open the canvas sidebar and find a group folder among your workspaces — group them with "New folder" at the bottom of the list once you have several projects to organize per client, per team, or per environment. Click a group\'s icon to open the same picker workspaces and projects already use, and choose one. It is remembered the next time you open the app, so folders holding different kinds of work are easy to tell apart at a glance.',
+      body: 'Open the canvas sidebar and find a group folder among your workspaces — group them with the "+" at the top of the sidebar → "New folder" once you have several projects to organize per client, per team, or per environment. Click a group\'s icon to open the same picker workspaces and projects already use, and choose one. It is remembered the next time you open the app, so folders holding different kinds of work are easy to tell apart at a glance.',
       tags: ['Workspace groups', 'sidebar', 'icon picker'],
     },
     {
@@ -944,6 +950,21 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: 'September 30, 2026 · 0.36.0',
+      title: 'Deep Space 0.36.0: locked zoom, tasks in their column and ropes on their own side',
+      summary: 'A padlock on the zoom, creating a task right in its column, one "+" for workspace and folder, and ropes that each leave through their own side',
+      items: [
+        'Zoom lock. A padlock sits next to the % selector, as one control with it: locked, the canvas stays at the chosen zoom — the wheel, pinch, double-click and shortcuts no longer change it, and the wheel pans the canvas instead. Away from 100%, text selection inside terminals drifts, and one accidental turn of the wheel was enough to leave it. The lock applies to every workspace, survives restarts, and is separate from the canvas padlock, which locks dragging and selecting nodes. Locked, the pill gets a frame and − and + dim, so the state reads in any theme, not only through the accent colour.',
+        'Tasks are created in their column. Every column of the board ends in its own "+ Add task", which opens a card right there: Enter creates it in that column and leaves the card open for the next one, Esc closes it, and clicking away never throws typed text out. Before, a bar at the top of the board opened a large form that always created in "To do". The description moved to the task detail, where it already had a place; pasting an image and the paperclip still work while creating.',
+        'One "+" for everything the sidebar holds. The "+" at the top of the sidebar opens a menu with New workspace and New folder. The folder name field no longer sits permanently at the bottom of the list: it appears at the top, focused, only while a folder is being created.',
+        'Creating an agent no longer depends on the Shell pin. The provider menu lived inside the toolbar block of the Shell button, so unpinning Shell took the only way to create an agent with it — and with the Console replacing the shell node, unpinning it is the natural thing to do. The menu now stands on its own, with or without Shell pinned.',
+        'Ropes anchor per connection instead of per node. Every rope left through the same dot, the one facing the nearest neighbour, so a board on the right and a note below both pulled their ropes downwards and the only way to make the canvas read was to pile the nodes together. Each rope now leaves through the side facing its own neighbour, with a small dot of its own, 5 px off that side and never on a rounded corner, and both follow when a node is moved. Ropes leave their side straight, like a cable out of a port, instead of folding into a hook next to the dot; a nearly vertical rope no longer hangs straight down and steps sideways at the bottom; nodes almost touching get a straight line instead of a zigzag; and a side that already holds a rope no longer shows a second, hover-only dot beside it.',
+        'Task titles broke in the middle of words ("Deplo / y de / stagin / g") in narrow columns, squeezed by the three card actions beside them. The title takes the full width now, and the actions appear over its corner on hover or focus.',
+        'Starting the project\'s own dev server — even from the Console node — or any other Deep Space server while the app was open took over ~/.deepspace/runtime.json, the file the deepspace CLI reads to find the app, so every agent\'s bridge command failed with "invalid bridge token". The file now stays with the instance that is already running; DEEPSPACE_ANNOUNCE_RUNTIME=1 forces the takeover when that is actually wanted.',
+        'The Console tour showed the generic icon in the onboarding, because its icon was missing from the list the onboarding resolves.',
+      ],
+    },
     {
       date: 'September 24, 2026 · 0.35.3',
       title: 'Deep Space 0.35.3: the Console actually runs',

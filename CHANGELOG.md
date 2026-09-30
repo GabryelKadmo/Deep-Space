@@ -5,6 +5,22 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.36.0 - 2026-09-30
+
+### Added
+
+- **Zoom lock.** A padlock sits next to the % selector, as one control with it: locking keeps the canvas at the chosen zoom, so the wheel, pinch, double-click and shortcuts stop changing it, and the wheel pans the canvas instead. Away from 100%, text selection inside terminals drifts, and one accidental turn of the wheel was enough to leave it. The lock applies to every workspace, survives restarts, and is separate from the canvas padlock, which locks dragging and selecting nodes. Locked, the pill gets a frame and − and + dim, so the state reads in any theme, not only through the accent colour.
+- **Tasks are created in their column.** Every column of the board ends in its own "+ Add task", which opens a card right there: Enter creates it in that column and leaves the card open for the next one, Esc closes it, and clicking away never throws typed text out. Before, a bar at the top of the board opened a large form that always created in "To do". The description moved to the task detail, where it already had a place; pasting an image and the paperclip still work while creating.
+- **One "+" for everything the sidebar holds.** The "+" at the top of the sidebar opens a menu with New workspace and New folder. The folder name field no longer sits permanently at the bottom of the list: it appears at the top, focused, only while a folder is being created.
+
+### Fixed
+
+- Creating an agent is no longer tied to the Shell pin. The provider menu lived inside the toolbar block of the Shell button, so unpinning Shell took the only way to create an agent with it — and with the Console replacing the shell node, unpinning it is the natural thing to do. The menu now stands on its own, pinned or not.
+- Ropes anchor per connection instead of per node. Every rope left a node through the same dot, the one facing the nearest neighbour, so a board on the right and a note below both pulled their ropes downwards and the only way to make the canvas read was to pile the nodes together. Each rope now leaves through the side that faces its own neighbour, with a small dot of its own, 5 px off that side and never on a rounded corner, and both follow when a node is moved. Ropes leave their side straight, like a cable out of a port, instead of folding into a hook next to the dot; a nearly vertical rope no longer hangs straight down and steps sideways at the bottom; nodes almost touching get a straight line instead of a zigzag; and a side that already holds a rope no longer shows a second, hover-only dot beside it.
+- Task titles broke in the middle of words ("Deplo / y de / stagin / g") in narrow columns, squeezed by the three card actions beside them. The title takes the full width now, and the actions appear over its corner on hover or focus.
+- Starting the project's own dev server — even from the Console node — or any other Deep Space server while the app was open took over `~/.deepspace/runtime.json`, the file the `deepspace` CLI reads to find the app, so every agent's bridge command failed with "invalid bridge token". The file now stays with the instance that is already running; `DEEPSPACE_ANNOUNCE_RUNTIME=1` forces the takeover when that is actually wanted.
+- The Console tour showed the generic icon in the onboarding, because its icon was missing from the list the onboarding resolves.
+
 ## 0.35.3 - 2026-09-24
 
 ### Added
