@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createNodeOnCanvas } from './helpers.js';
+import { createNodeOnCanvas, openNewWorkspaceDialog } from './helpers.js';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -10,7 +10,7 @@ test.describe('restauracao de sessao', () => {
     const workspaceName = `E2E respawn ${Date.now()}`;
 
     await page.goto('/canvas');
-    await page.getByRole('button', { name: 'Novo workspace' }).click();
+    await openNewWorkspaceDialog(page);
     await page.getByPlaceholder('Nome', { exact: true }).fill(workspaceName);
     await page.getByPlaceholder('Diretório de trabalho').fill(dir);
     await page.getByRole('button', { name: 'Criar' }).click();

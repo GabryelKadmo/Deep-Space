@@ -94,7 +94,8 @@ export async function dragConnectHandles(page: Page, sourceNode: Locator, target
   const sourceNodeBox = (await sourceNode.boundingBox())!;
   await page.mouse.move(sourceNodeBox.x + sourceNodeBox.width / 2, sourceNodeBox.y + sourceNodeBox.height / 2);
 
-  const sourceHandle = sourceNode.locator('.svelte-flow__handle').first();
+  // Lado que ja tem corda esconde o handle (visibility): mira um lado livre.
+  const sourceHandle = sourceNode.locator('.svelte-flow__handle:not(.occupied)').first();
   const sourceBox = (await sourceHandle.boundingBox())!;
   await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2, { steps: 5 });
   await page.mouse.down();
@@ -103,8 +104,18 @@ export async function dragConnectHandles(page: Page, sourceNode: Locator, target
   // entra pelo corpo do no antes de mirar no handle exato pra soltar.
   const targetNodeBox = (await targetNode.boundingBox())!;
   await page.mouse.move(targetNodeBox.x + targetNodeBox.width / 2, targetNodeBox.y + targetNodeBox.height / 2, { steps: 5 });
-  const targetHandle = targetNode.locator('.svelte-flow__handle').first();
+  const targetHandle = targetNode.locator('.svelte-flow__handle:not(.occupied)').first();
   const targetBox = (await targetHandle.boundingBox())!;
   await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2, { steps: 10 });
   await page.mouse.up();
+}
+
+/**
+ * Abre o dialogo de novo workspace. O "+" da barra lateral virou um menu
+ * (workspace ou pasta): todo teste passa por aqui para a proxima mudanca
+ * nesse botao nao quebrar os arquivos um a um.
+ */
+export async function openNewWorkspaceDialog(page: Page) {
+  await page.getByTestId('sidebar-create').click();
+  await page.getByRole('menuitem', { name: 'Novo workspace' }).click();
 }
