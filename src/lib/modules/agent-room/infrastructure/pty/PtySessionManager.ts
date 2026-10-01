@@ -46,7 +46,7 @@ export type PtySessionInfo = {
 };
 
 export type PtySessionListener = (data: string) => void;
-export type PtyExitListener = (exitCode: number) => void;
+export type PtyExitListener = (exitCode: number, stoppedByUser: boolean) => void;
 export type PtyAttentionListener = (waiting: boolean) => void;
 export type PtyWorkingDirectoryListener = (cwd: string) => void;
 
@@ -127,6 +127,8 @@ type PtySession = PtySessionInfo & {
   scrollback: string;
   listeners: Set<PtySessionListener>;
   exitListeners: Set<PtyExitListener>;
+  /** Encerrada por kill (stop, hibernar, fechar): no Windows sai com codigo 1, e nao e falha. */
+  stoppedByUser: boolean;
   attentionListeners: Set<PtyAttentionListener>;
   workingDirectoryListeners: Set<PtyWorkingDirectoryListener>;
   workingDirectoryTimer: ReturnType<typeof setTimeout> | null;
@@ -295,6 +297,7 @@ export class PtySessionManager {
       scrollback: '',
       listeners: new Set(),
       exitListeners: new Set(),
+      stoppedByUser: false,
       attentionListeners: new Set(),
       workingDirectoryListeners: new Set(),
       workingDirectoryTimer: null,
@@ -333,8 +336,9 @@ export class PtySessionManager {
       if (session.workingDirectoryTimer) clearTimeout(session.workingDirectoryTimer);
       this.rejectDeliveries(session, new Error(`Sessão PTY ${id} finalizada com código ${exitCode}.`));
       this.setWaiting(session, false);
-      for (const listener of session.exitListeners) listener(exitCode);
-      this.recordLifecycle(session, exitCode === 0 ? 'disconnected' : 'error', exitCode === 0 ? null : `PTY exited with code ${exitCode}`);
+      for (const listener of session.exitListeners) listener(exitCode, session.stoppedByUser);
+      if (exitCode === 0 || session.stoppedByUser) this.recordLifecycle(session, 'disconnected');
+      else this.recordLifecycle(session, 'error', `system:process_exited:${exitCode}`, session.label ?? null);
     });
 
     this.sessions.set(id, session);
@@ -422,7 +426,7 @@ export class PtySessionManager {
 
     const scrollback = session.scrollback;
     if (session.exited && onExit) {
-      queueMicrotask(() => onExit(session.exitCode ?? 0));
+      queueMicrotask(() => onExit(session.exitCode ?? 0, session.stoppedByUser));
     }
 
     return {
@@ -493,6 +497,7 @@ export class PtySessionManager {
     if (session.deliveryTimer) clearTimeout(session.deliveryTimer);
     if (session.workingDirectoryTimer) clearTimeout(session.workingDirectoryTimer);
     this.rejectDeliveries(session, new Error(`Sessão PTY ${id} encerrada.`));
+    session.stoppedByUser = true;
     if (!session.exited) {
       try {
         this.killProcessTree(session.pty, session.ownsProcessTree);
@@ -723,7 +728,7 @@ export class PtySessionManager {
     if (waiting) this.recordLifecycle(session, 'idle');
   }
 
-  private recordLifecycle(session: PtySession, state: 'starting' | 'working' | 'idle' | 'error' | 'disconnected', action: string | null = null): void {
+  private recordLifecycle(session: PtySession, state: 'starting' | 'working' | 'idle' | 'error' | 'disconnected', action: string | null = null, outcome: string | null = null): void {
     if (!session.workspaceId || !session.nodeId) return;
     const recorder = (globalThis as unknown as {
       __deepspaceRecordActivity?: (input: {
@@ -731,6 +736,7 @@ export class PtySessionManager {
         nodeId: string;
         state: typeof state;
         action?: string | null;
+        outcome?: string | null;
         metadata?: Record<string, unknown>;
       }) => void;
     }).__deepspaceRecordActivity;
@@ -739,6 +745,7 @@ export class PtySessionManager {
       nodeId: session.nodeId,
       state,
       action,
+      outcome,
       metadata: { sessionId: session.id, provider: session.provider ?? null },
     });
   }

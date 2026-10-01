@@ -36,6 +36,11 @@ export const TOURS_PT: Tour[] = [
         title: 'Rode e acompanhe',
         body: 'Passe o mouse num comando e clique em ▷. O ponto fica verde enquanto o processo vive, o ■ encerra, e trocar de comando não derruba nada: o log volta de onde parou. Marque "rodar ao abrir o workspace" no que precisa subir sozinho.',
       },
+      {
+        id: 'import',
+        title: 'Traga os scripts de outro workspace',
+        body: 'Projeto parecido já tem tudo salvo? O ícone de download no cabeçalho do nó abre Importar scripts: escolha o workspace de origem, desmarque o que não quer e importe. O que já existe igual aqui fica de fora.',
+      },
     ],
   },
   {

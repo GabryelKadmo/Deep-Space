@@ -507,7 +507,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'console-commands',
       title: 'Run the project commands without leaving the Canvas',
-      body: 'Create a Scripts node and save the commands you repeat every day — npm run dev, build, git pull, the lint script — each with a name and an optional folder. Hitting ▷ starts a process for that command alone, with the output beside the list and a green dot while it lives; ■ ends it. Switching commands drops nothing: each log comes back where it was, and the dev server stays up while you look at another one. Tick "run when the workspace opens" on whatever should start by itself. Collapse the list and the node becomes a plain terminal for a one-off command. Which shell runs those commands is your call: Settings > Terminal > Scripts shell (Automatic, Git Bash, WSL, CMD on Windows; bash, zsh, sh elsewhere).',
+      body: 'Create a Scripts node and save the commands you repeat every day — npm run dev, build, git pull, the lint script — each with a name and an optional folder. Hitting ▷ starts a process for that command alone, with the output beside the list and a green dot while it lives; ■ ends it. Switching commands drops nothing: each log comes back where it was, and the dev server stays up while you look at another one. Tick "run when the workspace opens" on whatever should start by itself. Collapse the list and the node becomes a plain terminal for a one-off command. To reuse what another project already has, the download icon in the header imports scripts from another workspace, skipping those that already exist here. Which shell runs those commands is your call: Settings > Terminal > Scripts shell (Automatic, Git Bash, WSL, CMD on Windows; bash, zsh, sh elsewhere).',
       tags: ['Scripts', 'Console', 'a process per command', 'folders'],
     },
     {
@@ -813,7 +813,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'triage-attention-across-workspaces',
       title: 'Triage every workspace from one attention inbox',
-      body: 'Open the bell beside Canvas/Workbench to see questions, permission requests, blockers, and failures from every workspace, with the current workspace first. Expand any item to read the complete failure and original request without leaving the inbox. Open source is a separate action and becomes unavailable when its agent or task has been removed; the persisted content remains readable. Mark it read, snooze it, or resolve it without losing the audit trail. Use Command/Ctrl+K with type:attention, workspace:"Name", agent:"Name", status:open, has:error, before:, or after: to recover the same event later.',
+      body: 'Open the bell beside Canvas/Workbench to see questions, permission requests, blockers, and failures from every workspace, with the current workspace first. Expand any item to read the complete failure and original request without leaving the inbox. Open source is a separate action and becomes unavailable when its agent or task has been removed; the persisted content remains readable. Mark it read, snooze it, or resolve it without losing the audit trail. Use Command/Ctrl+K with type:attention, workspace:"Name", agent:"Name", status:open, has:error, before:, or after: to recover the same event later. The tabs split Needs action, All, and Snoozed. Stopping a process on purpose — stop, hibernate or closing the app — creates no item or notification; only a process that crashes on its own shows up, with its name and exit code.',
       tags: ['Attention Center', 'cross-workspace triage', 'search operators'],
     },
     {
@@ -950,6 +950,17 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: 'October 1, 2026 · 0.37.0',
+      title: 'Deep Space 0.37.0: stopping is not an error, readable notices and scripts from another workspace',
+      summary: 'Stopping a script no longer raises an alert, crashes say which process failed, and the Attention Center explains itself',
+      items: [
+        'Stopping a script, hibernating a workspace or closing a terminal raised a desktop notification ("Start ended with an error (code 1)") and an Attention Center item, because on Windows a killed process exits with code 1. A process you stop on purpose is no longer treated as a failure; only one that crashes on its own notifies.',
+        'Crash notices name the process and speak the app language: "Build stopped with an error (code 3)" instead of the raw "PTY exited with code 3", both in the desktop notification and in the Attention Center, where the source reads Scripts instead of Console. Items recorded before the update are translated too.',
+        'The Attention Center now says what it is for at the top: what needs you across every workspace — agents waiting for an answer or approval, stuck tasks and processes that crashed on their own — and that items are marked as read once handled or snoozed for later.',
+        'Scripts can be imported from another workspace. The download icon in the Scripts header opens Import scripts: pick the source workspace, untick what you do not want, and the chosen scripts are copied with their folders and "run when the workspace opens" setting. Scripts that already exist here are marked and left out.',
+      ],
+    },
     {
       date: 'October 1, 2026 · 0.36.2',
       title: 'Deep Space 0.36.2: Scripts, links that open in the browser, and commands that survive a restart',

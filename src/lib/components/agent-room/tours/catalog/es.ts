@@ -32,6 +32,11 @@ export const TOURS_ES: Tour[] = [
         title: 'Ejecútalo y sigue la salida',
         body: 'Pasa el ratón por un comando y pulsa ▷. El punto queda verde mientras el proceso vive, ■ lo termina, y cambiar de comando no tira nada: el log vuelve donde estaba. Marca "ejecutar al abrir el workspace" en lo que deba arrancar solo.',
       },
+      {
+        id: 'import',
+        title: 'Trae scripts de otro workspace',
+        body: '¿Un proyecto parecido ya los tiene guardados? El icono de descarga en la cabecera del nodo abre Importar scripts: elige el workspace de origen, desmarca lo que no quieras e importa. Lo que ya existe igual aquí se queda fuera.',
+      },
     ],
   },
   {

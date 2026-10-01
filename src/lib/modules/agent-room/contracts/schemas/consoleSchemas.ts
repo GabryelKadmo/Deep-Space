@@ -3,6 +3,7 @@ import {
   MAX_CONSOLE_COMMAND_FOLDER,
   MAX_CONSOLE_COMMAND_LENGTH,
   MAX_CONSOLE_COMMAND_NAME,
+  MAX_CONSOLE_COMMANDS,
 } from '$lib/modules/agent-room/domain/console-commands.js';
 
 export const createConsoleCommandSchema = z.object({
@@ -20,5 +21,11 @@ export const updateConsoleCommandSchema = z.object({
   position: z.number().int().min(0).optional(),
 });
 
+export const importConsoleCommandsSchema = z.object({
+  sourceWorkspaceId: z.string().trim().min(1).max(64),
+  commandIds: z.array(z.string().trim().min(1).max(64)).min(1).max(MAX_CONSOLE_COMMANDS),
+});
+
 export type CreateConsoleCommandInput = z.infer<typeof createConsoleCommandSchema>;
 export type UpdateConsoleCommandInput = z.infer<typeof updateConsoleCommandSchema>;
+export type ImportConsoleCommandsInput = z.infer<typeof importConsoleCommandsSchema>;

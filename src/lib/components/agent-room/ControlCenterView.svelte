@@ -30,6 +30,7 @@
     ControlCenterSnapshot,
   } from '$lib/modules/agent-room/domain/types.js';
   import * as m from '$lib/paraglide/messages.js';
+  import { processExitCode, processExitLabel } from './activity-labels.js';
 
   let {
     workspaceName,
@@ -128,6 +129,8 @@
     if (event.action === 'system:task_completed') return m['control_center.action_task_completed']({ title: name('taskTitle') });
     if (event.action === 'system:task_review') return m['control_center.action_task_review']({ title: name('taskTitle') });
     if (event.action === 'system:task_working') return m['control_center.action_task_working']({ title: name('taskTitle') });
+    const exitCode = processExitCode(event.action);
+    if (exitCode !== null) return processExitLabel(exitCode, event.outcome);
     return event.action ?? event.verb;
   }
 
@@ -288,7 +291,7 @@
                       <strong class="min-w-0 flex-1 text-ui-xs font-semibold leading-4 text-[var(--app-text)]">{activityTitle(event)}</strong>
                       <span class="shrink-0 text-ui-xs text-[var(--app-text-muted)]">{elapsed(event.createdAt)}</span>
                     </div>
-                    {#if event.outcome}<p class="mt-1 text-ui-xs leading-4 text-[var(--app-text-soft)]">{event.outcome}</p>{/if}
+                    {#if event.outcome && processExitCode(event.action) === null}<p class="mt-1 text-ui-xs leading-4 text-[var(--app-text-soft)]">{event.outcome}</p>{/if}
                     <div class="mt-1.5 flex min-w-0 items-center gap-1.5 text-ui-xs text-[var(--app-text-muted)]">
                       <span class="rounded-[3px] bg-[var(--app-surface-raised)] px-1.5 py-0.5">{event.category}</span>
                       <span>{stateLabel(event.state)}</span>

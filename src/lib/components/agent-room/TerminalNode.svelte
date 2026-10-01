@@ -662,6 +662,7 @@
           provider,
           sessionStorage,
           label: sessionLabel,
+          exitNotice: sessionLabel ? m['term.exit_notice']({ name: sessionLabel, code: '{code}' }) : undefined,
           workspace: workspaceName,
           workspaceId,
           nodeId,

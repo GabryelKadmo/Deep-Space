@@ -1,7 +1,7 @@
 import { Controller } from '@beeblock/svelar/routing';
 import { FormRequest } from '@beeblock/svelar/forms';
 import { consoleCommandService } from '$lib/modules/agent-room/application/services/ConsoleCommandService.js';
-import { createConsoleCommandSchema, updateConsoleCommandSchema } from '$lib/modules/agent-room/contracts/schemas/consoleSchemas.js';
+import { createConsoleCommandSchema, importConsoleCommandsSchema, updateConsoleCommandSchema } from '$lib/modules/agent-room/contracts/schemas/consoleSchemas.js';
 
 function requestOf(schema: unknown) {
   return class extends FormRequest {
@@ -25,6 +25,15 @@ export class ConsoleCommandController extends Controller {
       return this.json({ data: await consoleCommandService.create(event.params.id, input) }, 201);
     } catch (error) {
       return this.errorResponse(error, 'Falha ao criar comando.');
+    }
+  }
+
+  async import(event: any) {
+    try {
+      const input = await (requestOf(importConsoleCommandsSchema)).validate(event);
+      return this.json({ data: await consoleCommandService.importFrom(event.params.id, input) }, 201);
+    } catch (error) {
+      return this.errorResponse(error, 'Falha ao importar comandos.');
     }
   }
 

@@ -507,7 +507,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'console-commands',
       title: 'Ejecuta los comandos del proyecto sin salir del Canvas',
-      body: 'Crea un nodo Scripts y guarda los comandos que repites cada día — npm run dev, build, git pull, el script de lint — cada uno con nombre y una carpeta opcional. Pulsar ▷ levanta un proceso solo para ese comando, con la salida al lado de la lista y el punto verde mientras vive; ■ lo termina. Cambiar de comando no tira nada: el log de cada uno vuelve donde estaba, y el dev server sigue en pie mientras miras otro. Marca "ejecutar al abrir el workspace" en lo que deba arrancar solo. Al plegar la lista, el nodo se vuelve una terminal normal para un comando suelto. En qué shell se ejecutan esos comandos lo eliges tú: Configuración > Terminal > Shell de los Scripts (Automático, Git Bash, WSL, CMD en Windows; bash, zsh, sh en los demás).',
+      body: 'Crea un nodo Scripts y guarda los comandos que repites cada día — npm run dev, build, git pull, el script de lint — cada uno con nombre y una carpeta opcional. Pulsar ▷ levanta un proceso solo para ese comando, con la salida al lado de la lista y el punto verde mientras vive; ■ lo termina. Cambiar de comando no tira nada: el log de cada uno vuelve donde estaba, y el dev server sigue en pie mientras miras otro. Marca "ejecutar al abrir el workspace" en lo que deba arrancar solo. Al plegar la lista, el nodo se vuelve una terminal normal para un comando suelto. Para reaprovechar lo que otro proyecto ya tiene, el icono de descarga en la cabecera importa scripts de otro workspace, saltando los que ya existen iguales aquí. En qué shell se ejecutan esos comandos lo eliges tú: Configuración > Terminal > Shell de los Scripts (Automático, Git Bash, WSL, CMD en Windows; bash, zsh, sh en los demás).',
       tags: ['Scripts', 'Console', 'un proceso por comando', 'carpetas'],
     },
     {
@@ -813,7 +813,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'triage-attention-across-workspaces',
       title: 'Gestionar todos los workspaces desde un centro de atención',
-      body: 'Abre la campana junto a Canvas/Workbench para ver preguntas, solicitudes de permiso, bloqueos y fallos de todos los workspaces, con el actual primero. Expande cualquier elemento para leer el fallo y la solicitud original completos sin salir del centro. Abrir origen es una acción separada y queda deshabilitada cuando el agente o la tarea ya fueron eliminados; el contenido persistido sigue siendo legible. Márcalo como leído, posponlo o resuélvelo sin perder el historial. Usa Command/Ctrl+K con type:attention, workspace:"Nombre", agent:"Nombre", status:open, has:error, before: o after: para recuperar el mismo evento después.',
+      body: 'Abre la campana junto a Canvas/Workbench para ver preguntas, solicitudes de permiso, bloqueos y fallos de todos los workspaces, con el actual primero. Expande cualquier elemento para leer el fallo y la solicitud original completos sin salir del centro. Abrir origen es una acción separada y queda deshabilitada cuando el agente o la tarea ya fueron eliminados; el contenido persistido sigue siendo legible. Márcalo como leído, posponlo o resuélvelo sin perder el historial. Usa Command/Ctrl+K con type:attention, workspace:"Nombre", agent:"Nombre", status:open, has:error, before: o after: para recuperar el mismo evento después. Las pestañas separan Requiere acción, Todos y Pospuestos. Detener un proceso a propósito — stop, hibernar o cerrar la app — no crea elemento ni notificación; solo aparece un proceso que se cae solo, con su nombre y el código de salida.',
       tags: ['Centro de atención', 'triaje entre workspaces', 'operadores de búsqueda'],
     },
     {
@@ -950,6 +950,17 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '1 de octubre de 2026 · 0.37.0',
+      title: 'Deep Space 0.37.0: detener no es un error, avisos que se entienden y scripts de otro workspace',
+      summary: 'Detener un script ya no genera una alerta, los fallos dicen qué proceso cayó y el Centro de Atención explica para qué sirve',
+      items: [
+        'Detener un script, hibernar un workspace o cerrar una terminal generaba una notificación del sistema ("Start terminó con un error (código 1)") y un elemento en el Centro de Atención, porque en Windows un proceso terminado sale con código 1. Un proceso que detienes a propósito ya no cuenta como fallo; solo avisa el que se cae solo.',
+        'Los avisos de fallo dicen el nombre del proceso y hablan el idioma de la app: "Build se detuvo con un error (código 3)" en lugar del crudo "PTY exited with code 3", tanto en la notificación del sistema como en el Centro de Atención, donde el origen aparece como Scripts en lugar de Console. Los elementos registrados antes de la actualización también se traducen.',
+        'El Centro de Atención ahora dice arriba para qué sirve: lo que te necesita en todos los workspaces — agentes esperando una respuesta o aprobación, tareas atascadas y procesos que se cayeron solos — y que el elemento se marca como leído cuando se resuelve o se pospone para después.',
+        'Los scripts se pueden importar de otro workspace. El icono de descarga en la cabecera de Scripts abre Importar scripts: elige el workspace de origen, desmarca lo que no quieras, y los elegidos se copian con sus carpetas y la opción "ejecutar al abrir el workspace". Los que ya existen iguales aquí aparecen marcados y se quedan fuera.',
+      ],
+    },
     {
       date: '1 de octubre de 2026 · 0.36.2',
       title: 'Deep Space 0.36.2: Scripts, enlaces que se abren en el navegador y comandos que sobreviven al reinicio',

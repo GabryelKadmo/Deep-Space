@@ -32,6 +32,11 @@ export const TOURS_EN: Tour[] = [
         title: 'Run it and watch',
         body: 'Hover a command and hit ▷. The dot stays green while the process lives, ■ ends it, and switching commands drops nothing: the log comes back where it was. Tick "run when the workspace opens" on whatever should start by itself.',
       },
+      {
+        id: 'import',
+        title: 'Bring scripts from another workspace',
+        body: 'A similar project already has them saved? The download icon in the node header opens Import scripts: pick the source workspace, untick what you do not want and import. Anything that already exists here is left out.',
+      },
     ],
   },
   {

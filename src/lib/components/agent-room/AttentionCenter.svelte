@@ -26,6 +26,7 @@
     AgentActivityCategory,
   } from '$lib/modules/agent-room/domain/types.js';
   import * as m from '$lib/paraglide/messages.js';
+  import { nodeDisplayTitle, processExitCode, processExitLabel } from './activity-labels.js';
 
   let { workspaceId = null }: { workspaceId?: string | null } = $props();
   let open = $state(false);
@@ -235,6 +236,7 @@
           {#each visibleItems as item (item.id)}
             {@const Icon = iconFor(item.category)}
             {@const expanded = expandedIds.has(item.id)}
+            {@const exitCode = processExitCode(item.title)}
             <article class="group rounded-md border border-[var(--app-border)] bg-[var(--app-surface-subtle)] transition-colors hover:border-[var(--app-border-strong)] hover:bg-[var(--app-surface-raised)]">
               <button
                 type="button"
@@ -253,15 +255,15 @@
                 </span>
                 <span class="min-w-0 flex-1">
                   <span class="flex items-center gap-2">
-                    <strong class:text-clip={expanded} class:line-clamp-2={!expanded} class="min-w-0 whitespace-pre-wrap break-words text-ui-sm font-semibold leading-4 text-[var(--app-text)]">{item.title}</strong>
+                    <strong class:text-clip={expanded} class:line-clamp-2={!expanded} class="min-w-0 whitespace-pre-wrap break-words text-ui-sm font-semibold leading-4 text-[var(--app-text)]">{exitCode === null ? item.title : processExitLabel(exitCode, item.body)}</strong>
                     {#if item.status === 'open'}<span class="size-1.5 shrink-0 rounded-full bg-[var(--app-accent)]"></span>{/if}
                   </span>
-                  {#if item.body}
+                  {#if item.body && exitCode === null}
                     <span class:line-clamp-2={!expanded} class="mt-1 block whitespace-pre-wrap break-words text-ui-xs leading-4 text-[var(--app-text-soft)]">{item.body}</span>
                   {/if}
                   <span class="mt-2 flex min-w-0 items-center gap-1.5 text-ui-xs text-[var(--app-text-muted)]">
                     <span class="truncate">{item.workspaceName ?? item.workspaceId}</span>
-                    {#if item.nodeTitle}<span>·</span><span class="truncate">{item.nodeTitle}</span>{/if}
+                    {#if item.nodeTitle}<span>·</span><span class="truncate">{nodeDisplayTitle(item.nodeTitle)}</span>{/if}
                     <span>·</span><time title={dateLabel(item.updatedAt)}>{dateLabel(item.updatedAt)}</time>
                   </span>
                 </span>

@@ -1,12 +1,13 @@
 <script lang="ts">
   import type { NodeProps } from '@xyflow/svelte';
-  import { ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen, Pencil, Play, Plus, Square, Terminal, Trash2, X } from '@lucide/svelte';
+  import { ChevronDown, ChevronRight, Download, PanelLeftClose, PanelLeftOpen, Pencil, Play, Plus, Square, Terminal, Trash2, X } from '@lucide/svelte';
   import { toast } from '@beeblock/svelar/ui';
   import { getCsrfToken } from '@beeblock/svelar/http';
   import TerminalNode from '../TerminalNode.svelte';
   import NodeShell, { type NodeConnection } from './NodeShell.svelte';
   import HeaderIconButton from './HeaderIconButton.svelte';
   import ConsoleCommandDialog from './ConsoleCommandDialog.svelte';
+  import ConsoleImportDialog from './ConsoleImportDialog.svelte';
   import { groupConsoleCommands, normalizeConsoleShell, type ConsoleCommand, type ConsoleShell } from '$lib/modules/agent-room/domain/console-commands.js';
   import { DEFAULT_TERMINAL_THEME, normalizeTerminalTheme } from '../terminal-themes.js';
   import { getAppSettings } from '../app-settings.svelte.js';
@@ -46,6 +47,7 @@
   let running = $state<Record<string, boolean>>({});
   let editing = $state<ConsoleCommand | null>(null);
   let creating = $state(false);
+  let importOpen = $state(false);
   let terminalTheme = $state(DEFAULT_TERMINAL_THEME);
   let consoleShell = $state<ConsoleShell>('auto');
 
@@ -157,6 +159,14 @@
     running = { ...running, [command.id]: false };
   }
 
+  function handleImported(result: { imported: ConsoleCommand[]; skipped: number }) {
+    commands = [...commands, ...result.imported];
+    importOpen = false;
+    toast.success(result.skipped
+      ? m['console.import_done_skipped']({ count: result.imported.length, skipped: result.skipped })
+      : m['console.import_done']({ count: result.imported.length }));
+  }
+
   async function saveCommand(input: { name: string; command: string; folder: string; runOnOpen: boolean }) {
     try {
       if (editing) {
@@ -205,6 +215,9 @@
   {#snippet actions()}
     <HeaderIconButton class="node-action-btn" label={m['console.new_command']()} side="left" onclick={() => { editing = null; creating = true; }}>
       <Plus size={13} />
+    </HeaderIconButton>
+    <HeaderIconButton class="node-action-btn" label={m['console.import_open']()} side="left" onclick={() => (importOpen = true)}>
+      <Download size={13} />
     </HeaderIconButton>
     <HeaderIconButton class="node-action-btn" label={listOpen ? m['console.hide_list']() : m['console.show_list']()} side="left" onclick={toggleList}>
       {#if listOpen}<PanelLeftClose size={13} />{:else}<PanelLeftOpen size={13} />{/if}
@@ -302,6 +315,14 @@
   folders={groups.map((group) => group.folder).filter(Boolean)}
   onSave={saveCommand}
   onClose={() => { creating = false; editing = null; }}
+/>
+
+<ConsoleImportDialog
+  open={importOpen}
+  workspaceId={data.workspaceId}
+  existing={commands}
+  onImported={handleImported}
+  onClose={() => (importOpen = false)}
 />
 
 <style>

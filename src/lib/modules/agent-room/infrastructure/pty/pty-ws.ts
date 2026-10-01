@@ -38,7 +38,7 @@ import {
 export const PTY_WS_PATH = '/ws/agent-room/pty';
 
 type ClientMessage =
-  | { type: 'create'; command: string; args?: string[]; conversationArgs?: string[]; freshSessionArgs?: string[]; agentSessionId?: string; cwd: string; cols?: number; rows?: number; env?: Record<string, string>; provider?: string; profileId?: string | null; sessionStorage?: string; label?: string; workspace?: string; workspaceId?: string; nodeId?: string; runtime?: WorkspaceExecutionRuntime; workspaceRoot?: string; multiSession?: boolean; shellLine?: boolean; shell?: string }
+  | { type: 'create'; command: string; args?: string[]; conversationArgs?: string[]; freshSessionArgs?: string[]; agentSessionId?: string; cwd: string; cols?: number; rows?: number; env?: Record<string, string>; provider?: string; profileId?: string | null; sessionStorage?: string; label?: string; exitNotice?: string; workspace?: string; workspaceId?: string; nodeId?: string; runtime?: WorkspaceExecutionRuntime; workspaceRoot?: string; multiSession?: boolean; shellLine?: boolean; shell?: string }
   | { type: 'attach'; sessionId: string; cols?: number; rows?: number }
   | { type: 'input'; sessionId: string; data: string }
   | { type: 'resize'; sessionId: string; cols: number; rows: number }
@@ -286,18 +286,22 @@ export function handlePtyConnection(socket: WebSocket): void {
           const scrollback = attachSession(session.id);
           send({ type: 'created', session, scrollback });
 
-          // Encerramento normal pode ser unload/reload solicitado pelo usuário
-          // e não deve gerar ruído. Só uma saída anormal vira notificação; para
-          // conclusões e pedidos de atenção, o agente usa `deepspace notify`.
+          // Encerramento pedido pelo usuário (stop, hibernar, fechar) não é
+          // falha, mesmo saindo com código 1 no Windows. Só uma saída anormal
+          // vira notificação; para conclusões e pedidos de atenção, o agente usa
+          // `deepspace notify`. O texto vem traduzido do cliente, com {code}.
           const label = typeof message.label === 'string' && message.label.trim() ? message.label.trim() : null;
           if (label) {
             const workspaceName = typeof message.workspace === 'string' && message.workspace.trim() ? message.workspace.trim() : 'Deep Space';
+            const notice = typeof message.exitNotice === 'string' && message.exitNotice.includes('{code}')
+              ? message.exitNotice.replace(/[\u0000-\u001f\u007f]+/g, ' ').slice(0, 300)
+              : `${label} stopped with an error (code {code}).`;
             ptySessionManager.attach(
               session.id,
               () => {},
-              (exitCode) => {
-                if (exitCode !== 0) {
-                  console.log(`[deepspace:notify] [${workspaceName}] ${label} encerrou com erro (código ${exitCode}).`);
+              (exitCode, stoppedByUser) => {
+                if (exitCode !== 0 && !stoppedByUser) {
+                  console.log(`[deepspace:notify] [${workspaceName}] ${notice.replace('{code}', String(exitCode))}`);
                 }
               }
             );
