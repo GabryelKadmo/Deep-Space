@@ -513,7 +513,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'zoom-lock',
       title: 'Lock the zoom where text stays sharp',
-      body: 'Away from 100%, text selection inside terminals drifts, and one accidental turn of the mouse wheel already takes the canvas off its zoom. Pick the level in the % selector at the bottom left and click the padlock next to the number: the pill gets a frame, − and + dim, and the wheel, pinch, double-click and shortcuts no longer change the zoom — the wheel pans the canvas instead. The lock applies to every workspace and survives restarts; click the padlock again to release it. It is separate from the canvas padlock, which locks dragging and selecting nodes.',
+      body: 'Away from 100%, text selection inside terminals drifts, and one accidental turn of the mouse wheel already takes the canvas off its zoom. Pick the level in the % selector at the bottom left and open the padlock next to + and choose Lock zoom: the padlock closes and gets a frame, the number takes the accent colour, − and + dim, and the wheel, pinch, double-click and shortcuts no longer change the zoom — the wheel pans the canvas instead. The lock applies to every workspace and survives restarts; choose Unlock zoom in the same menu to release it. It is separate from Lock canvas, the other entry under the same padlock, which locks dragging and selecting nodes.',
       tags: ['zoom', 'padlock', 'terminals'],
     },
     {
@@ -950,6 +950,17 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: 'October 1, 2026 · 0.36.1',
+      title: 'Deep Space 0.36.1: one padlock for both locks',
+      summary: 'Zoom and canvas locks under a single padlock, the current zoom marked in its menu, and the hibernate notice out of the toolbar',
+      items: [
+        'One padlock for both locks. The zoom bar read as − 100% 🔒 + ⛶ 🔒: two padlocks a few pixels apart, one for the zoom and one for the canvas, and nothing but a tooltip to tell them apart. It is now − 100% + 🔒 ⛶, and the single padlock opens a menu with Lock zoom and Lock canvas, each with its own icon; the entry turns into Unlock zoom or Unlock canvas while that lock is on, and either can be toggled without touching the other. The padlock closes and gets a frame whenever any lock is on, and the % value takes the accent colour while the zoom is locked.',
+        'The zoom menu marks the level the canvas is at, so 50%, 75%, 100%, 150% and 200% read as a choice instead of a plain list.',
+        'Hibernating a workspace showed its confirmation as a translucent banner right on top of the bottom toolbar, covering its buttons for five seconds. It now appears as a regular notification in the corner, like every other confirmation in the app, and on the canvas every notification sits above the toolbar instead of over its right end.',
+        'Items inside dropdowns, context menus, selects and the command palette showed the arrow cursor even though clicking them runs an action; only the button that opened the menu showed the hand. Every menu item now shows the hand, except disabled ones.',
+      ],
+    },
     {
       date: 'September 30, 2026 · 0.36.0',
       title: 'Deep Space 0.36.0: locked zoom, tasks in their column and ropes on their own side',

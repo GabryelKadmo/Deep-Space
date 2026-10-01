@@ -346,8 +346,11 @@
   "canvas.zoom_out": "Zoom out",
   "canvas.zoom_fit": "Fit to screen",
   "canvas.zoom_level": "Zoom level",
-  "canvas.zoom_lock": "Lock the canvas",
-  "canvas.zoom_unlock": "Unlock the canvas",
+  "canvas.lock_menu": "Locks",
+  "canvas.lock_zoom": "Lock zoom",
+  "canvas.unlock_zoom": "Unlock zoom",
+  "canvas.lock_canvas": "Lock canvas",
+  "canvas.unlock_canvas": "Unlock canvas",
   "canvas.hint_action": "action",
   "canvas.hint_view": "view",
   "canvas.hint_selection": "selection",
@@ -4293,8 +4296,6 @@
   "settings.console_shell_hint": "Which shell runs the Console node commands. Automatic uses PowerShell on Windows and your login shell on macOS/Linux.",
   "tasks.add_short": "Add",
   "tasks.new_in_column": "New task in {column}",
-  "canvas.zoom_pin_on": "Lock zoom at {percent}%",
-  "canvas.zoom_pin_off": "Unlock zoom",
   "canvas.zoom_lock_save_error": "Could not save the zoom lock.",
   "canvas.create_menu": "New"
 }

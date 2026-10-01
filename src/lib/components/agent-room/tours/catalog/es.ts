@@ -47,13 +47,13 @@ export const TOURS_ES: Tour[] = [
       },
       {
         id: 'lock',
-        title: 'Bloquéalo con el candado de al lado',
-        body: 'Haz clic en el candado junto al número. La píldora gana marco, − y + se atenúan, y la rueda del ratón mueve el canvas en lugar de cambiar el zoom.',
+        title: 'Bloquéalo desde el candado',
+        body: 'Haz clic en el candado junto al + y elige Bloquear zoom. El candado se cierra y gana un marco, el número toma el color de acento, − y + se atenúan, y la rueda del ratón mueve el canvas en lugar de cambiar el zoom.',
       },
       {
         id: 'unlock',
         title: 'Suéltalo cuando quieras',
-        body: 'El bloqueo vale para todos los workspaces y sigue tras reiniciar. Haz clic en el mismo candado para volver a hacer zoom.',
+        body: 'El bloqueo vale para todos los workspaces y sigue tras reiniciar. Abre el mismo candado y elige Desbloquear zoom para volver a hacer zoom.',
       },
     ],
   },
