@@ -14,10 +14,10 @@ export const TOURS_PT: Tour[] = [
     steps: [
       {
         id: 'node',
-        title: 'Crie o Console',
-        body: 'O Console guarda os comandos do workspace e roda cada um no próprio processo, com a saída ao lado da lista. Vou criar o nó para você.',
-        action: { kind: 'createConsole', title: 'Console' },
-        check: { kind: 'nodeExists', nodeType: 'console', titleIncludes: 'Console' },
+        title: 'Crie o nó Scripts',
+        body: 'O nó Scripts guarda os comandos do workspace e roda cada um no próprio processo, com a saída ao lado da lista. Vou criar o nó para você.',
+        action: { kind: 'createConsole', title: 'Scripts' },
+        check: { kind: 'nodeExists', nodeType: 'console', titleIncludes: 'Scripts' },
       },
       {
         id: 'dev',

@@ -500,15 +500,15 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'atalhos',
       title: 'Shortcuts',
-      body: `⌘P palette · ⌘K (or Ctrl+K) search documentation from any screen · ⌘2 Provider Center · ⌘⇧A next attention · ⌘⇧T organize the whole visible canvas · Cmd/Ctrl+D duplicate selected shapes · Cmd/Ctrl+C and Cmd/Ctrl+V copy and paste selected shapes · ⌘G group · ⌘⇧G ungroup · N new note · L connect selected · Alt+1…9 focus terminal · Alt+Space voice dictation · ⌘F search terminal · ⌘Z undo · Backspace delete. In terminals, Ctrl+V (Cmd+V on macOS) pastes text and also images or files: the attachment is stored under .deepspace/attachments/ and its path is pasted into the prompt, the same shortcut across every CLI. Ctrl+Shift+V and Shift+Insert work as aliases, and Alt+V stays free for the CLI own shortcut. On Windows, the styled title bar provides File, Edit, View, Workspace, Window, and Help while preserving window controls; macOS and Linux keep their platform menus.`,
+      body: `⌘P palette · ⌘K (or Ctrl+K) search documentation from any screen · ⌘2 Provider Center · ⌘⇧A next attention · ⌘⇧T organize the whole visible canvas · Cmd/Ctrl+D duplicate selected shapes · Cmd/Ctrl+C and Cmd/Ctrl+V copy and paste selected shapes · ⌘G group · ⌘⇧G ungroup · N new note · L connect selected · Alt+1…9 focus terminal · Alt+Space voice dictation · ⌘F search terminal · ⌘Z undo · Backspace delete. In terminals, Ctrl+V (Cmd+V on macOS) pastes text and also images or files: the attachment is stored under .deepspace/attachments/ and its path is pasted into the prompt, the same shortcut across every CLI. Ctrl+Shift+V and Shift+Insert work as aliases, and Alt+V stays free for the CLI own shortcut. On Windows, the styled title bar provides File, Edit, View, Workspace, Window, and Help while preserving window controls; macOS and Linux keep their platform menus. In a terminal, Cmd/Ctrl+click on a link (http or https) opens it in the system browser, and on a file path opens it in the editor.`,
     },
   ],
   useCases: [
     {
       id: 'console-commands',
       title: 'Run the project commands without leaving the Canvas',
-      body: 'Create a Console node and save the commands you repeat every day — npm run dev, build, git pull, the lint script — each with a name and an optional folder. Hitting ▷ starts a process for that command alone, with the output beside the list and a green dot while it lives; ■ ends it. Switching commands drops nothing: each log comes back where it was, and the dev server stays up while you look at another one. Tick "run when the workspace opens" on whatever should start by itself. Collapse the list and the node becomes a plain terminal for a one-off command. Which shell runs those commands is your call: Settings > Terminal > Console command shell (Automatic, Git Bash, WSL, CMD on Windows; bash, zsh, sh elsewhere).',
-      tags: ['Console', 'a process per command', 'folders'],
+      body: 'Create a Scripts node and save the commands you repeat every day — npm run dev, build, git pull, the lint script — each with a name and an optional folder. Hitting ▷ starts a process for that command alone, with the output beside the list and a green dot while it lives; ■ ends it. Switching commands drops nothing: each log comes back where it was, and the dev server stays up while you look at another one. Tick "run when the workspace opens" on whatever should start by itself. Collapse the list and the node becomes a plain terminal for a one-off command. Which shell runs those commands is your call: Settings > Terminal > Scripts shell (Automatic, Git Bash, WSL, CMD on Windows; bash, zsh, sh elsewhere).',
+      tags: ['Scripts', 'Console', 'a process per command', 'folders'],
     },
     {
       id: 'zoom-lock',
@@ -950,6 +950,18 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: 'October 1, 2026 · 0.36.2',
+      title: 'Deep Space 0.36.2: Scripts, links that open in the browser, and commands that survive a restart',
+      summary: 'The Console becomes Scripts, Ctrl/Cmd+click opens links in the system browser, and saved commands come back ready to run',
+      items: [
+        'The Console node is now called Scripts, the word package.json already uses for npm run dev and build. Nodes created before keep working and show the new name; the shell setting under Terminal follows it.',
+        'Cmd/Ctrl+click on a link in any terminal — Scripts, agents and Shell — opens it in the system browser. It works on links that wrap across lines, leaves sentence punctuation out of the address, and opens only http and https.',
+        'Cmd/Ctrl+click on a file path never reached the terminal in a plain shell: the canvas selection fix swallowed the click before the terminal saw it. Paths open in the editor again.',
+        'Reopening the app with a command that was running left Scripts on "PTY session not found", and play did nothing until a stop. Scripts now checks which saved sessions are still alive when it opens: the dead ones come back stopped, one click on ▷ runs them again, and commands marked "run when the workspace opens" start again instead of staying stuck on the old session.',
+        'Clicking a terminal whose process had already finished showed "PTY session … already finished". A finished terminal no longer sends input.',
+      ],
+    },
     {
       date: 'October 1, 2026 · 0.36.1',
       title: 'Deep Space 0.36.1: one padlock for both locks',
