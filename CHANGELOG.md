@@ -5,6 +5,17 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.36.3 - 2026-10-01
+
+### Changed
+
+- The Attention Center now says what it is for at the top: what needs you across every workspace — agents waiting for an answer or approval, stuck tasks and processes that crashed on their own — and that items are marked as read once handled or snoozed for later.
+
+### Fixed
+
+- Stopping a script, hibernating a workspace or closing a terminal raised a desktop notification ("Start ended with an error (code 1)") and an Attention Center item, because on Windows a killed process exits with code 1. A process you stop on purpose is no longer treated as a failure; only one that crashes on its own notifies.
+- Crash notices name the process and speak the app language: "Build stopped with an error (code 3)" instead of the raw "PTY exited with code 3", both in the desktop notification and in the Attention Center, where the source reads Scripts instead of Console. Items recorded before the update are translated too.
+
 ## 0.36.2 - 2026-10-01
 
 ### Changed

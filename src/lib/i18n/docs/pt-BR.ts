@@ -817,7 +817,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'triage-attention-across-workspaces',
       title: 'Tratar todos os workspaces em uma central de atenção',
-      body: 'Abra o sino ao lado de Canvas/Workbench para ver perguntas, pedidos de permissão, bloqueios e falhas de todos os workspaces, com o atual primeiro. Expanda qualquer item para ler a mensagem e a solicitação original completas sem sair da central. Abrir origem é uma ação separada e fica indisponível quando o agente ou tarefa já foi removido; ainda assim, o conteúdo persistido continua legível. Marque como lido, adie ou resolva sem perder o histórico. Use Command/Ctrl+K com type:attention, workspace:"Nome", agent:"Nome", status:open, has:error, before: ou after: para recuperar o mesmo evento depois.',
+      body: 'Abra o sino ao lado de Canvas/Workbench para ver perguntas, pedidos de permissão, bloqueios e falhas de todos os workspaces, com o atual primeiro. Expanda qualquer item para ler a mensagem e a solicitação original completas sem sair da central. Abrir origem é uma ação separada e fica indisponível quando o agente ou tarefa já foi removido; ainda assim, o conteúdo persistido continua legível. Marque como lido, adie ou resolva sem perder o histórico. Use Command/Ctrl+K com type:attention, workspace:"Nome", agent:"Nome", status:open, has:error, before: ou after: para recuperar o mesmo evento depois. As abas separam Requer ação, Todos e Adiados. Parar um processo de propósito — stop, hibernar ou fechar o app — não gera item nem notificação; só um processo que cai sozinho aparece, com o nome dele e o código de saída.',
       tags: ['Central de atenção', 'triagem entre workspaces', 'operadores de busca'],
     },
     {
@@ -954,6 +954,16 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '1 de outubro de 2026 · 0.36.3',
+      title: 'Deep Space 0.36.3: parar não é erro, e avisos que dá pra entender',
+      summary: 'Parar um script não gera mais alerta, as falhas dizem qual processo caiu e a Central de Atenção explica para que serve',
+      items: [
+        'Parar um script, hibernar um workspace ou fechar um terminal gerava uma notificação do sistema ("Start encerrou com erro (código 1)") e um item na Central de Atenção, porque no Windows um processo encerrado sai com código 1. Um processo que você para de propósito não conta mais como falha; só avisa o que cai sozinho.',
+        'Os avisos de falha dizem o nome do processo e falam o idioma do app: "Build parou com erro (código 3)" em vez do cru "PTY exited with code 3", tanto na notificação do sistema quanto na Central de Atenção, onde a origem aparece como Scripts em vez de Console. Os itens gravados antes da atualização também são traduzidos.',
+        'A Central de Atenção agora diz no topo para que serve: o que precisa de você em todos os workspaces — agentes esperando resposta ou aprovação, tarefas travadas e processos que caíram sozinhos — e que o item é marcado como lido quando resolvido ou adiado para depois.',
+      ],
+    },
     {
       date: '1 de outubro de 2026 · 0.36.2',
       title: 'Deep Space 0.36.2: Scripts, links que abrem no navegador e comandos que sobrevivem ao reinício',
