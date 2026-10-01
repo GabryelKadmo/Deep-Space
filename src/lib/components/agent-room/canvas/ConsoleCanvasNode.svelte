@@ -72,10 +72,20 @@
     loading = true;
     try {
       commands = await api<ConsoleCommand[]>(base);
-      // Um comando apagado por fora nao deve deixar sessao pendurada no payload.
+      // Um comando apagado por fora nao deve deixar sessao pendurada no payload,
+      // nem uma sessao que morreu com o app fechado: reanexar a ela so mostrava
+      // "sessao nao encontrada" e o play nao fazia nada ate um stop.
       const ids = new Set(commands.map((command) => command.id));
-      const pruned = Object.fromEntries(Object.entries(sessions).filter(([commandId]) => ids.has(commandId)));
-      if (Object.keys(pruned).length !== Object.keys(sessions).length) {
+      const checked = await Promise.all(Object.entries(sessions).map(async ([commandId, sessionId]) => {
+        if (!ids.has(commandId)) return null;
+        const status = await api<{ exists: boolean; running: boolean }>(`/api/agent-room/pty-sessions/${sessionId}`)
+          .catch(() => ({ exists: false, running: false }));
+        return status.exists ? { commandId, sessionId, running: status.running } : null;
+      }));
+      const alive = checked.filter((entry) => entry !== null);
+      running = Object.fromEntries(alive.map((entry) => [entry.commandId, entry.running]));
+      if (alive.length !== Object.keys(sessions).length) {
+        const pruned = Object.fromEntries(alive.map((entry) => [entry.commandId, entry.sessionId]));
         sessions = pruned;
         void persist({ sessions: pruned });
       }
@@ -190,7 +200,8 @@
   onRemoveConnection={data.onRemoveConnection}
 >
   {#snippet icon()}<Terminal size={13} />{/snippet}
-  {#snippet title()}{data.title || m['console.title']()}{/snippet}
+  <!-- Nos criados antes do nome Scripts guardaram o titulo padrao antigo. -->
+  {#snippet title()}{data.title && data.title !== 'Console' ? data.title : m['console.title']()}{/snippet}
   {#snippet actions()}
     <HeaderIconButton class="node-action-btn" label={m['console.new_command']()} side="left" onclick={() => { editing = null; creating = true; }}>
       <Plus size={13} />
@@ -272,6 +283,7 @@
             voiceControls={false}
             onSessionCreated={(sessionId) => handleSessionCreated(selected_, sessionId)}
             onExit={() => handleExit(selected_)}
+            onRespawn={() => stop(selected_)}
             onOpenPath={(path) => data.onOpenFile?.(path)}
           />
         {/key}
