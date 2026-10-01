@@ -11,7 +11,7 @@ import {
 import { normalizeSavedTerminalCommands } from '../../domain/terminal-commands.js';
 import { workspaceRepository } from '../../infrastructure/repositories/WorkspaceRepository.js';
 import { settingsService } from './SettingsService.js';
-import type { CreateConsoleCommandInput, UpdateConsoleCommandInput } from '../../contracts/schemas/consoleSchemas.js';
+import type { CreateConsoleCommandInput, ImportConsoleCommandsInput, UpdateConsoleCommandInput } from '../../contracts/schemas/consoleSchemas.js';
 
 function mapCommand(model: AgentConsoleCommand): ConsoleCommand {
   return {
@@ -54,6 +54,37 @@ export class ConsoleCommandService {
     });
     notifyWorkspaceChanged(workspaceId);
     return created;
+  }
+
+  /**
+   * Copia comandos escolhidos de outro workspace. So vale o que pertence de
+   * fato a origem, o que ja existe igual no destino e pulado, e o limite por
+   * workspace continua valendo.
+   */
+  async importFrom(workspaceId: string, input: ImportConsoleCommandsInput): Promise<{ imported: ConsoleCommand[]; skipped: number }> {
+    if (input.sourceWorkspaceId === workspaceId) throw new Error('CONSOLE_IMPORT_SAME_WORKSPACE');
+    if (!await AgentWorkspace.find(workspaceId) || !await AgentWorkspace.find(input.sourceWorkspaceId)) throw new Error('WORKSPACE_NOT_FOUND');
+    const wanted = new Set(input.commandIds);
+    const source = (await this.list(input.sourceWorkspaceId)).filter((command) => wanted.has(command.id));
+    const existing = await this.list(workspaceId);
+    const seen = new Set(existing.map((command) => this.fingerprint(command)));
+    const imported: ConsoleCommand[] = [];
+    let position = existing.length;
+    for (const command of source) {
+      if (seen.has(this.fingerprint(command))) continue;
+      if (position >= MAX_CONSOLE_COMMANDS) throw new Error('CONSOLE_COMMAND_LIMIT');
+      imported.push(await this.insert(workspaceId, {
+        folder: command.folder,
+        name: command.name,
+        command: command.command,
+        runOnOpen: command.runOnOpen,
+        position,
+      }));
+      seen.add(this.fingerprint(command));
+      position += 1;
+    }
+    if (imported.length) notifyWorkspaceChanged(workspaceId);
+    return { imported, skipped: source.length - imported.length };
   }
 
   async update(workspaceId: string, commandId: string, input: UpdateConsoleCommandInput): Promise<ConsoleCommand> {

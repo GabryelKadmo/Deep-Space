@@ -5,7 +5,11 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
-## 0.36.3 - 2026-10-01
+## 0.37.0 - 2026-10-01
+
+### Added
+
+- **Import scripts from another workspace.** The download icon in the Scripts header opens Import scripts: pick the source workspace, untick what you do not want, and the chosen scripts are copied with their folders and "run when the workspace opens" setting. Scripts that already exist here are marked and left out.
 
 ### Changed
 

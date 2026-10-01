@@ -511,7 +511,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'console-commands',
       title: 'Rode os comandos do projeto sem sair do Canvas',
-      body: 'Crie um nó Scripts e salve os comandos que você repete todo dia — npm run dev, build, git pull, o script de lint — cada um com nome e uma pasta para agrupar. Clicar em ▷ sobe um processo só daquele comando, com a saída ao lado da lista e o ponto verde enquanto ele vive; ■ encerra. Trocar de comando não derruba nada: o log de cada um volta de onde parou, e o dev server continua de pé enquanto você olha outro. Marque "rodar ao abrir o workspace" no que precisa subir sozinho. Recolhendo a lista, o nó vira um terminal comum para um comando avulso. Em qual shell esses comandos rodam é escolha sua: Configurações > Terminal > Shell dos Scripts (Automático, Git Bash, WSL, CMD no Windows; bash, zsh, sh nos demais).',
+      body: 'Crie um nó Scripts e salve os comandos que você repete todo dia — npm run dev, build, git pull, o script de lint — cada um com nome e uma pasta para agrupar. Clicar em ▷ sobe um processo só daquele comando, com a saída ao lado da lista e o ponto verde enquanto ele vive; ■ encerra. Trocar de comando não derruba nada: o log de cada um volta de onde parou, e o dev server continua de pé enquanto você olha outro. Marque "rodar ao abrir o workspace" no que precisa subir sozinho. Recolhendo a lista, o nó vira um terminal comum para um comando avulso. Para reaproveitar o que outro projeto já tem, o ícone de download no cabeçalho importa scripts de outro workspace, pulando os que já existem iguais aqui. Em qual shell esses comandos rodam é escolha sua: Configurações > Terminal > Shell dos Scripts (Automático, Git Bash, WSL, CMD no Windows; bash, zsh, sh nos demais).',
       tags: ['Scripts', 'Console', 'um processo por comando', 'pastas'],
     },
     {
@@ -955,13 +955,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
-      date: '1 de outubro de 2026 · 0.36.3',
-      title: 'Deep Space 0.36.3: parar não é erro, e avisos que dá pra entender',
+      date: '1 de outubro de 2026 · 0.37.0',
+      title: 'Deep Space 0.37.0: parar não é erro, avisos que dá pra entender e scripts de outro workspace',
       summary: 'Parar um script não gera mais alerta, as falhas dizem qual processo caiu e a Central de Atenção explica para que serve',
       items: [
         'Parar um script, hibernar um workspace ou fechar um terminal gerava uma notificação do sistema ("Start encerrou com erro (código 1)") e um item na Central de Atenção, porque no Windows um processo encerrado sai com código 1. Um processo que você para de propósito não conta mais como falha; só avisa o que cai sozinho.',
         'Os avisos de falha dizem o nome do processo e falam o idioma do app: "Build parou com erro (código 3)" em vez do cru "PTY exited with code 3", tanto na notificação do sistema quanto na Central de Atenção, onde a origem aparece como Scripts em vez de Console. Os itens gravados antes da atualização também são traduzidos.',
         'A Central de Atenção agora diz no topo para que serve: o que precisa de você em todos os workspaces — agentes esperando resposta ou aprovação, tarefas travadas e processos que caíram sozinhos — e que o item é marcado como lido quando resolvido ou adiado para depois.',
+        'Os scripts podem ser importados de outro workspace. O ícone de download no cabeçalho do Scripts abre Importar scripts: escolha o workspace de origem, desmarque o que não quer, e os escolhidos são copiados com as pastas e a opção "rodar ao abrir o workspace". Os que já existem iguais aqui aparecem marcados e ficam de fora.',
       ],
     },
     {
