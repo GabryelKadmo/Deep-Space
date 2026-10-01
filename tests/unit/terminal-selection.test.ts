@@ -16,7 +16,7 @@ describe('terminal selection geometry', () => {
   });
 
   it('so suprime a selecao nativa do xterm em clique unico/duplo/triplo, fora de modo de rastreamento de mouse (ou com Shift)', () => {
-    const leftSingleClick = { button: 0, detail: 1, shiftKey: false };
+    const leftSingleClick = { button: 0, detail: 1, shiftKey: false, ctrlKey: false, metaKey: false };
     expect(shouldSuppressNativeSingleClickSelection(leftSingleClick, 'none')).toBe(true);
     // Duplo/triplo clique (selecao de palavra/linha) tambem sao suprimidos,
     // na mesma condicao do clique unico (ver wordRangeAtCell/selectLines).
@@ -28,6 +28,9 @@ describe('terminal selection geometry', () => {
     // programa, exceto com Shift (aí a selecao de texto assume).
     expect(shouldSuppressNativeSingleClickSelection(leftSingleClick, 'any')).toBe(false);
     expect(shouldSuppressNativeSingleClickSelection({ ...leftSingleClick, shiftKey: true }, 'any')).toBe(true);
+    // Cmd/Ctrl+clique ativa os links do xterm, que dependem do mousedown nativo.
+    expect(shouldSuppressNativeSingleClickSelection({ ...leftSingleClick, ctrlKey: true }, 'none')).toBe(false);
+    expect(shouldSuppressNativeSingleClickSelection({ ...leftSingleClick, metaKey: true }, 'none')).toBe(false);
   });
 
   it('acha a palavra na celula clicada pelo texto real da linha', () => {
