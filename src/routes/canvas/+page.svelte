@@ -124,7 +124,7 @@
     setAgentProviderPinned,
   } from '$lib/components/agent-room/provider-toolbar.js';
   import { BackgroundVariant, SvelteFlowProvider } from '@xyflow/svelte';
-  import { BadgeCheck, ChevronDown, Terminal, Lock, LockOpen, Maximize, Minus, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
+  import { BadgeCheck, ChevronDown, Terminal, Lock, LockOpen, Maximize, Move, ZoomIn, Minus, Blocks, BookMarked, Braces, Cable, CalendarClock, ChevronLeft, ChevronRight, CircleHelp, Copy, Download, FileDiff, FolderPlus, FolderTree, Gauge, GitFork, Image as ImageIcon, Layers, LayoutGrid, LayoutTemplate, MessageCircleMore, MonitorCog, MonitorUp, MoreHorizontal, Palette, Pencil, Plus, Power, RadioTower, Scale, Search, Settings, Shapes, Smartphone, SquareKanban, StickyNote, Trash2, Upload, Waypoints, Workflow, Wrench, X } from '@lucide/svelte';
   import ZoomBridge from '$lib/components/agent-room/canvas/ZoomBridge.svelte';
   import type {
     AgentProviderInfo,
@@ -612,9 +612,18 @@
   let zoomPercent = $state(100);
   let connecting = $state(false);
   let canvasLocked = $state(false);
+  // Os toasts do app ficam no canto inferior direito, por cima da faixa de
+  // ferramentas; a faixa empurra o canto para cima enquanto existe.
+  let dockHeight = $state(0);
+  $effect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--toast-bottom-offset', `${dockHeight}px`);
+    return () => root.style.removeProperty('--toast-bottom-offset');
+  });
   const ZOOM_LEVELS = [0.5, 0.75, 1, 1.5, 2];
   const ZOOM_MIN = 0.05;
   const ZOOM_MAX = 4;
+  const currentZoomLevel = $derived(String(ZOOM_LEVELS.find((level) => Math.round(level * 100) === zoomPercent) ?? ''));
 
   function stepZoom(factor: number) {
     const current = zoomApi?.getViewport().zoom ?? 1;
@@ -1662,7 +1671,6 @@
   // O endpoint sempre foi por workspace; so a UI vivia presa ao ativo.
   let hibernatingWorkspace = $state<Workspace | null>(null);
   let unloading = $state(false);
-  let unloadMessage = $state('');
   let workspacesLoaded = $state(false);
 
   async function hibernateWorkspace(target: Workspace | null) {
@@ -1686,15 +1694,14 @@
         history.replaceState(null, '', '/canvas');
       }
       const count = result?.killedSessions ?? 0;
-      unloadMessage = count > 0
+      toast.success(count > 0
         ? count === 1
           ? m['canvas.hibernate_done_one']({ count })
           : m['canvas.hibernate_done_many']({ count })
-        : m['canvas.hibernate_none']();
+        : m['canvas.hibernate_none']());
     } finally {
       unloading = false;
       hibernatingWorkspace = null;
-      setTimeout(() => (unloadMessage = ''), 5_000);
     }
   }
 
@@ -3300,7 +3307,7 @@
           <Background gap={20} variant={backgroundVariant} patternColor="var(--app-grid)" />
         {/if}
       </SvelteFlow>
-      <div class="canvas-dock">
+      <div class="canvas-dock" bind:clientHeight={dockHeight}>
         <div class="canvas-dock-row">
           <div class="canvas-dock-left">
             {#if appSettings.showControls !== 'false'}
@@ -3308,50 +3315,45 @@
                 <button type="button" class="zoom-btn" data-testid="canvas-zoom-out" title={m['canvas.zoom_out']()} aria-label={m['canvas.zoom_out']()} disabled={lockedZoom !== null} onclick={() => stepZoom(1 / 1.25)}>
                   <Minus size={14} />
                 </button>
-                <!-- Numero e cadeado sao um controle so: o cadeado trava ESTE zoom,
-                     e colado ao numero nao se confunde com o cadeado do canvas. -->
-                <div class="zoom-pill" class:locked={lockedZoom !== null}>
-                  <DropdownMenu.Root>
-                    <DropdownMenu.Trigger class="zoom-value" data-testid="canvas-zoom-level" aria-label={m['canvas.zoom_level']()} disabled={lockedZoom !== null}>
-                      {zoomPercent}%<ChevronDown size={11} />
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content align="start" side="top" class="zoom-menu">
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger class="zoom-value" data-testid="canvas-zoom-level" aria-label={m['canvas.zoom_level']()} disabled={lockedZoom !== null}>
+                    {zoomPercent}%<ChevronDown size={11} />
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content align="start" side="top" class="zoom-menu">
+                    <DropdownMenu.RadioGroup value={currentZoomLevel} onValueChange={(value) => zoomApi?.setZoom(Number(value), { duration: 200 })}>
                       {#each ZOOM_LEVELS as level (level)}
-                        <DropdownMenu.Item class="zoom-menu-item" onSelect={() => zoomApi?.setZoom(level, { duration: 200 })}>{Math.round(level * 100)}%</DropdownMenu.Item>
+                        <DropdownMenu.RadioItem class="zoom-menu-item" value={String(level)}>{Math.round(level * 100)}%</DropdownMenu.RadioItem>
                       {/each}
-                      <DropdownMenu.Separator />
-                      <DropdownMenu.Item class="zoom-menu-item" onSelect={() => zoomApi?.fitView({ duration: 220 })}>{m['canvas.zoom_fit']()}</DropdownMenu.Item>
-                    </DropdownMenu.Content>
-                  </DropdownMenu.Root>
-                  <button
-                    type="button"
-                    class="zoom-btn zoom-pin"
-                    data-testid="canvas-zoom-pin"
-                    aria-pressed={lockedZoom !== null}
-                    title={lockedZoom !== null ? m['canvas.zoom_pin_off']() : m['canvas.zoom_pin_on']({ percent: zoomPercent })}
-                    aria-label={lockedZoom !== null ? m['canvas.zoom_pin_off']() : m['canvas.zoom_pin_on']({ percent: zoomPercent })}
-                    onclick={toggleZoomLock}
-                  >
-                    {#if lockedZoom !== null}<Lock size={11} />{:else}<LockOpen size={11} />{/if}
-                  </button>
-                </div>
+                    </DropdownMenu.RadioGroup>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item class="zoom-menu-item" onSelect={() => zoomApi?.fitView({ duration: 220 })}>{m['canvas.zoom_fit']()}</DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
                 <button type="button" class="zoom-btn" data-testid="canvas-zoom-in" title={m['canvas.zoom_in']()} aria-label={m['canvas.zoom_in']()} disabled={lockedZoom !== null} onclick={() => stepZoom(1.25)}>
                   <Plus size={14} />
                 </button>
                 <span class="zoom-sep" aria-hidden="true"></span>
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger
+                    class="zoom-btn zoom-lock-trigger"
+                    data-testid="canvas-lock-menu"
+                    data-active={lockedZoom !== null || canvasLocked ? 'true' : undefined}
+                    title={m['canvas.lock_menu']()}
+                    aria-label={m['canvas.lock_menu']()}
+                  >
+                    {#if lockedZoom !== null || canvasLocked}<Lock size={13} />{:else}<LockOpen size={13} />{/if}
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content align="start" side="top" class="min-w-[180px]">
+                    <DropdownMenu.Item data-testid="canvas-zoom-pin" onSelect={toggleZoomLock}>
+                      <ZoomIn size={14} />{lockedZoom !== null ? m['canvas.unlock_zoom']() : m['canvas.lock_zoom']()}
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item data-testid="canvas-zoom-lock" onSelect={() => (canvasLocked = !canvasLocked)}>
+                      <Move size={14} />{canvasLocked ? m['canvas.unlock_canvas']() : m['canvas.lock_canvas']()}
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
                 <button type="button" class="zoom-btn" data-testid="canvas-zoom-fit" title={m['canvas.zoom_fit']()} aria-label={m['canvas.zoom_fit']()} onclick={() => zoomApi?.fitView({ duration: 220 })}>
                   <Maximize size={13} />
-                </button>
-                <button
-                  type="button"
-                  class="zoom-btn"
-                  data-testid="canvas-zoom-lock"
-                  aria-pressed={canvasLocked}
-                  title={canvasLocked ? m['canvas.zoom_unlock']() : m['canvas.zoom_lock']()}
-                  aria-label={canvasLocked ? m['canvas.zoom_unlock']() : m['canvas.zoom_lock']()}
-                  onclick={() => (canvasLocked = !canvasLocked)}
-                >
-                  {#if canvasLocked}<Lock size={13} />{:else}<LockOpen size={13} />{/if}
                 </button>
               </div>
             {/if}
@@ -3718,9 +3720,6 @@
       </div>
     {:else if errorMessage}
       <p class="error-banner">{errorMessage}</p>
-    {/if}
-    {#if unloadMessage}
-      <p class="notice-banner">{unloadMessage}</p>
     {/if}
     </SvelteFlowProvider>
   </section>
@@ -4239,7 +4238,7 @@
     gap: 2px;
   }
 
-  .zoom-btn {
+  :global(.zoom-btn) {
     display: grid;
     place-items: center;
     width: 26px;
@@ -4251,10 +4250,19 @@
     cursor: pointer;
   }
 
-  .zoom-btn:hover,
-  .zoom-btn[aria-pressed='true'] {
+  :global(.zoom-btn:hover),
+  :global(.zoom-btn[data-state='open']) {
     background: var(--app-surface-raised);
     color: var(--app-text);
+  }
+
+  /* Com algum bloqueio ativo o cadeado fica fechado e em destaque, sobre
+     fundo elevado: no tema escuro padrao a cor de destaque e quase branca, e
+     so a cor nao bastava para ler o estado. */
+  :global(.zoom-lock-trigger[data-active='true']) {
+    background: var(--app-surface-raised);
+    box-shadow: inset 0 0 0 1px var(--app-border-strong);
+    color: var(--app-accent);
   }
 
   :global(.zoom-value) {
@@ -4277,56 +4285,19 @@
   }
 
   /* Zoom travado: −, + e o seletor ficam inertes, e o numero ganha a cor de
-     destaque junto com o cadeado — da pra ler que esta preso sem hover. */
-  .zoom-btn:disabled,
+     destaque — da pra ler que esta preso sem abrir o menu do cadeado. */
+  :global(.zoom-btn:disabled),
   :global(.zoom-value:disabled) {
     cursor: default;
     background: transparent;
   }
 
-  .zoom-btn:disabled {
+  :global(.zoom-btn:disabled) {
     opacity: 0.35;
   }
 
-  /* Numero e cadeado formam uma pilula, com um fio entre as duas metades: o
-     cadeado pertence ao seletor, nao e mais uma ferramenta da faixa (e nao se
-     confunde com o cadeado do canvas). Travada, ela ganha moldura e fundo
-     elevado: no tema escuro padrao a cor de destaque e quase branca, entao
-     so pintar de destaque nao mudava nada na tela. */
-  .zoom-pill {
-    display: flex;
-    align-items: center;
-    height: 26px;
-    border-radius: 6px;
-    transition: background 120ms ease, box-shadow 120ms ease;
-  }
-
-  .zoom-pill :global(.zoom-value) {
-    border-radius: 6px 0 0 6px;
-  }
-
-  .zoom-pin {
-    width: 22px;
-    border-left: 1px solid var(--app-border);
-    border-radius: 0 6px 6px 0;
-  }
-
-  .zoom-pill .zoom-pin[aria-pressed='true'] {
-    background: transparent;
-  }
-
-  .zoom-pill.locked {
-    background: var(--app-surface-raised);
-    box-shadow: inset 0 0 0 1px var(--app-border-strong);
-  }
-
-  .zoom-pill.locked :global(.zoom-value),
-  .zoom-pill.locked .zoom-pin {
+  :global(.zoom-value:disabled) {
     color: var(--app-accent);
-  }
-
-  .zoom-pill.locked .zoom-pin {
-    border-left-color: color-mix(in srgb, var(--app-accent) 35%, transparent);
   }
 
   :global(.zoom-menu) {
@@ -4545,19 +4516,6 @@
     left: 50%;
     width: min(520px, calc(100% - 24px));
     transform: translateX(-50%);
-  }
-
-  .notice-banner {
-    position: absolute;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: color-mix(in srgb, var(--app-success) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--app-success) 55%, transparent);
-    color: var(--app-success);
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-size: 12px;
   }
 
 </style>

@@ -517,7 +517,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'zoom-lock',
       title: 'Trave o zoom onde o texto fica nítido',
-      body: 'Fora de 100% a seleção de texto dentro dos terminais desalinha, e uma rodada sem querer da roda do mouse já tira o canvas do zoom. Escolha o nível no seletor de % no canto inferior esquerdo e clique no cadeado colado ao número: a pílula ganha moldura, − e + apagam, e roda, pinça, duplo clique e atalhos não mudam mais o zoom — a roda passa a mover o canvas. A trava vale para todos os workspaces e sobrevive a reinícios; clique no cadeado de novo para soltar. Ela é independente do cadeado do canvas, que trava arrastar e selecionar nós.',
+      body: 'Fora de 100% a seleção de texto dentro dos terminais desalinha, e uma rodada sem querer da roda do mouse já tira o canvas do zoom. Escolha o nível no seletor de % no canto inferior esquerdo e abra o cadeado ao lado do + e escolha Bloquear zoom: o cadeado fecha e ganha moldura, o número fica em destaque, − e + apagam, e roda, pinça, duplo clique e atalhos não mudam mais o zoom — a roda passa a mover o canvas. A trava vale para todos os workspaces e sobrevive a reinícios; escolha Desbloquear zoom no mesmo menu para soltar. Ela é independente de Bloquear canvas, a outra opção do mesmo cadeado, que trava arrastar e selecionar nós.',
       tags: ['zoom', 'cadeado', 'terminais'],
     },
     {
@@ -954,6 +954,17 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '1 de outubro de 2026 · 0.36.1',
+      title: 'Deep Space 0.36.1: um cadeado para os dois bloqueios',
+      summary: 'Bloqueio de zoom e de canvas sob um único cadeado, o zoom atual marcado no menu e o aviso de hibernar fora da barra',
+      items: [
+        'Um cadeado para os dois bloqueios. A barra de zoom era − 100% 🔒 + ⛶ 🔒: dois cadeados a poucos pixels um do outro, um para o zoom e outro para o canvas, e só a dica de ferramenta para diferenciá-los. Agora ela é − 100% + 🔒 ⛶, e o único cadeado abre um menu com Bloquear zoom e Bloquear canvas, cada um com seu ícone; a opção vira Desbloquear zoom ou Desbloquear canvas enquanto aquele bloqueio está ativo, e um pode ser ligado ou desligado sem mexer no outro. O cadeado fecha e ganha moldura sempre que algum bloqueio está ativo, e o valor em % fica na cor de destaque enquanto o zoom está bloqueado.',
+        'O menu de zoom marca o nível em que o canvas está, então 50%, 75%, 100%, 150% e 200% se leem como uma escolha e não como uma lista solta.',
+        'Hibernar um workspace mostrava a confirmação como uma faixa translúcida bem em cima da barra de ferramentas de baixo, cobrindo os botões por cinco segundos. Agora ela aparece como uma notificação comum no canto, igual a todas as outras confirmações do app, e no canvas toda notificação fica acima da barra de ferramentas em vez de cobrir a ponta direita dela.',
+        'Os itens de dropdowns, menus de contexto, seletores e da paleta de comandos mostravam a seta do mouse, embora clicar neles execute uma ação; só o botão que abria o menu mostrava a mãozinha. Agora todo item de menu mostra a mãozinha, exceto os desabilitados.',
+      ],
+    },
     {
       date: '30 de setembro de 2026 · 0.36.0',
       title: 'Deep Space 0.36.0: zoom travado, tarefa na coluna e cordas no seu lado',

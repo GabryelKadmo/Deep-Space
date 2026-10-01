@@ -47,13 +47,13 @@ export const TOURS_EN: Tour[] = [
       },
       {
         id: 'lock',
-        title: 'Lock it with the padlock beside it',
-        body: 'Click the padlock next to the number. The pill gets a frame, − and + dim, and the mouse wheel pans the canvas instead of changing the zoom.',
+        title: 'Lock it from the padlock',
+        body: 'Click the padlock next to + and choose Lock zoom. The padlock closes and gets a frame, the number takes the accent colour, − and + dim, and the mouse wheel pans the canvas instead of changing the zoom.',
       },
       {
         id: 'unlock',
         title: 'Release it whenever you want',
-        body: 'The lock applies to every workspace and stays after a restart. Click the same padlock to zoom again.',
+        body: 'The lock applies to every workspace and stays after a restart. Open the same padlock and choose Unlock zoom to zoom again.',
       },
     ],
   },

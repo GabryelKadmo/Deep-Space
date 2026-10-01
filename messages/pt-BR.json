@@ -346,8 +346,11 @@
   "canvas.zoom_out": "Diminuir zoom",
   "canvas.zoom_fit": "Ajustar à tela",
   "canvas.zoom_level": "Nível de zoom",
-  "canvas.zoom_lock": "Travar o canvas",
-  "canvas.zoom_unlock": "Destravar o canvas",
+  "canvas.lock_menu": "Bloqueios",
+  "canvas.lock_zoom": "Bloquear zoom",
+  "canvas.unlock_zoom": "Desbloquear zoom",
+  "canvas.lock_canvas": "Bloquear canvas",
+  "canvas.unlock_canvas": "Desbloquear canvas",
   "canvas.hint_action": "ação",
   "canvas.hint_view": "view",
   "canvas.hint_selection": "seleção",
@@ -4293,8 +4296,6 @@
   "settings.console_shell_hint": "Em qual shell os comandos do nó Console rodam. Automático usa o PowerShell no Windows e o seu shell de login no macOS/Linux.",
   "tasks.add_short": "Adicionar",
   "tasks.new_in_column": "Nova tarefa em {column}",
-  "canvas.zoom_pin_on": "Travar o zoom em {percent}%",
-  "canvas.zoom_pin_off": "Destravar o zoom",
   "canvas.zoom_lock_save_error": "Não foi possível salvar a trava do zoom.",
   "canvas.create_menu": "Novo"
 }
