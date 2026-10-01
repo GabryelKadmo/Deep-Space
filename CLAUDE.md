@@ -58,6 +58,7 @@
 - Use Svelte 5 runes in `.svelte` files: `$props`, `$state`, `$derived`, `$effect`, and `{@render children()}`.
 - Do not use Svelte runes in plain `.ts` files.
 - Use generated shadcn-svelte components for app UI.
+- Every clickable element shows `cursor: pointer`: buttons, triggers, and **each item inside a dropdown/menu/select**, not only the trigger that opens it. Several menus already have it on the trigger but not on their items, so check the items whenever you add or touch a menu, and check them again in the preview.
 - Mutating browser `fetch` calls must include Svelar's CSRF header. Enhanced forms can use the regular form flow.
 
 ## Agent Room Module
