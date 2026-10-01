@@ -5,6 +5,22 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.36.2 - 2026-10-01
+
+### Changed
+
+- **The Console is now Scripts**, the word package.json already uses for npm run dev and build. Nodes created before keep working and show the new name; the shell setting under Terminal follows it.
+
+### Added
+
+- **Links open in the browser.** Cmd/Ctrl+click on a link in any terminal — Scripts, agents and Shell — opens it in the system browser. It works on links that wrap across lines, leaves sentence punctuation out of the address, and opens only http and https.
+
+### Fixed
+
+- Reopening the app with a command that was running left Scripts on "PTY session not found", and play did nothing until a stop. Scripts now checks which saved sessions are still alive when it opens: the dead ones come back stopped, one click on ▷ runs them again, and commands marked "run when the workspace opens" start again instead of staying stuck on the old session.
+- Cmd/Ctrl+click on a file path never reached the terminal in a plain shell: the canvas selection fix swallowed the click before the terminal saw it. Paths open in the editor again.
+- Clicking a terminal whose process had already finished showed "PTY session … already finished". A finished terminal no longer sends input.
+
 ## 0.36.1 - 2026-10-01
 
 ### Changed

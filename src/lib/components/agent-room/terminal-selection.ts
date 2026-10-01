@@ -33,13 +33,14 @@ export function terminalSelectionRange(start: TerminalCell, end: TerminalCell, c
  * mouseTrackingMode ativo (ex.: Claude Code) usam o mouse pra reportar
  * clique/posicao pra propria TUI, entao sem Shift o clique tem que continuar
  * chegando ao processo normalmente (suprimir sempre, numa iteracao anterior,
- * quebrou clicar fora pra desselecionar e digitar no terminal).
+ * quebrou clicar fora pra desselecionar e digitar no terminal). Cmd/Ctrl+clique
+ * tambem passa: e ele que ativa os links do xterm (URL e caminho de arquivo).
  */
 export function shouldSuppressNativeSingleClickSelection(
-  event: Pick<MouseEvent, 'button' | 'detail' | 'shiftKey'>,
+  event: Pick<MouseEvent, 'button' | 'detail' | 'shiftKey' | 'ctrlKey' | 'metaKey'>,
   mouseTrackingMode: string
 ): boolean {
-  if (event.button !== 0 || event.detail < 1) return false;
+  if (event.button !== 0 || event.detail < 1 || event.ctrlKey || event.metaKey) return false;
   return mouseTrackingMode === 'none' || event.shiftKey;
 }
 

@@ -10,10 +10,10 @@ export const TOURS_EN: Tour[] = [
     steps: [
       {
         id: 'node',
-        title: 'Create the Console',
-        body: 'The Console keeps the workspace commands and runs each one in a process of its own, with the output beside the list. I will create the node for you.',
-        action: { kind: 'createConsole', title: 'Console' },
-        check: { kind: 'nodeExists', nodeType: 'console', titleIncludes: 'Console' },
+        title: 'Create the Scripts node',
+        body: 'The Scripts node keeps the workspace commands and runs each one in a process of its own, with the output beside the list. I will create the node for you.',
+        action: { kind: 'createConsole', title: 'Scripts' },
+        check: { kind: 'nodeExists', nodeType: 'console', titleIncludes: 'Scripts' },
       },
       {
         id: 'dev',

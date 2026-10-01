@@ -504,15 +504,15 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'atalhos',
       title: 'Atalhos',
-      body: `⌘P paleta · ⌘K (ou Ctrl+K) buscar na documentação de qualquer tela · ⌘2 Central de Providers · ⌘⇧A próxima atenção · ⌘⇧T organizar todo o canvas visível · Cmd/Ctrl+D duplicar formas selecionadas · Cmd/Ctrl+C e Cmd/Ctrl+V copiar e colar formas selecionadas · ⌘G agrupar · ⌘⇧G desagrupar · N nova nota · L conectar selecionados · Alt+1…9 focar terminal · Alt+Espaço ditado por voz · ⌘F buscar no terminal · ⌘Z desfazer · Backspace excluir. Nos terminais, Ctrl+V (Cmd+V no macOS) cola texto e também imagem ou arquivo: o anexo é salvo em .deepspace/attachments/ e o caminho é colado no prompt, com o mesmo atalho em todas as CLIs. Ctrl+Shift+V e Shift+Insert funcionam como alias e Alt+V segue livre para o atalho próprio da CLI. No Windows, a barra de título estilizada oferece Arquivo, Editar, Visualizar, Workspace, Janela e Ajuda sem perder os controles da janela; macOS e Linux mantêm seus menus de plataforma.`,
+      body: `⌘P paleta · ⌘K (ou Ctrl+K) buscar na documentação de qualquer tela · ⌘2 Central de Providers · ⌘⇧A próxima atenção · ⌘⇧T organizar todo o canvas visível · Cmd/Ctrl+D duplicar formas selecionadas · Cmd/Ctrl+C e Cmd/Ctrl+V copiar e colar formas selecionadas · ⌘G agrupar · ⌘⇧G desagrupar · N nova nota · L conectar selecionados · Alt+1…9 focar terminal · Alt+Espaço ditado por voz · ⌘F buscar no terminal · ⌘Z desfazer · Backspace excluir. Nos terminais, Ctrl+V (Cmd+V no macOS) cola texto e também imagem ou arquivo: o anexo é salvo em .deepspace/attachments/ e o caminho é colado no prompt, com o mesmo atalho em todas as CLIs. Ctrl+Shift+V e Shift+Insert funcionam como alias e Alt+V segue livre para o atalho próprio da CLI. No Windows, a barra de título estilizada oferece Arquivo, Editar, Visualizar, Workspace, Janela e Ajuda sem perder os controles da janela; macOS e Linux mantêm seus menus de plataforma. No terminal, Cmd/Ctrl+clique num link (http ou https) abre no navegador do sistema, e num caminho de arquivo abre no editor.`,
     },
   ],
   useCases: [
     {
       id: 'console-commands',
       title: 'Rode os comandos do projeto sem sair do Canvas',
-      body: 'Crie um nó Console e salve os comandos que você repete todo dia — npm run dev, build, git pull, o script de lint — cada um com nome e uma pasta para agrupar. Clicar em ▷ sobe um processo só daquele comando, com a saída ao lado da lista e o ponto verde enquanto ele vive; ■ encerra. Trocar de comando não derruba nada: o log de cada um volta de onde parou, e o dev server continua de pé enquanto você olha outro. Marque "rodar ao abrir o workspace" no que precisa subir sozinho. Recolhendo a lista, o nó vira um terminal comum para um comando avulso. Em qual shell esses comandos rodam é escolha sua: Configurações > Terminal > Shell dos comandos do Console (Automático, Git Bash, WSL, CMD no Windows; bash, zsh, sh nos demais).',
-      tags: ['Console', 'um processo por comando', 'pastas'],
+      body: 'Crie um nó Scripts e salve os comandos que você repete todo dia — npm run dev, build, git pull, o script de lint — cada um com nome e uma pasta para agrupar. Clicar em ▷ sobe um processo só daquele comando, com a saída ao lado da lista e o ponto verde enquanto ele vive; ■ encerra. Trocar de comando não derruba nada: o log de cada um volta de onde parou, e o dev server continua de pé enquanto você olha outro. Marque "rodar ao abrir o workspace" no que precisa subir sozinho. Recolhendo a lista, o nó vira um terminal comum para um comando avulso. Em qual shell esses comandos rodam é escolha sua: Configurações > Terminal > Shell dos Scripts (Automático, Git Bash, WSL, CMD no Windows; bash, zsh, sh nos demais).',
+      tags: ['Scripts', 'Console', 'um processo por comando', 'pastas'],
     },
     {
       id: 'zoom-lock',
@@ -954,6 +954,18 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '1 de outubro de 2026 · 0.36.2',
+      title: 'Deep Space 0.36.2: Scripts, links que abrem no navegador e comandos que sobrevivem ao reinício',
+      summary: 'O Console vira Scripts, Ctrl/Cmd+clique abre links no navegador do sistema e os comandos salvos voltam prontos para rodar',
+      items: [
+        'O nó Console agora se chama Scripts, a palavra que o package.json já usa para npm run dev e build. Os nós criados antes continuam funcionando e mostram o nome novo; a opção de shell em Terminal acompanha.',
+        'Cmd/Ctrl+clique num link em qualquer terminal — Scripts, agentes e Shell — abre no navegador do sistema. Funciona em link que quebra em duas linhas, deixa a pontuação da frase fora do endereço e só abre http e https.',
+        'Cmd/Ctrl+clique num caminho de arquivo nunca chegava ao terminal num shell comum: a correção da seleção do canvas engolia o clique antes de o terminal vê-lo. Os caminhos voltam a abrir no editor.',
+        'Reabrir o app com um comando rodando deixava o Scripts em "Sessão PTY não encontrada", e o play não fazia nada até um stop. Agora o Scripts confere, ao abrir, quais sessões salvas continuam vivas: as mortas voltam paradas, um clique em ▷ roda de novo, e os comandos marcados para rodar ao abrir o workspace voltam a subir em vez de ficarem presos na sessão antiga.',
+        'Clicar num terminal cujo processo já tinha terminado mostrava "Sessão PTY … já finalizada". Terminal encerrado não manda mais input.',
+      ],
+    },
     {
       date: '1 de outubro de 2026 · 0.36.1',
       title: 'Deep Space 0.36.1: um cadeado para os dois bloqueios',
