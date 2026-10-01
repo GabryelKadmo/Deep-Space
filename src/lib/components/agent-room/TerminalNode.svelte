@@ -23,6 +23,7 @@
   import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, wordRangeAtCell, type TerminalCell } from './terminal-selection.js';
   import { clipboardPasteFiles, storePastedTerminalFiles, terminalPathTokens } from './terminal-paste.js';
   import { workingDirectoryFromOsc } from './terminal-working-directory.js';
+  import { externalUrl, findTerminalPaths, findTerminalUrls, logicalLineAt } from './terminal-links.js';
   import { audioSignalIsEmpty } from '$lib/modules/agent-room/domain/voice-audio.js';
   import {
     LEADER_DICTATION_COMMAND,
@@ -528,35 +529,33 @@
     window.addEventListener('pointermove', selectionPointerMove);
     window.addEventListener('pointerup', selectionPointerUp);
 
-    // Cmd/Ctrl+clique em caminhos de arquivo (ex.: src/index.ts:42, ./a/b.js).
-    if (onOpenPath) {
-      terminal.registerLinkProvider({
-        provideLinks(bufferLineNumber, callback) {
-          const line = terminal.buffer.active.getLine(bufferLineNumber - 1);
-          if (!line) {
-            callback(undefined);
-            return;
-          }
-          const text = line.translateToString();
-          const pattern = /(?:\.|~)?\/?(?:[\w.@+-]+\/)+[\w.@+-]+(?::\d+)?/g;
-          const links = [];
-          let match;
-          while ((match = pattern.exec(text)) !== null) {
-            const raw = match[0];
-            links.push({
-              range: { start: { x: match.index + 1, y: bufferLineNumber }, end: { x: match.index + raw.length, y: bufferLineNumber } },
-              text: raw,
-              activate: (event: MouseEvent, linkText: string) => {
-                if (event.metaKey || event.ctrlKey) {
-                  onOpenPath(linkText.replace(/:\d+$/, ''));
-                }
-              },
-            });
-          }
-          callback(links.length ? links : undefined);
-        },
-      });
-    }
+    // Cmd/Ctrl+clique: URL abre no navegador do sistema (o app desktop manda
+    // todo window.open http(s) para fora), caminho de arquivo abre no editor.
+    terminal.registerLinkProvider({
+      provideLinks(bufferLineNumber, callback) {
+        const row = bufferLineNumber - 1;
+        const { text, cells } = logicalLineAt((y) => terminal.buffer.active.getLine(y), row);
+        const urls = findTerminalUrls(text);
+        const spans = [
+          ...urls.map((span) => ({ span, open: () => {
+            const url = externalUrl(span.text);
+            if (url) window.open(url, '_blank', 'noopener,noreferrer');
+          } })),
+          ...(onOpenPath ? findTerminalPaths(text, urls).map((span) => ({ span, open: () => onOpenPath(span.text.replace(/:\d+$/, '')) })) : []),
+        ];
+        const links = spans
+          .map(({ span, open }) => ({ start: cells[span.start], end: cells[span.end - 1], text: span.text, open }))
+          .filter(({ start, end }) => start && end && start.y <= row && end.y >= row)
+          .map(({ start, end, text: linkText, open }) => ({
+            range: { start: { x: start.x + 1, y: start.y + 1 }, end: { x: end.x + 1, y: end.y + 1 } },
+            text: linkText,
+            activate: (event: MouseEvent) => {
+              if (event.metaKey || event.ctrlKey) open();
+            },
+          }));
+        callback(links.length ? links : undefined);
+      },
+    });
 
     const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
     let socket: WebSocket;
@@ -584,6 +583,9 @@
       if (id) send({ type: 'kill', sessionId: id });
     };
     const sendTerminalInput = (data: string) => {
+      // Processo encerrado nao le mais nada: mandar input so trazia de volta o
+      // erro "sessao ja finalizada" para um simples clique no terminal.
+      if (exited !== null) return;
       const id = currentSessionId();
       if (!id || socket?.readyState !== WebSocket.OPEN) {
         pendingInput.push(data);
