@@ -51,13 +51,13 @@ export const TOURS_PT: Tour[] = [
       },
       {
         id: 'lock',
-        title: 'Trave no cadeado do lado',
-        body: 'Clique no cadeado colado ao número. A pílula ganha moldura, − e + apagam, e a roda do mouse passa a mover o canvas em vez de mudar o zoom.',
+        title: 'Trave pelo cadeado',
+        body: 'Clique no cadeado ao lado do + e escolha Bloquear zoom. O cadeado fecha e ganha moldura, o número fica em destaque, − e + apagam, e a roda do mouse passa a mover o canvas em vez de mudar o zoom.',
       },
       {
         id: 'unlock',
         title: 'Solte quando quiser',
-        body: 'A trava vale para todos os workspaces e continua depois de reiniciar. Clique no mesmo cadeado para voltar a dar zoom.',
+        body: 'A trava vale para todos os workspaces e continua depois de reiniciar. Abra o mesmo cadeado e escolha Desbloquear zoom para voltar a dar zoom.',
       },
     ],
   },

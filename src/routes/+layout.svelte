@@ -123,7 +123,7 @@
   {/if}
 </Tooltip.Provider>
 
-<Toaster position="bottom-right" />
+<Toaster position="bottom-right" class="pb-[calc(var(--toast-bottom-offset,0px)+1rem)]!" />
 <UpdateNotifier />
 
 <style>

@@ -346,8 +346,11 @@
   "canvas.zoom_out": "Alejar",
   "canvas.zoom_fit": "Ajustar a la pantalla",
   "canvas.zoom_level": "Nivel de zoom",
-  "canvas.zoom_lock": "Bloquear el canvas",
-  "canvas.zoom_unlock": "Desbloquear el canvas",
+  "canvas.lock_menu": "Bloqueos",
+  "canvas.lock_zoom": "Bloquear zoom",
+  "canvas.unlock_zoom": "Desbloquear zoom",
+  "canvas.lock_canvas": "Bloquear canvas",
+  "canvas.unlock_canvas": "Desbloquear canvas",
   "canvas.hint_action": "acción",
   "canvas.hint_view": "vista",
   "canvas.hint_selection": "selección",
@@ -4293,8 +4296,6 @@
   "settings.console_shell_hint": "En qué shell se ejecutan los comandos del nodo Console. Automático usa PowerShell en Windows y tu shell de inicio de sesión en macOS/Linux.",
   "tasks.add_short": "Añadir",
   "tasks.new_in_column": "Nueva tarea en {column}",
-  "canvas.zoom_pin_on": "Bloquear el zoom en {percent}%",
-  "canvas.zoom_pin_off": "Desbloquear el zoom",
   "canvas.zoom_lock_save_error": "No se pudo guardar el bloqueo del zoom.",
   "canvas.create_menu": "Nuevo"
 }

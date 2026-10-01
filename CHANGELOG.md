@@ -5,6 +5,18 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.36.1 - 2026-10-01
+
+### Changed
+
+- **One padlock for both locks.** The zoom bar read as − 100% 🔒 + ⛶ 🔒: two padlocks a few pixels apart, one for the zoom and one for the canvas, and nothing but a tooltip to tell them apart. It is now − 100% + 🔒 ⛶, and the single padlock opens a menu with Lock zoom and Lock canvas, each with its own icon; the entry turns into Unlock zoom or Unlock canvas while that lock is on, and either can be toggled without touching the other. The padlock closes and gets a frame whenever any lock is on, and the % value takes the accent colour while the zoom is locked.
+- The zoom menu marks the level the canvas is at, so 50%, 75%, 100%, 150% and 200% read as a choice instead of a plain list.
+
+### Fixed
+
+- Hibernating a workspace showed its confirmation as a translucent banner right on top of the bottom toolbar, covering its buttons for five seconds. It now appears as a regular notification in the corner, like every other confirmation in the app, and on the canvas every notification sits above the toolbar instead of over its right end.
+- Items inside dropdowns, context menus, selects and the command palette showed the arrow cursor even though clicking them runs an action; only the button that opened the menu showed the hand. Every menu item now shows the hand, except disabled ones.
+
 ## 0.36.0 - 2026-09-30
 
 ### Added
