@@ -951,6 +951,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: '2 de octubre de 2026 · 0.37.1',
+      title: 'Deep Space 0.37.1: desbloquear el zoom lo desbloquea de verdad',
+      summary: 'Abrir la app con el zoom bloqueado ya no deja el canvas atascado después de desbloquearlo',
+      items: [
+        'Abrir la app con el zoom bloqueado y luego desbloquearlo dejaba el canvas atascado en el nivel bloqueado: los niveles del menú no hacían nada, la rueda del ratón volvía al 100% y solo Ajustar a la pantalla lo movía. El motor del canvas solo leía sus límites de zoom al aparecer por primera vez, así que se quedaba con los bloqueados. Ahora bloquear y desbloquear le llegan al instante, y el zoom bloqueado también resiste Ajustar a la pantalla y Ctrl/Cmd+0, que antes se saltaban el bloqueo.',
+      ],
+    },
+    {
       date: '1 de octubre de 2026 · 0.37.0',
       title: 'Deep Space 0.37.0: detener no es un error, avisos que se entienden y scripts de otro workspace',
       summary: 'Detener un script ya no genera una alerta, los fallos dicen qué proceso cayó y el Centro de Atención explica para qué sirve',

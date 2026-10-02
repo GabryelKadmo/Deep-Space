@@ -951,6 +951,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: 'October 2, 2026 · 0.37.1',
+      title: 'Deep Space 0.37.1: unlocking the zoom really unlocks it',
+      summary: 'Opening the app with the zoom locked no longer leaves the canvas stuck there after unlocking',
+      items: [
+        'Opening the app with the zoom locked and then unlocking it left the canvas stuck at the locked level: the zoom levels in the menu did nothing, the mouse wheel snapped back to 100%, and only Fit to screen moved it. The canvas engine only read its zoom limits when it first appeared, so it kept the locked ones. Locking and unlocking now reach it immediately, and a locked zoom also holds against Fit to screen and Ctrl/Cmd+0, which used to slip past it.',
+      ],
+    },
+    {
       date: 'October 1, 2026 · 0.37.0',
       title: 'Deep Space 0.37.0: stopping is not an error, readable notices and scripts from another workspace',
       summary: 'Stopping a script no longer raises an alert, crashes say which process failed, and the Attention Center explains itself',
