@@ -3259,7 +3259,6 @@
         </div>
       {/if}
       <div class="canvas-main" inert={designModeNodeId !== null} aria-hidden={designModeNodeId ? 'true' : undefined}>
-      <ZoomBridge onReady={(api) => (zoomApi = api)} onZoomChange={(percent) => (zoomPercent = percent)} />
       {#if ghostRect}
         <div
           class="draw-ghost"
@@ -3300,6 +3299,9 @@
         onpointermove={handlePanePointerMove}
         onpointerup={handlePanePointerUp}
       >
+        <!-- Dentro do <SvelteFlow>: fora dele o useStore() devolve a store do provider,
+             sem o d3-zoom, e reaplicar os limites do zoom travado nao surtia efeito. -->
+        <ZoomBridge onReady={(api) => (zoomApi = api)} onZoomChange={(percent) => (zoomPercent = percent)} minZoom={lockedZoom ?? ZOOM_MIN} maxZoom={lockedZoom ?? ZOOM_MAX} />
         {#if appSettings.showMinimap !== 'false'}
           <MiniMap bgColor="var(--app-surface)" maskColor="color-mix(in srgb, var(--app-canvas) 72%, transparent)" nodeColor={minimapNodeColor} pannable zoomable />
         {/if}

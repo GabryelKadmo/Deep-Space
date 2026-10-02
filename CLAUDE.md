@@ -88,7 +88,8 @@
 
 - The canvas (`src/routes/canvas/+page.svelte`) uses @xyflow/svelte with custom node components in `src/lib/components/agent-room/canvas/`. Layout persists per workspace via the workspaces/nodes/edges API.
 - `useSvelteFlow()` only works inside `SvelteFlowProvider` — use the `ZoomBridge` component pattern to expose zoom functions to the page.
-  `setZoom`, `setCenter` and `fitView` work through that bridge, but `zoomIn`/`zoomOut` silently do nothing from outside `<SvelteFlow>` — step the zoom with `setZoom` against `getViewport().zoom` instead.
+  `ZoomBridge` is rendered as a child of `<SvelteFlow>`, not just inside the provider: outside it, `useStore()` returns the provider's own store, which has no d3-zoom (`panZoom` is null), so anything that touches the zoom engine silently does nothing there. That is also why `zoomIn`/`zoomOut` failed when the bridge sat outside.
+- `<SvelteFlow minZoom maxZoom>` are read only at mount; changing them later never reaches d3-zoom. The zoom lock reapplies them through `store.setMinZoom`/`setMaxZoom` in `ZoomBridge` — without that, opening the app with the zoom locked left the canvas stuck at that level after unlocking.
 - `onconnectend` only reports `toNode` when the rope ends inside a handle’s `connectionRadius`; the middle of a node is far outside every handle, so "drop the rope on the node" has to resolve the target from `document.elementFromPoint` (`handleConnectEnd` in `canvas/+page.svelte`).
 - `WorkspaceService.createEdge` rejects a self link and returns the existing edge for a pair that is already connected, in either direction — tests that rope a node to itself as a shortcut will fail.
 - Canvas page and `/terminal` are client-only (`ssr = false`) — avoids hydration races with xterm/xyflow.
