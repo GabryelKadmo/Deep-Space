@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.37.1 - 2026-10-02
+
+### Fixed
+
+- Opening the app with the zoom locked and then unlocking it left the canvas stuck at the locked level: the zoom levels in the menu did nothing, the mouse wheel snapped back to 100%, and only Fit to screen moved it. The canvas engine only read its zoom limits when it first appeared, so it kept the locked ones. Locking and unlocking now reach it immediately, and a locked zoom also holds against Fit to screen and Ctrl/Cmd+0, which used to slip past it.
+
 ## 0.37.0 - 2026-10-01
 
 ### Added

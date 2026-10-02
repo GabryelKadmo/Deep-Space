@@ -88,7 +88,8 @@
 
 - The canvas (`src/routes/canvas/+page.svelte`) uses @xyflow/svelte with custom node components in `src/lib/components/agent-room/canvas/`. Layout persists per workspace via the workspaces/nodes/edges API.
 - `useSvelteFlow()` only works inside `SvelteFlowProvider` — use the `ZoomBridge` component pattern to expose zoom functions to the page.
-  `setZoom`, `setCenter` and `fitView` work through that bridge, but `zoomIn`/`zoomOut` silently do nothing from outside `<SvelteFlow>` — step the zoom with `setZoom` against `getViewport().zoom` instead.
+  `ZoomBridge` is rendered as a child of `<SvelteFlow>`, not just inside the provider: outside it, `useStore()` returns the provider's own store, which has no d3-zoom (`panZoom` is null), so anything that touches the zoom engine silently does nothing there. That is also why `zoomIn`/`zoomOut` failed when the bridge sat outside.
+- `<SvelteFlow minZoom maxZoom>` are read only at mount; changing them later never reaches d3-zoom. The zoom lock reapplies them through `store.setMinZoom`/`setMaxZoom` in `ZoomBridge` — without that, opening the app with the zoom locked left the canvas stuck at that level after unlocking.
 - `onconnectend` only reports `toNode` when the rope ends inside a handle’s `connectionRadius`; the middle of a node is far outside every handle, so "drop the rope on the node" has to resolve the target from `document.elementFromPoint` (`handleConnectEnd` in `canvas/+page.svelte`).
 - `WorkspaceService.createEdge` rejects a self link and returns the existing edge for a pair that is already connected, in either direction — tests that rope a node to itself as a shortcut will fail.
 - Canvas page and `/terminal` are client-only (`ssr = false`) — avoids hydration races with xterm/xyflow.
@@ -142,6 +143,7 @@
 
 - **A visual change is never pushed to `dev` or `main` before the owner sees a preview.** Anything that alters what the app looks like — layout, spacing, colour, an icon, a new or rearranged control, a node, a dialog — is built, served from an isolated instance (own port and `DEEPSPACE_DATA_DIR`, never the real canvas) and captured with Playwright, and those screenshots go to the owner *before* the pull request is opened. Wait for the reply. Measure whatever the change claims to fix (alignment, offsets, overflow) and report the numbers with the image: "it looks right" is not evidence. This applies to a one-line CSS fix as much as to a new screen.
 - Before shipping meaningful changes, run focused tests and `npm run build` when feasible.
+- CI audits dependencies through `scripts/audit-dependencies.mjs`, the same gate as `npm audit --audit-level=moderate` plus a short list of reviewed exceptions. An exception is only for an advisory with no fix to take and no path into Deep Space; it names the advisory, the reason and a `reviewBy` date, after which it blocks again. Prefer updating the dependency; never widen an exception to a whole package.
 - For queue or scheduler behavior, run `npm run dev:worker` and `npm run dev:scheduler` locally with Redis available.
 - Do not revert unrelated user changes in the working tree.
 - Before opening a PR, run a self-review pass distinct from "does it work": a maintainer review on this repo previously caught a credential-persistence leak, an overly permissive PTY WebSocket origin check, unvalidated external API payloads reaching the UI, and provider-specific assumptions that didn't hold, all of which passed the full test suite. Specifically:

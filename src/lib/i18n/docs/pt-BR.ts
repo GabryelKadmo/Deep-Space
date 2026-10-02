@@ -955,6 +955,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: '2 de outubro de 2026 · 0.37.1',
+      title: 'Deep Space 0.37.1: destravar o zoom destrava de verdade',
+      summary: 'Abrir o app com o zoom travado não deixa mais o canvas preso depois de destravar',
+      items: [
+        'Abrir o app com o zoom travado e depois destravar deixava o canvas preso no nível travado: os níveis do menu não faziam nada, a rodinha do mouse voltava para 100% e só Ajustar à tela mexia. O motor do canvas só lia os limites de zoom quando aparecia pela primeira vez, então ficava com os travados. Agora travar e destravar chegam a ele na hora, e o zoom travado também resiste a Ajustar à tela e a Ctrl/Cmd+0, que antes escapavam da trava.',
+      ],
+    },
+    {
       date: '1 de outubro de 2026 · 0.37.0',
       title: 'Deep Space 0.37.0: parar não é erro, avisos que dá pra entender e scripts de outro workspace',
       summary: 'Parar um script não gera mais alerta, as falhas dizem qual processo caiu e a Central de Atenção explica para que serve',
