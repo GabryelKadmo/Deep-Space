@@ -56,6 +56,21 @@ export function externalUrl(raw: string): string | null {
   }
 }
 
+// Um mesmo clique pode chegar duas vezes ao abridor (o link OSC 8 que o
+// Claude Code imprime e o mesmo texto detectado como URL); a mesma URL dentro
+// da janela conta uma vez so, para nao abrir duas abas.
+export function createExternalLinkOpener(open: (url: string) => void, windowMs = 1000) {
+  let last = { url: '', at: -Infinity };
+  return (raw: string, now = Date.now()): boolean => {
+    const url = externalUrl(raw);
+    if (!url) return false;
+    if (url === last.url && now - last.at < windowMs) return false;
+    last = { url, at: now };
+    open(url);
+    return true;
+  };
+}
+
 // URLs longas quebram em varias linhas do terminal; a linha logica junta as
 // linhas quebradas e guarda a celula de cada caractere (um caractere largo
 // ocupa duas celulas), para devolver ao xterm uma faixa exata.

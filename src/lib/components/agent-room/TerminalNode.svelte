@@ -23,7 +23,7 @@
   import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, wordRangeAtCell, type TerminalCell } from './terminal-selection.js';
   import { clipboardPasteFiles, storePastedTerminalFiles, terminalPathTokens } from './terminal-paste.js';
   import { workingDirectoryFromOsc } from './terminal-working-directory.js';
-  import { externalUrl, findTerminalPaths, findTerminalUrls, logicalLineAt } from './terminal-links.js';
+  import { createExternalLinkOpener, findTerminalPaths, findTerminalUrls, logicalLineAt } from './terminal-links.js';
   import { audioSignalIsEmpty } from '$lib/modules/agent-room/domain/voice-audio.js';
   import {
     LEADER_DICTATION_COMMAND,
@@ -394,12 +394,22 @@
     let fontSize = 13;
     let fontFamily = "'JetBrains Mono Variable', 'JetBrains Mono', Consolas, 'Cascadia Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
 
+    const openLink = createExternalLinkOpener((url) => window.open(url, '_blank', 'noopener,noreferrer'));
     const terminal = new Terminal({
       cursorBlink: true,
       fontSize,
       fontFamily,
       theme: TERMINAL_THEMES[themeName]?.theme ?? TERMINAL_THEMES[DEFAULT_TERMINAL_THEME].theme,
       scrollback: 5000,
+      // Links OSC 8 (o Claude Code imprime URLs assim) caiam no handler padrao
+      // do xterm, que pede confirmacao em dialogo nativo e abre por conta
+      // propria; com ele, o Cmd/Ctrl+clique passa a ser o mesmo dos outros links.
+      linkHandler: {
+        allowNonHttpProtocols: false,
+        activate: (event, text) => {
+          if (event.ctrlKey || event.metaKey) openLink(text);
+        },
+      },
     });
     xtermInstance = terminal;
 
@@ -537,10 +547,7 @@
         const { text, cells } = logicalLineAt((y) => terminal.buffer.active.getLine(y), row);
         const urls = findTerminalUrls(text);
         const spans = [
-          ...urls.map((span) => ({ span, open: () => {
-            const url = externalUrl(span.text);
-            if (url) window.open(url, '_blank', 'noopener,noreferrer');
-          } })),
+          ...urls.map((span) => ({ span, open: () => openLink(span.text) })),
           ...(onOpenPath ? findTerminalPaths(text, urls).map((span) => ({ span, open: () => onOpenPath(span.text.replace(/:\d+$/, '')) })) : []),
         ];
         const links = spans

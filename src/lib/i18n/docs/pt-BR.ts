@@ -961,6 +961,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: '3 de outubro de 2026 · 0.38.2',
+      title: 'Deep Space 0.38.2: uma aba por link',
+      summary: 'Cmd/Ctrl+clique nos links que o Claude Code imprime abre uma aba, sem diálogo de confirmação',
+      items: [
+        'Cmd/Ctrl+clique num link impresso pelo Claude Code abria duas abas no navegador. O Claude Code imprime links como hyperlinks de terminal (OSC 8), que caíam no handler padrão do terminal: ele pedia confirmação num diálogo nativo, duas vezes por clique, e abria a página por conta própria. Esses links agora passam pelo mesmo Cmd/Ctrl+clique de todo link — uma aba, sem diálogo — inclusive hyperlinks cujo texto não é o endereço, como "abrir o PR".',
+      ],
+    },
+    {
       date: '3 de outubro de 2026 · 0.38.1',
       title: 'Deep Space 0.38.1: fixe o Servidores na dock',
       summary: 'O Servidores agora pode ser fixado na dock de baixo como todo nó',
