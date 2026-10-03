@@ -957,6 +957,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: '3 de octubre de 2026 · 0.38.3',
+      title: 'Deep Space 0.38.3: una pestaña en los enlaces de Claude Code, de verdad',
+      summary: 'Cmd/Ctrl+clic en un enlace ya no llega al programa que corre en la terminal',
+      items: [
+        'Cmd/Ctrl+clic en un enlace impreso por Claude Code todavía abría dos pestañas. En su modo de pantalla completa, Claude Code activa los clics del ratón y abre el enlace por su cuenta cuando recibe un clic en él, y la terminal reenviaba el mismo Cmd/Ctrl+clic que Deep Space ya había abierto. Ahora el Cmd/Ctrl+clic en un enlace se queda en la terminal y ya no se reenvía al programa; los clics normales, y Cmd/Ctrl+clic en cualquier otro lugar, siguen llegando como antes.',
+      ],
+    },
+    {
       date: '3 de octubre de 2026 · 0.38.2',
       title: 'Deep Space 0.38.2: una pestaña por enlace',
       summary: 'Cmd/Ctrl+clic en los enlaces que imprime Claude Code abre una pestaña, sin diálogo de confirmación',

@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.38.3 - 2026-10-03
+
+### Fixed
+
+- Cmd/Ctrl+click on a link printed by Claude Code still opened two tabs. In its full-screen mode Claude Code turns on mouse clicks and opens a link by itself when it receives a click on it, and the terminal forwarded the same Cmd/Ctrl+click that Deep Space had already opened. A Cmd/Ctrl+click on a link now stays with the terminal and is no longer forwarded to the running program; plain clicks, and Cmd/Ctrl+clicks anywhere else, still reach it as before.
+
 ## 0.38.2 - 2026-10-03
 
 ### Fixed
