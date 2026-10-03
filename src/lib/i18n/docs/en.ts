@@ -957,6 +957,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: 'October 3, 2026 · 0.38.1',
+      title: 'Deep Space 0.38.1: pin Servers to the dock',
+      summary: 'Servers can be pinned to the bottom dock like every other node',
+      items: [
+        'Pinning Servers from the tools menu removed it from the menu and drew nothing in the bottom dock, so the node could only be created from the menu. It now has its own dock button, like every other node, and a test fails whenever a node is added to the menu without one.',
+      ],
+    },
+    {
       date: 'October 2, 2026 · 0.38.0',
       title: 'Deep Space 0.38.0: your servers in the canvas',
       summary: 'A Servers node that reads ~/.ssh/config and opens SSH sessions to your VPS, several at once',

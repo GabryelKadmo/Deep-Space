@@ -961,6 +961,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: '3 de outubro de 2026 · 0.38.1',
+      title: 'Deep Space 0.38.1: fixe o Servidores na dock',
+      summary: 'O Servidores agora pode ser fixado na dock de baixo como todo nó',
+      items: [
+        'Fixar o Servidores pelo menu de ferramentas tirava ele do menu e não desenhava nada na dock de baixo, então o nó só podia ser criado pelo menu. Agora ele tem o próprio botão na dock, como todo nó, e um teste falha sempre que um nó entra no menu sem ele.',
+      ],
+    },
+    {
       date: '2 de outubro de 2026 · 0.38.0',
       title: 'Deep Space 0.38.0: seus servidores no canvas',
       summary: 'Um nó Servidores que lê o ~/.ssh/config e abre sessões SSH nas suas VPS, várias ao mesmo tempo',
