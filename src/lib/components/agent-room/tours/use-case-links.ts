@@ -2,6 +2,7 @@
 export const USE_CASE_TOUR_IDS: Record<string, string> = {
   'leader-team': 'team-leader',
   'console-commands': 'console-commands',
+  'ssh-servers': 'ssh-servers',
   'zoom-lock': 'zoom-lock',
   'workspace-node-transfer': 'workspace-node-transfer',
   'watch-24-7': 'vigia-24-7',
