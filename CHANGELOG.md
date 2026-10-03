@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.40.0 - 2026-10-03
+
+### Added
+
+- **Edit your SSH config from the Servers node.** A button in the header opens ~/.ssh/config in the system default editor; when the file does not exist yet, it is created with a commented example and permissions restricted to your user, and an existing file is never overwritten. After saving, the reload button brings the new servers. The file opens outside Deep Space on purpose: the in-app editor only touches workspace files, and the folder that holds your SSH keys stays out of it.
+
 ## 0.39.0 - 2026-10-03
 
 ### Added
