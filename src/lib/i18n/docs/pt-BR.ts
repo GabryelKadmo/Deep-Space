@@ -515,6 +515,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Scripts', 'Console', 'um processo por comando', 'pastas'],
     },
     {
+      id: 'ssh-servers',
+      title: 'Entre nas suas VPS pelo Canvas',
+      body: 'Crie um nó Servidores: ele lê o seu ~/.ssh/config e lista cada Host com usuário, endereço e porta — o mesmo arquivo do Remote-SSH do VS Code, então quem já usa não precisa configurar nada. Os atalhos de Git (github.com-pessoal e afins) e os padrões com * ficam de fora. Escolha um servidor e clique em Conectar: quem conecta é o ssh do seu sistema, com as suas chaves, e o Deep Space só lê os nomes — nenhuma chave ou senha passa por ele. Dá para manter várias VPS conectadas no mesmo nó; trocar na lista não derruba a outra conexão, e o terminal de cada uma volta de onde parou. Se a conexão cai sozinha, você recebe um aviso com o nome do servidor. Editou o config? O botão de recarregar no cabeçalho traz os hosts novos.',
+      tags: ['Servidores', 'SSH', 'VPS', 'Remote-SSH'],
+    },
+    {
       id: 'zoom-lock',
       title: 'Trave o zoom onde o texto fica nítido',
       body: 'Fora de 100% a seleção de texto dentro dos terminais desalinha, e uma rodada sem querer da roda do mouse já tira o canvas do zoom. Escolha o nível no seletor de % no canto inferior esquerdo e abra o cadeado ao lado do + e escolha Bloquear zoom: o cadeado fecha e ganha moldura, o número fica em destaque, − e + apagam, e roda, pinça, duplo clique e atalhos não mudam mais o zoom — a roda passa a mover o canvas. A trava vale para todos os workspaces e sobrevive a reinícios; escolha Desbloquear zoom no mesmo menu para soltar. Ela é independente de Bloquear canvas, a outra opção do mesmo cadeado, que trava arrastar e selecionar nós.',
@@ -954,6 +960,14 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '2 de outubro de 2026 · 0.38.0',
+      title: 'Deep Space 0.38.0: seus servidores no canvas',
+      summary: 'Um nó Servidores que lê o ~/.ssh/config e abre sessões SSH nas suas VPS, várias ao mesmo tempo',
+      items: [
+        'Nó Servidores. Ele lê o seu ~/.ssh/config — o mesmo arquivo do Remote-SSH do VS Code — e lista cada Host com usuário, endereço e porta; os atalhos de Git e os padrões com * ficam de fora. Escolha um servidor e clique em Conectar: quem conecta é o ssh do seu sistema, com as suas chaves, e o Deep Space só lê os nomes dos hosts, nunca chave ou senha. Vários servidores ficam conectados no mesmo nó, trocar na lista mantém cada sessão e o log dela, uma conexão que cai sozinha gera um aviso com o nome do servidor, e o botão de recarregar pega as edições do config. Fica no menu de ferramentas da barra, com caso de uso e tour guiado.',
+      ],
+    },
     {
       date: '2 de outubro de 2026 · 0.37.1',
       title: 'Deep Space 0.37.1: destravar o zoom destrava de verdade',

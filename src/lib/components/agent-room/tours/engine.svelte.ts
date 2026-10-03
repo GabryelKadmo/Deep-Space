@@ -297,6 +297,16 @@ async function runAction(action: TourAction): Promise<void> {
         }
         break;
       }
+      case 'createSsh': {
+        const nodes = await api<WorkspaceSnapshot['nodes']>(`/api/agent-room/workspaces/${workspaceId}/nodes`);
+        if (!nodes?.some((node) => node.type === 'ssh')) {
+          await api(`/api/agent-room/workspaces/${workspaceId}/nodes`, {
+            method: 'POST',
+            body: JSON.stringify({ type: 'ssh', title: action.title, ...nextPosition(), width: 680, height: 380, payload: {} }),
+          });
+        }
+        break;
+      }
       case 'createConsoleCommand': {
         const commands = await api<Array<{ name: string }>>(`/api/agent-room/workspaces/${workspaceId}/console-commands`);
         if (!commands?.some((command) => command.name === action.name)) {
