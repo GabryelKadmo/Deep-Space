@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { NodeProps } from '@xyflow/svelte';
-  import { PanelLeftClose, PanelLeftOpen, Plug, RefreshCw, Server, Unplug, X } from '@lucide/svelte';
+  import { FilePen, PanelLeftClose, PanelLeftOpen, Plug, RefreshCw, Server, Unplug, X } from '@lucide/svelte';
+  import { toast } from '@beeblock/svelar/ui';
   import { getCsrfToken } from '@beeblock/svelar/http';
   import { Button } from '$lib/components/ui/button';
   import TerminalNode from '../TerminalNode.svelte';
@@ -46,6 +47,12 @@
   let sessions = $state<Record<string, string>>({ ...(data.payload.sessions ?? {}) });
   let connected = $state<Record<string, boolean>>({});
   let terminalTheme = $state(DEFAULT_TERMINAL_THEME);
+  let openingConfig = $state(false);
+
+  type DesktopBridge = { openPath?: (path: string) => Promise<string> };
+  const desktop = typeof window === 'undefined'
+    ? undefined
+    : (window as typeof window & { deepspaceDesktop?: DesktopBridge }).deepspaceDesktop;
 
   const selectedHost = $derived(hosts.find((host) => host.alias === selectedAlias) ?? null);
 
@@ -100,6 +107,28 @@
       terminalTheme = normalizeTerminalTheme(settings.terminalTheme);
     });
   });
+
+  // Abre o ~/.ssh/config no editor padrao do sistema: o editor do app so mexe
+  // em arquivos do workspace, e a pasta das chaves SSH fica de fora de proposito.
+  async function editConfig() {
+    if (openingConfig) return;
+    openingConfig = true;
+    try {
+      const result = await api<{ configPath: string; created: boolean }>('/api/agent-room/ssh-hosts/config', { method: 'POST' });
+      configPath = result.configPath;
+      if (result.created) void load();
+      if (!desktop?.openPath) {
+        toast.info(m['ssh.edit_config_browser']({ path: result.configPath }));
+        return;
+      }
+      const failure = await desktop.openPath(result.configPath);
+      if (failure) toast.error(m['ssh.edit_config_failed']());
+    } catch {
+      toast.error(m['ssh.edit_config_failed']());
+    } finally {
+      openingConfig = false;
+    }
+  }
 
   function persist(partial: Partial<SshPayload>) {
     return data.onPayloadChange?.(id, partial);
@@ -156,6 +185,9 @@
   {#snippet icon()}<Server size={13} />{/snippet}
   {#snippet title()}{data.title || m['ssh.title']()}{/snippet}
   {#snippet actions()}
+    <HeaderIconButton class="node-action-btn" label={m['ssh.edit_config']()} side="left" onclick={() => void editConfig()}>
+      <FilePen size={13} />
+    </HeaderIconButton>
     <HeaderIconButton class="node-action-btn" label={m['ssh.reload']()} side="left" onclick={() => void load()}>
       <RefreshCw size={13} />
     </HeaderIconButton>

@@ -64,7 +64,7 @@ export const TOURS_PT: Tour[] = [
       {
         id: 'many',
         title: 'Várias VPS ao mesmo tempo',
-        body: 'Trocar de servidor na lista não derruba a conexão do outro, e o terminal de cada um volta de onde parou. Editou o config? O botão de recarregar no cabeçalho traz os hosts novos.',
+        body: 'Trocar de servidor na lista não derruba a conexão do outro, e o terminal de cada um volta de onde parou. Para adicionar um servidor, o botão de editar no cabeçalho abre o ~/.ssh/config no editor do sistema; depois de salvar, recarregue a lista.',
       },
     ],
   },

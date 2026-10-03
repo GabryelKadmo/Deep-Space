@@ -60,7 +60,7 @@ export const TOURS_ES: Tour[] = [
       {
         id: 'many',
         title: 'Varias VPS a la vez',
-        body: 'Cambiar de servidor en la lista no corta la otra conexión, y la terminal de cada uno vuelve donde estaba. ¿Editaste el config? El botón de recargar en la cabecera trae los hosts nuevos.',
+        body: 'Cambiar de servidor en la lista no corta la otra conexión, y la terminal de cada uno vuelve donde estaba. Para añadir un servidor, el botón de editar en la cabecera abre ~/.ssh/config en el editor del sistema; después de guardar, recarga la lista.',
       },
     ],
   },

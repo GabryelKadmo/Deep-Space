@@ -9,4 +9,12 @@ export class SshHostController extends Controller {
       return this.json({ error: error instanceof Error ? error.message : 'SSH_CONFIG_UNREADABLE' }, 500);
     }
   }
+
+  async ensureConfig() {
+    try {
+      return this.json({ data: await sshHostService.ensureConfig() });
+    } catch (error) {
+      return this.json({ error: error instanceof Error ? error.message : 'SSH_CONFIG_UNWRITABLE' }, 500);
+    }
+  }
 }
