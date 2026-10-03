@@ -10,6 +10,7 @@ import {
   CreateCanvasEdgeDto,
   ChangeTerminalProviderDto,
   ChangeTerminalRuntimeDto,
+  ChangeTerminalShellDto,
   CreateCanvasNodeDto,
   CreateWorkspaceDto,
   UpdateCanvasEdgeDto,
@@ -20,6 +21,7 @@ import {
   CreateCanvasEdgeRequest,
   ChangeTerminalProviderRequest,
   ChangeTerminalRuntimeRequest,
+  ChangeTerminalShellRequest,
   CreateCanvasNodeRequest,
   CreateWorkspaceRequest,
   DiscoverRolesRequest,
@@ -189,6 +191,19 @@ export class WorkspaceController extends Controller {
       });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao trocar o ambiente do terminal.');
+    }
+  }
+
+  async changeTerminalShell(event: any) {
+    try {
+      const input = await ChangeTerminalShellRequest.validate(event);
+      return this.json({
+        data: await workspaceService.changeTerminalShell(
+          ChangeTerminalShellDto.from(event.params.id, event.params.nodeId, input),
+        ),
+      });
+    } catch (error) {
+      return this.errorResponse(error, 'Falha ao trocar o shell do terminal.');
     }
   }
 

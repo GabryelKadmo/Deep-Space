@@ -16,7 +16,7 @@ test.describe('restauracao de sessao', () => {
     await page.getByRole('button', { name: 'Criar' }).click();
     await expect(page.locator('.workspace-list li.active')).toContainText(workspaceName, { timeout: 15_000 });
 
-    await createNodeOnCanvas(page, 'Shell');
+    await createNodeOnCanvas(page, 'Terminal');
     await expect(page.locator('.canvas-terminal .xterm')).toBeVisible({ timeout: 10_000 });
 
     // Simula restart do app: corrompe o sessionId como se a sessao tivesse morrido

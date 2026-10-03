@@ -13,6 +13,7 @@ import type {
   CreateWorkspaceInput,
   ChangeTerminalProviderInput,
   ChangeTerminalRuntimeInput,
+  ChangeTerminalShellInput,
   UpdateCanvasEdgeInput,
   UpdateCanvasNodeInput,
   UpdateWorkspaceInput,
@@ -48,6 +49,18 @@ export class ChangeTerminalRuntimeDto {
       input.wslDistribution ?? null,
       input.wslWorkingDir ?? null,
     );
+  }
+}
+
+export class ChangeTerminalShellDto {
+  constructor(
+    public readonly workspaceId: string,
+    public readonly nodeId: string,
+    public readonly shell: ChangeTerminalShellInput['shell'],
+  ) {}
+
+  static from(workspaceId: string, nodeId: string, input: ChangeTerminalShellInput): ChangeTerminalShellDto {
+    return new ChangeTerminalShellDto(workspaceId, nodeId, input.shell);
   }
 }
 

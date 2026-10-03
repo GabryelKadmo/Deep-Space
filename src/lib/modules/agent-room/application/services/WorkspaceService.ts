@@ -6,7 +6,14 @@ import { findFreeCanvasPosition } from '../../domain/canvas-placement.js';
 import { executionRuntimeKey } from '../../domain/runtime.js';
 import { AgentBoardTask } from '../../domain/models/AgentBoardTask.js';
 import { workspaceRepository } from '../../infrastructure/repositories/WorkspaceRepository.js';
-import { defaultShell } from '../../infrastructure/workspace.js';
+import { defaultShell, resolvePosixShell } from '../../infrastructure/workspace.js';
+import {
+  interactiveShellLaunch,
+  normalizeConsoleShell,
+  shellFromCommand,
+  terminalShellOptions,
+  type TerminalShell,
+} from '../../domain/console-commands.js';
 import { ptySessionManager } from '../../infrastructure/pty/PtySessionManager.ts';
 import { agentSessionTracker, agentSessionTrackerForRuntime } from '../../infrastructure/pty/AgentSessionTracker.ts';
 import { bridgeService, PROVIDER_BRIDGE_TARGETS } from './BridgeService.js';
@@ -25,6 +32,7 @@ import type {
   CreateCanvasEdgeDto,
   ChangeTerminalProviderDto,
   ChangeTerminalRuntimeDto,
+  ChangeTerminalShellDto,
   CreateCanvasNodeDto,
   UpdateCanvasEdgeDto,
   UpdateCanvasNodeDto,
@@ -906,11 +914,67 @@ export class WorkspaceService {
     const unavailableLegacyDefault = process.platform !== 'win32'
       && command === '/bin/zsh'
       && !existsSync(command);
-    if (command && !unavailableLegacyDefault) return false;
-
     const runtime = terminalExecutionRuntime(workspace, payload as never);
-    payload.command = defaultShell({ preferWsl: runtime.kind === 'wsl' });
+
+    if (runtime.kind === 'wsl') {
+      if (command && !unavailableLegacyDefault) return false;
+      payload.command = defaultShell({ preferWsl: true });
+      return true;
+    }
+
+    // O Terminal guarda o shell escolhido. Nos antigos so tinham o comando, e
+    // o PowerShell deles abria sem liberar a politica de execucao.
+    const args = Array.isArray(payload.args) ? payload.args : [];
+    const requested = typeof payload.shell === 'string' ? normalizeConsoleShell(payload.shell) : null;
+    const legacyPowerShell = !requested && process.platform === 'win32' && command === 'powershell.exe' && args.length === 0;
+    if (command && !unavailableLegacyDefault && !legacyPowerShell) {
+      if (requested) return false;
+      const known = shellFromCommand(command);
+      if (!known) return false;
+      payload.shell = known;
+      return true;
+    }
+    this.applyTerminalShell(payload, requested && requested !== 'auto' ? requested : this.defaultTerminalShell());
     return true;
+  }
+
+  private defaultTerminalShell(): TerminalShell {
+    if (process.platform === 'win32') return 'powershell';
+    return shellFromCommand(resolvePosixShell()) ?? 'sh';
+  }
+
+  private applyTerminalShell(payload: Record<string, unknown>, shell: TerminalShell): void {
+    const launch = interactiveShellLaunch(shell, process.platform);
+    payload.shell = shell;
+    payload.command = launch.command;
+    payload.args = launch.args;
+  }
+
+  async changeTerminalShell(dto: ChangeTerminalShellDto) {
+    const [workspace, node] = await Promise.all([
+      this.get(dto.workspaceId),
+      workspaceRepository.getNode(dto.nodeId),
+    ]);
+    if (!node || node.workspaceId !== dto.workspaceId || node.type !== 'terminal') {
+      throw new Error('Terminal não encontrado neste workspace.');
+    }
+    const payload = { ...((node.payload ?? {}) as Record<string, unknown>) };
+    if (typeof payload.provider === 'string' && payload.provider.trim()) {
+      throw new Error('Só o Terminal escolhe o shell; agentes usam o comando do provider.');
+    }
+    if (terminalExecutionRuntime(workspace, payload as never).kind === 'wsl') {
+      throw new Error('Em WSL o terminal usa o shell da distribuição.');
+    }
+    if (!terminalShellOptions(process.platform).includes(dto.shell)) {
+      throw new Error('Shell indisponível nesta plataforma.');
+    }
+    this.killTerminalSessions(dto.workspaceId, node.id, payload);
+    delete payload.sessionId;
+    this.applyTerminalShell(payload, dto.shell);
+    const updated = await workspaceRepository.updateNode(node.id, { payload: payload as never });
+    if (!updated) throw new Error('Terminal não encontrado neste workspace.');
+    this.notifyStructureChanged(dto.workspaceId);
+    return updated;
   }
 
   private assertWorkingDir(dir: string): string {

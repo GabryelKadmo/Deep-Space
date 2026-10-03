@@ -5,6 +5,7 @@ import {
   createWorkspaceSchema,
   changeTerminalProviderSchema,
   changeTerminalRuntimeSchema,
+  changeTerminalShellSchema,
   discoverRolesSchema,
   updateCanvasEdgeSchema,
   updateCanvasNodeSchema,
@@ -14,6 +15,7 @@ import {
   type CreateWorkspaceInput,
   type ChangeTerminalProviderInput,
   type ChangeTerminalRuntimeInput,
+  type ChangeTerminalShellInput,
   type DiscoverRolesInput,
   type UpdateCanvasEdgeInput,
   type UpdateCanvasNodeInput,
@@ -45,6 +47,20 @@ export class ChangeTerminalRuntimeRequest extends FormRequest {
 
   passedValidation(data: unknown): ChangeTerminalRuntimeInput {
     return changeTerminalRuntimeSchema.parse(data);
+  }
+}
+
+export class ChangeTerminalShellRequest extends FormRequest {
+  rules() {
+    return changeTerminalShellSchema;
+  }
+
+  authorize(): boolean {
+    return true;
+  }
+
+  passedValidation(data: unknown): ChangeTerminalShellInput {
+    return changeTerminalShellSchema.parse(data);
   }
 }
 

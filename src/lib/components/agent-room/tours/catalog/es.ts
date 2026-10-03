@@ -65,6 +65,29 @@ export const TOURS_ES: Tour[] = [
     ],
   },
   {
+    id: 'terminal-shell',
+    icon: 'Terminal',
+    title: 'Un shell por terminal',
+    tagline: 'PowerShell, Git Bash, CMD o WSL — cada terminal en el suyo.',
+    steps: [
+      {
+        id: 'pick',
+        title: 'Mira el shell en la cabecera',
+        body: 'Cada nodo Terminal muestra en la cabecera el shell en el que corre. Crea uno desde el dock (botón Terminal) si todavía no tienes.',
+      },
+      {
+        id: 'switch',
+        title: 'Cámbialo con un clic',
+        body: 'Haz clic en el nombre del shell y elige otro. La terminal se reabre en él y la elección queda guardada en el nodo.',
+      },
+      {
+        id: 'default',
+        title: 'Define el predeterminado',
+        body: 'En Configuración > Terminal, el shell predeterminado vale para las terminales nuevas y para Scripts.',
+      },
+    ],
+  },
+  {
     id: 'zoom-lock',
     icon: 'Lock',
     title: 'Zoom bloqueado en su punto',

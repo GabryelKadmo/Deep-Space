@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, untrack } from 'svelte';
   import type { NodeProps } from '@xyflow/svelte';
+  import { SHELL_NAMES, shellFromCommand, terminalShellOptions, type TerminalShell } from '$lib/modules/agent-room/domain/console-commands.js';
   import { ArrowLeftRight, BadgeCheck, Bot, ChevronDown, ChevronUp, Ellipsis, Globe2, History, ListRestart, LoaderCircle, MonitorCog, Paperclip, Play, RotateCcw, Scale, SendHorizontal, SquareTerminal, Star, SwatchBook, UserRound, X } from '@lucide/svelte';
   import { toast } from '@beeblock/svelar/ui';
   import { Button } from '$lib/components/ui/button';
@@ -50,6 +51,7 @@
     providersReady?: Promise<void>;
     providers?: AgentProviderInfo[];
     onProviderChange?: (id: string, provider: string, profileId?: string | null, profileLabel?: string | null) => Promise<void>;
+    onShellChange?: (id: string, shell: TerminalShell) => Promise<void>;
     onRuntimeChange?: (id: string, selection: { mode: 'default' | 'native' | 'wsl'; wslDistribution: string | null; wslWorkingDir: string | null }) => Promise<void>;
     onRoleChange?: (id: string, role: string | null) => void;
     onDelete: (id: string) => void;
@@ -83,6 +85,7 @@
   let runtimeProviders = $state<AgentProviderInfo[]>([]);
   let providerRequest = 0;
   const isWindows = typeof navigator !== 'undefined' && navigator.platform.startsWith('Win');
+  const shellOptions = terminalShellOptions(isWindows ? 'win32' : 'linux');
   const isPureShell = $derived(!data.payload.provider);
   const isPureNativeShell = $derived(!data.payload.provider && data.executionRuntime.kind === 'native');
   const launchWorkingDir = $derived(
@@ -204,6 +207,27 @@
       ? `${data.executionRuntime.distribution}:${data.executionRuntime.linuxWorkingDir}`
       : 'native',
   ].join(':'));
+  // Terminal (sem provider) fora do WSL escolhe o shell; em WSL e o da distribuicao.
+  const currentShell = $derived.by((): TerminalShell | null => {
+    if (currentProvider || data.executionRuntime.kind === 'wsl') return null;
+    const saved = (data.payload as TerminalNodePayload).shell;
+    return shellOptions.includes(saved as TerminalShell) ? (saved as TerminalShell) : shellFromCommand(data.payload.command);
+  });
+  let switchingShell = $state(false);
+
+  async function changeShell(shell: TerminalShell) {
+    if (shell === currentShell || switchingShell) return;
+    switchingShell = true;
+    providerError = '';
+    try {
+      await data.onShellChange?.(id, shell);
+    } catch {
+      providerError = m['term.shell_switch_error']();
+      setTimeout(() => (providerError = ''), 6_000);
+    } finally {
+      switchingShell = false;
+    }
+  }
   let switchingProvider = $state(false);
   let providerError = $state('');
 
@@ -580,7 +604,8 @@
       <SquareTerminal size={13} />
     {/if}
   {/snippet}
-  {#snippet title()}{data.title}{/snippet}
+  <!-- Terminais criados antes do nome Terminal guardaram "Shell" no titulo. -->
+  {#snippet title()}{currentShell && /^Shell( \d+)?$/.test(data.title) ? data.title.replace('Shell', m['canvas.default_shell']()) : data.title}{/snippet}
   {#snippet actions()}
     {#if runtimeOverride}
       <span class="terminal-status-chip" role="status" title={runtimeTitle} aria-label={runtimeTitle}>
@@ -593,6 +618,28 @@
         <BadgeCheck size={12} />
         <span>{roleLabel}</span>
       </span>
+    {/if}
+    {#if currentShell}
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger
+          class="terminal-shell-trigger"
+          data-testid="terminal-shell-picker"
+          aria-label={m['term.shell_switch']({ shell: SHELL_NAMES[currentShell] })}
+          title={m['term.shell_switch']({ shell: SHELL_NAMES[currentShell] })}
+          disabled={switchingShell}
+        >
+          <span>{SHELL_NAMES[currentShell]}</span>
+          <ChevronDown size={11} aria-hidden="true" />
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="end" class="w-44">
+          <DropdownMenu.Label>{m['term.shell_label']()}</DropdownMenu.Label>
+          <DropdownMenu.RadioGroup value={currentShell} onValueChange={(value: string) => void changeShell(value as TerminalShell)}>
+            {#each shellOptions as shell (shell)}
+              <DropdownMenu.RadioItem value={shell}>{SHELL_NAMES[shell]}</DropdownMenu.RadioItem>
+            {/each}
+          </DropdownMenu.RadioGroup>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
     {/if}
     {#if data.payload.maestro}
       <span class="terminal-leader-state" role="img" title={m['term.maestro_active']()} aria-label={m['term.maestro_active']()}>
@@ -1065,6 +1112,31 @@
     background: var(--app-border);
     border-radius: 4px;
     padding: 1px 5px;
+  }
+
+  :global(.terminal-shell-trigger) {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 22px;
+    padding: 0 5px 0 7px;
+    border: 1px solid var(--app-border);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--app-text-soft);
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  :global(.terminal-shell-trigger:hover),
+  :global(.terminal-shell-trigger[data-state='open']) {
+    background: var(--app-surface-raised);
+    color: var(--app-text);
+  }
+
+  :global(.terminal-shell-trigger:disabled) {
+    cursor: default;
+    opacity: 0.6;
   }
 
   .terminal-status-chip {

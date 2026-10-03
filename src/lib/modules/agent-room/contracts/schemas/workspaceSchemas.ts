@@ -78,6 +78,10 @@ export const changeTerminalRuntimeSchema = z.object({
   wslWorkingDir: z.string().trim().nullish(),
 });
 
+export const changeTerminalShellSchema = z.object({
+  shell: z.enum(['powershell', 'cmd', 'gitbash', 'wsl', 'bash', 'zsh', 'sh']),
+});
+
 export const discoverRolesSchema = z.object({
   fromDir: z.string().trim().min(1).max(4_000).optional(),
 });
@@ -100,6 +104,7 @@ export type CreateCanvasNodeInput = z.infer<typeof createCanvasNodeSchema>;
 export type UpdateCanvasNodeInput = z.infer<typeof updateCanvasNodeSchema>;
 export type ChangeTerminalProviderInput = z.infer<typeof changeTerminalProviderSchema>;
 export type ChangeTerminalRuntimeInput = z.infer<typeof changeTerminalRuntimeSchema>;
+export type ChangeTerminalShellInput = z.infer<typeof changeTerminalShellSchema>;
 export type DiscoverRolesInput = z.infer<typeof discoverRolesSchema>;
 export type CreateCanvasEdgeInput = z.infer<typeof createCanvasEdgeSchema>;
 export type UpdateCanvasEdgeInput = z.infer<typeof updateCanvasEdgeSchema>;

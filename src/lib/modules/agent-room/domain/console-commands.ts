@@ -85,3 +85,57 @@ export function consoleShellInvocation(
     : process.env.SHELL || '/bin/sh';
   return { command: posix, args: ['-lc', line] };
 }
+
+export type TerminalShell = Exclude<ConsoleShell, 'auto'>;
+
+export const SHELL_NAMES: Record<TerminalShell, string> = {
+  powershell: 'PowerShell',
+  gitbash: 'Git Bash',
+  wsl: 'WSL',
+  cmd: 'CMD',
+  bash: 'bash',
+  zsh: 'zsh',
+  sh: 'sh',
+};
+
+/** Shells que o no Terminal oferece: os da plataforma, sem o "Automatico". */
+export function terminalShellOptions(platform: NodeJS.Platform | string): TerminalShell[] {
+  return consoleShellOptions(platform).filter((shell): shell is TerminalShell => shell !== 'auto');
+}
+
+/** Reconhece o shell de um comando salvo antes de o no guardar a escolha. */
+export function shellFromCommand(command: string | null | undefined): TerminalShell | null {
+  const name = (command ?? '').trim().split(/[\\/]/).pop()?.toLowerCase().replace(/\.exe$/, '') ?? '';
+  if (name === 'powershell' || name === 'pwsh') return 'powershell';
+  if (name === 'cmd') return 'cmd';
+  if (name === 'wsl') return 'wsl';
+  if (name === 'bash') return /[\\/]git[\\/]/i.test(command ?? '') ? 'gitbash' : 'bash';
+  if (name === 'zsh' || name === 'sh') return name;
+  return null;
+}
+
+/** O que o PTY recebe para abrir um shell interativo no no Terminal. */
+export function interactiveShellLaunch(
+  shell: TerminalShell,
+  platform: NodeJS.Platform | string,
+): { command: string; args: string[] } {
+  if (platform === 'win32') {
+    switch (shell) {
+      case 'cmd':
+        return { command: process.env.ComSpec || 'cmd.exe', args: [] };
+      case 'gitbash':
+      case 'bash':
+      case 'zsh':
+      case 'sh':
+        return { command: `${process.env.ProgramFiles || 'C:\\Program Files'}\\Git\\bin\\bash.exe`, args: ['--login', '-i'] };
+      case 'wsl':
+        return { command: 'wsl.exe', args: [] };
+      default:
+        // Mesmo motivo do Scripts: sem Bypass, claude.ps1, npm.ps1 e o profile
+        // do usuario falham com "execucao de scripts desabilitada". Vale so
+        // para este processo, nunca para a maquina.
+        return { command: 'powershell.exe', args: ['-NoLogo', '-ExecutionPolicy', 'Bypass'] };
+    }
+  }
+  return { command: shell === 'bash' ? '/bin/bash' : shell === 'zsh' ? '/bin/zsh' : '/bin/sh', args: [] };
+}
