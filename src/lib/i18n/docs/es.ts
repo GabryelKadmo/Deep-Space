@@ -517,6 +517,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Servidores', 'SSH', 'VPS', 'Remote-SSH'],
     },
     {
+      id: 'terminal-shell',
+      title: 'Elige el shell de cada terminal',
+      body: 'El nodo Terminal (antes Shell) muestra en la cabecera el shell en el que corre — PowerShell, Git Bash, CMD o WSL en Windows; bash, zsh o sh en macOS y Linux. Haz clic para cambiarlo: la terminal se reabre en el shell elegido y la elección queda guardada en el nodo, así que cada terminal del canvas puede usar uno distinto. Las terminales nuevas nacen en el shell predeterminado de Configuración > Terminal, el mismo de Scripts. PowerShell se abre con la política de ejecución liberada solo para esa terminal, así que claude, npm y tu perfil funcionan sin tocar la configuración de la máquina.',
+      tags: ['Terminal', 'shell', 'PowerShell', 'Git Bash'],
+    },
+    {
       id: 'zoom-lock',
       title: 'Bloquea el zoom donde el texto se ve nítido',
       body: 'Fuera del 100 % la selección de texto dentro de las terminales se desalinea, y un giro accidental de la rueda del ratón ya saca el canvas de su zoom. Elige el nivel en el selector de % abajo a la izquierda y abre el candado junto al + y elige Bloquear zoom: el candado se cierra y gana un marco, el número toma el color de acento, − y + se atenúan, y la rueda, el pellizco, el doble clic y los atajos ya no cambian el zoom — la rueda mueve el canvas. El bloqueo vale para todos los workspaces y sobrevive a los reinicios; elige Desbloquear zoom en el mismo menú para soltarlo. Es independiente de Bloquear canvas, la otra opción del mismo candado, que bloquea arrastrar y seleccionar nodos.',
@@ -956,6 +962,17 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '3 de octubre de 2026 · 0.39.0',
+      title: 'Deep Space 0.39.0: elige el shell de cada terminal',
+      summary: 'El nodo Shell pasa a ser Terminal, con el shell elegido en la cabecera, y los enlaces de Claude Code abren una pestaña',
+      items: [
+        'Selector de shell en el nodo Terminal. La cabecera muestra el shell en el que corre la terminal — PowerShell, Git Bash, CMD o WSL en Windows; bash, zsh o sh en macOS y Linux — y un clic la reabre en otro, guardado por nodo. Las terminales nuevas nacen en el shell predeterminado de Configuración > Terminal, que ahora vale tanto para Scripts como para las terminales.',
+        'El nodo Shell ahora se llama Terminal. Los nodos guardados con el título anterior muestran el nombre nuevo.',
+        'PowerShell en el nodo Terminal se abría con la política de ejecución de la máquina, así que claude, npm y el perfil del usuario fallaban con "la ejecución de scripts está deshabilitada en este sistema". Ahora se abre con la política liberada solo para esa terminal, como ya hacía Scripts; las terminales existentes cambian la próxima vez que arranquen.',
+        'Cmd/Ctrl+clic en un enlace impreso por Claude Code todavía abría dos pestañas. En su modo de pantalla completa, Claude Code activa los clics del ratón y abre el enlace por su cuenta cuando recibe un clic en él, y la terminal reenviaba el mismo Cmd/Ctrl+clic que Deep Space ya había abierto. Ahora el Cmd/Ctrl+clic en un enlace se queda en la terminal y ya no se reenvía al programa; los clics normales, y Cmd/Ctrl+clic en cualquier otro lugar, siguen llegando como antes.',
+      ],
+    },
     {
       date: '3 de octubre de 2026 · 0.38.2',
       title: 'Deep Space 0.38.2: una pestaña por enlace',

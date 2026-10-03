@@ -129,7 +129,7 @@
   $effect(() => {
     if (open && !lastOpen) {
       formData.set({
-        title: provider?.displayName ?? 'Shell',
+        title: provider?.displayName ?? m['canvas.default_shell'](),
         model: '',
         effort: null,
         profileId: null,

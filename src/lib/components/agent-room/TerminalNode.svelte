@@ -521,6 +521,17 @@
       if (!screen || !shouldSuppressNativeSingleClickSelection(event, terminal.modes.mouseTrackingMode)) return;
       event.stopPropagation();
     };
+    // Cmd/Ctrl+clique num link e do terminal: com o mouse ligado (o Claude Code
+    // em tela cheia liga), o xterm repassaria o mesmo clique ao programa, que
+    // abre o link por conta propria — duas abas. O linkifier escuta a tela e o
+    // repasse escuta o elemento externo; parar aqui, depois do linkifier, deixa
+    // so o nosso abridor agir. Clique sem modificador segue para o programa.
+    const keepLinkClickFromProgram = (event: MouseEvent) => {
+      if (event.button !== 0 || !(event.ctrlKey || event.metaKey)) return;
+      if (!screen?.classList.contains('xterm-cursor-pointer')) return;
+      event.stopPropagation();
+    };
+    screen?.addEventListener('mousedown', keepLinkClickFromProgram);
     screen?.addEventListener('pointerdown', selectionPointerDown);
     screen?.addEventListener('dblclick', selectionDoubleClick);
     screen?.addEventListener('click', selectionTripleClick);
@@ -822,6 +833,7 @@
 
     return () => {
       disposed = true;
+      screen?.removeEventListener('mousedown', keepLinkClickFromProgram);
       screen?.removeEventListener('pointerdown', selectionPointerDown);
       screen?.removeEventListener('dblclick', selectionDoubleClick);
       screen?.removeEventListener('click', selectionTripleClick);

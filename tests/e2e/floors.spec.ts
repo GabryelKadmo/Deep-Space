@@ -69,7 +69,7 @@ test.describe('andares e rotinas', () => {
     await createWorkspaceIn(page, workspaceName, dir);
 
     // Abre um shell para ser o alvo
-    await createNodeOnCanvas(page, 'Shell');
+    await createNodeOnCanvas(page, 'Terminal');
     await expect(page.locator('.canvas-terminal .xterm')).toBeVisible({ timeout: 10_000 });
     // Aguarda a sessao PTY ser criada e o payload.sessionId ser persistido
     await page.waitForTimeout(2_500);
@@ -82,7 +82,7 @@ test.describe('andares e rotinas', () => {
     await panel.getByRole('button', { name: 'Nova automação' }).click();
     await panel.getByLabel('Nome').fill(marker);
     await panel.getByRole('button', { name: 'Agente de destino', exact: true }).click();
-    await page.locator('[data-slot="select-item"]').filter({ hasText: 'Shell' }).click();
+    await page.locator('[data-slot="select-item"]').filter({ hasText: 'Terminal' }).click();
     await panel.getByRole('textbox', { name: 'Prompt', exact: true }).fill(`echo ${marker}`);
     await panel.getByRole('button', { name: 'Salvar automação' }).click();
     const automation = panel.getByRole('article').filter({ hasText: marker });

@@ -5,6 +5,21 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.39.0 - 2026-10-03
+
+### Added
+
+- **Shell picker on the Terminal node.** The header shows the shell the terminal runs — PowerShell, Git Bash, CMD or WSL on Windows; bash, zsh or sh on macOS and Linux — and clicking it reopens the terminal in another one, saved per node. New terminals start in the default shell from Settings > Terminal, which now applies to Scripts and terminals alike.
+
+### Changed
+
+- The Shell node is now called Terminal. Nodes saved with the old title show the new name.
+
+### Fixed
+
+- PowerShell in the Terminal node opened with the machine execution policy, so claude, npm and the user profile failed with "running scripts is disabled on this system". It now opens with the policy released for that terminal only, as Scripts already did; existing terminals switch on their next start.
+- Cmd/Ctrl+click on a link printed by Claude Code still opened two tabs. In its full-screen mode Claude Code turns on mouse clicks and opens a link by itself when it receives a click on it, and the terminal forwarded the same Cmd/Ctrl+click that Deep Space had already opened. A Cmd/Ctrl+click on a link now stays with the terminal and is no longer forwarded to the running program; plain clicks, and Cmd/Ctrl+clicks anywhere else, still reach it as before.
+
 ## 0.38.2 - 2026-10-03
 
 ### Fixed
