@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { externalUrl, findTerminalPaths, findTerminalUrls, logicalLineAt, type BufferLineLike } from '../../src/lib/components/agent-room/terminal-links';
+import { createExternalLinkOpener, externalUrl, findTerminalPaths, findTerminalUrls, logicalLineAt, type BufferLineLike } from '../../src/lib/components/agent-room/terminal-links';
 
 function line(text: string, isWrapped = false, wide: number[] = []): BufferLineLike {
   const cells: Array<{ chars: string; width: number }> = [];
@@ -74,5 +74,25 @@ describe('logicalLineAt', () => {
     const logical = logicalLineAt((y) => rows[y], 0);
     const [url] = findTerminalUrls(logical.text);
     expect(logical.cells[url.start]).toEqual({ x: 3, y: 0 });
+  });
+});
+
+describe('createExternalLinkOpener', () => {
+  it('opens a URL once even when the same click reaches it twice', () => {
+    const opened: string[] = [];
+    const open = createExternalLinkOpener((url) => opened.push(url));
+    expect(open('https://example.com/a', 1000)).toBe(true);
+    expect(open('https://example.com/a', 1200)).toBe(false);
+    expect(open('https://example.com/a', 2500)).toBe(true);
+    expect(open('https://example.com/b', 2600)).toBe(true);
+    expect(opened).toEqual(['https://example.com/a', 'https://example.com/a', 'https://example.com/b']);
+  });
+
+  it('never opens non-web schemes', () => {
+    const opened: string[] = [];
+    const open = createExternalLinkOpener((url) => opened.push(url));
+    expect(open('file:///etc/passwd')).toBe(false);
+    expect(open('javascript:alert(1)')).toBe(false);
+    expect(opened).toEqual([]);
   });
 });
