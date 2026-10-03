@@ -40,6 +40,31 @@ export const TOURS_EN: Tour[] = [
     ],
   },
   {
+    id: 'ssh-servers',
+    icon: 'Server',
+    title: 'Your VPS inside the canvas',
+    tagline: 'Get into the servers in your ~/.ssh/config without leaving Deep Space.',
+    steps: [
+      {
+        id: 'node',
+        title: 'Create the Servers node',
+        body: 'It reads your ~/.ssh/config and lists every Host with user, address and port. Git shortcuts and patterns with * are left out. I will create the node for you.',
+        action: { kind: 'createSsh', title: 'Servers' },
+        check: { kind: 'nodeExists', nodeType: 'ssh', titleIncludes: 'Servers' },
+      },
+      {
+        id: 'connect',
+        title: 'Connect with one click',
+        body: 'Pick a server and click Connect. Your own ssh connects, with your keys: Deep Space only reads the names. The dot stays green while the connection lives.',
+      },
+      {
+        id: 'many',
+        title: 'Several VPS at once',
+        body: 'Switching servers in the list does not drop the other connection, and each terminal comes back where it was. Edited the config? The reload button in the header brings the new hosts.',
+      },
+    ],
+  },
+  {
     id: 'zoom-lock',
     icon: 'Lock',
     title: 'Zoom locked at the right level',

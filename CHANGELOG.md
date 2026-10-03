@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.38.0 - 2026-10-02
+
+### Added
+
+- **Servers node.** It reads your ~/.ssh/config — the same file VS Code Remote-SSH uses — and lists every Host with user, address and port; Git shortcuts and patterns with * are left out. Pick a server and click Connect: your own ssh connects with your keys, and Deep Space only reads the host names, never a key or password. Several servers stay connected in the same node, switching in the list keeps each session and its log, a connection that drops on its own raises a notice with the server name, and the reload button picks up config edits. It lives in the toolbar's tool menu, with a use case and a guided tour.
+
 ## 0.37.1 - 2026-10-02
 
 ### Fixed

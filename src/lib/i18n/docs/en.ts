@@ -511,6 +511,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Scripts', 'Console', 'a process per command', 'folders'],
     },
     {
+      id: 'ssh-servers',
+      title: 'Get into your VPS from the Canvas',
+      body: 'Create a Servers node: it reads your ~/.ssh/config and lists every Host with user, address and port — the same file VS Code Remote-SSH uses, so there is nothing to set up if you already use it. Git shortcuts (github.com-personal and the like) and patterns with * are left out. Pick a server and click Connect: your own ssh connects, with your keys, and Deep Space only reads the names — no key or password goes through it. Several VPS can stay connected in the same node; switching in the list does not drop the other connection, and each terminal comes back where it was. If a connection drops on its own, you get a notice with the server name. Edited the config? The reload button in the header brings the new hosts.',
+      tags: ['Servers', 'SSH', 'VPS', 'Remote-SSH'],
+    },
+    {
       id: 'zoom-lock',
       title: 'Lock the zoom where text stays sharp',
       body: 'Away from 100%, text selection inside terminals drifts, and one accidental turn of the mouse wheel already takes the canvas off its zoom. Pick the level in the % selector at the bottom left and open the padlock next to + and choose Lock zoom: the padlock closes and gets a frame, the number takes the accent colour, − and + dim, and the wheel, pinch, double-click and shortcuts no longer change the zoom — the wheel pans the canvas instead. The lock applies to every workspace and survives restarts; choose Unlock zoom in the same menu to release it. It is separate from Lock canvas, the other entry under the same padlock, which locks dragging and selecting nodes.',
@@ -950,6 +956,14 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: 'October 2, 2026 · 0.38.0',
+      title: 'Deep Space 0.38.0: your servers in the canvas',
+      summary: 'A Servers node that reads ~/.ssh/config and opens SSH sessions to your VPS, several at once',
+      items: [
+        'Servers node. It reads your ~/.ssh/config — the same file VS Code Remote-SSH uses — and lists every Host with user, address and port; Git shortcuts and patterns with * are left out. Pick a server and click Connect: your own ssh connects with your keys, and Deep Space only reads the host names, never a key or password. Several servers stay connected in the same node, switching in the list keeps each session and its log, a connection that drops on its own raises a notice with the server name, and the reload button picks up config edits. It lives in the toolbar\'s tool menu, with a use case and a guided tour.',
+      ],
+    },
     {
       date: 'October 2, 2026 · 0.37.1',
       title: 'Deep Space 0.37.1: unlocking the zoom really unlocks it',
