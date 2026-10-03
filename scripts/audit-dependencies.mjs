@@ -13,6 +13,16 @@ const ALLOWED = [
     reason: 'node-forge RSA signature verification. No patched node-forge exists; it only arrives through postman-runtime, which uses it to convert keys for ASAP auth. The API client never builds ASAP auth and nothing verifies signatures with node-forge.',
     reviewBy: '2026-11-02',
   },
+  {
+    url: 'https://github.com/advisories/GHSA-vfj7-8cjw-p6xm',
+    reason: 'braces stack exhaustion on deeply nested patterns. No patched braces exists; it only arrives through patch-package (devDependency, postinstall) via micromatch, which expands glob patterns from this repository, never user input, and is not packaged into the app.',
+    reviewBy: '2026-11-02',
+  },
+  {
+    url: 'https://github.com/advisories/GHSA-ch52-4w7c-c8xp',
+    reason: 'http-cache-semantics max-stale cross-user cache disclosure. No patched release exists; it only arrives through electron-builder (devDependency) when the build downloads Electron, with no shared cache between users, and is not packaged into the app.',
+    reviewBy: '2026-11-02',
+  },
 ];
 
 let report;
