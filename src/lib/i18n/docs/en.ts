@@ -957,6 +957,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: 'October 3, 2026 · 0.38.2',
+      title: 'Deep Space 0.38.2: one tab per link',
+      summary: 'Cmd/Ctrl+click on the links Claude Code prints opens one tab, without a confirmation dialog',
+      items: [
+        'Cmd/Ctrl+click on a link printed by Claude Code opened two browser tabs. Claude Code prints links as terminal hyperlinks (OSC 8), which fell through to the built-in terminal handler: it asked for confirmation in a native dialog, twice per click, and opened the page on its own. Those links now go through the same Cmd/Ctrl+click as every other link — one tab, no dialog — including hyperlinks whose text is not the address, such as "open the PR".',
+      ],
+    },
+    {
       date: 'October 3, 2026 · 0.38.1',
       title: 'Deep Space 0.38.1: pin Servers to the dock',
       summary: 'Servers can be pinned to the bottom dock like every other node',

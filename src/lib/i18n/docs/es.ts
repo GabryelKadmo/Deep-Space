@@ -957,6 +957,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: '3 de octubre de 2026 · 0.38.2',
+      title: 'Deep Space 0.38.2: una pestaña por enlace',
+      summary: 'Cmd/Ctrl+clic en los enlaces que imprime Claude Code abre una pestaña, sin diálogo de confirmación',
+      items: [
+        'Cmd/Ctrl+clic en un enlace impreso por Claude Code abría dos pestañas en el navegador. Claude Code imprime los enlaces como hipervínculos de terminal (OSC 8), que caían en el manejador por defecto de la terminal: pedía confirmación en un diálogo nativo, dos veces por clic, y abría la página por su cuenta. Esos enlaces ahora pasan por el mismo Cmd/Ctrl+clic que cualquier enlace — una pestaña, sin diálogo — incluso los hipervínculos cuyo texto no es la dirección, como "abrir el PR".',
+      ],
+    },
+    {
       date: '3 de octubre de 2026 · 0.38.1',
       title: 'Deep Space 0.38.1: fija Servidores en el dock',
       summary: 'Servidores ahora se puede fijar en el dock inferior como cualquier nodo',

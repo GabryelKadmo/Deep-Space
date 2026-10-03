@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.38.2 - 2026-10-03
+
+### Fixed
+
+- Cmd/Ctrl+click on a link printed by Claude Code opened two browser tabs. Claude Code prints links as terminal hyperlinks (OSC 8), which fell through to the built-in terminal handler: it asked for confirmation in a native dialog, twice per click, and opened the page on its own. Those links now go through the same Cmd/Ctrl+click as every other link — one tab, no dialog — including hyperlinks whose text is not the address, such as "open the PR".
+
 ## 0.38.1 - 2026-10-03
 
 ### Fixed
