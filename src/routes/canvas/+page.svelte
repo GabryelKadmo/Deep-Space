@@ -1391,6 +1391,7 @@
           }).catch(() => {});
         },
         onProviderChange: changeNodeProvider,
+        onShellChange: changeNodeShell,
         onRuntimeChange: changeNodeRuntime,
         onToggleMaestro: (id: string) => {
           const current = (nodes.find((node) => node.id === id)?.data?.payload ?? {}) as Record<string, unknown>;
@@ -1469,6 +1470,15 @@
     } else {
       toast.success(m['term.profile_switched']({ profile: profileLabel ?? m['term.profile_default']() }));
     }
+  }
+
+  async function changeNodeShell(id: string, shell: string) {
+    if (!activeWorkspace) return;
+    const updated = await api<CanvasNode>(`/api/agent-room/workspaces/${activeWorkspace.id}/nodes/${id}/shell`, {
+      method: 'PUT',
+      body: JSON.stringify({ shell }),
+    });
+    nodes = nodes.map((node) => node.id === id ? toFlowNode(updated) : node);
   }
 
   async function changeNodeRuntime(
@@ -1824,8 +1834,9 @@
         ? { command: spec.command, args: spec.args, env: spec.env, provider: provider.id, ...(creation?.leader ? { maestro: true } : {}) }
         : { command: provider.id, args: [], provider: provider.id };
     } else {
-      // The server resolves the native/WSL shell against the host where the PTY runs.
-      payload = { command: '', args: [] };
+      // The server resolves the native/WSL shell against the host where the PTY runs;
+      // a new Terminal starts in the shell chosen in Settings > Terminal.
+      payload = { command: '', args: [], shell: appSettings.consoleShell || 'auto' };
     }
     if (creation?.executionRuntime) payload.executionRuntime = creation.executionRuntime;
     if (creation?.profileId) payload.profileId = creation.profileId;

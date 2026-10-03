@@ -650,6 +650,8 @@ export type TerminalNodePayload = {
   resumeRecovery?: boolean;
   command?: string;
   args?: string[];
+  /** Shell escolhido no no Terminal (id de TerminalShell); agentes nao usam. */
+  shell?: string;
   env?: Record<string, string>;
   provider?: AgentProviderId;
   /** Perfil de multi-conta ativo (id de ProviderProfile), quando aplicavel. */

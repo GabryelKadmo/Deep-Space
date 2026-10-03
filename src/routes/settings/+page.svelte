@@ -16,7 +16,7 @@
   import { terminalThemeLabel } from '$lib/components/agent-room/terminal-theme-label.js';
   import { normalizeTerminalTheme, TERMINAL_THEMES, TERMINAL_THEME_ORDER } from '$lib/components/agent-room/terminal-themes.js';
   import { DEFAULT_DICTATION_HOTKEY, comboFromEvent, comboLabel } from '$lib/components/agent-room/dictation-hotkey.js';
-  import { consoleShellOptions, normalizeConsoleShell, type ConsoleShell } from '$lib/modules/agent-room/domain/console-commands.js';
+  import { SHELL_NAMES, consoleShellOptions, normalizeConsoleShell, type ConsoleShell } from '$lib/modules/agent-room/domain/console-commands.js';
   import { appSettingsStore, getAppSettings, invalidateAppSettings } from '$lib/components/agent-room/app-settings.svelte.js';
   import { addCustomIcon, customIconNames, ensureCustomIconsLoaded, getCustomIconNode, removeCustomIcon } from '$lib/components/agent-room/workspace-custom-icons.svelte.js';
   import DynamicLucideIcon from '$lib/components/agent-room/DynamicLucideIcon.svelte';
@@ -63,18 +63,8 @@
   // Shell dos comandos do Console. So faz sentido oferecer o que existe na
   // plataforma; o app e o PTY rodam no mesmo host, entao o navigator serve.
   const shellOptions = consoleShellOptions(isWindowsPlatform() ? 'win32' : 'linux');
-  const SHELL_LABELS: Record<Exclude<ConsoleShell, 'auto'>, string> = {
-    powershell: 'PowerShell',
-    gitbash: 'Git Bash',
-    wsl: 'WSL',
-    cmd: 'CMD',
-    bash: 'bash',
-    zsh: 'zsh',
-    sh: 'sh',
-  };
-
   function shellLabel(shell: ConsoleShell): string {
-    return shell === 'auto' ? m['settings.console_shell_auto']() : SHELL_LABELS[shell];
+    return shell === 'auto' ? m['settings.console_shell_auto']() : SHELL_NAMES[shell];
   }
 
   const hotkeyLabel = $derived(comboLabel(settings.dictationHotkey || DEFAULT_DICTATION_HOTKEY));
