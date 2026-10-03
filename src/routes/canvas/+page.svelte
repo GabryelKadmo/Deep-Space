@@ -3404,6 +3404,11 @@
                 <Terminal size={15} class="tool-icon-svg" /> {m['console.title']()}
               </ToolbarButton>
             {/if}
+            {#if pinnedToolbarSet.has('ssh')}
+              <ToolbarButton label={m['tool.ssh']()} active={drawTool === 'ssh'} onclick={() => toggleDrawTool('ssh')}>
+                <Server size={15} class="tool-icon-svg" /> {m['ssh.title']()}
+              </ToolbarButton>
+            {/if}
             {#if pinnedToolbarSet.has('note')}
               <ToolbarButton label={m['tool.note']()} active={drawTool === 'note'} onclick={() => toggleDrawTool('note')}>
                 <StickyNote size={15} class="tool-icon-svg" /> {m['canvas.default_note']()}

@@ -957,6 +957,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: '3 de octubre de 2026 · 0.38.1',
+      title: 'Deep Space 0.38.1: fija Servidores en el dock',
+      summary: 'Servidores ahora se puede fijar en el dock inferior como cualquier nodo',
+      items: [
+        'Fijar Servidores desde el menú de herramientas lo quitaba del menú y no dibujaba nada en el dock inferior, así que el nodo solo se podía crear desde el menú. Ahora tiene su propio botón en el dock, como cualquier nodo, y una prueba falla siempre que un nodo entra en el menú sin él.',
+      ],
+    },
+    {
       date: '2 de octubre de 2026 · 0.38.0',
       title: 'Deep Space 0.38.0: tus servidores en el canvas',
       summary: 'Un nodo Servidores que lee ~/.ssh/config y abre sesiones SSH en tus VPS, varias a la vez',

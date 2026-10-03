@@ -5,6 +5,12 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.38.1 - 2026-10-03
+
+### Fixed
+
+- Pinning Servers from the tools menu removed it from the menu and drew nothing in the bottom dock, so the node could only be created from the menu. It now has its own dock button, like every other node, and a test fails whenever a node is added to the menu without one.
+
 ## 0.38.0 - 2026-10-02
 
 ### Added

@@ -4321,6 +4321,7 @@
   "settings.dictation_enabled": "Dictado por voz",
   "settings.dictation_enabled_desc": "Apagado, el micrófono sale del canvas y de las terminales, y el atajo deja de grabar.",
   "tool.console": "Comandos guardados del workspace, un proceso por comando",
+  "tool.ssh": "Servidores de tu ~/.ssh/config, una sesión SSH por servidor",
   "settings.console_shell": "Shell de los Scripts",
   "settings.console_shell_auto": "Automático",
   "settings.console_shell_hint": "En qué shell se ejecutan los comandos del nodo Scripts. Automático usa PowerShell en Windows y tu shell de inicio de sesión en macOS/Linux.",
