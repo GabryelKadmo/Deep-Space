@@ -961,6 +961,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: '3 de outubro de 2026 · 0.38.3',
+      title: 'Deep Space 0.38.3: uma aba nos links do Claude Code, de verdade',
+      summary: 'Cmd/Ctrl+clique num link não chega mais ao programa rodando no terminal',
+      items: [
+        'Cmd/Ctrl+clique num link impresso pelo Claude Code ainda abria duas abas. No modo de tela cheia, o Claude Code liga os cliques do mouse e abre o link por conta própria quando recebe um clique nele, e o terminal repassava o mesmo Cmd/Ctrl+clique que o Deep Space já tinha aberto. Agora o Cmd/Ctrl+clique num link fica com o terminal e não é mais repassado ao programa; cliques comuns, e Cmd/Ctrl+clique em qualquer outro lugar, continuam chegando a ele como antes.',
+      ],
+    },
+    {
       date: '3 de outubro de 2026 · 0.38.2',
       title: 'Deep Space 0.38.2: uma aba por link',
       summary: 'Cmd/Ctrl+clique nos links que o Claude Code imprime abre uma aba, sem diálogo de confirmação',

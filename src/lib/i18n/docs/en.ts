@@ -957,6 +957,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: 'October 3, 2026 · 0.38.3',
+      title: 'Deep Space 0.38.3: one tab from Claude Code links, for real',
+      summary: 'Cmd/Ctrl+click on a link no longer reaches the program running in the terminal',
+      items: [
+        'Cmd/Ctrl+click on a link printed by Claude Code still opened two tabs. In its full-screen mode Claude Code turns on mouse clicks and opens a link by itself when it receives a click on it, and the terminal forwarded the same Cmd/Ctrl+click that Deep Space had already opened. A Cmd/Ctrl+click on a link now stays with the terminal and is no longer forwarded to the running program; plain clicks, and Cmd/Ctrl+clicks anywhere else, still reach it as before.',
+      ],
+    },
+    {
       date: 'October 3, 2026 · 0.38.2',
       title: 'Deep Space 0.38.2: one tab per link',
       summary: 'Cmd/Ctrl+click on the links Claude Code prints opens one tab, without a confirmation dialog',
