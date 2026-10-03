@@ -513,7 +513,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'ssh-servers',
       title: 'Get into your VPS from the Canvas',
-      body: 'Create a Servers node: it reads your ~/.ssh/config and lists every Host with user, address and port — the same file VS Code Remote-SSH uses, so there is nothing to set up if you already use it. Git shortcuts (github.com-personal and the like) and patterns with * are left out. Pick a server and click Connect: your own ssh connects, with your keys, and Deep Space only reads the names — no key or password goes through it. Several VPS can stay connected in the same node; switching in the list does not drop the other connection, and each terminal comes back where it was. If a connection drops on its own, you get a notice with the server name. Edited the config? The reload button in the header brings the new hosts.',
+      body: 'Create a Servers node: it reads your ~/.ssh/config and lists every Host with user, address and port — the same file VS Code Remote-SSH uses, so there is nothing to set up if you already use it. Git shortcuts (github.com-personal and the like) and patterns with * are left out. Pick a server and click Connect: your own ssh connects, with your keys, and Deep Space only reads the names — no key or password goes through it. Several VPS can stay connected in the same node; switching in the list does not drop the other connection, and each terminal comes back where it was. If a connection drops on its own, you get a notice with the server name. To change the list, the edit button in the header opens ~/.ssh/config in your system editor (and creates the file with a commented example if it does not exist yet); after saving, the reload button brings the new hosts.',
       tags: ['Servers', 'SSH', 'VPS', 'Remote-SSH'],
     },
     {
@@ -962,6 +962,14 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: 'October 3, 2026 · 0.40.0',
+      title: 'Deep Space 0.40.0: edit your SSH config from Servers',
+      summary: 'A button in the Servers node opens ~/.ssh/config in the system editor',
+      items: [
+        'Edit your SSH config from the Servers node. A button in the header opens ~/.ssh/config in the system default editor; when the file does not exist yet, it is created with a commented example and permissions restricted to your user, and an existing file is never overwritten. After saving, the reload button brings the new servers. The file opens outside Deep Space on purpose: the in-app editor only touches workspace files, and the folder that holds your SSH keys stays out of it.',
+      ],
+    },
     {
       date: 'October 3, 2026 · 0.39.0',
       title: 'Deep Space 0.39.0: pick the shell of each terminal',

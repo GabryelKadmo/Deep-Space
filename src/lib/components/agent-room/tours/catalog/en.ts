@@ -60,7 +60,7 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'many',
         title: 'Several VPS at once',
-        body: 'Switching servers in the list does not drop the other connection, and each terminal comes back where it was. Edited the config? The reload button in the header brings the new hosts.',
+        body: 'Switching servers in the list does not drop the other connection, and each terminal comes back where it was. To add a server, the edit button in the header opens ~/.ssh/config in the system editor; after saving, reload the list.',
       },
     ],
   },
