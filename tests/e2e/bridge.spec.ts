@@ -125,9 +125,9 @@ test.describe('ponte CLI (bridge)', () => {
 
     // Dois shells vivos (o PTY so nasce com o no montado no canvas).
     // Posicoes sem sobreposicao: terminais tem 560px — vizinho cobre o handle.
-    await createNodeOnCanvas(page, 'Shell', { x: 300, y: 300 });
+    await createNodeOnCanvas(page, 'Terminal', { x: 300, y: 300 });
     await expect(page.locator('.canvas-terminal')).toHaveCount(1);
-    await createNodeOnCanvas(page, 'Shell', { x: 900, y: 300 });
+    await createNodeOnCanvas(page, 'Terminal', { x: 900, y: 300 });
     await expect(page.locator('.canvas-terminal')).toHaveCount(2);
 
     // Conecta os dois arrastando do handle.

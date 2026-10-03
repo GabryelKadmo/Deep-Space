@@ -88,7 +88,7 @@ test.describe('polimento do canvas', () => {
     const workspaceName = `E2E theme ${Date.now()}`;
     await createWorkspaceIn(page, workspaceName);
 
-    await createNodeOnCanvas(page, 'Shell');
+    await createNodeOnCanvas(page, 'Terminal');
     const terminal = page.locator('.canvas-terminal');
     await expect(terminal).toBeVisible();
 

@@ -62,7 +62,7 @@ test.describe('dialogo de criacao de agente', () => {
     await page.getByRole('button', { name: 'Criar' }).click();
     await expect(page.locator('.workspace-list li.active')).toContainText(workspaceName, { timeout: 15_000 });
 
-    await selectCanvasTool(page, 'Shell');
+    await selectCanvasTool(page, 'Terminal');
     await page.locator('.svelte-flow__pane').click({ position: { x: 600, y: 350 } });
     const dialog = page.locator('[role="dialog"]');
     await expect(dialog).toBeVisible();
