@@ -54,7 +54,10 @@ export function managedPortalSurface(host: HTMLElement, input: SurfaceInput) {
         left = Math.max(left, bounds.left); top = Math.max(top, bounds.top); right = Math.min(right, bounds.right); bottom = Math.min(bottom, bounds.bottom);
       }
     }
-    const blocker = document.querySelector('[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"], [role="menu"][data-state="open"], [data-popover-content][data-state="open"]');
+    // A view nativa fica acima de todo o DOM: qualquer camada aberta (dialogo,
+    // menu, popover ou a lista de um Select, como a de dispositivos) precisa
+    // dela escondida, senao abre por tras da pagina.
+    const blocker = document.querySelector('[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"], [role="menu"][data-state="open"], [role="listbox"][data-state="open"], [data-popover-content][data-state="open"]');
     const owner = host.closest('.svelte-flow__node');
     const covered = owner && [[left + 2, top + 2], [right - 2, bottom - 2], [(left + right) / 2, (top + bottom) / 2]].some(([x, y]) => {
       const topNode = document.elementFromPoint(x, y)?.closest('.svelte-flow__node');
