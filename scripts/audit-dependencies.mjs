@@ -23,6 +23,11 @@ const ALLOWED = [
     reason: 'http-cache-semantics max-stale cross-user cache disclosure. No patched release exists; it only arrives through electron-builder (devDependency) when the build downloads Electron, with no shared cache between users, and is not packaged into the app.',
     reviewBy: '2026-11-02',
   },
+  {
+    url: 'https://github.com/advisories/GHSA-hp3w-g68c-fv3c',
+    reason: 'sprintf-js denial of service through unbounded precision specifiers. Every release is affected; it only arrives through electron-builder (devDependency) via @electron/get, global-agent and roarr, which format their own log lines while the build downloads Electron, and is not packaged into the app.',
+    reviewBy: '2026-11-07',
+  },
 ];
 
 let report;
