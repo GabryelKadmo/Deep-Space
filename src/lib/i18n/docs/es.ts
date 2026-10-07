@@ -963,11 +963,13 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
-      date: '3 de octubre de 2026 · 0.40.0',
+      date: '7 de octubre de 2026 · 0.40.0',
       title: 'Deep Space 0.40.0: edita tu config de SSH desde Servidores',
       summary: 'Un botón en el nodo Servidores abre ~/.ssh/config en el editor del sistema',
       items: [
         'Edita tu config de SSH desde el nodo Servidores. Un botón en la cabecera abre ~/.ssh/config en el editor predeterminado del sistema; si el archivo todavía no existe, se crea con un ejemplo comentado y permisos solo de tu usuario, y un archivo existente nunca se sobrescribe. Después de guardar, el botón de recargar trae los servidores nuevos. El archivo se abre fuera de Deep Space a propósito: el editor de la app solo toca archivos del workspace, y la carpeta de tus claves SSH queda fuera.',
+        'Bloquear canvas también impedía arrastrar el propio canvas con el ratón, y la única forma de moverse era Mayús+rueda. Ahora el bloqueo solo mantiene los nodos en su sitio (sin arrastrarlos ni seleccionarlos); arrastrar el área vacía mueve el canvas como siempre.',
+        'El selector de dispositivo del Portal ("Responsivo (llena el nodo)") abría la lista detrás de la página. La página es una vista nativa dibujada encima de toda la app, y solo se ocultaba para diálogos, menús y popovers, no para la lista de un selector. Ahora se aparta mientras una de esas listas está abierta y vuelve al cerrarla.',
       ],
     },
     {

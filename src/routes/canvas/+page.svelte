@@ -3308,7 +3308,7 @@
         zoomOnPinch={lockedZoom === null}
         zoomOnDoubleClick={lockedZoom === null}
         panOnScroll={lockedZoom !== null}
-        panOnDrag={canvasLocked ? false : drawTool === null ? true : [1, 2]}
+        panOnDrag={drawTool === null ? true : [1, 2]}
         nodesDraggable={!canvasLocked}
         elementsSelectable={!canvasLocked}
         deleteKey={designModeNodeId ? [] : ['Backspace', 'Delete']}
