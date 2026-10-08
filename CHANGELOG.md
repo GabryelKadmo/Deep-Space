@@ -5,6 +5,18 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
+## 0.40.0 - 2026-10-07
+
+### Added
+
+- **Interface tour.** "Get to know the interface" dims the screen and highlights one control at a time, with the tour panel placed next to it: the workspace list, the + that creates a workspace (the tour opens the New workspace form and walks through name, Working directory, where an existing project comes in, preset and Create), the Canvas and Workbench switch, the agents menu, the toolbar, zoom, the padlock, the Attention Center and the app menu, ending in the Provider Center, where it shows how to install and sign in to each CLI before the first agent. It opens by itself once, on the first visit to the canvas with a workspace, and stays in How to use. Any tour step can now point at a control, and the locked zoom tour points at the % picker and the padlock. The native Portal page steps aside while the highlight is on screen.
+- **Edit your SSH config from the Servers node.** A button in the header opens ~/.ssh/config in the system default editor; when the file does not exist yet, it is created with a commented example and permissions restricted to your user, and an existing file is never overwritten. After saving, the reload button brings the new servers. The file opens outside Deep Space on purpose: the in-app editor only touches workspace files, and the folder that holds your SSH keys stays out of it.
+
+### Fixed
+
+- Lock canvas also stopped dragging the canvas itself with the mouse, so the only way to move around was Shift+scroll. The lock now only holds the nodes in place (no dragging or selecting them); dragging the empty canvas pans it as usual.
+- The Portal device picker ("Responsive (fill node)") opened its list behind the page. The page is a native view drawn above the whole app, and it was only hidden for dialogs, menus and popovers, not for the list of a select. It now steps aside while any of those lists is open and comes back when it closes.
+
 ## 0.39.0 - 2026-10-03
 
 ### Added

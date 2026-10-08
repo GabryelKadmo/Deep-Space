@@ -14,6 +14,10 @@ const CATALOGS: Record<string, Tour[]> = {
   es: TOURS_ES,
 };
 
+/** Tour da interface: abre sozinho uma vez, na primeira visita ao canvas com um workspace. */
+export const INTERFACE_TOUR_ID = 'interface';
+export const INTERFACE_TOUR_SEEN = 'deepspace.interface-tour-seen';
+
 /** Catalogo de tours no locale atual (fallback pt-BR). */
 export function toursCatalog(): Tour[] {
   return CATALOGS[localeState.current] ?? TOURS_PT;

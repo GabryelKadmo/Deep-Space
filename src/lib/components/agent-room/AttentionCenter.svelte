@@ -171,6 +171,7 @@
           size="icon"
           class="relative size-8 shrink-0 text-[var(--app-text-muted)] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)]"
           aria-label={m['attention.open']()}
+          data-tour="attention"
           onclick={() => (open = true)}
         >
           {#if actionable.length}<BellRing size={15} />{:else}<Bell size={15} />{/if}
