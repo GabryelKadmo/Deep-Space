@@ -7,9 +7,9 @@
   import { Input } from '$lib/components/ui/input';
   import * as m from '$lib/paraglide/messages.js';
   import {
-    Activity, ArrowLeft, BookMarked, Cable, FileCode2, FolderPlus, GitBranch, GitPullRequestArrow, GlobeLock, Languages, Layers, LayoutGrid, LayoutTemplate, ListRestart, MessageCircleMore, Mic, MonitorCog, Palette, PanelLeftOpen, Paperclip, Pin, RadioTower, Repeat, Rocket, Scale, ScanSearch, Search, Smartphone, Sparkles, Users, Workflow, Terminal, Lock, Server,
+    Activity, ArrowLeft, BookMarked, Cable, FileCode2, FolderPlus, GitBranch, GitPullRequestArrow, GlobeLock, Languages, Layers, LayoutGrid, LayoutTemplate, ListRestart, MessageCircleMore, Mic, MonitorCog, Palette, PanelLeftOpen, Paperclip, Pin, RadioTower, Repeat, Rocket, Scale, ScanSearch, Search, Smartphone, Sparkles, Users, Workflow, Terminal, Lock, Server, Compass,
   } from '@lucide/svelte';
-  import { toursCatalog, startTour } from './engine.svelte.js';
+  import { INTERFACE_TOUR_ID, toursCatalog, startTour } from './engine.svelte.js';
   import type { Tour } from './types.js';
   import { getAppSettings, invalidateAppSettings } from '$lib/components/agent-room/app-settings.svelte.js';
   import { localeState } from '$lib/i18n/locale.svelte.js';
@@ -29,7 +29,7 @@
 
   let { open, onClose, onCreateWorkspace, activeWorkspaceId, requestedTourId = null }: Props = $props();
 
-  const ICONS: Record<string, typeof Users> = { Users, Repeat, GitBranch, GitPullRequestArrow, GlobeLock, Workflow, Search, FolderPlus, Cable, Rocket, Layers, LayoutGrid, LayoutTemplate, ListRestart, Palette, PanelLeftOpen, FileCode2, Paperclip, Pin, RadioTower, Mic, MessageCircleMore, Languages, Activity, Scale, ScanSearch, Smartphone, MonitorCog, BookMarked, Terminal, Lock, Server };
+  const ICONS: Record<string, typeof Users> = { Users, Repeat, GitBranch, GitPullRequestArrow, GlobeLock, Workflow, Search, FolderPlus, Cable, Rocket, Layers, LayoutGrid, LayoutTemplate, ListRestart, Palette, PanelLeftOpen, FileCode2, Paperclip, Pin, RadioTower, Mic, MessageCircleMore, Languages, Activity, Scale, ScanSearch, Smartphone, MonitorCog, BookMarked, Terminal, Lock, Server, Compass };
 
   type WizardStep = 'language' | 'welcome' | 'workspace' | 'usecase';
   type UiLanguage = 'pt-BR' | 'en' | 'es';
@@ -63,7 +63,7 @@
       step = savedStep;
       workspaceId = untrack(() => activeWorkspaceId);
       createError = '';
-      pickedTour = requestedTourId ? toursCatalog().find((tour) => tour.id === requestedTourId) ?? null : null;
+      pickedTour = toursCatalog().find((tour) => tour.id === (requestedTourId ?? INTERFACE_TOUR_ID)) ?? null;
       tourQuery = '';
       languageSaving = null;
     }

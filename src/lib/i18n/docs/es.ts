@@ -505,6 +505,12 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   useCases: [
     {
+      id: 'interface-tour',
+      title: 'Conoce la interfaz en un minuto',
+      body: 'El tour "Conoce la interfaz" oscurece la pantalla y destaca, uno a la vez, los controles que más usas: la lista de workspaces, el + que crea un workspace (el tour abre el formulario y recorre cada campo, destacando el Directorio de trabajo, donde entra el proyecto que ya tienes), el cambio entre Canvas y Workbench, el menú de agentes, la barra de herramientas, el zoom, el candado, el Centro de Atención y el menú con Cómo usar, Providers y Configuración. Al final abre la Central de Providers y muestra cómo instalar e iniciar sesión en cada CLI antes del primer agente. El panel del tour se coloca junto al control destacado. Se abre solo la primera vez que entras al canvas con un workspace y siempre queda aquí, en Cómo usar, para volver a verlo.',
+      tags: ['tour', 'onboarding', 'interfaz'],
+    },
+    {
       id: 'console-commands',
       title: 'Ejecuta los comandos del proyecto sin salir del Canvas',
       body: 'Crea un nodo Scripts y guarda los comandos que repites cada día — npm run dev, build, git pull, el script de lint — cada uno con nombre y una carpeta opcional. Pulsar ▷ levanta un proceso solo para ese comando, con la salida al lado de la lista y el punto verde mientras vive; ■ lo termina. Cambiar de comando no tira nada: el log de cada uno vuelve donde estaba, y el dev server sigue en pie mientras miras otro. Marca "ejecutar al abrir el workspace" en lo que deba arrancar solo. Al plegar la lista, el nodo se vuelve una terminal normal para un comando suelto. Para reaprovechar lo que otro proyecto ya tiene, el icono de descarga en la cabecera importa scripts de otro workspace, saltando los que ya existen iguales aquí. En qué shell se ejecutan esos comandos lo eliges tú: Configuración > Terminal > Shell de los Scripts (Automático, Git Bash, WSL, CMD en Windows; bash, zsh, sh en los demás).',
@@ -964,9 +970,10 @@ Header: Authorization = Bearer {{accessToken}}`,
   changelog: [
     {
       date: '7 de octubre de 2026 · 0.40.0',
-      title: 'Deep Space 0.40.0: edita tu config de SSH desde Servidores',
-      summary: 'Un botón en el nodo Servidores abre ~/.ssh/config en el editor del sistema',
+      title: 'Deep Space 0.40.0: un tour por la interfaz y tu config de SSH desde Servidores',
+      summary: 'Un tour destaca cada control de la pantalla, y un botón en el nodo Servidores abre ~/.ssh/config en el editor del sistema',
       items: [
+        'Tour por la interfaz. "Conoce la interfaz" oscurece la pantalla y destaca un control a la vez, con el panel del tour a su lado: workspaces, el formulario de Nuevo workspace campo por campo (con el Directorio de trabajo, donde entra el proyecto que ya existe), Canvas y Workbench, agentes, barra de herramientas, zoom, candado, Centro de Atención y el menú de la app, terminando en la Central de Providers, donde muestra cómo instalar e iniciar sesión en cada CLI. Se abre solo una vez, en la primera visita al canvas, y queda en Cómo usar. El tour del zoom bloqueado ahora también señala el selector de % y el candado.',
         'Edita tu config de SSH desde el nodo Servidores. Un botón en la cabecera abre ~/.ssh/config en el editor predeterminado del sistema; si el archivo todavía no existe, se crea con un ejemplo comentado y permisos solo de tu usuario, y un archivo existente nunca se sobrescribe. Después de guardar, el botón de recargar trae los servidores nuevos. El archivo se abre fuera de Deep Space a propósito: el editor de la app solo toca archivos del workspace, y la carpeta de tus claves SSH queda fuera.',
         'Bloquear canvas también impedía arrastrar el propio canvas con el ratón, y la única forma de moverse era Mayús+rueda. Ahora el bloqueo solo mantiene los nodos en su sitio (sin arrastrarlos ni seleccionarlos); arrastrar el área vacía mueve el canvas como siempre.',
         'El selector de dispositivo del Portal ("Responsivo (llena el nodo)") abría la lista detrás de la página. La página es una vista nativa dibujada encima de toda la app, y solo se ocultaba para diálogos, menús y popovers, no para la lista de un selector. Ahora se aparta mientras una de esas listas está abierta y vuelve al cerrarla.',

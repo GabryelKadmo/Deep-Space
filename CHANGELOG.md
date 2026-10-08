@@ -9,6 +9,7 @@ pt-BR, English, and Spanish translations.
 
 ### Added
 
+- **Interface tour.** "Get to know the interface" dims the screen and highlights one control at a time, with the tour panel placed next to it: the workspace list, the + that creates a workspace (the tour opens the New workspace form and walks through name, Working directory, where an existing project comes in, preset and Create), the Canvas and Workbench switch, the agents menu, the toolbar, zoom, the padlock, the Attention Center and the app menu, ending in the Provider Center, where it shows how to install and sign in to each CLI before the first agent. It opens by itself once, on the first visit to the canvas with a workspace, and stays in How to use. Any tour step can now point at a control, and the locked zoom tour points at the % picker and the padlock. The native Portal page steps aside while the highlight is on screen.
 - **Edit your SSH config from the Servers node.** A button in the header opens ~/.ssh/config in the system default editor; when the file does not exist yet, it is created with a commented example and permissions restricted to your user, and an existing file is never overwritten. After saving, the reload button brings the new servers. The file opens outside Deep Space on purpose: the in-app editor only touches workspace files, and the folder that holds your SSH keys stays out of it.
 
 ### Fixed

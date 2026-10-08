@@ -78,7 +78,17 @@ export type TourStep = {
   action?: TourAction | TourAction[];
   /** Auto-conclui quando a condicao aparece no workspace. Sem check = botao manual. */
   check?: TourCheck;
+  /** Valor de `data-tour` do elemento que o passo destaca. Sem alvo visivel,
+      o painel fica no canto de sempre. */
+  target?: string;
+  /** Dialogo que o passo precisa aberto. O tour abre ao entrar e fecha ao sair, se foi ele quem abriu. */
+  dialog?: TourDialog;
 };
+
+export type TourDialog = 'workspace-create';
+
+/** Evento que o painel do tour emite a cada passo, com o dialogo que ele pede (ou null). */
+export const TOUR_DIALOG_EVENT = 'deepspace:tour-dialog';
 
 export type Tour = {
   id: string;

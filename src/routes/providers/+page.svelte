@@ -264,7 +264,7 @@
       {#each visibleProviders as provider (provider.id)}
         {@const expanded = expandedProvider === provider.id}
         {@const command = installCommand(provider)}
-        <article class="provider-row" class:available={provider.installed}>
+        <article class="provider-row" class:available={provider.installed} data-tour="provider-row">
           <div class="provider-main">
             <span class="provider-icon app-logo-plate">
               {#if providerIcons[provider.id]}

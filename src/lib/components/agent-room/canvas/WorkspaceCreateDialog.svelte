@@ -175,16 +175,22 @@ const form = superForm(defaults(zod(schema)), {
       await loadWslAvailability(dir);
     }
   }
+
+  function keepOpenForTour(event: PointerEvent) {
+    if (event.target instanceof Element && event.target.closest('.tour-panel')) event.preventDefault();
+  }
 </script>
 
 <Dialog.Root {open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-  <Dialog.Content class="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
+  <!-- O painel do tour fica fora do dialogo: clicar nele nao fecha o formulario. -->
+  <Dialog.Content class="max-h-[90dvh] overflow-y-auto sm:max-w-lg" onInteractOutside={keepOpenForTour}>
     <Dialog.Header>
       <Dialog.Title>{m['dlg.new_ws_title']()}</Dialog.Title>
       <Dialog.Description>{m['dlg.new_ws_desc']()}</Dialog.Description>
     </Dialog.Header>
 
     <form method="POST" use:enhance class="space-y-4">
+      <div data-tour="ws-name">
       <Form.Field {form} name="name">
         <Form.Control>
           {#snippet children({ props })}
@@ -194,6 +200,7 @@ const form = superForm(defaults(zod(schema)), {
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
+      </div>
 
       {#if groupOptions.length}
         <Form.Field {form} name="groupId">
@@ -266,6 +273,7 @@ const form = superForm(defaults(zod(schema)), {
         </div>
       {/if}
 
+      <div data-tour="ws-dir">
       <Form.Field {form} name="workingDir">
         <Form.Control>
           {#snippet children({ props })}
@@ -290,9 +298,10 @@ const form = superForm(defaults(zod(schema)), {
         <Form.Description>{m['dlg.new_ws_dir_hint']()}</Form.Description>
         <Form.FieldErrors />
       </Form.Field>
+      </div>
 
       {#if presets.length}
-        <div class="space-y-2">
+        <div class="space-y-2" data-tour="ws-preset">
           <span class="text-sm font-medium leading-none">{m['dlg.preset_start_label']()}</span>
           <Select.Root type="single" value={presetId} onValueChange={(value: string) => (presetId = value === '__none' ? '' : value)}>
             <Select.Trigger data-slot="select-trigger" class="w-full">
@@ -328,7 +337,7 @@ const form = superForm(defaults(zod(schema)), {
 
       <Dialog.Footer>
         <Button type="button" variant="outline" onclick={onClose}>{m['dlg.cancel']()}</Button>
-        <Button type="submit">{m['dlg.create']()}</Button>
+        <Button type="submit" data-tour="ws-create">{m['dlg.create']()}</Button>
       </Dialog.Footer>
     </form>
   </Dialog.Content>

@@ -1,5 +1,6 @@
 /** Maps every documented use case to the guided tour that exercises it. */
 export const USE_CASE_TOUR_IDS: Record<string, string> = {
+  'interface-tour': 'interface',
   'leader-team': 'team-leader',
   'console-commands': 'console-commands',
   'ssh-servers': 'ssh-servers',

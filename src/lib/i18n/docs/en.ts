@@ -505,6 +505,12 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   useCases: [
     {
+      id: 'interface-tour',
+      title: 'Get to know the interface in a minute',
+      body: 'The "Get to know the interface" tour dims the screen and highlights, one at a time, the controls you use most: the workspace list, the + that creates a workspace (the tour opens the form and walks through each field, highlighting the Working directory, where the project you already have comes in), the Canvas and Workbench switch, the agents menu, the toolbar, zoom, the padlock, the Attention Center and the menu with How to use, Providers and Settings. It ends by opening the Provider Center and showing how to install and sign in to each CLI before the first agent. The tour panel places itself next to the highlighted control. It opens by itself the first time you enter the canvas with a workspace and always stays here, in How to use, to watch again.',
+      tags: ['tour', 'onboarding', 'interface'],
+    },
+    {
       id: 'console-commands',
       title: 'Run the project commands without leaving the Canvas',
       body: 'Create a Scripts node and save the commands you repeat every day — npm run dev, build, git pull, the lint script — each with a name and an optional folder. Hitting ▷ starts a process for that command alone, with the output beside the list and a green dot while it lives; ■ ends it. Switching commands drops nothing: each log comes back where it was, and the dev server stays up while you look at another one. Tick "run when the workspace opens" on whatever should start by itself. Collapse the list and the node becomes a plain terminal for a one-off command. To reuse what another project already has, the download icon in the header imports scripts from another workspace, skipping those that already exist here. Which shell runs those commands is your call: Settings > Terminal > Scripts shell (Automatic, Git Bash, WSL, CMD on Windows; bash, zsh, sh elsewhere).',
@@ -964,9 +970,10 @@ Header: Authorization = Bearer {{accessToken}}`,
   changelog: [
     {
       date: 'October 7, 2026 · 0.40.0',
-      title: 'Deep Space 0.40.0: edit your SSH config from Servers',
-      summary: 'A button in the Servers node opens ~/.ssh/config in the system editor',
+      title: 'Deep Space 0.40.0: an interface tour and your SSH config from Servers',
+      summary: 'A tour highlights each control on screen, and a button in the Servers node opens ~/.ssh/config in the system editor',
       items: [
+        'Interface tour. "Get to know the interface" dims the screen and highlights one control at a time, with the tour panel next to it: workspaces, the New workspace form field by field (with the Working directory, where an existing project comes in), Canvas and Workbench, agents, toolbar, zoom, padlock, Attention Center and the app menu, ending in the Provider Center, where it shows how to install and sign in to each CLI. It opens by itself once, on the first visit to the canvas, and stays in How to use. The locked zoom tour now also points at the % picker and the padlock.',
         'Edit your SSH config from the Servers node. A button in the header opens ~/.ssh/config in the system default editor; when the file does not exist yet, it is created with a commented example and permissions restricted to your user, and an existing file is never overwritten. After saving, the reload button brings the new servers. The file opens outside Deep Space on purpose: the in-app editor only touches workspace files, and the folder that holds your SSH keys stays out of it.',
         'Lock canvas also stopped dragging the canvas itself with the mouse, so the only way to move around was Shift+scroll. The lock now only holds the nodes in place (no dragging or selecting them); dragging the empty canvas pans it as usual.',
         'The Portal device picker ("Responsive (fill node)") opened its list behind the page. The page is a native view drawn above the whole app, and it was only hidden for dialogs, menus and popovers, not for the list of a select. It now steps aside while any of those lists is open and comes back when it closes.',

@@ -8,6 +8,9 @@ type Desktop = {
   onPortalState: (callback: (event: { workspaceId: string; nodeId: string; state: State }) => void) => () => void;
 };
 
+/** Camadas abertas do DOM (dialogo, menu, popover, lista de Select). */
+export const OPEN_LAYER_SELECTOR = '[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"], [role="menu"][data-state="open"], [role="listbox"][data-state="open"], [data-popover-content][data-state="open"]';
+
 export function managedPortalSurface(host: HTMLElement, input: SurfaceInput) {
   const desktop = (window as unknown as { deepspaceDesktop: Desktop }).deepspaceDesktop;
   const identity = { workspaceId: input.workspaceId, nodeId: input.nodeId, lease: crypto.randomUUID() };
@@ -55,9 +58,9 @@ export function managedPortalSurface(host: HTMLElement, input: SurfaceInput) {
       }
     }
     // A view nativa fica acima de todo o DOM: qualquer camada aberta (dialogo,
-    // menu, popover ou a lista de um Select, como a de dispositivos) precisa
+    // menu, popover, a lista de um Select ou o destaque de um tour) precisa
     // dela escondida, senao abre por tras da pagina.
-    const blocker = document.querySelector('[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"], [role="menu"][data-state="open"], [role="listbox"][data-state="open"], [data-popover-content][data-state="open"]');
+    const blocker = document.querySelector(`${OPEN_LAYER_SELECTOR}, [data-tour-spotlight]`);
     const owner = host.closest('.svelte-flow__node');
     const covered = owner && [[left + 2, top + 2], [right - 2, bottom - 2], [(left + right) / 2, (top + bottom) / 2]].some(([x, y]) => {
       const topNode = document.elementFromPoint(x, y)?.closest('.svelte-flow__node');
