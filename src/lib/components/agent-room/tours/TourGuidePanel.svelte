@@ -4,12 +4,75 @@
   import * as m from '$lib/paraglide/messages.js';
   import { Check, CircleCheck, Loader2, Play, X } from '@lucide/svelte';
   import { tourState, tourNext, tourBack, tourCompleteCurrent, tourRunAction, stopTour } from './engine.svelte.js';
+  import { findTourTarget, placeTourPanel, type Box, type Size } from './spotlight.js';
+  import { OPEN_LAYER_SELECTOR } from '../managed-portal-surface.js';
+  import { TOUR_DIALOG_EVENT } from './types.js';
 
   const step = $derived(tourState.tour?.steps[tourState.stepIndex] ?? null);
   const total = $derived(tourState.tour?.steps.length ?? 0);
   const completed = (id: string) => tourState.autoCompleted.has(id);
 
-  function portal(node: HTMLElement) {
+  const SPOTLIGHT_PADDING = 6;
+  let panelWidth = $state(0);
+  let panelHeight = $state(0);
+  let targetBox = $state<Box | null>(null);
+  let viewport = $state<Size>({ width: 0, height: 0 });
+
+  const target = $derived(tourState.done ? undefined : step?.target);
+  let layerOpen = $state(false);
+  // Preso a 2px da borda da janela: um alvo encostado nela (a sidebar) ainda
+  // mostra o anel inteiro.
+  const highlighted = $derived.by(() => {
+    if (!targetBox) return null;
+    const top = Math.max(2, targetBox.top - SPOTLIGHT_PADDING);
+    const left = Math.max(2, targetBox.left - SPOTLIGHT_PADDING);
+    const bottom = Math.min(viewport.height - 2, targetBox.top + targetBox.height + SPOTLIGHT_PADDING);
+    const right = Math.min(viewport.width - 2, targetBox.left + targetBox.width + SPOTLIGHT_PADDING);
+    return { top, left, width: right - left, height: bottom - top };
+  });
+  // Um menu ou painel aberto por cima do alvo ficaria abaixo da camada escura:
+  // ela sai enquanto ele estiver aberto, e o painel continua ancorado. Quando
+  // o alvo esta dentro da camada (um campo do dialogo), ela continua.
+  const spotlight = $derived(layerOpen ? null : highlighted);
+  const placement = $derived(
+    highlighted && panelWidth && panelHeight ? placeTourPanel(highlighted, { width: panelWidth, height: panelHeight }, viewport) : null,
+  );
+
+  $effect(() => {
+    const dialog = tourState.done ? null : step?.dialog ?? null;
+    window.dispatchEvent(new CustomEvent(TOUR_DIALOG_EVENT, { detail: dialog }));
+  });
+
+  // O alvo pode mudar de lugar (sidebar recolhida, dock rolando, janela
+  // redimensionada) ou ainda nem existir quando o passo abre: segue o
+  // retangulo a cada quadro enquanto o passo tiver alvo.
+  $effect(() => {
+    const id = target;
+    if (!id) {
+      targetBox = null;
+      return;
+    }
+    let frame = 0;
+    let last = '';
+    const follow = () => {
+      const element = findTourTarget(id);
+      const rect = element?.getBoundingClientRect();
+      const next = rect ? { top: Math.round(rect.top), left: Math.round(rect.left), width: Math.round(rect.width), height: Math.round(rect.height) } : null;
+      const open = [...document.querySelectorAll(OPEN_LAYER_SELECTOR)].some((layer) => !element || !layer.contains(element));
+      const key = `${JSON.stringify(next)}:${window.innerWidth}x${window.innerHeight}:${open}`;
+      if (key !== last) {
+        last = key;
+        targetBox = next;
+        layerOpen = open;
+        viewport = { width: window.innerWidth, height: window.innerHeight };
+      }
+      frame = requestAnimationFrame(follow);
+    };
+    follow();
+    return () => cancelAnimationFrame(frame);
+  });
+
+  function portal(node: Element) {
     document.body.appendChild(node);
     return {
       destroy() {
@@ -20,9 +83,28 @@
 </script>
 
 {#if tourState.tour && step}
+  {#if spotlight}
+    <!-- Mascara SVG: uma box-shadow do tamanho da tela nao e pintada pelo Chromium. -->
+    <svg class="tour-spotlight" data-tour-spotlight use:portal aria-hidden="true">
+      <defs>
+        <mask id="tour-spotlight-hole">
+          <rect width="100%" height="100%" fill="white" />
+          <rect class="tour-hole" x={spotlight.left} y={spotlight.top} width={spotlight.width} height={spotlight.height} rx="10" fill="black" />
+        </mask>
+      </defs>
+      <rect class="tour-dim" width="100%" height="100%" mask="url(#tour-spotlight-hole)" />
+      <rect class="tour-hole tour-ring" x={spotlight.left} y={spotlight.top} width={spotlight.width} height={spotlight.height} rx="10" />
+    </svg>
+  {/if}
   <aside
     class="tour-panel nodrag nowheel"
     class:workbench={page.url.pathname === '/terminal'}
+    class:anchored={placement !== null}
+    data-side={placement?.side}
+    style:top={placement ? `${placement.top}px` : undefined}
+    style:left={placement ? `${placement.left}px` : undefined}
+    bind:offsetWidth={panelWidth}
+    bind:offsetHeight={panelHeight}
     use:portal
     aria-label={m['tour.panel_aria']()}
   >
@@ -102,6 +184,35 @@
     right: 16px;
     bottom: 40px;
     left: auto;
+  }
+
+  .tour-panel.anchored {
+    right: auto;
+    bottom: auto;
+    transition: top 220ms ease, left 220ms ease;
+  }
+
+  .tour-spotlight {
+    position: fixed;
+    inset: 0;
+    z-index: 59;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+  }
+
+  .tour-dim {
+    fill: rgba(0, 0, 0, 0.55);
+  }
+
+  .tour-ring {
+    fill: none;
+    stroke: var(--app-accent);
+    stroke-width: 2;
+  }
+
+  .tour-hole {
+    transition: x 220ms ease, y 220ms ease, width 220ms ease, height 220ms ease;
   }
 
   .tour-head {
@@ -248,6 +359,11 @@
   @media (prefers-reduced-motion: reduce) {
     :global(.tour-spin) {
       animation: none;
+    }
+
+    .tour-panel.anchored,
+    .tour-hole {
+      transition: none;
     }
   }
 </style>

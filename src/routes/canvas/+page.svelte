@@ -50,7 +50,8 @@
   import AgentCreateDialog from '$lib/components/agent-room/canvas/AgentCreateDialog.svelte';
   import HeaderIconButton from '$lib/components/agent-room/canvas/HeaderIconButton.svelte';
   import OnboardingWizard from '$lib/components/agent-room/tours/OnboardingWizard.svelte';
-  import { startTour } from '$lib/components/agent-room/tours/engine.svelte.js';
+  import { INTERFACE_TOUR_ID, INTERFACE_TOUR_SEEN, startTour, tourState } from '$lib/components/agent-room/tours/engine.svelte.js';
+  import { TOUR_DIALOG_EVENT, type TourDialog } from '$lib/components/agent-room/tours/types.js';
   import CouncilDialog from '$lib/components/agent-room/CouncilDialog.svelte';
   import WorkspaceSharingButton from '$lib/components/collaboration/WorkspaceSharingButton.svelte';
   import WorkspaceSharingDialog from '$lib/components/collaboration/WorkspaceSharingDialog.svelte';
@@ -588,6 +589,7 @@
   let initialPresetId = $state('');
   let pendingWorkspaceGroupId = $state<string | null>(null);
   let showOnboarding = $state(false);
+  let tourOpenedWorkspaceForm = false;
   let requestedTourId = $state<string | null>(null);
   let councilOpen = $state(false);
   let councilSource = $state<{ taskId?: string; taskTitle?: string; taskDescription?: string | null; leaderNodeId?: string } | null>(null);
@@ -1012,7 +1014,26 @@
     window.addEventListener('deepspace:open-council', openCouncilListener);
     window.addEventListener('deepspace:open-sharing', openSharingListener);
     window.addEventListener('deepspace:open-design-exploration', openDesignExplorationListener);
+    // O tour abre o formulario de workspace nos passos que explicam os campos
+    // e so fecha o que ele mesmo abriu. Reage apenas quando o pedido muda: o
+    // mesmo pedido repetido depois de Criar nao reabre o formulario.
+    let lastTourDialog: TourDialog | null = null;
+    const tourDialogListener = (event: Event) => {
+      const requested = (event as CustomEvent<TourDialog | null>).detail;
+      if (requested === lastTourDialog) return;
+      lastTourDialog = requested;
+      const wanted = requested === 'workspace-create';
+      if (wanted && !showWorkspaceForm) {
+        initialPresetId = '';
+        showWorkspaceForm = true;
+        tourOpenedWorkspaceForm = true;
+      } else if (!wanted && tourOpenedWorkspaceForm) {
+        showWorkspaceForm = false;
+        tourOpenedWorkspaceForm = false;
+      }
+    };
     window.addEventListener('deepspace:open-file', openFileListener);
+    window.addEventListener(TOUR_DIALOG_EVENT, tourDialogListener);
     const pending = sessionStorage.getItem('deepspace.menu-action');
     if (pending) {
       sessionStorage.removeItem('deepspace.menu-action');
@@ -1024,6 +1045,7 @@
       window.removeEventListener('deepspace:open-sharing', openSharingListener);
       window.removeEventListener('deepspace:open-design-exploration', openDesignExplorationListener);
       window.removeEventListener('deepspace:open-file', openFileListener);
+      window.removeEventListener(TOUR_DIALOG_EVENT, tourDialogListener);
     };
   });
 
@@ -1316,6 +1338,9 @@
           showOnboarding = true;
         } else if (!workspaceList.length && !localStorage.getItem('deepspace.onboarded')) {
           showOnboarding = true;
+        } else if (activeWorkspace && !requestedTourId && !tourState.tour && !localStorage.getItem(INTERFACE_TOUR_SEEN)) {
+          localStorage.setItem(INTERFACE_TOUR_SEEN, '1');
+          await startTour(INTERFACE_TOUR_ID, activeWorkspace.id);
         }
         if (!forced && requestedTourId && workspaceList.length) params.delete('tour');
         if (params.has('council') && workspaceList.length) params.delete('council');
@@ -2920,8 +2945,8 @@
 <svelte:window onkeydown={handleGlobalKeydown} oncopy={handleShapeCopy} onpaste={handleShapePaste} />
 
 <main class="canvas-page">
-  <aside class="sidebar" inert={designModeNodeId !== null} aria-hidden={designModeNodeId ? 'true' : undefined}>
-      <div class="sidebar-tabs">
+  <aside class="sidebar" data-tour="workspaces" inert={designModeNodeId !== null} aria-hidden={designModeNodeId ? 'true' : undefined}>
+      <div class="sidebar-tabs" data-tour="mode-switch">
         <WorkspaceModeSwitch
           active="canvas"
           workspaceId={activeWorkspace?.id ?? null}
@@ -2942,7 +2967,7 @@
                pasta tinha um campo proprio fixo no pe da lista, sempre ocupando
                espaco para uma acao rara. -->
           <DropdownMenu.Root>
-            <DropdownMenu.Trigger class="grid size-7 cursor-pointer place-items-center rounded-md border-0 bg-[var(--app-accent)] text-[var(--app-accent-contrast)] hover:brightness-110" data-testid="sidebar-create" aria-label={m['canvas.create_menu']()}>
+            <DropdownMenu.Trigger class="grid size-7 cursor-pointer place-items-center rounded-md border-0 bg-[var(--app-accent)] text-[var(--app-accent-contrast)] hover:brightness-110" data-testid="sidebar-create" data-tour="create-workspace" aria-label={m['canvas.create_menu']()}>
               <Plus size={15} />
             </DropdownMenu.Trigger>
             <DropdownMenu.Content
@@ -2959,7 +2984,7 @@
             </DropdownMenu.Content>
           </DropdownMenu.Root>
           <DropdownMenu.Root>
-            <DropdownMenu.Trigger class="grid size-7 cursor-pointer place-items-center rounded-md border-0 bg-transparent text-[var(--app-text-muted)] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)] data-[state=open]:bg-[var(--app-surface-raised)] data-[state=open]:text-[var(--app-text)]" aria-label={m['canvas.workspace_actions']()}>
+            <DropdownMenu.Trigger class="grid size-7 cursor-pointer place-items-center rounded-md border-0 bg-transparent text-[var(--app-text-muted)] hover:bg-[var(--app-surface-raised)] hover:text-[var(--app-text)] data-[state=open]:bg-[var(--app-surface-raised)] data-[state=open]:text-[var(--app-text)]" aria-label={m['canvas.workspace_actions']()} data-tour="app-menu">
               <MoreHorizontal size={15} />
             </DropdownMenu.Trigger>
             <DropdownMenu.Content align="end" class="min-w-[220px]">
@@ -3022,7 +3047,7 @@
       groups={workspaceGroups}
       initialGroupId={pendingWorkspaceGroupId}
       onCreated={handleWorkspaceCreated}
-      onClose={() => { showWorkspaceForm = false; initialPresetId = ''; pendingWorkspaceGroupId = null; }}
+      onClose={() => { showWorkspaceForm = false; tourOpenedWorkspaceForm = false; initialPresetId = ''; pendingWorkspaceGroupId = null; }}
     />
 
       <ul
@@ -3338,7 +3363,7 @@
         <div class="canvas-dock-row">
           <div class="canvas-dock-left">
             {#if appSettings.showControls !== 'false'}
-              <div class="zoom-cluster">
+              <div class="zoom-cluster" data-tour="zoom">
                 <button type="button" class="zoom-btn" data-testid="canvas-zoom-out" title={m['canvas.zoom_out']()} aria-label={m['canvas.zoom_out']()} disabled={lockedZoom !== null} onclick={() => stepZoom(1 / 1.25)}>
                   <Minus size={14} />
                 </button>
@@ -3364,6 +3389,7 @@
                   <DropdownMenu.Trigger
                     class="zoom-btn zoom-lock-trigger"
                     data-testid="canvas-lock-menu"
+                    data-tour="canvas-lock"
                     data-active={lockedZoom !== null || canvasLocked ? 'true' : undefined}
                     title={m['canvas.lock_menu']()}
                     aria-label={m['canvas.lock_menu']()}
@@ -3386,7 +3412,7 @@
             {/if}
           </div>
           <div class="canvas-dock-center">
-          <div class="toolbar-wrap">
+          <div class="toolbar-wrap" data-tour="dock">
             {#if canScrollLeft}
               <button class="toolbar-arrow" aria-label={m['canvas.scroll_left']()} onclick={() => scrollToolbar(-1)}>
                 <ChevronLeft size={14} />

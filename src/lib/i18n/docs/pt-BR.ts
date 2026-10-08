@@ -509,6 +509,12 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   useCases: [
     {
+      id: 'interface-tour',
+      title: 'Conheça a interface em um minuto',
+      body: 'O tour "Conheça a interface" escurece a tela e destaca, um de cada vez, os controles que você mais usa: a lista de workspaces, o + que cria um workspace (o tour abre o formulário e passa por cada campo, com destaque para o Diretório de trabalho, onde entra o projeto que você já tem), a troca entre Canvas e Workbench, o menu de agentes, a barra de ferramentas, o zoom, o cadeado, a Central de Atenção e o menu com Como usar, Providers e Configurações. No fim, abre a Central de Providers e mostra como instalar e logar cada CLI antes do primeiro agente. O painel do tour se posiciona ao lado do controle destacado. Ele abre sozinho na primeira vez que você entra no canvas com um workspace e fica sempre aqui, em Como usar, para rever.',
+      tags: ['tour', 'onboarding', 'interface'],
+    },
+    {
       id: 'console-commands',
       title: 'Rode os comandos do projeto sem sair do Canvas',
       body: 'Crie um nó Scripts e salve os comandos que você repete todo dia — npm run dev, build, git pull, o script de lint — cada um com nome e uma pasta para agrupar. Clicar em ▷ sobe um processo só daquele comando, com a saída ao lado da lista e o ponto verde enquanto ele vive; ■ encerra. Trocar de comando não derruba nada: o log de cada um volta de onde parou, e o dev server continua de pé enquanto você olha outro. Marque "rodar ao abrir o workspace" no que precisa subir sozinho. Recolhendo a lista, o nó vira um terminal comum para um comando avulso. Para reaproveitar o que outro projeto já tem, o ícone de download no cabeçalho importa scripts de outro workspace, pulando os que já existem iguais aqui. Em qual shell esses comandos rodam é escolha sua: Configurações > Terminal > Shell dos Scripts (Automático, Git Bash, WSL, CMD no Windows; bash, zsh, sh nos demais).',
@@ -968,9 +974,10 @@ Header: Authorization = Bearer {{accessToken}}`,
   changelog: [
     {
       date: '7 de outubro de 2026 · 0.40.0',
-      title: 'Deep Space 0.40.0: edite o config do SSH pelo Servidores',
-      summary: 'Um botão no nó Servidores abre o ~/.ssh/config no editor do sistema',
+      title: 'Deep Space 0.40.0: tour pela interface e o config do SSH pelo Servidores',
+      summary: 'Um tour destaca cada controle da tela, e um botão no nó Servidores abre o ~/.ssh/config no editor do sistema',
       items: [
+        'Tour pela interface. "Conheça a interface" escurece a tela e destaca um controle por vez, com o painel do tour ao lado dele: workspaces, o formulário de Novo workspace campo a campo (com o Diretório de trabalho, onde entra o projeto que já existe), Canvas e Workbench, agentes, barra de ferramentas, zoom, cadeado, Central de Atenção e o menu do app, terminando na Central de Providers, onde mostra como instalar e logar cada CLI. Abre sozinho uma vez, na primeira visita ao canvas, e fica em Como usar. O tour do zoom travado também passou a apontar o seletor de % e o cadeado.',
         'Edite o config do SSH pelo nó Servidores. Um botão no cabeçalho abre o ~/.ssh/config no editor padrão do sistema; se o arquivo ainda não existe, ele é criado com um exemplo comentado e permissões só do seu usuário, e um arquivo existente nunca é sobrescrito. Depois de salvar, o botão de recarregar traz os servidores novos. O arquivo abre fora do Deep Space de propósito: o editor do app só mexe em arquivos do workspace, e a pasta das suas chaves SSH fica de fora.',
         'Bloquear canvas também travava o arrastar do próprio canvas com o mouse, e o único jeito de se mover era Shift+rolagem. Agora o bloqueio só segura os nós no lugar (sem arrastar nem selecionar); arrastar a área vazia move o canvas normalmente.',
         'O seletor de dispositivo do Portal ("Responsivo (preenche o nó)") abria a lista por trás da página. A página é uma view nativa desenhada acima do app inteiro, e ela só era escondida para diálogos, menus e popovers, não para a lista de um seletor. Agora ela sai da frente enquanto uma dessas listas está aberta e volta quando fecha.',
