@@ -3,7 +3,10 @@
   "origins": [
     {
       "origin": "http://127.0.0.1:5199",
-      "localStorage": [{ "name": "deepspace.onboarded", "value": "1" }]
+      "localStorage": [
+        { "name": "deepspace.onboarded", "value": "1" },
+        { "name": "deepspace.interface-tour-seen", "value": "1" }
+      ]
     }
   ]
 }
