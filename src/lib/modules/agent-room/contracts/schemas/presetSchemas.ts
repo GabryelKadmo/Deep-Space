@@ -9,6 +9,7 @@ export const applyPresetSchema = z.object({
   wslWorkingDir: z.string().trim().nullish(),
   groupId: z.string().trim().uuid().nullish(),
   locale: z.enum(['pt-BR', 'en', 'es']).optional(),
+  agentProvider: z.string().trim().regex(/^[a-z0-9-]{1,40}$/).optional(),
 });
 
 export type ApplyPresetInput = z.infer<typeof applyPresetSchema>;

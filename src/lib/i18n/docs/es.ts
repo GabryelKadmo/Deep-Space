@@ -356,7 +356,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'presets',
       title: 'Presets de equipo',
-      body: `La Biblioteca de presets está en el icono de plantilla de la barra lateral y en Presets de la barra inferior. Además de Producto, React, Next.js, SvelteKit, Svelar y Laravel, incluye Campaña y lanzamiento, Brand y diseño, Contenido y SEO y Deep Space Contributing. Cada receta trae líder, especialistas, roles operativos extensos, skills, briefing, tablero, tarea inicial y layout; el equipo de contribución también exige consenso entre Claude, Codex y Kimi. Los agentes comienzan con acceso total autónomo y reciben el rol mediante el mecanismo nativo de la CLI, sin dejar la terminal bloqueada por texto pegado. El líder recibe la tarea inicial completa y debe asignarla antes de delegar. Usa Nuevo workspace para otra carpeta o + para sumar el equipo al canvas actual.`,
+      body: `La Biblioteca de presets está en el icono de plantilla de la barra lateral y en Presets de la barra inferior. Además de Producto, React, Next.js, SvelteKit, Svelar y Laravel, incluye Campaña y lanzamiento, Brand y diseño, Contenido y SEO y Deep Space Contributing. Cada receta trae líder, especialistas, roles operativos extensos, skills, briefing, tablero, tarea inicial y layout; el equipo de contribución también exige consenso entre los oráculos del equipo. Los agentes comienzan con acceso total autónomo y reciben el rol mediante el mecanismo nativo de la CLI, sin dejar la terminal bloqueada por texto pegado. El líder recibe la tarea inicial completa y debe asignarla antes de delegar. Usa Nuevo workspace para otra carpeta o + para sumar el equipo al canvas actual. Al crear el workspace o sumar el equipo al canvas, el campo Provider de los agentes define la CLI de todos los agentes del preset (empieza en Claude cuando está instalado, si no en la primera CLI detectada); cada agente mantiene su rol.`,
     },
     {
       id: 'fluxos',
@@ -547,6 +547,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Terminal', 'arrastrar y soltar', 'ruta', 'imágenes'],
     },
     {
+      id: 'agent-done-alert',
+      title: 'Entérate de cuándo terminó el agente sin vigilarlo',
+      body: 'En Configuración > Terminal, Aviso cuando un agente termina reproduce un sonido cuando un agente se detiene después de trabajar al menos 10 segundos en una tarea, la hayas pedido tú o la haya entregado otro agente. Con Sonido y notificación del sistema, también aparece una notificación cuando Deep Space no está en primer plano; al hacer clic, la app vuelve. Las pausas mientras escribes no disparan el aviso, y varios agentes terminando juntos reproducen un solo sonido.',
+      tags: ['notificación', 'sonido', 'agentes', 'foco'],
+    },
+    {
       id: 'zoom-lock',
       title: 'Bloquea el zoom donde el texto se ve nítido',
       body: 'Fuera del 100 % la selección de texto dentro de las terminales se desalinea, y un giro accidental de la rueda del ratón ya saca el canvas de su zoom. Elige el nivel en el selector de % abajo a la izquierda y abre el candado junto al + y elige Bloquear zoom: el candado se cierra y gana un marco, el número toma el color de acento, − y + se atenúan, y la rueda, el pellizco, el doble clic y los atajos ya no cambian el zoom — la rueda mueve el canvas. El bloqueo vale para todos los workspaces y sobrevive a los reinicios; elige Desbloquear zoom en el mismo menú para soltarlo. Es independiente de Bloquear canvas, la otra opción del mismo candado, que bloquea arrastrar y seleccionar nodos.',
@@ -693,7 +699,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'framework-preset',
       title: 'Preset de tu framework (proyecto nuevo en 30s)',
-      body: 'Abre la Biblioteca de presets y elige React, Next.js, SvelteKit, Svelar o Laravel. El proyecto nace con líder, implementación, arquitectura y QA conectados, roles completos, skills para Claude/Codex, tablero y tarea inicial. Las terminales usan el modo autónomo de acceso total del adapter del provider para que el equipo ejecute sin confirmaciones repetidas. Guarda el workspace como preset para duplicar y personalizar la receta.',
+      body: 'Abre la Biblioteca de presets y elige React, Next.js, SvelteKit, Svelar o Laravel. El proyecto nace con líder, implementación, arquitectura y QA conectados, roles completos, skills para Claude/Codex, tablero y tarea inicial. Las terminales usan el modo autónomo de acceso total del adapter del provider para que el equipo ejecute sin confirmaciones repetidas. Guarda el workspace como preset para duplicar y personalizar la receta. Elige también el Provider de los agentes: todo el equipo corre en la CLI que tienes instalada.',
       tags: ['Biblioteca de presets', 'roles/skills', 'bootstrap'],
     },
     {
@@ -717,8 +723,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'deepspace-contributing',
       title: 'Contribuir a Deep Space con tres perspectivas',
-      body: 'Aplica Deep Space Contributing. Claude lidera, Codex y Kimi actúan como oráculos independientes y ambos deben aprobar el plan antes de crear cualquier tarea; especialistas Svelar, desktop y QA/release ejecutan el plan documentado.',
-      tags: ['Claude + Codex + Kimi', 'consenso', 'open source'],
+      body: 'Aplica Deep Space Contributing. El líder coordina, el Oráculo Técnico y el Oráculo Crítico actúan como revisores independientes y ambos deben aprobar el plan antes de crear cualquier tarea; especialistas Svelar, desktop y QA/release ejecutan el plan documentado.',
+      tags: ['oráculos', 'consenso', 'open source'],
     },
     {
       id: 'approval-pipeline',
@@ -988,11 +994,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   changelog: [
     {
       date: '12 de octubre de 2026 · 0.41.0',
-      title: 'Deep Space 0.41.0: suelta un archivo en el terminal para escribir su ruta',
-      summary: 'Los archivos soltados en el terminal se convierten en su ruta en la línea, y el canvas bloqueado vuelve a seleccionar texto',
+      title: 'Deep Space 0.41.0: escucha cuando un agente termina',
+      summary: 'Un sonido opcional cuando un agente termina, ruta del archivo soltado en el terminal y un provider por preset',
       items: [
         'Con Bloquear canvas activado, arrastrar dentro de un terminal (o de una nota, o de cualquier nodo) movía todo el canvas en lugar de seleccionar el texto. El bloqueo sigue manteniendo los nodos en su sitio y arrastrar el área vacía sigue moviendo el canvas, pero arrastrar dentro de un nodo vuelve a llegar a su contenido.',
         'Suelta un archivo en el terminal para escribir su ruta. Como en un terminal del sistema, un archivo arrastrado desde el Explorador o el Finder a cualquier terminal (de agente o no) escribe su ruta real en la línea, entre comillas cuando tiene espacios, y Claude Code y las demás CLI la leen directamente; en un terminal WSL, C:\\... se convierte en /mnt/c/.... Un archivo que no viene del disco se convierte en una copia en .deepspace/attachments y entra por esa ruta. Soltarlo en el composer sigue adjuntándolo al prompt.',
+        'Los presets corren todos los agentes en un solo provider. Los presets incluidos mezclaban Claude, Codex y Kimi, y quien solo tenía Claude instalado recibía terminales de CLI que no tenía. Crear un workspace desde un preset, o sumar un preset al canvas, ahora pide el Provider de los agentes (Claude cuando está instalado, si no la primera CLI detectada) y todos los agentes corren en él, manteniendo su rol.',
+        'Los tours guiados ya no crean agentes en una CLI que no tienes: un tour que pide Codex o Kimi lo usa cuando está instalado y, si no, recurre a tu provider principal (el flujo creativo de imágenes sigue requiriendo Codex, que genera las imágenes). El agente del tour de revisión cruzada ahora se llama Revisor Cruzado, y los oráculos de Deep Space Contributing pasaron a ser Oráculo Técnico y Oráculo Crítico, ya que corren en el provider elegido.',
+        'Aviso cuando un agente termina. Configuración > Terminal suma Aviso cuando un agente termina (Desactivado, Sonido, Sonido y notificación del sistema). Un sonido corto suena cuando un agente se detiene después de trabajar al menos 10 segundos en una tarea iniciada con un Enter, escrito o entregado por otro agente; las pausas al escribir nunca cuentan, varios agentes terminando juntos suenan una sola vez y la notificación del sistema solo aparece cuando Deep Space no está en primer plano. El botón Escuchar reproduce el sonido en la salida de audio elegida.',
         'En macOS y Linux la rama Git actual nunca aparecía: el indicador solo existía en la barra de título de Windows. Ahora está en la parte superior de la barra lateral del canvas y en la fila de encabezado del Workbench, con el mismo panel al hacer clic.',
         'Elige cómo abren los terminales de agente. Configuración > Terminal suma Omitir aprobaciones en los terminales de agente y Remote Control en los terminales de Claude, ambos activados por defecto como antes. Desactivar el primero quita la flag de bypass de cada CLI (--dangerously-skip-permissions, el bypass de Codex, --yolo, --auto, --force, el modo dangerous de Devin) y los agentes piden antes de actuar; desactivar el segundo abre Claude sin --rc. La elección aplica cuando un terminal abre o reabre, incluidos los creados antes.',
         'Panel Git con revisión por bloque. El botón Git de la barra ahora abre Git en un panel fijo en el lateral del canvas, como Uso, con Agregar Git al canvas arriba. Los archivos modificados muestran nombre, carpeta y estado con color; al hacer clic en uno se abre el diff completo, donde cada bloque se puede preparar, quitar del stage o revertir por separado (revertir pide un segundo clic). Las acciones por bloque aplican un parche de un solo bloque con git apply y se rechazan cuando el archivo cambió después de abrir el diff.',

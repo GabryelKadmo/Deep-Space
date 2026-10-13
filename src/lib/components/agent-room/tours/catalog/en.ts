@@ -168,6 +168,30 @@ export const TOURS_EN: Tour[] = [
     ],
   },
   {
+    id: 'agent-done-alert',
+    icon: 'BellRing',
+    title: 'Know when the agent is done',
+    tagline: 'A sound (and a notification) when the agent stops working.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Open Settings',
+        body: 'The alert lives in the Terminal section of Settings. I will open it for you.',
+        action: { kind: 'openPage', path: '/settings#terminal' },
+      },
+      {
+        id: 'pick',
+        title: 'Pick the alert',
+        body: 'In Alert when an agent finishes, choose Sound, or Sound and system notification to also get a system notice while you are in another window. Click Listen to check the volume and save.',
+      },
+      {
+        id: 'work',
+        title: 'Let the agent work',
+        body: 'Send a task to an agent and go do something else. When it stops after working at least 10 seconds, the sound plays and you come back to Deep Space. Pauses while you type do not count.',
+      },
+    ],
+  },
+  {
     id: 'agent-launch-defaults',
     icon: 'ShieldCheck',
     title: 'How agents open',
@@ -573,21 +597,21 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'reviewer',
         title: 'The reviewer',
-        body: 'I\'ll create the Codex reviewer — a different model reviewing with another perspective.',
-        action: { kind: 'createAgent', title: 'Codex Reviewer', provider: 'codex' },
-        check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Codex Reviewer' },
+        body: 'I\'ll create the reviewer. With Codex installed it runs there, so a different model reviews with another perspective; without Codex it uses your main provider.',
+        action: { kind: 'createAgent', title: 'Cross Reviewer', provider: 'codex' },
+        check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Cross Reviewer' },
       },
       {
         id: 'connect',
         title: 'Connect the two',
         body: 'I\'ll make the connection: anything one asks the other travels through it (and it glows green while they talk).',
-        action: { kind: 'connect', fromTitle: 'Claude Dev', toTitle: 'Codex Reviewer' },
-        check: { kind: 'edgeExists', fromTitle: 'Claude Dev', toTitle: 'Codex Reviewer' },
+        action: { kind: 'connect', fromTitle: 'Claude Dev', toTitle: 'Cross Reviewer' },
+        check: { kind: 'edgeExists', fromTitle: 'Claude Dev', toTitle: 'Cross Reviewer' },
       },
       {
         id: 'flow',
         title: 'The review flow',
-        body: 'Tell Claude Dev: "implement X and ask Codex Reviewer for a review (deepspace ask)". It implements, Codex critiques, the verdict comes back on the same rope.',
+        body: 'Tell Claude Dev: "implement X and ask Cross Reviewer for a review (deepspace ask)". It implements, the reviewer critiques, the verdict comes back on the same rope.',
       },
     ],
   },
@@ -1998,7 +2022,7 @@ export const TOURS_EN: Tour[] = [
         id: 'create-director',
         title: 'Create the Creative Director',
         body: 'I add a single Codex agent to control every stage. Use an authenticated Codex account or plan with ImageGen available; no API key is required.',
-        action: { kind: 'createAgent', title: 'XYZ Creative Director', provider: 'codex', position: { x: 40, y: 60 } },
+        action: { kind: 'createAgent', title: 'XYZ Creative Director', provider: 'codex', requiresProvider: true, position: { x: 40, y: 60 } },
         check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'XYZ Creative Director' },
       },
       {

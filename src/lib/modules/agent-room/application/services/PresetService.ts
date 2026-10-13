@@ -13,7 +13,8 @@ import { mcpService } from './McpService.js';
 import { builtinPresetCatalog, normalizePresetLocale, type PresetLocale } from '../catalogs/BuiltinPresetCatalog.js';
 import { CreateWorkspaceDto } from '../dto/WorkspaceDtos.js';
 import { boardColumnService, type BoardColumnRecipe } from './BoardColumnService.js';
-import { materializeInteractiveAgentCommand } from '../adapters/registry.js';
+import { hasAgentAdapter, materializeInteractiveAgentCommand } from '../adapters/registry.js';
+import { withAgentProvider } from '../../domain/preset-provider.js';
 
 export type PresetSummary = {
   id: string;
@@ -119,9 +120,10 @@ function sanitizePayload(payload: unknown): Record<string, unknown> {
   return clean;
 }
 
-async function presetNodePayload(workspaceId: string, node: PresetData['nodes'][number]): Promise<Record<string, unknown>> {
-  const payload = sanitizePayload(node.payload);
-  if (node.type !== 'terminal') return payload;
+async function presetNodePayload(workspaceId: string, node: PresetData['nodes'][number], agentProvider?: string): Promise<Record<string, unknown>> {
+  const sanitized = sanitizePayload(node.payload);
+  if (node.type !== 'terminal') return sanitized;
+  const payload = withAgentProvider(sanitized, agentProvider);
   const roleName = typeof payload.role === 'string' ? payload.role : null;
   const role = roleName ? await roleService.launchContext(workspaceId, roleName) : null;
   return materializeInteractiveAgentCommand(payload, role).payload;
@@ -393,8 +395,11 @@ export class PresetService {
       wslDistribution?: string | null;
       wslWorkingDir?: string | null;
       groupId?: string | null;
-    }) & { locale?: PresetLocale }
+    }) & { locale?: PresetLocale; agentProvider?: string }
   ): Promise<{ workspaceId: string; nodes: number; edges: number; roles: number; routines: number; tasks: number; columns: number; mcps: number; skills: number }> {
+    // Todos os agentes do preset rodam no provider escolhido: um time misto
+    // quebrava para quem so tem uma CLI instalada.
+    if (target.agentProvider && !hasAgentAdapter(target.agentProvider)) throw new Error('Provider de agente desconhecido.');
     const preset = await this.data(presetId, target.locale ?? 'pt-BR');
     let workspaceId: string;
     let offsetX = 0;
@@ -448,7 +453,7 @@ export class PresetService {
         width: node.width ?? 560,
         height: node.height ?? 360,
         zIndex: node.zIndex ?? 0,
-        payload: await presetNodePayload(workspaceId, node) as never,
+        payload: await presetNodePayload(workspaceId, node, target.agentProvider) as never,
       });
       nodeIds.push(created.id);
     }

@@ -3065,6 +3065,7 @@
       {initialPresetId}
       groups={workspaceGroups}
       initialGroupId={pendingWorkspaceGroupId}
+      {providers}
       onCreated={handleWorkspaceCreated}
       onClose={() => { showWorkspaceForm = false; tourOpenedWorkspaceForm = false; initialPresetId = ''; pendingWorkspaceGroupId = null; }}
     />
@@ -3629,6 +3630,7 @@
     {#if showPresetPanel}
       <PresetLibraryPanel
         workspaceId={activeWorkspace?.id ?? null}
+        {providers}
         onCreateWorkspace={createWorkspaceFromPreset}
         onApplied={refreshAfterPresetApply}
         onClose={() => (showPresetPanel = false)}

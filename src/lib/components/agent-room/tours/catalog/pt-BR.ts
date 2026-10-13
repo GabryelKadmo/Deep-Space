@@ -172,6 +172,30 @@ export const TOURS_PT: Tour[] = [
     ],
   },
   {
+    id: 'agent-done-alert',
+    icon: 'BellRing',
+    title: 'Saiba quando o agente terminou',
+    tagline: 'Um som (e uma notificação) quando o agente para de trabalhar.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Abra as Configurações',
+        body: 'O aviso fica na seção Terminal das Configurações. Vou abrir para você.',
+        action: { kind: 'openPage', path: '/settings#terminal' },
+      },
+      {
+        id: 'pick',
+        title: 'Escolha o aviso',
+        body: 'Em Aviso quando um agente termina, escolha Som, ou Som e notificação do sistema para também receber um aviso do sistema quando estiver em outra janela. Clique em Ouvir para conferir o volume e salve.',
+      },
+      {
+        id: 'work',
+        title: 'Deixe o agente trabalhar',
+        body: 'Mande uma tarefa a um agente e vá fazer outra coisa. Quando ele parar depois de trabalhar pelo menos 10 segundos, o som toca e você volta ao Deep Space. Pausas enquanto você digita não contam.',
+      },
+    ],
+  },
+  {
     id: 'agent-launch-defaults',
     icon: 'ShieldCheck',
     title: 'Como os agentes abrem',
@@ -577,21 +601,21 @@ export const TOURS_PT: Tour[] = [
       {
         id: 'reviewer',
         title: 'O revisor',
-        body: 'Crio o Codex revisor — um modelo diferente revisando com outro olhar.',
-        action: { kind: 'createAgent', title: 'Codex Reviewer', provider: 'codex' },
-        check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Codex Reviewer' },
+        body: 'Crio o revisor. Com o Codex instalado ele roda nele, e um modelo diferente revisa com outro olhar; sem o Codex, ele usa o seu provider principal.',
+        action: { kind: 'createAgent', title: 'Revisor Cruzado', provider: 'codex' },
+        check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Revisor Cruzado' },
       },
       {
         id: 'connect',
         title: 'Conecte os dois',
         body: 'Faço a conexão: tudo que um perguntar ao outro viaja por ela (e ela acende verde durante a conversa).',
-        action: { kind: 'connect', fromTitle: 'Claude Dev', toTitle: 'Codex Reviewer' },
-        check: { kind: 'edgeExists', fromTitle: 'Claude Dev', toTitle: 'Codex Reviewer' },
+        action: { kind: 'connect', fromTitle: 'Claude Dev', toTitle: 'Revisor Cruzado' },
+        check: { kind: 'edgeExists', fromTitle: 'Claude Dev', toTitle: 'Revisor Cruzado' },
       },
       {
         id: 'flow',
         title: 'O fluxo de revisão',
-        body: 'Diga ao Claude Dev: "implemente X e peça revisão ao Codex Reviewer (deepspace ask)". Ele implementa, o Codex critica, o veredito volta na mesma corda.',
+        body: 'Diga ao Claude Dev: "implemente X e peça revisão ao Revisor Cruzado (deepspace ask)". Ele implementa, o revisor critica, o veredito volta na mesma corda.',
       },
     ],
   },
@@ -2002,7 +2026,7 @@ export const TOURS_PT: Tour[] = [
         id: 'create-director',
         title: 'Crie o Diretor Criativo',
         body: 'Eu adiciono um único agente Codex para controlar todas as etapas. Use uma conta ou assinatura Codex autenticada com ImageGen disponível; nenhuma chave de API é necessária.',
-        action: { kind: 'createAgent', title: 'Diretor Criativo XYZ', provider: 'codex', position: { x: 40, y: 60 } },
+        action: { kind: 'createAgent', title: 'Diretor Criativo XYZ', provider: 'codex', requiresProvider: true, position: { x: 40, y: 60 } },
         check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Diretor Criativo XYZ' },
       },
       {
