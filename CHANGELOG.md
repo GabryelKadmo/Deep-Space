@@ -5,7 +5,7 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
-## 0.41.0 - 2026-10-12
+## 0.41.0 - 2026-10-13
 
 ### Added
 

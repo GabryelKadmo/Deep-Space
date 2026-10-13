@@ -999,9 +999,9 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
-      date: '12 de octubre de 2026 · 0.41.0',
-      title: 'Deep Space 0.41.0: escucha cuando un agente termina',
-      summary: 'Un sonido opcional cuando un agente termina, ruta del archivo soltado en el terminal y un provider por preset',
+      date: '13 de octubre de 2026 · 0.41.0',
+      title: 'Deep Space 0.41.0: panel Git con revisión por bloque',
+      summary: 'Git fijo en el lateral con revertir y preparar por bloque, aviso sonoro cuando un agente termina, ruta del archivo soltado en el terminal y un provider por preset',
       items: [
         'Con Bloquear canvas activado, arrastrar dentro de un terminal (o de una nota, o de cualquier nodo) movía todo el canvas en lugar de seleccionar el texto. El bloqueo sigue manteniendo los nodos en su sitio y arrastrar el área vacía sigue moviendo el canvas, pero arrastrar dentro de un nodo vuelve a llegar a su contenido.',
         'Suelta un archivo en el terminal para escribir su ruta. Como en un terminal del sistema, un archivo arrastrado desde el Explorador o el Finder a cualquier terminal (de agente o no) escribe su ruta real en la línea, entre comillas cuando tiene espacios, y Claude Code y las demás CLI la leen directamente; en un terminal WSL, C:\\... se convierte en /mnt/c/.... Un archivo que no viene del disco se convierte en una copia en .deepspace/attachments y entra por esa ruta. Soltarlo en el composer sigue adjuntándolo al prompt.',
