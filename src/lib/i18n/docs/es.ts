@@ -529,6 +529,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Terminal', 'shell', 'PowerShell', 'Git Bash'],
     },
     {
+      id: 'app-shortcuts',
+      title: 'Vuelve al canvas con Esc y abre la Configuración con Ctrl+,',
+      body: 'En cualquier página de la app (Configuración, Central de Providers, Cómo usar, Skills, Remote) Esc vuelve al canvas. Espera su turno: con un diálogo, menú o lista abierta, Esc cierra primero esa capa, y dentro de un campo de texto sigue siendo del campo. Ctrl+, (⌘, en Mac) abre la Configuración, y Ctrl+Alt+U, R, F y O abren Uso, Roles, Pisos y Puertos, también cuando Deep Space se abre en el navegador.',
+      tags: ['atajos', 'Esc', 'Configuración'],
+    },
+    {
       id: 'git-changes-panel',
       title: 'Sigue y revierte lo que cambió en el proyecto',
       body: 'Abre Git con el botón de la barra: queda fijo en el lateral del Canvas, como Uso, y el primer botón de arriba pone el mismo Git en el canvas. La lista muestra cada archivo modificado con nombre, carpeta y estado (M, A, D, U). Haz clic en un archivo para ver el diff completo y decidir bloque por bloque: Preparar bloque envía solo ese tramo al commit, Revertir bloque descarta solo ese tramo (con un segundo clic para confirmar) y, en lo ya preparado, Quitar bloque del stage. Si el archivo cambia mientras lo miras, la acción se rechaza y el diff se recarga.',
@@ -993,9 +999,9 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
-      date: '12 de octubre de 2026 · 0.41.0',
-      title: 'Deep Space 0.41.0: escucha cuando un agente termina',
-      summary: 'Un sonido opcional cuando un agente termina, ruta del archivo soltado en el terminal y un provider por preset',
+      date: '13 de octubre de 2026 · 0.41.0',
+      title: 'Deep Space 0.41.0: panel Git con revisión por bloque',
+      summary: 'Git fijo en el lateral con revertir y preparar por bloque, aviso sonoro cuando un agente termina, ruta del archivo soltado en el terminal y un provider por preset',
       items: [
         'Con Bloquear canvas activado, arrastrar dentro de un terminal (o de una nota, o de cualquier nodo) movía todo el canvas en lugar de seleccionar el texto. El bloqueo sigue manteniendo los nodos en su sitio y arrastrar el área vacía sigue moviendo el canvas, pero arrastrar dentro de un nodo vuelve a llegar a su contenido.',
         'Suelta un archivo en el terminal para escribir su ruta. Como en un terminal del sistema, un archivo arrastrado desde el Explorador o el Finder a cualquier terminal (de agente o no) escribe su ruta real en la línea, entre comillas cuando tiene espacios, y Claude Code y las demás CLI la leen directamente; en un terminal WSL, C:\\... se convierte en /mnt/c/.... Un archivo que no viene del disco se convierte en una copia en .deepspace/attachments y entra por esa ruta. Soltarlo en el composer sigue adjuntándolo al prompt.',
@@ -1006,6 +1012,7 @@ Header: Authorization = Bearer {{accessToken}}`,
         'Elige cómo abren los terminales de agente. Configuración > Terminal suma Omitir aprobaciones en los terminales de agente y Remote Control en los terminales de Claude, ambos activados por defecto como antes. Desactivar el primero quita la flag de bypass de cada CLI (--dangerously-skip-permissions, el bypass de Codex, --yolo, --auto, --force, el modo dangerous de Devin) y los agentes piden antes de actuar; desactivar el segundo abre Claude sin --rc. La elección aplica cuando un terminal abre o reabre, incluidos los creados antes.',
         'Panel Git con revisión por bloque. El botón Git de la barra ahora abre Git en un panel fijo en el lateral del canvas, como Uso, con Agregar Git al canvas arriba. Los archivos modificados muestran nombre, carpeta y estado con color; al hacer clic en uno se abre el diff completo, donde cada bloque se puede preparar, quitar del stage o revertir por separado (revertir pide un segundo clic). Las acciones por bloque aplican un parche de un solo bloque con git apply y se rechazan cuando el archivo cambió después de abrir el diff.',
         'Los botones con los tamaños de texto compactos (Commit en Git, las acciones del Centro de revisión y otros) perdían el color del texto y mostraban texto claro sobre fondo claro: el combinador de clases trataba los tamaños text-ui-* del tema como color. Ahora se registran como tamaño de fuente y cada botón conserva el color de su variante.',
+        'Esc vuelve al canvas. En cualquier página de la app (Configuración, Central de Providers, Cómo usar, Skills, Remote) Esc vuelve al canvas, después de que los diálogos, menús y campos de texto abiertos tuvieron su turno. Cuando Deep Space corre en el navegador, la propia app atiende Ctrl+, (Configuración) y Ctrl+Alt+U, R, F y O (Uso, Roles, Pisos, Puertos), que el menú de la app de escritorio ya ofrecía.',
       ],
     },
     {

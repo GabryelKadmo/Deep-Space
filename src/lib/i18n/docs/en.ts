@@ -529,6 +529,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Terminal', 'shell', 'PowerShell', 'Git Bash'],
     },
     {
+      id: 'app-shortcuts',
+      title: 'Go back to the canvas with Esc and open Settings with Ctrl+,',
+      body: 'On any app page (Settings, Provider Center, How to use, Skills, Remote) Esc goes back to the canvas. It waits its turn: with a dialog, menu or list open, Esc closes that layer first, and inside a text field it still belongs to the field. Ctrl+, (⌘, on Mac) opens Settings, and Ctrl+Alt+U, R, F and O open Usage, Roles, Floors and Ports, also when Deep Space is opened in a browser.',
+      tags: ['shortcuts', 'Esc', 'Settings'],
+    },
+    {
       id: 'git-changes-panel',
       title: 'Track and revert what changed in the project',
       body: 'Open Git from the toolbar button: it stays pinned to the side of the Canvas, like Usage, and the first button at the top puts the same Git on the canvas. The list shows each changed file with name, folder and status (M, A, D, U). Click a file to see the full diff and decide block by block: Stage block sends just that hunk to the commit, Revert block discards just that hunk (with a second click to confirm) and, on staged files, Unstage block. If the file changes while you look, the action is refused and the diff reloads.',
@@ -993,9 +999,9 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
-      date: 'October 12, 2026 · 0.41.0',
-      title: 'Deep Space 0.41.0: hear when an agent is done',
-      summary: 'An optional sound when an agent finishes, file paths dropped on terminals, one provider per preset',
+      date: 'October 13, 2026 · 0.41.0',
+      title: 'Deep Space 0.41.0: a Git panel with block-level review',
+      summary: 'Git pinned to the side with per-block revert and stage, a sound when an agent finishes, file paths dropped on terminals and one provider per preset',
       items: [
         'With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.',
         'Drop a file on a terminal to type its path. Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.',
@@ -1006,6 +1012,7 @@ Header: Authorization = Bearer {{accessToken}}`,
         'Choose how agent terminals open. Settings > Terminal gains Skip approvals in agent terminals and Remote Control in Claude terminals, both on by default as before. Turning the first off removes each CLI\'s bypass flag (--dangerously-skip-permissions, Codex\'s bypass, --yolo, --auto, --force, Devin\'s dangerous mode) so agents ask before acting; turning the second off opens Claude without --rc. The choice applies when a terminal opens or reopens, including terminals created before.',
         'Git panel with block-level review. The Git button in the toolbar now opens Git in a panel pinned to the side of the canvas, like Usage, with Add Git to the canvas at the top. Changed files show name, folder and a colored status; clicking one opens the full diff, where each block can be staged, unstaged or reverted on its own (revert asks for a second click). Block actions apply a single-hunk patch with git apply and are refused when the file changed after the diff was opened.',
         'Buttons with the compact text sizes (Commit in Git, the Review Center actions and others) lost their text color and showed light text on a light background: the class merger treated the theme\'s text-ui-* sizes as colors. They are now registered as font sizes, so each button keeps its variant color.',
+        'Esc goes back to the canvas. On any app page (Settings, Provider Center, How to use, Skills, Remote) Esc returns to the canvas, after open dialogs, menus and text fields had their turn. When Deep Space runs in a browser, the app itself now handles Ctrl+, (Settings) and Ctrl+Alt+U, R, F and O (Usage, Roles, Floors, Ports), which the desktop menu already provided.',
       ],
     },
     {

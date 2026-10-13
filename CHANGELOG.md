@@ -5,7 +5,7 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
-## 0.41.0 - 2026-10-12
+## 0.41.0 - 2026-10-13
 
 ### Added
 
@@ -13,6 +13,7 @@ pt-BR, English, and Spanish translations.
 - **Alert when an agent finishes.** Settings > Terminal gains Alert when an agent finishes (Off, Sound, Sound and system notification). It plays a short chime when an agent stops after working at least 10 seconds on a task started by an Enter, typed or delivered by another agent; pauses while typing never count, several agents finishing together play one sound, and the system notification only shows while Deep Space is not in focus. A Listen button previews the sound on the chosen audio output.
 - **Choose how agent terminals open.** Settings > Terminal gains Skip approvals in agent terminals and Remote Control in Claude terminals, both on by default as before. Turning the first off removes each CLI's bypass flag (--dangerously-skip-permissions, Codex's bypass, --yolo, --auto, --force, Devin's dangerous mode) so agents ask before acting; turning the second off opens Claude without --rc. The choice applies when a terminal opens or reopens, including terminals created before.
 - **Git panel with block-level review.** The Git button in the toolbar now opens Git in a panel pinned to the side of the canvas, like Usage, with Add Git to the canvas at the top. Changed files show name, folder and a colored status; clicking one opens the full diff, where each block can be staged, unstaged or reverted on its own (revert asks for a second click). Block actions apply a single-hunk patch with git apply and are refused when the file changed after the diff was opened.
+- **Esc goes back to the canvas.** On any app page (Settings, Provider Center, How to use, Skills, Remote) Esc returns to the canvas, after open dialogs, menus and text fields had their turn. When Deep Space runs in a browser, the app itself now handles Ctrl+, (Settings) and Ctrl+Alt+U, R, F and O (Usage, Roles, Floors, Ports), which the desktop menu already provided.
 
 ### Changed
 
