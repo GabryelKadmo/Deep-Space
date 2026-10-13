@@ -985,6 +985,7 @@ Header: Authorization = Bearer {{accessToken}}`,
       items: [
         'Com Bloquear canvas ligado, arrastar dentro de um terminal (ou de uma nota, ou de qualquer nó) movia o canvas inteiro em vez de selecionar o texto. O bloqueio continua segurando os nós no lugar, e arrastar a área vazia continua movendo o canvas, mas arrastar dentro de um nó volta a chegar no conteúdo dele.',
         'Solte um arquivo no terminal para digitar o caminho. Como num terminal do sistema, um arquivo arrastado do Explorer ou do Finder para qualquer terminal (de agente ou não) digita o caminho real dele na linha, entre aspas quando tem espaço, e o Claude Code e as outras CLIs leem direto; num terminal WSL, C:\\... vira /mnt/c/.... Um arquivo que não vem do disco vira uma cópia em .deepspace/attachments e entra por esse caminho. Soltar no composer continua anexando ao prompt.',
+        'No macOS e no Linux a branch Git atual nunca aparecia: o indicador só existia na barra de título do Windows. Agora ele fica no topo da sidebar do canvas e na linha de cabeçalho do Workbench, com o mesmo painel ao clicar.',
       ],
     },
     {

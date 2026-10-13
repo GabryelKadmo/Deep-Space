@@ -14,6 +14,7 @@ pt-BR, English, and Spanish translations.
 ### Fixed
 
 - With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.
+- On macOS and Linux the current Git branch never showed up: the indicator only lived in the Windows title bar. It now sits at the top of the canvas sidebar and in the Workbench header row, with the same panel when clicked.
 
 ## 0.40.0 - 2026-10-07
 

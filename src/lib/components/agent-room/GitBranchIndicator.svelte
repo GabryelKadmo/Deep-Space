@@ -13,6 +13,9 @@
     behind: number;
   };
 
+  /** `block`: ocupa a linha inteira (sidebar do mac/Linux, que nao tem a barra de titulo do Windows). */
+  let { block = false }: { block?: boolean } = $props();
+
   let status = $state<Status | null>(null);
   let open = $state(false);
   const workspaceId = $derived(activeWorkspaceStore.id);
@@ -43,7 +46,7 @@
   {@const wsId = workspaceId}
   <Popover.Root bind:open>
     <Popover.Trigger
-      class="branch-indicator"
+      class={block ? 'branch-indicator branch-indicator-block' : 'branch-indicator'}
       aria-label={m['git.branch_indicator_label']({ branch: branchLabel })}
     >
       <GitBranch size={12} aria-hidden="true" />
@@ -74,6 +77,17 @@
     font-size: 11px;
     line-height: 1;
     cursor: pointer;
+  }
+
+  :global(.branch-indicator-block) {
+    width: 100%;
+    height: 28px;
+  }
+
+  :global(.branch-indicator-block .branch-indicator-name) {
+    flex: 1;
+    max-width: none;
+    text-align: left;
   }
 
   :global(.branch-indicator:hover) {

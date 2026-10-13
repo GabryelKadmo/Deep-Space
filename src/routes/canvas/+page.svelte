@@ -63,6 +63,7 @@
   import WorkspaceModeSwitch from '$lib/components/agent-room/WorkspaceModeSwitch.svelte';
   import { setActiveWorkspaceId, setSharingOpenHandler } from '$lib/components/agent-room/active-workspace.svelte.js';
   import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
+  import GitBranchIndicator from '$lib/components/agent-room/GitBranchIndicator.svelte';
   import WorkspaceMemoryDialog from '$lib/components/agent-room/WorkspaceMemoryDialog.svelte';
   import AnnotationCenterDialog from '$lib/components/agent-room/AnnotationCenterDialog.svelte';
   import HuddleDialog from '$lib/components/agent-room/HuddleDialog.svelte';
@@ -2964,6 +2965,9 @@
           nodeId={nodes.find((node) => node.selected)?.id ?? canvasRouteNodeId()}
         />
       </div>
+      {#if !windowsDesktop}
+        <div class="sidebar-branch"><GitBranchIndicator block /></div>
+      {/if}
       <div class="sidebar-header">
         <h2>{m['canvas.workspaces']()}</h2>
         <div class="sidebar-header-actions">
@@ -3818,6 +3822,10 @@
   /* Sangra ate a borda do sidebar (compensa o padding do .sidebar) para a
      divisoria ficar de ponta a ponta, igual ao Workbench — mesma altura fixa
      e centralizacao por flex, sem padding vertical (nao "gorda" como antes). */
+  .sidebar-branch:not(:empty) {
+    padding-top: 10px;
+  }
+
   .sidebar-tabs {
     flex-shrink: 0;
     height: 44px;

@@ -981,6 +981,7 @@ Header: Authorization = Bearer {{accessToken}}`,
       items: [
         'With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.',
         '**Drop a file on a terminal to type its path.** Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.',
+        'On macOS and Linux the current Git branch never showed up: the indicator only lived in the Windows title bar. It now sits at the top of the canvas sidebar and in the Workbench header row, with the same panel when clicked.',
       ],
     },
     {
