@@ -5,6 +5,7 @@ export const USE_CASE_TOUR_IDS: Record<string, string> = {
   'console-commands': 'console-commands',
   'ssh-servers': 'ssh-servers',
   'terminal-shell': 'terminal-shell',
+  'app-shortcuts': 'interface',
   'git-changes-panel': 'manage-git-workspace',
   'agent-launch-defaults': 'agent-launch-defaults',
   'terminal-drop-path': 'terminal-shell',
