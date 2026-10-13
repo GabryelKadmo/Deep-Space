@@ -13,11 +13,6 @@ pt-BR, English, and Spanish translations.
 - **Alert when an agent finishes.** Settings > Terminal gains Alert when an agent finishes (Off, Sound, Sound and system notification). It plays a short chime when an agent stops after working at least 10 seconds on a task started by an Enter, typed or delivered by another agent; pauses while typing never count, several agents finishing together play one sound, and the system notification only shows while Deep Space is not in focus. A Listen button previews the sound on the chosen audio output.
 - **Choose how agent terminals open.** Settings > Terminal gains Skip approvals in agent terminals and Remote Control in Claude terminals, both on by default as before. Turning the first off removes each CLI's bypass flag (--dangerously-skip-permissions, Codex's bypass, --yolo, --auto, --force, Devin's dangerous mode) so agents ask before acting; turning the second off opens Claude without --rc. The choice applies when a terminal opens or reopens, including terminals created before.
 
-### Changed
-
-- **Presets run every agent on one provider.** Built-in presets mixed Claude, Codex and Kimi, so someone with only Claude installed got terminals for CLIs they did not have. Creating a workspace from a preset, or adding a preset to the canvas, now asks for the Provider for the agents (Claude when installed, otherwise the first CLI detected) and every agent runs on it, keeping its role.
-- Guided tours no longer create agents on a CLI you do not have: a tour that asks for Codex or Kimi uses it when installed and otherwise falls back to your main provider (the creative image workflow still requires Codex, which generates the images). The cross-provider review tour's agent is now Cross Reviewer, and the Deep Space Contributing oracles are the Technical Oracle and the Critical Oracle, since they run on the chosen provider.
-
 ### Fixed
 
 - With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.
