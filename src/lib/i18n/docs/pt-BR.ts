@@ -539,6 +539,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Terminal', 'arrastar e soltar', 'caminho', 'imagens'],
     },
     {
+      id: 'agent-done-alert',
+      title: 'Saiba quando o agente terminou sem ficar olhando',
+      body: 'Em Configurações > Terminal, Aviso quando um agente termina toca um som quando um agente para depois de trabalhar pelo menos 10 segundos numa tarefa, seja pedida por você ou entregue por outro agente. Com Som e notificação do sistema, também aparece uma notificação quando o Deep Space não está em foco; clicar nela traz o app de volta. Pausas enquanto você digita não disparam o aviso, e vários agentes terminando juntos tocam um som só.',
+      tags: ['notificação', 'som', 'agentes', 'foco'],
+    },
+    {
       id: 'zoom-lock',
       title: 'Trave o zoom onde o texto fica nítido',
       body: 'Fora de 100% a seleção de texto dentro dos terminais desalinha, e uma rodada sem querer da roda do mouse já tira o canvas do zoom. Escolha o nível no seletor de % no canto inferior esquerdo e abra o cadeado ao lado do + e escolha Bloquear zoom: o cadeado fecha e ganha moldura, o número fica em destaque, − e + apagam, e roda, pinça, duplo clique e atalhos não mudam mais o zoom — a roda passa a mover o canvas. A trava vale para todos os workspaces e sobrevive a reinícios; escolha Desbloquear zoom no mesmo menu para soltar. Ela é independente de Bloquear canvas, a outra opção do mesmo cadeado, que trava arrastar e selecionar nós.',
@@ -980,13 +986,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   changelog: [
     {
       date: '12 de outubro de 2026 · 0.41.0',
-      title: 'Deep Space 0.41.0: solte um arquivo no terminal para digitar o caminho',
-      summary: 'Arquivos soltos no terminal viram o caminho na linha, e o canvas bloqueado volta a selecionar texto',
+      title: 'Deep Space 0.41.0: ouça quando um agente termina',
+      summary: 'Um som opcional quando um agente termina, caminho de arquivo solto no terminal e um provider por preset',
       items: [
         'Com Bloquear canvas ligado, arrastar dentro de um terminal (ou de uma nota, ou de qualquer nó) movia o canvas inteiro em vez de selecionar o texto. O bloqueio continua segurando os nós no lugar, e arrastar a área vazia continua movendo o canvas, mas arrastar dentro de um nó volta a chegar no conteúdo dele.',
         'Solte um arquivo no terminal para digitar o caminho. Como num terminal do sistema, um arquivo arrastado do Explorer ou do Finder para qualquer terminal (de agente ou não) digita o caminho real dele na linha, entre aspas quando tem espaço, e o Claude Code e as outras CLIs leem direto; num terminal WSL, C:\\... vira /mnt/c/.... Um arquivo que não vem do disco vira uma cópia em .deepspace/attachments e entra por esse caminho. Soltar no composer continua anexando ao prompt.',
         'Presets rodam todos os agentes num provider só. Os presets embutidos misturavam Claude, Codex e Kimi, e quem só tinha o Claude instalado recebia terminais de CLIs que não tinha. Criar um workspace a partir de um preset, ou somar um preset ao canvas, agora pede o Provider dos agentes (o Claude quando instalado, senão a primeira CLI detectada) e todos os agentes rodam nele, mantendo o seu papel.',
         'Os tours guiados não criam mais agentes numa CLI que você não tem: um tour que pede Codex ou Kimi usa o provider quando ele está instalado e, senão, cai no seu provider principal (o fluxo criativo de imagens continua exigindo o Codex, que gera as imagens). O agente do tour de revisão cruzada agora se chama Revisor Cruzado, e os oráculos do Deep Space Contributing viraram Oráculo Técnico e Oráculo Crítico, já que rodam no provider escolhido.',
+        'Aviso quando um agente termina. Configurações > Terminal ganha Aviso quando um agente termina (Desligado, Som, Som e notificação do sistema). Um som curto toca quando um agente para depois de trabalhar pelo menos 10 segundos numa tarefa iniciada por um Enter, digitado ou entregue por outro agente; pausas de digitação nunca contam, vários agentes terminando juntos tocam um som só e a notificação do sistema aparece só quando o Deep Space não está em foco. O botão Ouvir toca o som na saída de áudio escolhida.',
       ],
     },
     {

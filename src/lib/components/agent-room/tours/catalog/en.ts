@@ -168,6 +168,30 @@ export const TOURS_EN: Tour[] = [
     ],
   },
   {
+    id: 'agent-done-alert',
+    icon: 'BellRing',
+    title: 'Know when the agent is done',
+    tagline: 'A sound (and a notification) when the agent stops working.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Open Settings',
+        body: 'The alert lives in the Terminal section of Settings. I will open it for you.',
+        action: { kind: 'openPage', path: '/settings#terminal' },
+      },
+      {
+        id: 'pick',
+        title: 'Pick the alert',
+        body: 'In Alert when an agent finishes, choose Sound, or Sound and system notification to also get a system notice while you are in another window. Click Listen to check the volume and save.',
+      },
+      {
+        id: 'work',
+        title: 'Let the agent work',
+        body: 'Send a task to an agent and go do something else. When it stops after working at least 10 seconds, the sound plays and you come back to Deep Space. Pauses while you type do not count.',
+      },
+    ],
+  },
+  {
     id: 'terminal-shell',
     icon: 'Terminal',
     title: 'One shell per terminal',
