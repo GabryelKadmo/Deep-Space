@@ -529,6 +529,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Terminal', 'shell', 'PowerShell', 'Git Bash'],
     },
     {
+      id: 'agent-launch-defaults',
+      title: 'Decide whether agents ask for approval',
+      body: 'In Settings > Terminal, Skip approvals in agent terminals (on by default) opens each CLI in the mode where it runs commands and edits files without asking: --dangerously-skip-permissions in Claude, Codex\'s bypass, --yolo in Copilot and the equivalent in the others. Turn it off so agents ask for your approval. Remote Control in Claude terminals (also on) opens Claude with --rc, so you can continue the conversation from your phone. Both apply to terminals opened or reopened after you save, including existing ones.',
+      tags: ['permissions', 'bypass', 'Remote Control', 'Claude'],
+    },
+    {
       id: 'terminal-drop-path',
       title: 'Drag a file onto the terminal and its path is typed',
       body: 'Drop a file from Explorer or Finder onto a terminal (agent or not) and its real path goes onto the line, like in a system terminal: in quotes when it has spaces and with a trailing space to keep writing the instruction. Claude Code recognizes an image by its path. In a WSL terminal, C:\\... becomes /mnt/c/.... A file that does not come from disk (dragged from a page) becomes a copy in .deepspace/attachments and goes in by that copy\'s path. Dropping on the composer still attaches it to the prompt.',
@@ -980,8 +986,9 @@ Header: Authorization = Bearer {{accessToken}}`,
       summary: 'Files dropped on a terminal become their path on the line, and a locked canvas selects text again',
       items: [
         'With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.',
-        '**Drop a file on a terminal to type its path.** Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.',
+        'Drop a file on a terminal to type its path. Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.',
         'On macOS and Linux the current Git branch never showed up: the indicator only lived in the Windows title bar. It now sits at the top of the canvas sidebar and in the Workbench header row, with the same panel when clicked.',
+        'Choose how agent terminals open. Settings > Terminal gains Skip approvals in agent terminals and Remote Control in Claude terminals, both on by default as before. Turning the first off removes each CLI\'s bypass flag (--dangerously-skip-permissions, Codex\'s bypass, --yolo, --auto, --force, Devin\'s dangerous mode) so agents ask before acting; turning the second off opens Claude without --rc. The choice applies when a terminal opens or reopens, including terminals created before.',
       ],
     },
     {

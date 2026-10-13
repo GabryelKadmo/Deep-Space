@@ -168,6 +168,30 @@ export const TOURS_ES: Tour[] = [
     ],
   },
   {
+    id: 'agent-launch-defaults',
+    icon: 'ShieldCheck',
+    title: 'Cómo abren los agentes',
+    tagline: 'Elige si los agentes piden aprobación y si Claude abre con Remote Control.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Abre la Configuración',
+        body: 'Las dos opciones están en la sección Terminal de la Configuración. Te la abro.',
+        action: { kind: 'openPage', path: '/settings#terminal' },
+      },
+      {
+        id: 'approvals',
+        title: 'Aprobaciones',
+        body: 'Omitir aprobaciones en los terminales de agente viene activado: los agentes ejecutan comandos y editan archivos sin preguntar. Desactívalo para que cada CLI pida tu confirmación antes.',
+      },
+      {
+        id: 'remote-control',
+        title: 'Remote Control',
+        body: 'Remote Control en los terminales de Claude también viene activado, para continuar la conversación desde el móvil. Desactívalo si no lo usas. Ambas opciones aplican a los terminales abiertos o reabiertos después de guardar.',
+      },
+    ],
+  },
+  {
     id: 'terminal-shell',
     icon: 'Terminal',
     title: 'Un shell por terminal',

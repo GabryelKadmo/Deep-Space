@@ -1,4 +1,5 @@
 import { AgentSetting } from '../../domain/models/AgentSetting.js';
+import type { AgentLaunchPolicy } from '../../infrastructure/pty/agent-launch-policy.js';
 import { DEFAULT_EMBEDDED_TTS_SPEED, DEFAULT_EMBEDDED_TTS_VOICE } from '../../domain/voice.js';
 
 const DEFAULTS: Record<string, string> = {
@@ -34,6 +35,8 @@ const DEFAULTS: Record<string, string> = {
   pinnedAgentProviders: '[]',
   terminalGlobalCommands: '[]',
   consoleShell: 'auto',
+  agentRemoteControl: 'true',
+  agentBypassPermissions: 'true',
   canvasZoomLock: '',
   coreRunInBackground: 'false',
   coreLaunchAtLogin: 'false',
@@ -57,6 +60,12 @@ export class SettingsService {
     else await AgentSetting.create({ key, value });
     this.cache.set(key, value);
     return value;
+  }
+
+  /** Como os terminais de agente abrem: Remote Control e bypass de aprovacoes. */
+  async agentLaunchPolicy(): Promise<AgentLaunchPolicy> {
+    const [remoteControl, bypassPermissions] = await Promise.all([this.get('agentRemoteControl'), this.get('agentBypassPermissions')]);
+    return { remoteControl: remoteControl !== 'false', bypassPermissions: bypassPermissions !== 'false' };
   }
 
   async all(): Promise<Record<string, string>> {

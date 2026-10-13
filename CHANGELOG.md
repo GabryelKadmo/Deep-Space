@@ -10,6 +10,7 @@ pt-BR, English, and Spanish translations.
 ### Added
 
 - **Drop a file on a terminal to type its path.** Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.
+- **Choose how agent terminals open.** Settings > Terminal gains Skip approvals in agent terminals and Remote Control in Claude terminals, both on by default as before. Turning the first off removes each CLI's bypass flag (--dangerously-skip-permissions, Codex's bypass, --yolo, --auto, --force, Devin's dangerous mode) so agents ask before acting; turning the second off opens Claude without --rc. The choice applies when a terminal opens or reopens, including terminals created before.
 
 ### Fixed
 
