@@ -356,7 +356,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'presets',
       title: 'Presets de equipo',
-      body: `La Biblioteca de presets está en el icono de plantilla de la barra lateral y en Presets de la barra inferior. Además de Producto, React, Next.js, SvelteKit, Svelar y Laravel, incluye Campaña y lanzamiento, Brand y diseño, Contenido y SEO y Deep Space Contributing. Cada receta trae líder, especialistas, roles operativos extensos, skills, briefing, tablero, tarea inicial y layout; el equipo de contribución también exige consenso entre Claude, Codex y Kimi. Los agentes comienzan con acceso total autónomo y reciben el rol mediante el mecanismo nativo de la CLI, sin dejar la terminal bloqueada por texto pegado. El líder recibe la tarea inicial completa y debe asignarla antes de delegar. Usa Nuevo workspace para otra carpeta o + para sumar el equipo al canvas actual.`,
+      body: `La Biblioteca de presets está en el icono de plantilla de la barra lateral y en Presets de la barra inferior. Además de Producto, React, Next.js, SvelteKit, Svelar y Laravel, incluye Campaña y lanzamiento, Brand y diseño, Contenido y SEO y Deep Space Contributing. Cada receta trae líder, especialistas, roles operativos extensos, skills, briefing, tablero, tarea inicial y layout; el equipo de contribución también exige consenso entre los oráculos del equipo. Los agentes comienzan con acceso total autónomo y reciben el rol mediante el mecanismo nativo de la CLI, sin dejar la terminal bloqueada por texto pegado. El líder recibe la tarea inicial completa y debe asignarla antes de delegar. Usa Nuevo workspace para otra carpeta o + para sumar el equipo al canvas actual. Al crear el workspace o sumar el equipo al canvas, el campo Provider de los agentes define la CLI de todos los agentes del preset (empieza en Claude cuando está instalado, si no en la primera CLI detectada); cada agente mantiene su rol.`,
     },
     {
       id: 'fluxos',
@@ -681,7 +681,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'framework-preset',
       title: 'Preset de tu framework (proyecto nuevo en 30s)',
-      body: 'Abre la Biblioteca de presets y elige React, Next.js, SvelteKit, Svelar o Laravel. El proyecto nace con líder, implementación, arquitectura y QA conectados, roles completos, skills para Claude/Codex, tablero y tarea inicial. Las terminales usan el modo autónomo de acceso total del adapter del provider para que el equipo ejecute sin confirmaciones repetidas. Guarda el workspace como preset para duplicar y personalizar la receta.',
+      body: 'Abre la Biblioteca de presets y elige React, Next.js, SvelteKit, Svelar o Laravel. El proyecto nace con líder, implementación, arquitectura y QA conectados, roles completos, skills para Claude/Codex, tablero y tarea inicial. Las terminales usan el modo autónomo de acceso total del adapter del provider para que el equipo ejecute sin confirmaciones repetidas. Guarda el workspace como preset para duplicar y personalizar la receta. Elige también el Provider de los agentes: todo el equipo corre en la CLI que tienes instalada.',
       tags: ['Biblioteca de presets', 'roles/skills', 'bootstrap'],
     },
     {
@@ -981,6 +981,7 @@ Header: Authorization = Bearer {{accessToken}}`,
       items: [
         'Con Bloquear canvas activado, arrastrar dentro de un terminal (o de una nota, o de cualquier nodo) movía todo el canvas en lugar de seleccionar el texto. El bloqueo sigue manteniendo los nodos en su sitio y arrastrar el área vacía sigue moviendo el canvas, pero arrastrar dentro de un nodo vuelve a llegar a su contenido.',
         'Suelta un archivo en el terminal para escribir su ruta. Como en un terminal del sistema, un archivo arrastrado desde el Explorador o el Finder a cualquier terminal (de agente o no) escribe su ruta real en la línea, entre comillas cuando tiene espacios, y Claude Code y las demás CLI la leen directamente; en un terminal WSL, C:\\... se convierte en /mnt/c/.... Un archivo que no viene del disco se convierte en una copia en .deepspace/attachments y entra por esa ruta. Soltarlo en el composer sigue adjuntándolo al prompt.',
+        'Los presets corren todos los agentes en un solo provider. Los presets incluidos mezclaban Claude, Codex y Kimi, y quien solo tenía Claude instalado recibía terminales de CLI que no tenía. Crear un workspace desde un preset, o sumar un preset al canvas, ahora pide el Provider de los agentes (Claude cuando está instalado, si no la primera CLI detectada) y todos los agentes corren en él, manteniendo su rol.',
       ],
     },
     {
