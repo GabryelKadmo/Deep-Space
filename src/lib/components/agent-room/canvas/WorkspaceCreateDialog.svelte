@@ -9,8 +9,10 @@
   import { FolderOpen } from '@lucide/svelte';
   import * as Select from '$lib/components/ui/select';
   import WorkspaceIcon from '../WorkspaceIcon.svelte';
+  import PresetProviderSelect from './PresetProviderSelect.svelte';
+  import { defaultPresetProvider, presetProviderOptions } from '../agent-provider-choice.js';
   import { createWorkspaceSchema } from '$lib/modules/agent-room/contracts/schemas/workspaceSchemas.js';
-  import type { Workspace, WorkspaceGroup } from '$lib/modules/agent-room/domain/types.js';
+  import type { AgentProviderInfo, Workspace, WorkspaceGroup } from '$lib/modules/agent-room/domain/types.js';
   import { onMount } from 'svelte';
   import * as m from '$lib/paraglide/messages.js';
   import { localeState } from '$lib/i18n/locale.svelte.js';
@@ -29,15 +31,20 @@
     initialPresetId?: string;
     groups?: WorkspaceGroup[];
     initialGroupId?: string | null;
+    providers?: AgentProviderInfo[];
     onCreated: (workspace: Workspace) => void;
     onClose: () => void;
   };
 
-  let { open, initialPresetId = '', groups = [], initialGroupId = null, onCreated, onClose }: Props = $props();
+  let { open, initialPresetId = '', groups = [], initialGroupId = null, providers = [], onCreated, onClose }: Props = $props();
 
   let submitError = $state('');
   let presets = $state<PresetSummary[]>([]);
   let presetId = $state('');
+  let agentProvider = $state('');
+  $effect(() => {
+    if (!presetProviderOptions(providers).some((provider) => provider.id === agentProvider)) agentProvider = defaultPresetProvider(providers);
+  });
 
   // Lista achatada com indentacao — as pastas tem profundidade ilimitada.
   const groupOptions = $derived.by(() => {
@@ -110,7 +117,7 @@ const form = superForm(defaults(zod(schema)), {
           const applyResponse = await fetch(`/api/agent-room/presets/${presetId}/apply`, {
             method: 'POST',
             headers: csrfHeaders({ 'content-type': 'application/json' }),
-            body: JSON.stringify({ ...f.data, runtimeKind, wslDistribution: wslDistribution || null, wslWorkingDir: wslWorkingDir || null, locale: localeState.current }),
+            body: JSON.stringify({ ...f.data, runtimeKind, wslDistribution: wslDistribution || null, wslWorkingDir: wslWorkingDir || null, locale: localeState.current, agentProvider }),
           });
           const applyPayload = await applyResponse.json();
           if (!applyResponse.ok || applyPayload.error) throw new Error(applyPayload.error || m['dlg.preset_apply_error']());
@@ -329,6 +336,9 @@ const form = superForm(defaults(zod(schema)), {
           </Select.Root>
           <p class="text-xs text-muted-foreground">{m['dlg.preset_apply_hint']()}</p>
         </div>
+        {#if presetId}
+          <PresetProviderSelect {providers} value={agentProvider} onChange={(value) => (agentProvider = value)} />
+        {/if}
       {/if}
 
       {#if submitError}

@@ -356,7 +356,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'presets',
       title: 'Team presets',
-      body: `The Preset library is available from the template icon in the sidebar and Presets in the bottom toolbar. Alongside Product, React, Next.js, SvelteKit, Svelar, and Laravel, it includes Campaign and launch, Brand and design, Content and SEO, and Deep Space Contributing. Each recipe includes a lead, specialists, extensive operational roles, skills, a brief, board, initial task, and layout; the contributing team also requires Claude, Codex, and Kimi consensus. Preset agents start with autonomous full access and receive roles through the CLI's native instruction mechanism without leaving the terminal blocked by pasted text. The leader receives the complete initial task and must assign it before delegating. Use New workspace for another folder or + to add the team to the current canvas.`,
+      body: `The Preset library is available from the template icon in the sidebar and Presets in the bottom toolbar. Alongside Product, React, Next.js, SvelteKit, Svelar, and Laravel, it includes Campaign and launch, Brand and design, Content and SEO, and Deep Space Contributing. Each recipe includes a lead, specialists, extensive operational roles, skills, a brief, board, initial task, and layout; the contributing team also requires consensus among its oracles. Preset agents start with autonomous full access and receive roles through the CLI's native instruction mechanism without leaving the terminal blocked by pasted text. The leader receives the complete initial task and must assign it before delegating. Use New workspace for another folder or + to add the team to the current canvas. When you create the workspace or add the team to the canvas, the Provider for the agents field sets the CLI for every agent in the preset (it starts on Claude when it is installed, otherwise on the first CLI detected); each agent keeps its role.`,
     },
     {
       id: 'fluxos',
@@ -681,7 +681,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'framework-preset',
       title: 'Preset for your framework (new project in 30s)',
-      body: 'Open the Preset library and choose React, Next.js, SvelteKit, Svelar, or Laravel. The project starts with connected lead, implementation, architecture, and QA agents, complete roles, Claude/Codex skills, a board, and an initial task. Agent terminals use the provider adapter’s autonomous full-access mode so the team can execute without repeated confirmations. Save the workspace as a preset to duplicate and customize the recipe.',
+      body: 'Open the Preset library and choose React, Next.js, SvelteKit, Svelar, or Laravel. The project starts with connected lead, implementation, architecture, and QA agents, complete roles, Claude/Codex skills, a board, and an initial task. Agent terminals use the provider adapter’s autonomous full-access mode so the team can execute without repeated confirmations. Save the workspace as a preset to duplicate and customize the recipe. Also pick the Provider for the agents: the whole team runs on the CLI you have installed.',
       tags: ['Preset library', 'roles/skills', 'bootstrap'],
     },
     {
@@ -705,8 +705,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'deepspace-contributing',
       title: 'Contribute to Deep Space with three perspectives',
-      body: 'Apply Deep Space Contributing. Claude leads, Codex and Kimi act as independent oracles and both must approve the plan before any task is created; Svelar, desktop, and QA/release specialists execute the documented plan.',
-      tags: ['Claude + Codex + Kimi', 'consensus', 'open source'],
+      body: 'Apply Deep Space Contributing. The lead coordinates, the Technical Oracle and the Critical Oracle act as independent reviewers and both must approve the plan before any task is created; Svelar, desktop, and QA/release specialists execute the documented plan.',
+      tags: ['oracles', 'consensus', 'open source'],
     },
     {
       id: 'approval-pipeline',
@@ -981,6 +981,8 @@ Header: Authorization = Bearer {{accessToken}}`,
       items: [
         'With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.',
         '**Drop a file on a terminal to type its path.** Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.',
+        '**Presets run every agent on one provider.** Built-in presets mixed Claude, Codex and Kimi, so someone with only Claude installed got terminals for CLIs they did not have. Creating a workspace from a preset, or adding a preset to the canvas, now asks for the Provider for the agents (Claude when installed, otherwise the first CLI detected) and every agent runs on it, keeping its role.',
+        'Guided tours no longer create agents on a CLI you do not have: a tour that asks for Codex or Kimi uses it when installed and otherwise falls back to your main provider (the creative image workflow still requires Codex, which generates the images). The cross-provider review tour\'s agent is now Cross Reviewer, and the Deep Space Contributing oracles are the Technical Oracle and the Critical Oracle, since they run on the chosen provider.',
       ],
     },
     {

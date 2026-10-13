@@ -11,6 +11,11 @@ pt-BR, English, and Spanish translations.
 
 - **Drop a file on a terminal to type its path.** Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.
 
+### Changed
+
+- **Presets run every agent on one provider.** Built-in presets mixed Claude, Codex and Kimi, so someone with only Claude installed got terminals for CLIs they did not have. Creating a workspace from a preset, or adding a preset to the canvas, now asks for the Provider for the agents (Claude when installed, otherwise the first CLI detected) and every agent runs on it, keeping its role.
+- Guided tours no longer create agents on a CLI you do not have: a tour that asks for Codex or Kimi uses it when installed and otherwise falls back to your main provider (the creative image workflow still requires Codex, which generates the images). The cross-provider review tour's agent is now Cross Reviewer, and the Deep Space Contributing oracles are the Technical Oracle and the Critical Oracle, since they run on the chosen provider.
+
 ### Fixed
 
 - With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.
