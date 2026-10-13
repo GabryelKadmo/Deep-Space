@@ -62,6 +62,9 @@ describe('arquivos soltos no terminal', () => {
     expect(terminalPathFor(windowsPath, 'wsl')).toBe('/mnt/c/Users/me/My Project/shot.png');
     expect(terminalPathFor(windowsPath, 'native')).toBe(windowsPath);
     expect(terminalPathFor('/home/me/shot.png', 'wsl')).toBe('/home/me/shot.png');
+    expect(terminalPathFor(String.raw`\\wsl.localhost\Ubuntu\home\me\app\log.txt`, 'wsl')).toBe('/home/me/app/log.txt');
+    expect(terminalPathFor(String.raw`\\wsl$\Debian\srv\data.json`, 'wsl')).toBe('/srv/data.json');
+    expect(terminalPathFor(String.raw`\\wsl.localhost\Ubuntu\home\me\log.txt`, 'native')).toBe(String.raw`\\wsl.localhost\Ubuntu\home\me\log.txt`);
     expect(terminalPathTokens([terminalPathFor(windowsPath, 'wsl')])).toBe('"/mnt/c/Users/me/My Project/shot.png" ');
   });
 });
