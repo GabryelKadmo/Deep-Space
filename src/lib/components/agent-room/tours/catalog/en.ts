@@ -192,6 +192,30 @@ export const TOURS_EN: Tour[] = [
     ],
   },
   {
+    id: 'agent-launch-defaults',
+    icon: 'ShieldCheck',
+    title: 'How agents open',
+    tagline: 'Choose whether agents ask for approval and whether Claude opens with Remote Control.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Open Settings',
+        body: 'Both options live in the Terminal section of Settings. I will open it for you.',
+        action: { kind: 'openPage', path: '/settings#terminal' },
+      },
+      {
+        id: 'approvals',
+        title: 'Approvals',
+        body: 'Skip approvals in agent terminals starts on: agents run commands and edit files without asking. Turn it off so each CLI asks for your confirmation first.',
+      },
+      {
+        id: 'remote-control',
+        title: 'Remote Control',
+        body: 'Remote Control in Claude terminals also starts on, so you can continue the conversation from your phone. Turn it off if you do not use it. Both apply to terminals opened or reopened after you save.',
+      },
+    ],
+  },
+  {
     id: 'terminal-shell',
     icon: 'Terminal',
     title: 'One shell per terminal',

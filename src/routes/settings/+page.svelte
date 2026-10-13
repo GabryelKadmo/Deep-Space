@@ -666,6 +666,31 @@
       </div>
     </div>
 
+    <div class="grid">
+      <div class="flex min-h-14 items-center justify-between gap-4 border-t border-[var(--app-border)] py-3">
+        <div class="flex min-w-0 flex-col gap-1">
+          <span class="field-label">{m['settings.agent_bypass']()}</span>
+          <p class="field-hint">{m['settings.agent_bypass_desc']()}</p>
+        </div>
+        <Switch
+          checked={settings.agentBypassPermissions !== 'false'}
+          aria-label={m['settings.agent_bypass']()}
+          onCheckedChange={(checked: boolean) => (settings = { ...settings, agentBypassPermissions: String(checked) })}
+        />
+      </div>
+      <div class="flex min-h-14 items-center justify-between gap-4 border-t border-[var(--app-border)] py-3">
+        <div class="flex min-w-0 flex-col gap-1">
+          <span class="field-label">{m['settings.agent_remote_control']()}</span>
+          <p class="field-hint">{m['settings.agent_remote_control_desc']()}</p>
+        </div>
+        <Switch
+          checked={settings.agentRemoteControl !== 'false'}
+          aria-label={m['settings.agent_remote_control']()}
+          onCheckedChange={(checked: boolean) => (settings = { ...settings, agentRemoteControl: String(checked) })}
+        />
+      </div>
+    </div>
+
     <div class="grid-fields">
       <div class="field span-2">
         <span class="field-label">{m['settings.agent_done_alert']()}</span>
