@@ -3,7 +3,8 @@
 export type TourPosition = { x: number; y: number };
 
 export type TourAction =
-  | { kind: 'createAgent'; title: string; provider: string; leader?: boolean; position?: TourPosition }
+  /** Sem `requiresProvider`, um provider nao instalado cai no provider principal do usuario. */
+  | { kind: 'createAgent'; title: string; provider: string; leader?: boolean; position?: TourPosition; requiresProvider?: boolean }
   | { kind: 'createNote'; title: string; content: string; position?: TourPosition }
   | { kind: 'createTasksBoard' }
   | { kind: 'createUsage'; title: string }

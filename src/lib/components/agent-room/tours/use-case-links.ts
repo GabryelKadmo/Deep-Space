@@ -7,6 +7,7 @@ export const USE_CASE_TOUR_IDS: Record<string, string> = {
   'terminal-shell': 'terminal-shell',
   'agent-launch-defaults': 'agent-launch-defaults',
   'terminal-drop-path': 'terminal-shell',
+  'agent-done-alert': 'agent-done-alert',
   'zoom-lock': 'zoom-lock',
   'workspace-node-transfer': 'workspace-node-transfer',
   'watch-24-7': 'vigia-24-7',

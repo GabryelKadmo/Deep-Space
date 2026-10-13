@@ -419,4 +419,46 @@ describe('PtySessionManager', () => {
     expect(writes[1].at).toBeGreaterThanOrEqual(350);
     manager.kill(session.id);
   });
+
+  it('marca o fim de uma tarefa so quando o agente trabalhou depois de um Enter', () => {
+    vi.useFakeTimers();
+    let emit: (data: string) => void = () => {};
+    const fakePty = {
+      write: () => {},
+      resize: () => {},
+      kill: () => {},
+      onData: (callback: (data: string) => void) => {
+        emit = callback;
+        return { dispose: () => {} };
+      },
+      onExit: () => ({ dispose: () => {} }),
+      pid: 1,
+    };
+    const manager = new PtySessionManager((() => fakePty) as unknown as typeof spawn);
+    const session = manager.create({ command: 'claude', cwd: process.cwd() });
+    const idles: boolean[] = [];
+    manager.attach(session.id, () => {}, undefined, (waiting, finishedTask) => {
+      if (waiting) idles.push(finishedTask);
+    });
+    const work = (milliseconds: number) => {
+      for (let elapsed = 0; elapsed < milliseconds; elapsed += 1_000) {
+        emit('.');
+        vi.advanceTimersByTime(1_000);
+      }
+      vi.advanceTimersByTime(3_000);
+    };
+
+    work(2_000);
+    manager.write(session.id, 'faz a tarefa X\r');
+    work(12_000);
+    manager.write(session.id, 'rascunho sem enviar');
+    emit('rascunho sem enviar');
+    vi.advanceTimersByTime(3_000);
+    manager.write(session.id, '\r');
+    work(3_000);
+
+    expect(idles).toEqual([false, true, false, false]);
+    manager.kill(session.id);
+    vi.useRealTimers();
+  });
 });
