@@ -21,7 +21,8 @@
   import { voiceModelsReadyForUse } from './voice-model-status.js';
   import { terminalDictationInput } from './terminal-dictation.js';
   import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, wordRangeAtCell, type TerminalCell } from './terminal-selection.js';
-  import { clipboardPasteFiles, storePastedTerminalFiles, terminalPathTokens } from './terminal-paste.js';
+  import { alertAgentFinished } from './agent-done-alert.js';
+  import { clipboardPasteFiles, droppedHostPaths, storePastedTerminalFiles, terminalPathFor, terminalPathTokens } from './terminal-paste.js';
   import { workingDirectoryFromOsc } from './terminal-working-directory.js';
   import { createExternalLinkOpener, findTerminalPaths, findTerminalUrls, logicalLineAt } from './terminal-links.js';
   import { audioSignalIsEmpty } from '$lib/modules/agent-room/domain/voice-audio.js';
@@ -356,6 +357,24 @@
 
   export function kill() {
     sendKill?.();
+  }
+
+  /**
+   * Arquivos soltos no terminal entram como caminho, igual a um terminal do
+   * sistema: o caminho real quando o arquivo vem do disco, senao uma copia no
+   * workspace. Devolve false quando nao ha sessao viva para receber.
+   */
+  export async function dropFiles(files: File[], runtime: 'native' | 'wsl'): Promise<boolean> {
+    const terminal = xtermInstance;
+    if (!terminal || !sendInput || exited !== null) return false;
+    const desktop = (window as typeof window & {
+      deepspaceDesktop?: { pathForFile?: (file: File) => string };
+    }).deepspaceDesktop;
+    const hostPaths = droppedHostPaths(files, desktop?.pathForFile);
+    if (hostPaths) terminal.paste(terminalPathTokens(hostPaths.map((path) => terminalPathFor(path, runtime))));
+    else await pasteFilesIntoTerminal(terminal, files);
+    terminal.focus();
+    return true;
   }
 
   async function copyTerminalSelection(terminal: Terminal) {
@@ -726,6 +745,7 @@
           break;
         case 'idle':
           waiting = Boolean(message.idle);
+          if (waiting && message.finishedTask && provider) void alertAgentFinished(sessionLabel || provider);
           break;
         case 'exit':
           waiting = false;

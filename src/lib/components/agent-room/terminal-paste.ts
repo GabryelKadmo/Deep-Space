@@ -21,6 +21,31 @@ export function terminalPathTokens(paths: string[]): string {
 }
 
 /**
+ * Caminho de um arquivo do Windows como o terminal o enxerga: num terminal
+ * WSL o disco C: fica montado em /mnt/c, e um arquivo da propria distro
+ * (\\wsl.localhost\<distro>\... ou \\wsl$\<distro>\...) volta a ser /....
+ */
+export function terminalPathFor(hostPath: string, runtime: 'native' | 'wsl'): string {
+  if (runtime !== 'wsl') return hostPath;
+  const distroFile = /^[\\/]{2}(?:wsl\.localhost|wsl\$)[\\/][^\\/]+[\\/](.*)$/i.exec(hostPath);
+  if (distroFile) return `/${distroFile[1].replaceAll('\\', '/')}`;
+  const drive = /^([A-Za-z]):[\\/](.*)$/.exec(hostPath);
+  if (!drive) return hostPath;
+  return `/mnt/${drive[1].toLowerCase()}/${drive[2].replaceAll('\\', '/')}`;
+}
+
+/**
+ * Caminhos reais dos arquivos soltos no terminal, ou null quando algum nao
+ * vem do disco (arquivo arrastado de uma pagina, app no navegador): ai ele
+ * precisa virar copia no workspace.
+ */
+export function droppedHostPaths(files: File[], pathForFile: ((file: File) => string) | undefined): string[] | null {
+  if (!pathForFile || !files.length) return null;
+  const paths = files.map((file) => pathForFile(file));
+  return paths.every(Boolean) ? paths : null;
+}
+
+/**
  * Guarda os arquivos colados no workspace e devolve os caminhos relativos, o
  * mesmo contrato que o composer do canvas ja usa para entregar anexos aos
  * agentes (.deepspace/attachments/...).

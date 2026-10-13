@@ -1,6 +1,6 @@
 {
   "name": "deep-space",
-  "version": "0.40.0",
+  "version": "0.41.0",
   "description": "Deep Space — Desenvolvimento com IA em outra profundidade",
   "private": true,
   "license": "Apache-2.0",
@@ -173,15 +173,16 @@
     "zod-v3-to-json-schema": "^4.0.0"
   },
   "overrides": {
-    "@faker-js/faker": "10.6.0",
-    "@xmldom/xmldom": "0.8.15",
     "axios": "1.20.0",
     "cookie": "^0.7.2",
     "dompurify": "$dompurify",
+    "@faker-js/faker": "10.6.0",
     "fast-uri": "3.1.8",
+    "handlebars": "4.7.10",
     "nanoid": "3.3.18",
     "qs": "6.16.0",
-    "uuid": "11.1.1"
+    "uuid": "11.1.1",
+    "@xmldom/xmldom": "0.8.15"
   },
   "main": "electron/main.cjs",
   "workspaces": [

@@ -17,6 +17,7 @@
   } from '$lib/modules/agent-room/application/services/GitService.js';
   import type { GitOperationInput } from '$lib/modules/agent-room/contracts/schemas/fsSchemas.js';
   import { workbenchReviewCenterItemId } from './workbench-review-center.js';
+  import GitDiffDialog from './GitDiffDialog.svelte';
   import * as m from '$lib/paraglide/messages.js';
 
   let {
@@ -41,6 +42,18 @@
   let pendingInput = $state<GitOperationInput | null>(null);
   let pendingPreview = $state<GitOperationPreview | null>(null);
   let refreshTimer: ReturnType<typeof setInterval> | null = null;
+  let openChange = $state<GitChange | null>(null);
+
+  function fileParts(path: string): { name: string; folder: string } {
+    const slash = path.lastIndexOf('/');
+    return slash < 0 ? { name: path, folder: '' } : { name: path.slice(slash + 1), folder: path.slice(0, slash) };
+  }
+
+  function statusClass(status: string): string {
+    if (status === 'D') return 'text-[var(--app-danger)]';
+    if (status === 'A' || status === '?') return 'text-[var(--app-success)]';
+    return 'text-[var(--app-warning)]';
+  }
 
   const staged = $derived(snapshot?.status.changes.filter((change) => change.staged) ?? []);
   const unstaged = $derived(snapshot?.status.changes.filter((change) => !change.staged) ?? []);
@@ -214,8 +227,10 @@
             <div class="flex items-center justify-between px-3 py-1.5 text-ui-xs font-semibold uppercase text-[var(--app-text-muted)]"><span>{section.title}</span><span>{section.items.length}</span></div>
             {#each section.items as change (change.id)}
               <div class="group flex h-7 items-center gap-2 px-3 text-ui-xs hover:bg-[var(--app-surface-muted)]">
-                <span class="w-3 font-mono font-bold text-[var(--app-warning)]">{change.status}</span>
-                <button class="min-w-0 flex-1 truncate text-left" onclick={openReviewCenter}>{change.path}</button>
+                <span class="w-3 font-mono font-bold {statusClass(change.status)}">{change.status === '?' ? 'U' : change.status}</span>
+                <button class="min-w-0 flex-1 cursor-pointer truncate text-left" title={change.path} aria-label={m['git.open_diff']({ file: change.path })} onclick={() => (openChange = change)}>
+                  {fileParts(change.path).name}{#if fileParts(change.path).folder}<span class="ml-1.5 text-[var(--app-text-muted)]">{fileParts(change.path).folder}</span>{/if}
+                </button>
                 <Button variant="ghost" size="icon-sm" class="h-6 w-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100" aria-label={change.staged ? m['git.unstage']() : m['git.stage']()} onclick={() => void toggleStage(change)}>{#if change.staged}<Minus />{:else}<Plus />{/if}</Button>
               </div>
             {:else}
@@ -265,6 +280,8 @@
     </Tabs.Root>
   {/if}
 </div>
+
+<GitDiffDialog {workspaceId} change={openChange} onClose={() => (openChange = null)} onChanged={refresh} />
 
 <Dialog.Root bind:open={branchDialogOpen}>
   <Dialog.Content class="sm:max-w-sm"><Dialog.Header><Dialog.Title>{m['git.new_branch']()}</Dialog.Title><Dialog.Description>{m['git.new_branch_hint']()}</Dialog.Description></Dialog.Header><Input bind:value={branchName} placeholder="feature/name" onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && void createBranch()} /><Dialog.Footer><Button variant="outline" onclick={() => (branchDialogOpen = false)}>{m['settings.cancel']()}</Button><Button disabled={!branchName.trim() || busy} onclick={() => void createBranch()}>{m['git.create_branch']()}</Button></Dialog.Footer></Dialog.Content>

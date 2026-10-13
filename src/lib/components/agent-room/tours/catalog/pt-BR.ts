@@ -172,6 +172,54 @@ export const TOURS_PT: Tour[] = [
     ],
   },
   {
+    id: 'agent-done-alert',
+    icon: 'BellRing',
+    title: 'Saiba quando o agente terminou',
+    tagline: 'Um som (e uma notificação) quando o agente para de trabalhar.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Abra as Configurações',
+        body: 'O aviso fica na seção Terminal das Configurações. Vou abrir para você.',
+        action: { kind: 'openPage', path: '/settings#terminal' },
+      },
+      {
+        id: 'pick',
+        title: 'Escolha o aviso',
+        body: 'Em Aviso quando um agente termina, escolha Som, ou Som e notificação do sistema para também receber um aviso do sistema quando estiver em outra janela. Clique em Ouvir para conferir o volume e salve.',
+      },
+      {
+        id: 'work',
+        title: 'Deixe o agente trabalhar',
+        body: 'Mande uma tarefa a um agente e vá fazer outra coisa. Quando ele parar depois de trabalhar pelo menos 10 segundos, o som toca e você volta ao Deep Space. Pausas enquanto você digita não contam.',
+      },
+    ],
+  },
+  {
+    id: 'agent-launch-defaults',
+    icon: 'ShieldCheck',
+    title: 'Como os agentes abrem',
+    tagline: 'Escolha se os agentes pedem aprovação e se o Claude abre com Remote Control.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Abra as Configurações',
+        body: 'As duas opções ficam na seção Terminal das Configurações. Vou abrir para você.',
+        action: { kind: 'openPage', path: '/settings#terminal' },
+      },
+      {
+        id: 'approvals',
+        title: 'Aprovações',
+        body: 'Pular aprovações nos terminais de agente vem ligado: os agentes executam comandos e editam arquivos sem perguntar. Desligue para cada CLI pedir a sua confirmação antes.',
+      },
+      {
+        id: 'remote-control',
+        title: 'Remote Control',
+        body: 'Remote Control nos terminais do Claude também vem ligado, para continuar a conversa pelo celular. Desligue se não usa. As duas opções valem para os terminais abertos ou reabertos depois de salvar.',
+      },
+    ],
+  },
+  {
     id: 'terminal-shell',
     icon: 'Terminal',
     title: 'Um shell por terminal',
@@ -191,6 +239,11 @@ export const TOURS_PT: Tour[] = [
         id: 'default',
         title: 'Defina o padrão',
         body: 'Em Configurações > Terminal, o shell padrão vale para os terminais novos e para os Scripts.',
+      },
+      {
+        id: 'drop',
+        title: 'Solte um arquivo no terminal',
+        body: 'Arraste um arquivo do Explorer ou do Finder para cima de qualquer terminal, de agente ou não: o caminho dele é digitado na linha, entre aspas quando tem espaço, e você continua escrevendo a instrução. Num terminal WSL o caminho já vem como /mnt/c/....',
       },
     ],
   },
@@ -548,21 +601,21 @@ export const TOURS_PT: Tour[] = [
       {
         id: 'reviewer',
         title: 'O revisor',
-        body: 'Crio o Codex revisor — um modelo diferente revisando com outro olhar.',
-        action: { kind: 'createAgent', title: 'Codex Reviewer', provider: 'codex' },
-        check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Codex Reviewer' },
+        body: 'Crio o revisor. Com o Codex instalado ele roda nele, e um modelo diferente revisa com outro olhar; sem o Codex, ele usa o seu provider principal.',
+        action: { kind: 'createAgent', title: 'Revisor Cruzado', provider: 'codex' },
+        check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Revisor Cruzado' },
       },
       {
         id: 'connect',
         title: 'Conecte os dois',
         body: 'Faço a conexão: tudo que um perguntar ao outro viaja por ela (e ela acende verde durante a conversa).',
-        action: { kind: 'connect', fromTitle: 'Claude Dev', toTitle: 'Codex Reviewer' },
-        check: { kind: 'edgeExists', fromTitle: 'Claude Dev', toTitle: 'Codex Reviewer' },
+        action: { kind: 'connect', fromTitle: 'Claude Dev', toTitle: 'Revisor Cruzado' },
+        check: { kind: 'edgeExists', fromTitle: 'Claude Dev', toTitle: 'Revisor Cruzado' },
       },
       {
         id: 'flow',
         title: 'O fluxo de revisão',
-        body: 'Diga ao Claude Dev: "implemente X e peça revisão ao Codex Reviewer (deepspace ask)". Ele implementa, o Codex critica, o veredito volta na mesma corda.',
+        body: 'Diga ao Claude Dev: "implemente X e peça revisão ao Revisor Cruzado (deepspace ask)". Ele implementa, o revisor critica, o veredito volta na mesma corda.',
       },
     ],
   },
@@ -1577,6 +1630,7 @@ export const TOURS_PT: Tour[] = [
     steps: [
       { id: 'add-git-workspace', title: 'Adicione o workspace Git nativo', body: 'Eu adiciono um único node Git ao Canvas. Abra o mesmo node persistente no Workbench quando precisar de mais espaço.', action: { kind: 'createGit', title: 'Git' }, check: { kind: 'nodeExists', nodeType: 'git' } },
       { id: 'inspect-git-state', title: 'Inspecione antes de alterar', body: 'Mudanças, grafo de commits, branches, tags, remotes, stashes e worktrees vêm do repositório do workspace. Credenciais são ocultadas.' },
+      { id: 'review-blocks', title: 'Revise bloco a bloco', body: 'O botão Git da barra abre o mesmo Git num painel fixo na lateral. Clique num arquivo em Mudanças para abrir o diff completo: cada bloco tem Reverter bloco (pede um segundo clique, porque não dá para desfazer) e Preparar bloco; no que já está preparado, Remover bloco do stage.' },
       { id: 'preview-git-operation', title: 'Revise operações protegidas', body: 'Use os menus de branch e commit para merge, rebase, cherry-pick, revert e exclusão. Ações destrutivas mostram o comando exato e recusam revisões desatualizadas.' },
       { id: 'coordinate-git-delivery', title: 'Mantenha a entrega rastreável', body: 'Use Andares para worktrees isolados e a Central de revisão para o diff final. Agentes usam git_status, git_preview e git_execute somente com uma tarefa Kanban ativa e atribuída.' },
     ],
@@ -1972,7 +2026,7 @@ export const TOURS_PT: Tour[] = [
         id: 'create-director',
         title: 'Crie o Diretor Criativo',
         body: 'Eu adiciono um único agente Codex para controlar todas as etapas. Use uma conta ou assinatura Codex autenticada com ImageGen disponível; nenhuma chave de API é necessária.',
-        action: { kind: 'createAgent', title: 'Diretor Criativo XYZ', provider: 'codex', position: { x: 40, y: 60 } },
+        action: { kind: 'createAgent', title: 'Diretor Criativo XYZ', provider: 'codex', requiresProvider: true, position: { x: 40, y: 60 } },
         check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Diretor Criativo XYZ' },
       },
       {

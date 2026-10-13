@@ -13,6 +13,9 @@
     behind: number;
   };
 
+  /** `block`: ocupa a linha inteira (sidebar do mac/Linux, que nao tem a barra de titulo do Windows). */
+  let { block = false }: { block?: boolean } = $props();
+
   let status = $state<Status | null>(null);
   let open = $state(false);
   const workspaceId = $derived(activeWorkspaceStore.id);
@@ -37,13 +40,19 @@
   });
 
   const branchLabel = $derived(status?.branch ?? m['git.detached']());
+
+  // O diff de um arquivo abre num dialogo por cima do popover: clicar ou focar
+  // nele nao pode fechar o popover, que desmontaria o proprio dialogo.
+  function keepOpenUnderDialog(event: Event) {
+    if (document.querySelector('[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"]')) event.preventDefault();
+  }
 </script>
 
 {#if workspaceId && status?.isRepo}
   {@const wsId = workspaceId}
   <Popover.Root bind:open>
     <Popover.Trigger
-      class="branch-indicator"
+      class={block ? 'branch-indicator branch-indicator-block' : 'branch-indicator'}
       aria-label={m['git.branch_indicator_label']({ branch: branchLabel })}
     >
       <GitBranch size={12} aria-hidden="true" />
@@ -52,7 +61,7 @@
         <span class="branch-indicator-sync">{status.ahead}↑ {status.behind}↓</span>
       {/if}
     </Popover.Trigger>
-    <Popover.Content class="w-auto p-0" align="end" side="bottom" sideOffset={6}>
+    <Popover.Content class="w-auto p-0" align="end" side="bottom" sideOffset={6} onInteractOutside={keepOpenUnderDialog} onFocusOutside={keepOpenUnderDialog} onEscapeKeydown={keepOpenUnderDialog}>
       <div class="branch-indicator-panel">
         <GitWorkspace workspaceId={wsId} />
       </div>
@@ -74,6 +83,17 @@
     font-size: 11px;
     line-height: 1;
     cursor: pointer;
+  }
+
+  :global(.branch-indicator-block) {
+    width: 100%;
+    height: 28px;
+  }
+
+  :global(.branch-indicator-block .branch-indicator-name) {
+    flex: 1;
+    max-width: none;
+    text-align: left;
   }
 
   :global(.branch-indicator:hover) {

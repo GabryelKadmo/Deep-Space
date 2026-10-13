@@ -14,6 +14,8 @@
   import { initLocaleRuntime, localeState } from '$lib/i18n/locale.svelte.js';
   import { appSettingsStore } from '$lib/components/agent-room/app-settings.svelte.js';
   import { applyAppTheme } from '$lib/components/agent-room/app-themes.js';
+  import { isEditableTarget, menuShortcutAction, shouldEscapeToCanvas } from '$lib/components/agent-room/app-shortcuts.js';
+  import { OPEN_LAYER_SELECTOR } from '$lib/components/agent-room/managed-portal-surface.js';
 
   type DesktopMenuBridge = {
     platform?: string;
@@ -53,7 +55,7 @@
       localeReady = true;
     });
     const canvasActions = new Set(['new-workspace', 'presets', 'organize', 'floors', 'roles', 'usage', 'ports']);
-    const unsubscribeMenu = desktopMenu?.onMenuAction?.((action) => {
+    const runMenuAction = (action: string) => {
       if (action === 'canvas') void goto('/canvas');
       else if (action === 'terminals') void goto('/terminal');
       else if (action === 'providers') void goto('/providers');
@@ -70,7 +72,35 @@
           window.dispatchEvent(new CustomEvent('deepspace:menu-action', { detail: action }));
         }
       }
-    });
+    };
+    const unsubscribeMenu = desktopMenu?.onMenuAction?.(runMenuAction);
+
+    // No app desktop o menu nativo ja atende os atalhos; no navegador (preview,
+    // acesso remoto) e o proprio app. O Esc vale nos dois: so depois que
+    // dialogos, menus e campos de texto tiveram a chance de usa-lo.
+    const mac = navigator.platform.toLowerCase().includes('mac');
+    const handleAppShortcut = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      if (!desktopMenu?.onMenuAction) {
+        const action = menuShortcutAction(event, mac);
+        if (action) {
+          event.preventDefault();
+          runMenuAction(action);
+          return;
+        }
+      }
+      if (shouldEscapeToCanvas({
+        key: event.key,
+        pathname: location.pathname,
+        editableTarget: isEditableTarget(event.target),
+        layerOpen: document.querySelector(OPEN_LAYER_SELECTOR) !== null,
+        modifiers: event.ctrlKey || event.metaKey || event.altKey || event.shiftKey,
+      })) {
+        event.preventDefault();
+        void goto('/canvas');
+      }
+    };
+    window.addEventListener('keydown', handleAppShortcut);
 
     const syncCsrfToken = (event: SubmitEvent) => {
       const form = event.target;
@@ -93,6 +123,7 @@
     document.addEventListener('submit', syncCsrfToken, true);
     return () => {
       unsubscribeMenu?.();
+      window.removeEventListener('keydown', handleAppShortcut);
       document.removeEventListener('submit', syncCsrfToken, true);
     };
   });

@@ -28,6 +28,7 @@ import { agentSessionTracker, agentSessionTrackerForRuntime, type AgentSessionTr
 import type { WorkspaceExecutionRuntime } from '../../domain/types.ts';
 import { executionRuntimeKey } from '../../domain/runtime.ts';
 import { consoleShellInvocation } from '../../domain/console-commands.ts';
+import { applyAgentLaunchPolicy, type AgentLaunchPolicy } from './agent-launch-policy.ts';
 import { preflightWslLaunch, WslLaunchError, type WslTrackingContext } from '../WslRuntime.ts';
 import {
   codexMcpLaunchForRuntime,
@@ -57,6 +58,7 @@ const wsGlobal = globalThis as unknown as {
   __deepspaceBroadcast?: (payload: Record<string, unknown>) => void;
   __deepspaceResolveProviderProfileEnv?: (profileId: string, providerId: string, options?: { runtimeHome?: string }) => Promise<Record<string, string>>;
   __deepspaceCanStartWorkspaceSession?: (workspaceId: string) => Promise<boolean>;
+  __deepspaceAgentLaunchPolicy?: () => Promise<AgentLaunchPolicy>;
 };
 const allSockets = (wsGlobal.__deepspaceWsClients ??= new Set<WebSocket>());
 wsGlobal.__deepspaceBroadcast = (payload) => {
@@ -117,7 +119,7 @@ export function handlePtyConnection(socket: WebSocket): void {
       sessionId,
       (data) => send({ type: 'output', sessionId, data }),
       (exitCode) => send({ type: 'exit', sessionId, exitCode }),
-      (waiting) => send({ type: 'idle', sessionId, idle: waiting }),
+      (waiting, finishedTask) => send({ type: 'idle', sessionId, idle: waiting, finishedTask }),
       (cwd) => send({ type: 'cwd', sessionId, cwd }),
     );
     detachers.set(sessionId, detach);
@@ -220,7 +222,8 @@ export function handlePtyConnection(socket: WebSocket): void {
               )
             : agentSessionTracker;
           const runtime = message.runtime ?? { kind: 'native' as const };
-          const messageArgs = Array.isArray(message.args) ? message.args.map(String) : [];
+          const launchPolicy = await (wsGlobal.__deepspaceAgentLaunchPolicy?.() ?? Promise.resolve({ remoteControl: true, bypassPermissions: true }));
+          const messageArgs = applyAgentLaunchPolicy(message.provider, Array.isArray(message.args) ? message.args.map(String) : [], launchPolicy);
           const providerArgs = message.provider === 'codex'
             ? codexMcpOverrideArgs(codexMcpLaunchForRuntime(runtime))
             : [];

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { onMount, tick, untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import { toast } from '@beeblock/svelar/ui';
   import { getCsrfToken } from '@beeblock/svelar/http';
@@ -63,6 +63,7 @@
   import WorkspaceModeSwitch from '$lib/components/agent-room/WorkspaceModeSwitch.svelte';
   import { setActiveWorkspaceId, setSharingOpenHandler } from '$lib/components/agent-room/active-workspace.svelte.js';
   import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
+  import GitBranchIndicator from '$lib/components/agent-room/GitBranchIndicator.svelte';
   import WorkspaceMemoryDialog from '$lib/components/agent-room/WorkspaceMemoryDialog.svelte';
   import AnnotationCenterDialog from '$lib/components/agent-room/AnnotationCenterDialog.svelte';
   import HuddleDialog from '$lib/components/agent-room/HuddleDialog.svelte';
@@ -88,6 +89,7 @@
   import RoutinePanel from '$lib/components/agent-room/canvas/RoutinePanel.svelte';
   import RolesPanel from '$lib/components/agent-room/canvas/RolesPanel.svelte';
   import UsagePanel from '$lib/components/agent-room/canvas/UsagePanel.svelte';
+  import GitPanel from '$lib/components/agent-room/canvas/GitPanel.svelte';
   import UsageCanvasNode from '$lib/components/agent-room/canvas/UsageCanvasNode.svelte';
   import CodeGraphCanvasNode from '$lib/components/agent-room/canvas/CodeGraphCanvasNode.svelte';
   import DeviceCanvasNode from '$lib/components/agent-room/canvas/DeviceCanvasNode.svelte';
@@ -616,6 +618,16 @@
   let zoomPercent = $state(100);
   let connecting = $state(false);
   let canvasLocked = $state(false);
+  // O xyflow so marca como `nopan` o no arrastavel. Com o canvas bloqueado
+  // nenhum no arrasta, e arrastar dentro de um terminal ou nota movia o
+  // canvas em vez de selecionar o texto; o `nopan` explicito devolve a selecao.
+  const lockedNodeClass = (locked: boolean) => (locked ? 'nopan' : undefined);
+  $effect(() => {
+    const nodeClass = lockedNodeClass(canvasLocked);
+    untrack(() => {
+      nodes = nodes.map((node) => (node.class === nodeClass ? node : { ...node, class: nodeClass }));
+    });
+  });
   // Os toasts do app ficam no canto inferior direito, por cima da faixa de
   // ferramentas; a faixa empurra o canto para cima enquanto existe.
   let dockHeight = $state(0);
@@ -864,6 +876,7 @@
   let showRoutinePanel = $state(false);
   let showRolesPanel = $state(false);
   let showUsagePanel = $state(false);
+  let showGitPanel = $state(false);
   let showPortsPanel = $state(false);
   let showPresetPanel = $state(false);
   let leaderDictationState = $state<LeaderDictationStatus>('idle');
@@ -872,7 +885,7 @@
   let visibleFloorId = $state<string | null>(null);
   let floors = $state<Floor[]>([]);
 
-  type SidePanelName = 'presets' | 'floors' | 'routines' | 'roles' | 'usage' | 'ports';
+  type SidePanelName = 'presets' | 'floors' | 'routines' | 'roles' | 'usage' | 'ports' | 'git';
 
   function toggleSidePanel(panel: SidePanelName) {
     const next = panel === 'presets' ? !showPresetPanel
@@ -880,6 +893,7 @@
       : panel === 'routines' ? !showRoutinePanel
       : panel === 'roles' ? !showRolesPanel
       : panel === 'usage' ? !showUsagePanel
+      : panel === 'git' ? !showGitPanel
       : !showPortsPanel;
     showPresetPanel = panel === 'presets' && next;
     showFloorPanel = panel === 'floors' && next;
@@ -887,6 +901,7 @@
     showRolesPanel = panel === 'roles' && next;
     showUsagePanel = panel === 'usage' && next;
     showPortsPanel = panel === 'ports' && next;
+    showGitPanel = panel === 'git' && next;
   }
 
   function createWorkspaceFromPreset(presetId: string) {
@@ -1384,6 +1399,7 @@
       // Camadas deterministicas evitam que SVGs de edges atravessem terminais
       // em alguns compositores Chromium/Windows.
       zIndex: node.type === 'group' ? 0 : 20 + Math.max(0, node.zIndex ?? 0),
+      class: lockedNodeClass(canvasLocked),
       data: {
         title: node.title ?? '',
         workspaceId: activeWorkspace?.id ?? '',
@@ -2892,7 +2908,7 @@
       case 'files':
         return { id, label: m['canvas.default_files'](), icon: { kind: 'lucide', component: FolderTree }, onSelect: () => toggleDrawTool('fileTree') };
       case 'git':
-        return { id, label: m['canvas.default_git'](), icon: { kind: 'lucide', component: GitFork }, onSelect: () => toggleDrawTool('git') };
+        return { id, label: m['canvas.default_git'](), icon: { kind: 'lucide', component: GitFork }, onSelect: () => toggleSidePanel('git') };
       case 'console':
         return { id, label: m['console.title'](), icon: { kind: 'lucide', component: Terminal }, onSelect: () => toggleDrawTool('console') };
       case 'ssh':
@@ -2953,6 +2969,9 @@
           nodeId={nodes.find((node) => node.selected)?.id ?? canvasRouteNodeId()}
         />
       </div>
+      {#if !windowsDesktop}
+        <div class="sidebar-branch"><GitBranchIndicator block /></div>
+      {/if}
       <div class="sidebar-header">
         <h2>{m['canvas.workspaces']()}</h2>
         <div class="sidebar-header-actions">
@@ -3046,6 +3065,7 @@
       {initialPresetId}
       groups={workspaceGroups}
       initialGroupId={pendingWorkspaceGroupId}
+      {providers}
       onCreated={handleWorkspaceCreated}
       onClose={() => { showWorkspaceForm = false; tourOpenedWorkspaceForm = false; initialPresetId = ''; pendingWorkspaceGroupId = null; }}
     />
@@ -3462,7 +3482,7 @@
               </ToolbarButton>
             {/if}
             {#if pinnedToolbarSet.has('git')}
-              <ToolbarButton label={m['tool.git']()} active={drawTool === 'git'} onclick={() => toggleDrawTool('git')}>
+              <ToolbarButton label={m['tool.git']()} active={showGitPanel} onclick={() => toggleSidePanel('git')}>
                 <GitFork size={15} class="tool-icon-svg" /> {m['canvas.default_git']()}
               </ToolbarButton>
             {/if}
@@ -3610,6 +3630,7 @@
     {#if showPresetPanel}
       <PresetLibraryPanel
         workspaceId={activeWorkspace?.id ?? null}
+        {providers}
         onCreateWorkspace={createWorkspaceFromPreset}
         onApplied={refreshAfterPresetApply}
         onClose={() => (showPresetPanel = false)}
@@ -3642,6 +3663,16 @@
         onAddToCanvas={() => {
           void addUsageNode();
           showUsagePanel = false;
+        }}
+      />
+    {/if}
+    {#if showGitPanel && activeWorkspace}
+      <GitPanel
+        workspaceId={activeWorkspace.id}
+        onClose={() => (showGitPanel = false)}
+        onAddToCanvas={() => {
+          void addGit();
+          showGitPanel = false;
         }}
       />
     {/if}
@@ -3807,6 +3838,10 @@
   /* Sangra ate a borda do sidebar (compensa o padding do .sidebar) para a
      divisoria ficar de ponta a ponta, igual ao Workbench — mesma altura fixa
      e centralizacao por flex, sem padding vertical (nao "gorda" como antes). */
+  .sidebar-branch:not(:empty) {
+    padding-top: 10px;
+  }
+
   .sidebar-tabs {
     flex-shrink: 0;
     height: 44px;

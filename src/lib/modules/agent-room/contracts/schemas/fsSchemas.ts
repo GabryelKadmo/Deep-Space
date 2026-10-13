@@ -11,6 +11,14 @@ export const gitPathSchema = z.object({
   path: z.string().trim().min(1).max(4_000),
 });
 
+export const gitHunkSchema = z.object({
+  path: z.string().trim().min(1).max(4_000),
+  staged: z.boolean(),
+  index: z.number().int().min(0).max(10_000),
+  action: z.enum(['stage', 'unstage', 'revert']),
+  expectedRevision: z.string().regex(/^[0-9a-f]{64}$/i),
+});
+
 export const gitOperationSchema = z.enum([
   'fetch', 'pull', 'push', 'checkout', 'createBranch', 'renameBranch',
   'deleteBranch', 'merge', 'rebase', 'cherryPick', 'revert', 'createTag',
@@ -34,5 +42,6 @@ export const executeGitOperationSchema = gitOperationInputSchema.extend({
 
 export type FsWriteInput = z.infer<typeof fsWriteSchema>;
 export type GitPathInput = z.infer<typeof gitPathSchema>;
+export type GitHunkInput = z.infer<typeof gitHunkSchema>;
 export type GitOperationInput = z.infer<typeof gitOperationInputSchema>;
 export type ExecuteGitOperationInput = z.infer<typeof executeGitOperationSchema>;

@@ -108,7 +108,7 @@ export const DOCS_EN: DocsCatalog = {
     {
       id: 'git-workspace',
       title: 'Native Git workspace',
-      body: `Add Git from the Canvas toolbar or open the same node in Workbench. Changes stages and unstages files, creates commits, stashes work, and opens the exact diff in Review Center. Graph shows bounded commit history with cherry-pick and revert actions. Branches checks out and creates branches, merges or rebases the current branch, and manages tags. Worktrees lists the same isolated work owned by Floors; create, preview, and land worktrees through Floors so task and agent ownership remain traceable. Fetch prunes stale refs, pull is fast-forward only, and every operation is executed without a shell. Destructive operations show the exact command, require explicit confirmation, and refuse to run if the repository changed after preview. Remote credentials are redacted. Agents use git_status, git_preview, and git_execute against this same workspace state; execution requires an active assigned Kanban task and is recorded in Control Center. WSL workspaces execute Git inside the selected distribution while native Windows workspaces keep using Windows Git. On the Windows titlebar, Canvas and Workbench show the active workspace's current branch without opening the node — click it for the same Git panel in a quick popover.`,
+      body: `Add Git from the Canvas toolbar or open the same node in Workbench. Changes stages and unstages files, creates commits, stashes work, and opens the exact diff in Review Center. Graph shows bounded commit history with cherry-pick and revert actions. Branches checks out and creates branches, merges or rebases the current branch, and manages tags. Worktrees lists the same isolated work owned by Floors; create, preview, and land worktrees through Floors so task and agent ownership remain traceable. Fetch prunes stale refs, pull is fast-forward only, and every operation is executed without a shell. Destructive operations show the exact command, require explicit confirmation, and refuse to run if the repository changed after preview. Remote credentials are redacted. Agents use git_status, git_preview, and git_execute against this same workspace state; execution requires an active assigned Kanban task and is recorded in Control Center. WSL workspaces execute Git inside the selected distribution while native Windows workspaces keep using Windows Git. On the Windows titlebar, Canvas and Workbench show the active workspace's current branch without opening the node — click it for the same Git panel in a quick popover. The Git button in the toolbar opens Git in a panel pinned to the side of the Canvas, with Add Git to the canvas at the top. Clicking a file opens the full diff with block actions: stage, unstage and revert just that hunk.`,
     },
     {
       id: 'portal-design-mode',
@@ -356,7 +356,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'presets',
       title: 'Team presets',
-      body: `The Preset library is available from the template icon in the sidebar and Presets in the bottom toolbar. Alongside Product, React, Next.js, SvelteKit, Svelar, and Laravel, it includes Campaign and launch, Brand and design, Content and SEO, and Deep Space Contributing. Each recipe includes a lead, specialists, extensive operational roles, skills, a brief, board, initial task, and layout; the contributing team also requires Claude, Codex, and Kimi consensus. Preset agents start with autonomous full access and receive roles through the CLI's native instruction mechanism without leaving the terminal blocked by pasted text. The leader receives the complete initial task and must assign it before delegating. Use New workspace for another folder or + to add the team to the current canvas.`,
+      body: `The Preset library is available from the template icon in the sidebar and Presets in the bottom toolbar. Alongside Product, React, Next.js, SvelteKit, Svelar, and Laravel, it includes Campaign and launch, Brand and design, Content and SEO, and Deep Space Contributing. Each recipe includes a lead, specialists, extensive operational roles, skills, a brief, board, initial task, and layout; the contributing team also requires consensus among its oracles. Preset agents start with autonomous full access and receive roles through the CLI's native instruction mechanism without leaving the terminal blocked by pasted text. The leader receives the complete initial task and must assign it before delegating. Use New workspace for another folder or + to add the team to the current canvas. When you create the workspace or add the team to the canvas, the Provider for the agents field sets the CLI for every agent in the preset (it starts on Claude when it is installed, otherwise on the first CLI detected); each agent keeps its role.`,
     },
     {
       id: 'fluxos',
@@ -529,6 +529,36 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Terminal', 'shell', 'PowerShell', 'Git Bash'],
     },
     {
+      id: 'app-shortcuts',
+      title: 'Go back to the canvas with Esc and open Settings with Ctrl+,',
+      body: 'On any app page (Settings, Provider Center, How to use, Skills, Remote) Esc goes back to the canvas. It waits its turn: with a dialog, menu or list open, Esc closes that layer first, and inside a text field it still belongs to the field. Ctrl+, (⌘, on Mac) opens Settings, and Ctrl+Alt+U, R, F and O open Usage, Roles, Floors and Ports, also when Deep Space is opened in a browser.',
+      tags: ['shortcuts', 'Esc', 'Settings'],
+    },
+    {
+      id: 'git-changes-panel',
+      title: 'Track and revert what changed in the project',
+      body: 'Open Git from the toolbar button: it stays pinned to the side of the Canvas, like Usage, and the first button at the top puts the same Git on the canvas. The list shows each changed file with name, folder and status (M, A, D, U). Click a file to see the full diff and decide block by block: Stage block sends just that hunk to the commit, Revert block discards just that hunk (with a second click to confirm) and, on staged files, Unstage block. If the file changes while you look, the action is refused and the diff reloads.',
+      tags: ['Git', 'diff', 'revert', 'stage'],
+    },
+    {
+      id: 'agent-launch-defaults',
+      title: 'Decide whether agents ask for approval',
+      body: 'In Settings > Terminal, Skip approvals in agent terminals (on by default) opens each CLI in the mode where it runs commands and edits files without asking: --dangerously-skip-permissions in Claude, Codex\'s bypass, --yolo in Copilot and the equivalent in the others. Turn it off so agents ask for your approval. Remote Control in Claude terminals (also on) opens Claude with --rc, so you can continue the conversation from your phone. Both apply to terminals opened or reopened after you save, including existing ones.',
+      tags: ['permissions', 'bypass', 'Remote Control', 'Claude'],
+    },
+    {
+      id: 'terminal-drop-path',
+      title: 'Drag a file onto the terminal and its path is typed',
+      body: 'Drop a file from Explorer or Finder onto a terminal (agent or not) and its real path goes onto the line, like in a system terminal: in quotes when it has spaces and with a trailing space to keep writing the instruction. Claude Code recognizes an image by its path. In a WSL terminal, C:\\... becomes /mnt/c/.... A file that does not come from disk (dragged from a page) becomes a copy in .deepspace/attachments and goes in by that copy\'s path. Dropping on the composer still attaches it to the prompt.',
+      tags: ['Terminal', 'drag and drop', 'path', 'images'],
+    },
+    {
+      id: 'agent-done-alert',
+      title: 'Know when the agent is done without watching it',
+      body: 'In Settings > Terminal, Alert when an agent finishes plays a sound when an agent stops after working at least 10 seconds on a task, whether you asked for it or another agent delivered it. With Sound and system notification, a notification also shows when Deep Space is not in focus; clicking it brings the app back. Pauses while you type do not trigger the alert, and several agents finishing together play a single sound.',
+      tags: ['notification', 'sound', 'agents', 'focus'],
+    },
+    {
       id: 'zoom-lock',
       title: 'Lock the zoom where text stays sharp',
       body: 'Away from 100%, text selection inside terminals drifts, and one accidental turn of the mouse wheel already takes the canvas off its zoom. Pick the level in the % selector at the bottom left and open the padlock next to + and choose Lock zoom: the padlock closes and gets a frame, the number takes the accent colour, − and + dim, and the wheel, pinch, double-click and shortcuts no longer change the zoom — the wheel pans the canvas instead. The lock applies to every workspace and survives restarts; choose Unlock zoom in the same menu to release it. It is separate from Lock canvas, the other entry under the same padlock, which locks dragging and selecting nodes.',
@@ -675,7 +705,7 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'framework-preset',
       title: 'Preset for your framework (new project in 30s)',
-      body: 'Open the Preset library and choose React, Next.js, SvelteKit, Svelar, or Laravel. The project starts with connected lead, implementation, architecture, and QA agents, complete roles, Claude/Codex skills, a board, and an initial task. Agent terminals use the provider adapter’s autonomous full-access mode so the team can execute without repeated confirmations. Save the workspace as a preset to duplicate and customize the recipe.',
+      body: 'Open the Preset library and choose React, Next.js, SvelteKit, Svelar, or Laravel. The project starts with connected lead, implementation, architecture, and QA agents, complete roles, Claude/Codex skills, a board, and an initial task. Agent terminals use the provider adapter’s autonomous full-access mode so the team can execute without repeated confirmations. Save the workspace as a preset to duplicate and customize the recipe. Also pick the Provider for the agents: the whole team runs on the CLI you have installed.',
       tags: ['Preset library', 'roles/skills', 'bootstrap'],
     },
     {
@@ -699,8 +729,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'deepspace-contributing',
       title: 'Contribute to Deep Space with three perspectives',
-      body: 'Apply Deep Space Contributing. Claude leads, Codex and Kimi act as independent oracles and both must approve the plan before any task is created; Svelar, desktop, and QA/release specialists execute the documented plan.',
-      tags: ['Claude + Codex + Kimi', 'consensus', 'open source'],
+      body: 'Apply Deep Space Contributing. The lead coordinates, the Technical Oracle and the Critical Oracle act as independent reviewers and both must approve the plan before any task is created; Svelar, desktop, and QA/release specialists execute the documented plan.',
+      tags: ['oracles', 'consensus', 'open source'],
     },
     {
       id: 'approval-pipeline',
@@ -968,6 +998,23 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: 'October 13, 2026 · 0.41.0',
+      title: 'Deep Space 0.41.0: a Git panel with block-level review',
+      summary: 'Git pinned to the side with per-block revert and stage, a sound when an agent finishes, file paths dropped on terminals and one provider per preset',
+      items: [
+        'With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.',
+        'Drop a file on a terminal to type its path. Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.',
+        'Presets run every agent on one provider. Built-in presets mixed Claude, Codex and Kimi, so someone with only Claude installed got terminals for CLIs they did not have. Creating a workspace from a preset, or adding a preset to the canvas, now asks for the Provider for the agents (Claude when installed, otherwise the first CLI detected) and every agent runs on it, keeping its role.',
+        'Guided tours no longer create agents on a CLI you do not have: a tour that asks for Codex or Kimi uses it when installed and otherwise falls back to your main provider (the creative image workflow still requires Codex, which generates the images). The cross-provider review tour\'s agent is now Cross Reviewer, and the Deep Space Contributing oracles are the Technical Oracle and the Critical Oracle, since they run on the chosen provider.',
+        'Alert when an agent finishes. Settings > Terminal gains Alert when an agent finishes (Off, Sound, Sound and system notification). It plays a short chime when an agent stops after working at least 10 seconds on a task started by an Enter, typed or delivered by another agent; pauses while typing never count, several agents finishing together play one sound, and the system notification only shows while Deep Space is not in focus. A Listen button previews the sound on the chosen audio output.',
+        'On macOS and Linux the current Git branch never showed up: the indicator only lived in the Windows title bar. It now sits at the top of the canvas sidebar and in the Workbench header row, with the same panel when clicked.',
+        'Choose how agent terminals open. Settings > Terminal gains Skip approvals in agent terminals and Remote Control in Claude terminals, both on by default as before. Turning the first off removes each CLI\'s bypass flag (--dangerously-skip-permissions, Codex\'s bypass, --yolo, --auto, --force, Devin\'s dangerous mode) so agents ask before acting; turning the second off opens Claude without --rc. The choice applies when a terminal opens or reopens, including terminals created before.',
+        'Git panel with block-level review. The Git button in the toolbar now opens Git in a panel pinned to the side of the canvas, like Usage, with Add Git to the canvas at the top. Changed files show name, folder and a colored status; clicking one opens the full diff, where each block can be staged, unstaged or reverted on its own (revert asks for a second click). Block actions apply a single-hunk patch with git apply and are refused when the file changed after the diff was opened.',
+        'Buttons with the compact text sizes (Commit in Git, the Review Center actions and others) lost their text color and showed light text on a light background: the class merger treated the theme\'s text-ui-* sizes as colors. They are now registered as font sizes, so each button keeps its variant color.',
+        'Esc goes back to the canvas. On any app page (Settings, Provider Center, How to use, Skills, Remote) Esc returns to the canvas, after open dialogs, menus and text fields had their turn. When Deep Space runs in a browser, the app itself now handles Ctrl+, (Settings) and Ctrl+Alt+U, R, F and O (Usage, Roles, Floors, Ports), which the desktop menu already provided.',
+      ],
+    },
     {
       date: 'October 7, 2026 · 0.40.0',
       title: 'Deep Space 0.40.0: an interface tour and your SSH config from Servers',

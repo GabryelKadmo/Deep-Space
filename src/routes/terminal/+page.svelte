@@ -93,6 +93,7 @@
   import { setActiveWorkspaceId, setSharingOpenHandler } from '$lib/components/agent-room/active-workspace.svelte.js';
   import WorkspaceSharingButton from '$lib/components/collaboration/WorkspaceSharingButton.svelte';
   import AttentionCenter from '$lib/components/agent-room/AttentionCenter.svelte';
+  import GitBranchIndicator from '$lib/components/agent-room/GitBranchIndicator.svelte';
   import WorkspacePermissionNotice from '$lib/components/agent-room/WorkspacePermissionNotice.svelte';
   import { isWorkspacePermissionError } from '$lib/components/agent-room/workspace-permission.js';
   import {
@@ -1131,7 +1132,8 @@
       />
     </div>
     {#if !windowsDesktop}
-      <div class="flex h-9 shrink-0 items-center justify-end gap-1 border-b border-[var(--app-border)] px-3">
+      <div class="flex h-9 shrink-0 items-center gap-1 border-b border-[var(--app-border)] px-3">
+        <div class="min-w-0 flex-1"><GitBranchIndicator /></div>
         <WorkspaceSharingButton variant="icon" workspaceId={selectedWorkspaceId} onOpen={() => (sharingOpen = true)} />
         <AttentionCenter workspaceId={selectedWorkspaceId} />
       </div>

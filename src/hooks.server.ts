@@ -14,6 +14,8 @@ import { providerProfileService } from '$lib/modules/agent-room/application/serv
 import { workspaceRepository } from '$lib/modules/agent-room/infrastructure/repositories/WorkspaceRepository.js';
 import { agentRuntimeService } from '$lib/modules/agent-room/application/services/AgentRuntimeService.js';
 import { afterDatabaseReady } from '$lib/modules/agent-room/infrastructure/background-startup.js';
+import { settingsService } from '$lib/modules/agent-room/application/services/SettingsService.js';
+import type { AgentLaunchPolicy } from '$lib/modules/agent-room/infrastructure/pty/agent-launch-policy.js';
 
 // Scheduler de rotinas do Agent Room (tick a cada 15s em processo).
 const globalRef = globalThis as unknown as {
@@ -21,9 +23,11 @@ const globalRef = globalThis as unknown as {
   __deepspaceAgentRuntimeSupervisor?: boolean;
   __deepspaceResolveProviderProfileEnv?: (profileId: string, providerId: string, options?: { runtimeHome?: string }) => Promise<Record<string, string>>;
   __deepspaceCanStartWorkspaceSession?: (workspaceId: string) => Promise<boolean>;
+  __deepspaceAgentLaunchPolicy?: () => Promise<AgentLaunchPolicy>;
 };
 globalRef.__deepspaceResolveProviderProfileEnv = (profileId, providerId, options) =>
   providerProfileService.resolveEnv(profileId, providerId, options);
+globalRef.__deepspaceAgentLaunchPolicy = () => settingsService.agentLaunchPolicy();
 globalRef.__deepspaceCanStartWorkspaceSession = async (workspaceId) => {
   const workspace = await workspaceRepository.getWorkspace(workspaceId);
   return Boolean(workspace && !workspace.suspendedAt);

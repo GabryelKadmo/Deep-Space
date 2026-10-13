@@ -1,7 +1,7 @@
 /**
  * Preload do Electron: expoe uma ponte minima e segura para o renderer.
  */
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 contextBridge.exposeInMainWorld('deepspaceDesktop', {
   /** Abre o seletor nativo de pastas (com opcao de criar nova pasta). */
@@ -28,6 +28,14 @@ contextBridge.exposeInMainWorld('deepspaceDesktop', {
   installUpdate: () => ipcRenderer.invoke('deepspace:update-install'),
   /** Abre URL https no navegador do sistema (fallback de download manual). */
   openExternal: (url) => ipcRenderer.invoke('deepspace:open-external', url),
+  /** Caminho real de um arquivo arrastado do sistema (vazio quando ele nao vem do disco). */
+  pathForFile: (file) => {
+    try {
+      return webUtils.getPathForFile(file);
+    } catch {
+      return '';
+    }
+  },
   /** Abre um arquivo local no aplicativo padrão do sistema. */
   openPath: (path) => ipcRenderer.invoke('deepspace:open-path', path),
   /** Copia texto pelo clipboard nativo, inclusive no Chromium do Windows. */

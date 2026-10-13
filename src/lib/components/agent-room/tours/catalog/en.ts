@@ -168,6 +168,54 @@ export const TOURS_EN: Tour[] = [
     ],
   },
   {
+    id: 'agent-done-alert',
+    icon: 'BellRing',
+    title: 'Know when the agent is done',
+    tagline: 'A sound (and a notification) when the agent stops working.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Open Settings',
+        body: 'The alert lives in the Terminal section of Settings. I will open it for you.',
+        action: { kind: 'openPage', path: '/settings#terminal' },
+      },
+      {
+        id: 'pick',
+        title: 'Pick the alert',
+        body: 'In Alert when an agent finishes, choose Sound, or Sound and system notification to also get a system notice while you are in another window. Click Listen to check the volume and save.',
+      },
+      {
+        id: 'work',
+        title: 'Let the agent work',
+        body: 'Send a task to an agent and go do something else. When it stops after working at least 10 seconds, the sound plays and you come back to Deep Space. Pauses while you type do not count.',
+      },
+    ],
+  },
+  {
+    id: 'agent-launch-defaults',
+    icon: 'ShieldCheck',
+    title: 'How agents open',
+    tagline: 'Choose whether agents ask for approval and whether Claude opens with Remote Control.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Open Settings',
+        body: 'Both options live in the Terminal section of Settings. I will open it for you.',
+        action: { kind: 'openPage', path: '/settings#terminal' },
+      },
+      {
+        id: 'approvals',
+        title: 'Approvals',
+        body: 'Skip approvals in agent terminals starts on: agents run commands and edit files without asking. Turn it off so each CLI asks for your confirmation first.',
+      },
+      {
+        id: 'remote-control',
+        title: 'Remote Control',
+        body: 'Remote Control in Claude terminals also starts on, so you can continue the conversation from your phone. Turn it off if you do not use it. Both apply to terminals opened or reopened after you save.',
+      },
+    ],
+  },
+  {
     id: 'terminal-shell',
     icon: 'Terminal',
     title: 'One shell per terminal',
@@ -187,6 +235,11 @@ export const TOURS_EN: Tour[] = [
         id: 'default',
         title: 'Set the default',
         body: 'In Settings > Terminal, the default shell applies to new terminals and to Scripts.',
+      },
+      {
+        id: 'drop',
+        title: 'Drop a file on the terminal',
+        body: 'Drag a file from Explorer or Finder onto any terminal, agent or not: its path is typed on the line, in quotes when it has spaces, and you keep writing the instruction. In a WSL terminal the path already comes as /mnt/c/....',
       },
     ],
   },
@@ -544,21 +597,21 @@ export const TOURS_EN: Tour[] = [
       {
         id: 'reviewer',
         title: 'The reviewer',
-        body: 'I\'ll create the Codex reviewer — a different model reviewing with another perspective.',
-        action: { kind: 'createAgent', title: 'Codex Reviewer', provider: 'codex' },
-        check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Codex Reviewer' },
+        body: 'I\'ll create the reviewer. With Codex installed it runs there, so a different model reviews with another perspective; without Codex it uses your main provider.',
+        action: { kind: 'createAgent', title: 'Cross Reviewer', provider: 'codex' },
+        check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'Cross Reviewer' },
       },
       {
         id: 'connect',
         title: 'Connect the two',
         body: 'I\'ll make the connection: anything one asks the other travels through it (and it glows green while they talk).',
-        action: { kind: 'connect', fromTitle: 'Claude Dev', toTitle: 'Codex Reviewer' },
-        check: { kind: 'edgeExists', fromTitle: 'Claude Dev', toTitle: 'Codex Reviewer' },
+        action: { kind: 'connect', fromTitle: 'Claude Dev', toTitle: 'Cross Reviewer' },
+        check: { kind: 'edgeExists', fromTitle: 'Claude Dev', toTitle: 'Cross Reviewer' },
       },
       {
         id: 'flow',
         title: 'The review flow',
-        body: 'Tell Claude Dev: "implement X and ask Codex Reviewer for a review (deepspace ask)". It implements, Codex critiques, the verdict comes back on the same rope.',
+        body: 'Tell Claude Dev: "implement X and ask Cross Reviewer for a review (deepspace ask)". It implements, the reviewer critiques, the verdict comes back on the same rope.',
       },
     ],
   },
@@ -1573,6 +1626,7 @@ export const TOURS_EN: Tour[] = [
     steps: [
       { id: 'add-git-workspace', title: 'Add the native Git workspace', body: 'I add one Git node to Canvas. Open the same persistent node in Workbench whenever you need more space.', action: { kind: 'createGit', title: 'Git' }, check: { kind: 'nodeExists', nodeType: 'git' } },
       { id: 'inspect-git-state', title: 'Inspect before changing', body: 'Changes, commit graph, branches, tags, remotes, stashes, and worktrees come from the selected workspace repository. Credentials are redacted.' },
+      { id: 'review-blocks', title: 'Review block by block', body: 'The Git button in the toolbar opens the same Git in a panel pinned to the side. Click a file under Changes to open the full diff: each block has Revert block (it asks for a second click, since it cannot be undone) and Stage block; on staged files, Unstage block.' },
       { id: 'preview-git-operation', title: 'Preview guarded operations', body: 'Use branch and commit menus for merge, rebase, cherry-pick, revert, and deletion. Destructive actions show the exact command and refuse stale repository revisions.' },
       { id: 'coordinate-git-delivery', title: 'Keep delivery traceable', body: 'Use Floors for isolated worktrees and Review Center for the final diff. Agents use git_status, git_preview, and git_execute only with an active assigned Kanban task.' },
     ],
@@ -1968,7 +2022,7 @@ export const TOURS_EN: Tour[] = [
         id: 'create-director',
         title: 'Create the Creative Director',
         body: 'I add a single Codex agent to control every stage. Use an authenticated Codex account or plan with ImageGen available; no API key is required.',
-        action: { kind: 'createAgent', title: 'XYZ Creative Director', provider: 'codex', position: { x: 40, y: 60 } },
+        action: { kind: 'createAgent', title: 'XYZ Creative Director', provider: 'codex', requiresProvider: true, position: { x: 40, y: 60 } },
         check: { kind: 'nodeExists', nodeType: 'terminal', titleIncludes: 'XYZ Creative Director' },
       },
       {

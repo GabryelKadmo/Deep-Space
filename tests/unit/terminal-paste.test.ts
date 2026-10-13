@@ -6,7 +6,7 @@ vi.mock('$lib/components/agent-room/workspace-attachments.js', () => ({
   uploadWorkspaceAttachment: (...args: unknown[]) => uploadWorkspaceAttachment(...args),
 }));
 
-const { clipboardPasteFiles, storePastedTerminalFiles, terminalPathTokens } = await import(
+const { clipboardPasteFiles, droppedHostPaths, storePastedTerminalFiles, terminalPathFor, terminalPathTokens } = await import(
   '$lib/components/agent-room/terminal-paste.js'
 );
 
@@ -41,5 +41,30 @@ describe('colagem de arquivos no terminal', () => {
       '.deepspace/attachments/b.png',
     ]);
     expect(uploadWorkspaceAttachment).toHaveBeenCalledWith('ws-1', files[0]);
+  });
+});
+
+describe('arquivos soltos no terminal', () => {
+  const file = (name: string) => new File(['x'], name);
+
+  it('usa o caminho real de cada arquivo vindo do disco', () => {
+    const paths = droppedHostPaths([file('a.png'), file('b.txt')], (dropped) => `C:/Users/me/${dropped.name}`);
+    expect(paths).toEqual(['C:/Users/me/a.png', 'C:/Users/me/b.txt']);
+  });
+
+  it('cai para a copia no workspace quando algum arquivo nao tem caminho', () => {
+    expect(droppedHostPaths([file('a.png'), file('web.png')], (dropped) => (dropped.name === 'a.png' ? '/tmp/a.png' : ''))).toBeNull();
+    expect(droppedHostPaths([file('a.png')], undefined)).toBeNull();
+  });
+
+  it('converte o disco do Windows para /mnt num terminal WSL e deixa o resto como esta', () => {
+    const windowsPath = String.raw`C:\Users\me\My Project\shot.png`;
+    expect(terminalPathFor(windowsPath, 'wsl')).toBe('/mnt/c/Users/me/My Project/shot.png');
+    expect(terminalPathFor(windowsPath, 'native')).toBe(windowsPath);
+    expect(terminalPathFor('/home/me/shot.png', 'wsl')).toBe('/home/me/shot.png');
+    expect(terminalPathFor(String.raw`\\wsl.localhost\Ubuntu\home\me\app\log.txt`, 'wsl')).toBe('/home/me/app/log.txt');
+    expect(terminalPathFor(String.raw`\\wsl$\Debian\srv\data.json`, 'wsl')).toBe('/srv/data.json');
+    expect(terminalPathFor(String.raw`\\wsl.localhost\Ubuntu\home\me\log.txt`, 'native')).toBe(String.raw`\\wsl.localhost\Ubuntu\home\me\log.txt`);
+    expect(terminalPathTokens([terminalPathFor(windowsPath, 'wsl')])).toBe('"/mnt/c/Users/me/My Project/shot.png" ');
   });
 });
