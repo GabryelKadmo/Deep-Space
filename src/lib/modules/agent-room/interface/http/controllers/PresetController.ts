@@ -99,7 +99,7 @@ export class PresetController extends Controller {
     try {
       const input = await ApplyPresetRequest.validate(event);
       if (input.workspaceId) {
-        return this.json({ data: await presetService.apply(event.params.id, { workspaceId: input.workspaceId, locale: input.locale }) });
+        return this.json({ data: await presetService.apply(event.params.id, { workspaceId: input.workspaceId, locale: input.locale, agentProvider: input.agentProvider }) });
       }
       if (!input.name?.trim() || !input.workingDir?.trim()) {
         throw new Error('Informe workspaceId (aplicar aqui) ou name+workingDir (novo workspace).');
@@ -113,6 +113,7 @@ export class PresetController extends Controller {
           wslWorkingDir: input.wslWorkingDir,
           groupId: input.groupId,
           locale: input.locale,
+          agentProvider: input.agentProvider,
         }),
       });
     } catch (error) {

@@ -34,6 +34,7 @@ const DEFAULTS: Record<string, string> = {
   pinnedAgentProviders: '[]',
   terminalGlobalCommands: '[]',
   consoleShell: 'auto',
+  agentDoneAlert: 'off',
   canvasZoomLock: '',
   coreRunInBackground: 'false',
   coreLaunchAtLogin: 'false',

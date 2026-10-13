@@ -6,6 +6,7 @@ export const USE_CASE_TOUR_IDS: Record<string, string> = {
   'ssh-servers': 'ssh-servers',
   'terminal-shell': 'terminal-shell',
   'terminal-drop-path': 'terminal-shell',
+  'agent-done-alert': 'agent-done-alert',
   'zoom-lock': 'zoom-lock',
   'workspace-node-transfer': 'workspace-node-transfer',
   'watch-24-7': 'vigia-24-7',

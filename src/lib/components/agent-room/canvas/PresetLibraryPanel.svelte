@@ -7,6 +7,9 @@
   import { Input } from '$lib/components/ui/input';
   import { Textarea } from '$lib/components/ui/textarea';
   import WorkspaceIcon from '../WorkspaceIcon.svelte';
+  import PresetProviderSelect from './PresetProviderSelect.svelte';
+  import { defaultPresetProvider, presetProviderOptions } from '../agent-provider-choice.js';
+  import type { AgentProviderInfo } from '$lib/modules/agent-room/domain/types.js';
   import { localeState } from '$lib/i18n/locale.svelte.js';
   import { ArrowRight, Download, History, Library, PackageOpen, Plus, Search, Sparkles, Upload, X } from '@lucide/svelte';
   import * as m from '$lib/paraglide/messages.js';
@@ -26,18 +29,23 @@
 
   type Props = {
     workspaceId?: string | null;
+    providers?: AgentProviderInfo[];
     onCreateWorkspace: (presetId: string) => void;
     onApplied: () => void | Promise<void>;
     onClose: () => void;
     api: <T>(path: string, init?: RequestInit) => Promise<T>;
   };
 
-  let { workspaceId, onCreateWorkspace, onApplied, onClose, api }: Props = $props();
+  let { workspaceId, providers = [], onCreateWorkspace, onApplied, onClose, api }: Props = $props();
   let presets = $state<PresetSummary[]>([]);
   let query = $state('');
   let category = $state<'all' | PresetSummary['category']>('all');
   let pendingPreset = $state<PresetSummary | null>(null);
   let applying = $state(false);
+  let agentProvider = $state('');
+  $effect(() => {
+    if (!presetProviderOptions(providers).some((provider) => provider.id === agentProvider)) agentProvider = defaultPresetProvider(providers);
+  });
   let errorMessage = $state('');
   let importInput: HTMLInputElement;
   let detailPreset = $state<PresetSummary | null>(null);
@@ -82,7 +90,7 @@
     try {
       await api(`/api/agent-room/presets/${pendingPreset.id}/apply`, {
         method: 'POST',
-        body: JSON.stringify({ workspaceId, locale: localeState.current }),
+        body: JSON.stringify({ workspaceId, locale: localeState.current, agentProvider }),
       });
       pendingPreset = null;
       await onApplied();
@@ -225,6 +233,9 @@
       <AlertDialog.Title>{m['preset.apply_title']()}</AlertDialog.Title>
       <AlertDialog.Description>{m['preset.apply_description']({ name: pendingPreset?.name ?? '' })}</AlertDialog.Description>
     </AlertDialog.Header>
+    {#if pendingPreset?.agents}
+      <PresetProviderSelect {providers} value={agentProvider} onChange={(value) => (agentProvider = value)} />
+    {/if}
     <AlertDialog.Footer>
       <AlertDialog.Cancel disabled={applying}>{m['settings.cancel']()}</AlertDialog.Cancel>
       <AlertDialog.Action disabled={applying} onclick={applyToCurrent}>

@@ -117,7 +117,7 @@ export function handlePtyConnection(socket: WebSocket): void {
       sessionId,
       (data) => send({ type: 'output', sessionId, data }),
       (exitCode) => send({ type: 'exit', sessionId, exitCode }),
-      (waiting) => send({ type: 'idle', sessionId, idle: waiting }),
+      (waiting, finishedTask) => send({ type: 'idle', sessionId, idle: waiting, finishedTask }),
       (cwd) => send({ type: 'cwd', sessionId, cwd }),
     );
     detachers.set(sessionId, detach);
