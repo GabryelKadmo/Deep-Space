@@ -228,8 +228,8 @@ describe('PresetService', () => {
     const flow = nodes.find((node) => node.type === 'flow');
     expect(flow).toBeTruthy();
     expect((flow!.payload as { steps?: unknown[] }).steps).toHaveLength(7);
-    expect(nodes.find((node) => node.title === 'Oráculo Codex')).toBeTruthy();
-    expect(nodes.find((node) => node.title === 'Oráculo Kimi')).toBeTruthy();
+    expect(nodes.find((node) => node.title === 'Oráculo Técnico')).toBeTruthy();
+    expect(nodes.find((node) => node.title === 'Oráculo Crítico')).toBeTruthy();
 
     const columns = await boardColumnService.list(applied.workspaceId);
     expect(columns.map((column) => column.key)).toEqual(['todo', 'planned', 'doing', 'review', 'validation', 'done']);

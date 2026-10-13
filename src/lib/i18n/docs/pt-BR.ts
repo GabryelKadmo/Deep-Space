@@ -709,8 +709,8 @@ Header: Authorization = Bearer {{accessToken}}`,
     {
       id: 'deepspace-contributing',
       title: 'Contribuir no Deep Space com três perspectivas',
-      body: 'Aplique Deep Space Contributing. O Claude lidera, Codex e Kimi atuam como oráculos independentes e precisam aprovar o plano antes de qualquer tarefa ser criada; especialistas Svelar, desktop e QA/release executam o plano já documentado.',
-      tags: ['Claude + Codex + Kimi', 'consenso', 'open source'],
+      body: 'Aplique Deep Space Contributing. O líder coordena, o Oráculo Técnico e o Oráculo Crítico atuam como revisores independentes e precisam aprovar o plano antes de qualquer tarefa ser criada; especialistas Svelar, desktop e QA/release executam o plano já documentado.',
+      tags: ['oráculos', 'consenso', 'open source'],
     },
     {
       id: 'approval-pipeline',
@@ -986,6 +986,7 @@ Header: Authorization = Bearer {{accessToken}}`,
         'Com Bloquear canvas ligado, arrastar dentro de um terminal (ou de uma nota, ou de qualquer nó) movia o canvas inteiro em vez de selecionar o texto. O bloqueio continua segurando os nós no lugar, e arrastar a área vazia continua movendo o canvas, mas arrastar dentro de um nó volta a chegar no conteúdo dele.',
         'Solte um arquivo no terminal para digitar o caminho. Como num terminal do sistema, um arquivo arrastado do Explorer ou do Finder para qualquer terminal (de agente ou não) digita o caminho real dele na linha, entre aspas quando tem espaço, e o Claude Code e as outras CLIs leem direto; num terminal WSL, C:\\... vira /mnt/c/.... Um arquivo que não vem do disco vira uma cópia em .deepspace/attachments e entra por esse caminho. Soltar no composer continua anexando ao prompt.',
         'Presets rodam todos os agentes num provider só. Os presets embutidos misturavam Claude, Codex e Kimi, e quem só tinha o Claude instalado recebia terminais de CLIs que não tinha. Criar um workspace a partir de um preset, ou somar um preset ao canvas, agora pede o Provider dos agentes (o Claude quando instalado, senão a primeira CLI detectada) e todos os agentes rodam nele, mantendo o seu papel.',
+        'Os tours guiados não criam mais agentes numa CLI que você não tem: um tour que pede Codex ou Kimi usa o provider quando ele está instalado e, senão, cai no seu provider principal (o fluxo criativo de imagens continua exigindo o Codex, que gera as imagens). O agente do tour de revisão cruzada agora se chama Revisor Cruzado, e os oráculos do Deep Space Contributing viraram Oráculo Técnico e Oráculo Crítico, já que rodam no provider escolhido.',
       ],
     },
     {

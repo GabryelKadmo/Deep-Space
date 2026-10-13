@@ -5,6 +5,8 @@ import { TOURS_ES } from './catalog/es.js';
 import { localeState } from '$lib/i18n/locale.svelte.js';
 import * as m from '$lib/paraglide/messages.js';
 import { checkPasses, isTourComplete } from './checks.js';
+import { defaultPresetProvider, presetProviderOptions } from '../agent-provider-choice.js';
+import type { AgentProviderInfo } from '$lib/modules/agent-room/domain/types.js';
 import { goto } from '$app/navigation';
 import { getCsrfToken } from '@beeblock/svelar/http';
 
@@ -141,6 +143,7 @@ export async function startTour(id: string, workspace: string): Promise<void> {
   tourState.error = '';
   tourState.actionDoneFor = null;
   tourState.autoCompleted = new Set();
+  installedProviders = null;
   await evaluateChecks();
   startPolling();
 }
@@ -185,6 +188,17 @@ async function findNode(title: string): Promise<WorkspaceSnapshot['nodes'][numbe
 
 async function findNodeId(title: string): Promise<string | null> {
   return (await findNode(title))?.id ?? null;
+}
+
+// Um tour nao pode criar um agente numa CLI que o usuario nao tem: o
+// provider pedido so vale quando esta instalado (ou quando o tour exige ele).
+let installedProviders: Promise<AgentProviderInfo[]> | null = null;
+async function tourAgentProvider(action: Extract<TourAction, { kind: 'createAgent' }>): Promise<string> {
+  if (action.requiresProvider) return action.provider;
+  installedProviders ??= api<{ providers: AgentProviderInfo[] }>('/api/agent-room/status').then((status) => status?.providers ?? []);
+  const providers = await installedProviders;
+  if (!providers.length || presetProviderOptions(providers).some((provider) => provider.id === action.provider)) return action.provider;
+  return defaultPresetProvider(providers);
 }
 
 let positionSeq = 0;
@@ -235,6 +249,7 @@ async function runAction(action: TourAction): Promise<void> {
     switch (action.kind) {
       case 'createAgent': {
         if (await findNode(action.title)) break;
+        const provider = await tourAgentProvider(action);
         await api(`/api/agent-room/workspaces/${workspaceId}/nodes`, {
           method: 'POST',
           body: JSON.stringify({
@@ -243,7 +258,7 @@ async function runAction(action: TourAction): Promise<void> {
             ...(action.position ?? nextPosition()),
             width: 560,
             height: 340,
-            payload: { command: action.provider, provider: action.provider, ...(action.leader ? { maestro: true } : {}) },
+            payload: { command: provider, provider, ...(action.leader ? { maestro: true } : {}) },
           }),
         });
         break;

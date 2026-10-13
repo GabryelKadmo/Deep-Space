@@ -14,6 +14,7 @@ pt-BR, English, and Spanish translations.
 ### Changed
 
 - **Presets run every agent on one provider.** Built-in presets mixed Claude, Codex and Kimi, so someone with only Claude installed got terminals for CLIs they did not have. Creating a workspace from a preset, or adding a preset to the canvas, now asks for the Provider for the agents (Claude when installed, otherwise the first CLI detected) and every agent runs on it, keeping its role.
+- Guided tours no longer create agents on a CLI you do not have: a tour that asks for Codex or Kimi uses it when installed and otherwise falls back to your main provider (the creative image workflow still requires Codex, which generates the images). The cross-provider review tour's agent is now Cross Reviewer, and the Deep Space Contributing oracles are the Technical Oracle and the Critical Oracle, since they run on the chosen provider.
 
 ### Fixed
 
