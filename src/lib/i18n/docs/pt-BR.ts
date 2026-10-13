@@ -533,6 +533,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Terminal', 'shell', 'PowerShell', 'Git Bash'],
     },
     {
+      id: 'terminal-drop-path',
+      title: 'Arraste um arquivo para o terminal e o caminho é digitado',
+      body: 'Solte um arquivo do Explorer ou do Finder em cima de um terminal (de agente ou não) e o caminho real dele entra na linha, como num terminal do sistema: entre aspas quando tem espaço e com um espaço no fim para continuar a instrução. O Claude Code reconhece uma imagem pelo caminho. Num terminal WSL, C:\\... vira /mnt/c/.... Um arquivo que não vem do disco (arrastado de uma página) vira uma cópia em .deepspace/attachments e entra pelo caminho dessa cópia. Soltar no composer continua anexando ao prompt.',
+      tags: ['Terminal', 'arrastar e soltar', 'caminho', 'imagens'],
+    },
+    {
       id: 'zoom-lock',
       title: 'Trave o zoom onde o texto fica nítido',
       body: 'Fora de 100% a seleção de texto dentro dos terminais desalinha, e uma rodada sem querer da roda do mouse já tira o canvas do zoom. Escolha o nível no seletor de % no canto inferior esquerdo e abra o cadeado ao lado do + e escolha Bloquear zoom: o cadeado fecha e ganha moldura, o número fica em destaque, − e + apagam, e roda, pinça, duplo clique e atalhos não mudam mais o zoom — a roda passa a mover o canvas. A trava vale para todos os workspaces e sobrevive a reinícios; escolha Desbloquear zoom no mesmo menu para soltar. Ela é independente de Bloquear canvas, a outra opção do mesmo cadeado, que trava arrastar e selecionar nós.',
@@ -974,10 +980,11 @@ Header: Authorization = Bearer {{accessToken}}`,
   changelog: [
     {
       date: '12 de outubro de 2026 · 0.41.0',
-      title: 'Deep Space 0.41.0: selecione texto com o canvas bloqueado',
-      summary: 'Arrastar dentro de um terminal ou nota volta a selecionar texto com o canvas bloqueado',
+      title: 'Deep Space 0.41.0: solte um arquivo no terminal para digitar o caminho',
+      summary: 'Arquivos soltos no terminal viram o caminho na linha, e o canvas bloqueado volta a selecionar texto',
       items: [
         'Com Bloquear canvas ligado, arrastar dentro de um terminal (ou de uma nota, ou de qualquer nó) movia o canvas inteiro em vez de selecionar o texto. O bloqueio continua segurando os nós no lugar, e arrastar a área vazia continua movendo o canvas, mas arrastar dentro de um nó volta a chegar no conteúdo dele.',
+        'Solte um arquivo no terminal para digitar o caminho. Como num terminal do sistema, um arquivo arrastado do Explorer ou do Finder para qualquer terminal (de agente ou não) digita o caminho real dele na linha, entre aspas quando tem espaço, e o Claude Code e as outras CLIs leem direto; num terminal WSL, C:\\... vira /mnt/c/.... Um arquivo que não vem do disco vira uma cópia em .deepspace/attachments e entra por esse caminho. Soltar no composer continua anexando ao prompt.',
       ],
     },
     {

@@ -1669,6 +1669,7 @@
   "attachment.error": "The attachment could not be added.",
   "attachment.remove_error": "The attachment could not be removed.",
   "attachment.agent_drop_target": "Drop files or links to add them to the agent prompt",
+  "attachment.terminal_drop_target": "Drop files to type their path into the terminal, or links to add them to the agent prompt",
   "workbench.usage_footer_label": "Provider usage",
   "workbench.usage_loading": "Loading usage…",
   "workbench.usage_unavailable": "Usage unavailable",

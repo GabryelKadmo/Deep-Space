@@ -529,6 +529,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Terminal', 'shell', 'PowerShell', 'Git Bash'],
     },
     {
+      id: 'terminal-drop-path',
+      title: 'Arrastra un archivo al terminal y se escribe su ruta',
+      body: 'Suelta un archivo desde el Explorador o el Finder sobre un terminal (de agente o no) y su ruta real entra en la línea, como en un terminal del sistema: entre comillas cuando tiene espacios y con un espacio al final para seguir la instrucción. Claude Code reconoce una imagen por su ruta. En un terminal WSL, C:\\... se convierte en /mnt/c/.... Un archivo que no viene del disco (arrastrado desde una página) se convierte en una copia en .deepspace/attachments y entra por la ruta de esa copia. Soltarlo en el composer sigue adjuntándolo al prompt.',
+      tags: ['Terminal', 'arrastrar y soltar', 'ruta', 'imágenes'],
+    },
+    {
       id: 'zoom-lock',
       title: 'Bloquea el zoom donde el texto se ve nítido',
       body: 'Fuera del 100 % la selección de texto dentro de las terminales se desalinea, y un giro accidental de la rueda del ratón ya saca el canvas de su zoom. Elige el nivel en el selector de % abajo a la izquierda y abre el candado junto al + y elige Bloquear zoom: el candado se cierra y gana un marco, el número toma el color de acento, − y + se atenúan, y la rueda, el pellizco, el doble clic y los atajos ya no cambian el zoom — la rueda mueve el canvas. El bloqueo vale para todos los workspaces y sobrevive a los reinicios; elige Desbloquear zoom en el mismo menú para soltarlo. Es independiente de Bloquear canvas, la otra opción del mismo candado, que bloquea arrastrar y seleccionar nodos.',
@@ -970,10 +976,11 @@ Header: Authorization = Bearer {{accessToken}}`,
   changelog: [
     {
       date: '12 de octubre de 2026 · 0.41.0',
-      title: 'Deep Space 0.41.0: selecciona texto con el canvas bloqueado',
-      summary: 'Arrastrar dentro de un terminal o nota vuelve a seleccionar texto con el canvas bloqueado',
+      title: 'Deep Space 0.41.0: suelta un archivo en el terminal para escribir su ruta',
+      summary: 'Los archivos soltados en el terminal se convierten en su ruta en la línea, y el canvas bloqueado vuelve a seleccionar texto',
       items: [
         'Con Bloquear canvas activado, arrastrar dentro de un terminal (o de una nota, o de cualquier nodo) movía todo el canvas en lugar de seleccionar el texto. El bloqueo sigue manteniendo los nodos en su sitio y arrastrar el área vacía sigue moviendo el canvas, pero arrastrar dentro de un nodo vuelve a llegar a su contenido.',
+        'Suelta un archivo en el terminal para escribir su ruta. Como en un terminal del sistema, un archivo arrastrado desde el Explorador o el Finder a cualquier terminal (de agente o no) escribe su ruta real en la línea, entre comillas cuando tiene espacios, y Claude Code y las demás CLI la leen directamente; en un terminal WSL, C:\\... se convierte en /mnt/c/.... Un archivo que no viene del disco se convierte en una copia en .deepspace/attachments y entra por esa ruta. Soltarlo en el composer sigue adjuntándolo al prompt.',
       ],
     },
     {

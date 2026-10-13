@@ -188,6 +188,11 @@ export const TOURS_EN: Tour[] = [
         title: 'Set the default',
         body: 'In Settings > Terminal, the default shell applies to new terminals and to Scripts.',
       },
+      {
+        id: 'drop',
+        title: 'Drop a file on the terminal',
+        body: 'Drag a file from Explorer or Finder onto any terminal, agent or not: its path is typed on the line, in quotes when it has spaces, and you keep writing the instruction. In a WSL terminal the path already comes as /mnt/c/....',
+      },
     ],
   },
   {
