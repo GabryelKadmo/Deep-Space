@@ -973,6 +973,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: '12 de outubro de 2026 · 0.41.0',
+      title: 'Deep Space 0.41.0: selecione texto com o canvas bloqueado',
+      summary: 'Arrastar dentro de um terminal ou nota volta a selecionar texto com o canvas bloqueado',
+      items: [
+        'Com Bloquear canvas ligado, arrastar dentro de um terminal (ou de uma nota, ou de qualquer nó) movia o canvas inteiro em vez de selecionar o texto. O bloqueio continua segurando os nós no lugar, e arrastar a área vazia continua movendo o canvas, mas arrastar dentro de um nó volta a chegar no conteúdo dele.',
+      ],
+    },
+    {
       date: '7 de outubro de 2026 · 0.40.0',
       title: 'Deep Space 0.40.0: tour pela interface e o config do SSH pelo Servidores',
       summary: 'Um tour destaca cada controle da tela, e um botão no nó Servidores abre o ~/.ssh/config no editor do sistema',

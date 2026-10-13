@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { onMount, tick, untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import { toast } from '@beeblock/svelar/ui';
   import { getCsrfToken } from '@beeblock/svelar/http';
@@ -616,6 +616,16 @@
   let zoomPercent = $state(100);
   let connecting = $state(false);
   let canvasLocked = $state(false);
+  // O xyflow so marca como `nopan` o no arrastavel. Com o canvas bloqueado
+  // nenhum no arrasta, e arrastar dentro de um terminal ou nota movia o
+  // canvas em vez de selecionar o texto; o `nopan` explicito devolve a selecao.
+  const lockedNodeClass = (locked: boolean) => (locked ? 'nopan' : undefined);
+  $effect(() => {
+    const nodeClass = lockedNodeClass(canvasLocked);
+    untrack(() => {
+      nodes = nodes.map((node) => (node.class === nodeClass ? node : { ...node, class: nodeClass }));
+    });
+  });
   // Os toasts do app ficam no canto inferior direito, por cima da faixa de
   // ferramentas; a faixa empurra o canto para cima enquanto existe.
   let dockHeight = $state(0);
@@ -1384,6 +1394,7 @@
       // Camadas deterministicas evitam que SVGs de edges atravessem terminais
       // em alguns compositores Chromium/Windows.
       zIndex: node.type === 'group' ? 0 : 20 + Math.max(0, node.zIndex ?? 0),
+      class: lockedNodeClass(canvasLocked),
       data: {
         title: node.title ?? '',
         workspaceId: activeWorkspace?.id ?? '',
