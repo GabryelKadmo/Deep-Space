@@ -89,6 +89,7 @@
   import RoutinePanel from '$lib/components/agent-room/canvas/RoutinePanel.svelte';
   import RolesPanel from '$lib/components/agent-room/canvas/RolesPanel.svelte';
   import UsagePanel from '$lib/components/agent-room/canvas/UsagePanel.svelte';
+  import GitPanel from '$lib/components/agent-room/canvas/GitPanel.svelte';
   import UsageCanvasNode from '$lib/components/agent-room/canvas/UsageCanvasNode.svelte';
   import CodeGraphCanvasNode from '$lib/components/agent-room/canvas/CodeGraphCanvasNode.svelte';
   import DeviceCanvasNode from '$lib/components/agent-room/canvas/DeviceCanvasNode.svelte';
@@ -875,6 +876,7 @@
   let showRoutinePanel = $state(false);
   let showRolesPanel = $state(false);
   let showUsagePanel = $state(false);
+  let showGitPanel = $state(false);
   let showPortsPanel = $state(false);
   let showPresetPanel = $state(false);
   let leaderDictationState = $state<LeaderDictationStatus>('idle');
@@ -883,7 +885,7 @@
   let visibleFloorId = $state<string | null>(null);
   let floors = $state<Floor[]>([]);
 
-  type SidePanelName = 'presets' | 'floors' | 'routines' | 'roles' | 'usage' | 'ports';
+  type SidePanelName = 'presets' | 'floors' | 'routines' | 'roles' | 'usage' | 'ports' | 'git';
 
   function toggleSidePanel(panel: SidePanelName) {
     const next = panel === 'presets' ? !showPresetPanel
@@ -891,6 +893,7 @@
       : panel === 'routines' ? !showRoutinePanel
       : panel === 'roles' ? !showRolesPanel
       : panel === 'usage' ? !showUsagePanel
+      : panel === 'git' ? !showGitPanel
       : !showPortsPanel;
     showPresetPanel = panel === 'presets' && next;
     showFloorPanel = panel === 'floors' && next;
@@ -898,6 +901,7 @@
     showRolesPanel = panel === 'roles' && next;
     showUsagePanel = panel === 'usage' && next;
     showPortsPanel = panel === 'ports' && next;
+    showGitPanel = panel === 'git' && next;
   }
 
   function createWorkspaceFromPreset(presetId: string) {
@@ -2904,7 +2908,7 @@
       case 'files':
         return { id, label: m['canvas.default_files'](), icon: { kind: 'lucide', component: FolderTree }, onSelect: () => toggleDrawTool('fileTree') };
       case 'git':
-        return { id, label: m['canvas.default_git'](), icon: { kind: 'lucide', component: GitFork }, onSelect: () => toggleDrawTool('git') };
+        return { id, label: m['canvas.default_git'](), icon: { kind: 'lucide', component: GitFork }, onSelect: () => toggleSidePanel('git') };
       case 'console':
         return { id, label: m['console.title'](), icon: { kind: 'lucide', component: Terminal }, onSelect: () => toggleDrawTool('console') };
       case 'ssh':
@@ -3477,7 +3481,7 @@
               </ToolbarButton>
             {/if}
             {#if pinnedToolbarSet.has('git')}
-              <ToolbarButton label={m['tool.git']()} active={drawTool === 'git'} onclick={() => toggleDrawTool('git')}>
+              <ToolbarButton label={m['tool.git']()} active={showGitPanel} onclick={() => toggleSidePanel('git')}>
                 <GitFork size={15} class="tool-icon-svg" /> {m['canvas.default_git']()}
               </ToolbarButton>
             {/if}
@@ -3657,6 +3661,16 @@
         onAddToCanvas={() => {
           void addUsageNode();
           showUsagePanel = false;
+        }}
+      />
+    {/if}
+    {#if showGitPanel && activeWorkspace}
+      <GitPanel
+        workspaceId={activeWorkspace.id}
+        onClose={() => (showGitPanel = false)}
+        onAddToCanvas={() => {
+          void addGit();
+          showGitPanel = false;
         }}
       />
     {/if}
