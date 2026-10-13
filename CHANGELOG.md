@@ -10,6 +10,7 @@ pt-BR, English, and Spanish translations.
 ### Added
 
 - **Drop a file on a terminal to type its path.** Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.
+- **Alert when an agent finishes.** Settings > Terminal gains Alert when an agent finishes (Off, Sound, Sound and system notification). It plays a short chime when an agent stops after working at least 10 seconds on a task started by an Enter, typed or delivered by another agent; pauses while typing never count, several agents finishing together play one sound, and the system notification only shows while Deep Space is not in focus. A Listen button previews the sound on the chosen audio output.
 
 ### Changed
 

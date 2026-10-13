@@ -47,7 +47,8 @@ export type PtySessionInfo = {
 
 export type PtySessionListener = (data: string) => void;
 export type PtyExitListener = (exitCode: number, stoppedByUser: boolean) => void;
-export type PtyAttentionListener = (waiting: boolean) => void;
+/** `finishedTask`: a sessao parou depois de trabalhar numa tarefa (ver FINISHED_TASK_MIN_MS). */
+export type PtyAttentionListener = (waiting: boolean, finishedTask: boolean) => void;
 export type PtyWorkingDirectoryListener = (cwd: string) => void;
 
 const execFileAsync = promisify(execFile);
@@ -124,6 +125,8 @@ type PtySession = PtySessionInfo & {
   bridgeAgentToken: string | null;
   ownsProcessTree: boolean;
   initialIdleObserved: boolean;
+  /** Quando chegou o Enter que comecou a tarefa em andamento; null sem tarefa. */
+  taskStartedAt: number | null;
   scrollback: string;
   listeners: Set<PtySessionListener>;
   exitListeners: Set<PtyExitListener>;
@@ -198,6 +201,10 @@ export type CreatePtySessionInput = {
 
 const SCROLLBACK_LIMIT = 256 * 1024; // 256 KB por sessão
 const SESSION_IDLE_MS = 2_500;
+// Uma tarefa comeca num Enter (digitado ou entregue por outro agente) e
+// termina na ociosidade seguinte. Respostas curtas nao merecem aviso, e as
+// pausas de digitacao nunca contam porque nao comecam tarefa.
+const FINISHED_TASK_MIN_MS = 10_000;
 const AGENT_DELIVERY_SETTLE_MS = 8_000;
 const SHELL_DELIVERY_SETTLE_MS = 400;
 const HUMAN_SUBMIT_SETTLE_MS = 400;
@@ -294,6 +301,7 @@ export class PtySessionManager {
       bridgeAgentToken: input.bridgeAgentToken ?? null,
       ownsProcessTree: Boolean(input.workspaceId && input.nodeId),
       initialIdleObserved: false,
+      taskStartedAt: null,
       scrollback: '',
       listeners: new Set(),
       exitListeners: new Set(),
@@ -445,6 +453,7 @@ export class PtySessionManager {
     if (session.exited) throw new Error(`Sessão PTY ${id} já finalizada.`);
     this.setWaiting(session, false);
     session.lastOutputAt = Date.now();
+    if (session.taskStartedAt === null && /[\r\n]/.test(data)) session.taskStartedAt = Date.now();
     session.pty.write(data);
   }
 
@@ -724,7 +733,9 @@ export class PtySessionManager {
     if (waiting) session.initialIdleObserved = true;
     if (session.waiting === waiting) return;
     session.waiting = waiting;
-    for (const listener of session.attentionListeners) listener(waiting);
+    const finishedTask = waiting && session.taskStartedAt !== null && Date.now() - session.taskStartedAt >= FINISHED_TASK_MIN_MS;
+    if (waiting) session.taskStartedAt = null;
+    for (const listener of session.attentionListeners) listener(waiting, finishedTask);
     if (waiting) this.recordLifecycle(session, 'idle');
   }
 

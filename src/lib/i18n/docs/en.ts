@@ -535,6 +535,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Terminal', 'drag and drop', 'path', 'images'],
     },
     {
+      id: 'agent-done-alert',
+      title: 'Know when the agent is done without watching it',
+      body: 'In Settings > Terminal, Alert when an agent finishes plays a sound when an agent stops after working at least 10 seconds on a task, whether you asked for it or another agent delivered it. With Sound and system notification, a notification also shows when Deep Space is not in focus; clicking it brings the app back. Pauses while you type do not trigger the alert, and several agents finishing together play a single sound.',
+      tags: ['notification', 'sound', 'agents', 'focus'],
+    },
+    {
       id: 'zoom-lock',
       title: 'Lock the zoom where text stays sharp',
       body: 'Away from 100%, text selection inside terminals drifts, and one accidental turn of the mouse wheel already takes the canvas off its zoom. Pick the level in the % selector at the bottom left and open the padlock next to + and choose Lock zoom: the padlock closes and gets a frame, the number takes the accent colour, − and + dim, and the wheel, pinch, double-click and shortcuts no longer change the zoom — the wheel pans the canvas instead. The lock applies to every workspace and survives restarts; choose Unlock zoom in the same menu to release it. It is separate from Lock canvas, the other entry under the same padlock, which locks dragging and selecting nodes.',
@@ -976,13 +982,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   changelog: [
     {
       date: 'October 12, 2026 · 0.41.0',
-      title: 'Deep Space 0.41.0: drop a file on the terminal to type its path',
-      summary: 'Files dropped on a terminal become their path on the line, and a locked canvas selects text again',
+      title: 'Deep Space 0.41.0: hear when an agent is done',
+      summary: 'An optional sound when an agent finishes, file paths dropped on terminals, one provider per preset',
       items: [
         'With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.',
-        '**Drop a file on a terminal to type its path.** Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.',
-        '**Presets run every agent on one provider.** Built-in presets mixed Claude, Codex and Kimi, so someone with only Claude installed got terminals for CLIs they did not have. Creating a workspace from a preset, or adding a preset to the canvas, now asks for the Provider for the agents (Claude when installed, otherwise the first CLI detected) and every agent runs on it, keeping its role.',
+        'Drop a file on a terminal to type its path. Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.',
+        'Presets run every agent on one provider. Built-in presets mixed Claude, Codex and Kimi, so someone with only Claude installed got terminals for CLIs they did not have. Creating a workspace from a preset, or adding a preset to the canvas, now asks for the Provider for the agents (Claude when installed, otherwise the first CLI detected) and every agent runs on it, keeping its role.',
         'Guided tours no longer create agents on a CLI you do not have: a tour that asks for Codex or Kimi uses it when installed and otherwise falls back to your main provider (the creative image workflow still requires Codex, which generates the images). The cross-provider review tour\'s agent is now Cross Reviewer, and the Deep Space Contributing oracles are the Technical Oracle and the Critical Oracle, since they run on the chosen provider.',
+        'Alert when an agent finishes. Settings > Terminal gains Alert when an agent finishes (Off, Sound, Sound and system notification). It plays a short chime when an agent stops after working at least 10 seconds on a task started by an Enter, typed or delivered by another agent; pauses while typing never count, several agents finishing together play one sound, and the system notification only shows while Deep Space is not in focus. A Listen button previews the sound on the chosen audio output.',
       ],
     },
     {

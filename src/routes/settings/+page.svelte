@@ -16,6 +16,7 @@
   import { terminalThemeLabel } from '$lib/components/agent-room/terminal-theme-label.js';
   import { normalizeTerminalTheme, TERMINAL_THEMES, TERMINAL_THEME_ORDER } from '$lib/components/agent-room/terminal-themes.js';
   import { DEFAULT_DICTATION_HOTKEY, comboFromEvent, comboLabel } from '$lib/components/agent-room/dictation-hotkey.js';
+  import { AGENT_DONE_ALERTS, normalizeAgentDoneAlert, playAgentDoneSound, type AgentDoneAlert } from '$lib/components/agent-room/agent-done-alert.js';
   import { SHELL_NAMES, consoleShellOptions, normalizeConsoleShell, type ConsoleShell } from '$lib/modules/agent-room/domain/console-commands.js';
   import { appSettingsStore, getAppSettings, invalidateAppSettings } from '$lib/components/agent-room/app-settings.svelte.js';
   import { addCustomIcon, customIconNames, ensureCustomIconsLoaded, getCustomIconNode, removeCustomIcon } from '$lib/components/agent-room/workspace-custom-icons.svelte.js';
@@ -63,6 +64,20 @@
   // Shell dos comandos do Console. So faz sentido oferecer o que existe na
   // plataforma; o app e o PTY rodam no mesmo host, entao o navigator serve.
   const shellOptions = consoleShellOptions(isWindowsPlatform() ? 'win32' : 'linux');
+  function agentDoneAlertLabel(alert: AgentDoneAlert): string {
+    if (alert === 'sound') return m['settings.agent_done_alert_sound']();
+    if (alert === 'sound-notify') return m['settings.agent_done_alert_sound_notify']();
+    return m['settings.agent_done_alert_off']();
+  }
+
+  // A notificacao do sistema precisa de permissao no navegador; o app desktop ja concede.
+  function chooseAgentDoneAlert(value: string) {
+    settings = { ...settings, agentDoneAlert: value };
+    if (value === 'sound-notify' && typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      void Notification.requestPermission();
+    }
+  }
+
   function shellLabel(shell: ConsoleShell): string {
     return shell === 'auto' ? m['settings.console_shell_auto']() : SHELL_NAMES[shell];
   }
@@ -648,6 +663,28 @@
           </Select.Content>
         </Select.Root>
         <p class="field-hint">{m['settings.console_shell_hint']()}</p>
+      </div>
+    </div>
+
+    <div class="grid-fields">
+      <div class="field span-2">
+        <span class="field-label">{m['settings.agent_done_alert']()}</span>
+        <div class="agent-done-row">
+          <Select.Root type="single" value={normalizeAgentDoneAlert(settings.agentDoneAlert)} onValueChange={chooseAgentDoneAlert}>
+            <Select.Trigger data-slot="select-trigger" class="flex-1">
+              {agentDoneAlertLabel(normalizeAgentDoneAlert(settings.agentDoneAlert))}
+            </Select.Trigger>
+            <Select.Content>
+              {#each AGENT_DONE_ALERTS as alert (alert)}
+                <Select.Item value={alert}>{agentDoneAlertLabel(alert)}</Select.Item>
+              {/each}
+            </Select.Content>
+          </Select.Root>
+          <Button variant="outline" size="sm" onclick={() => void playAgentDoneSound(settings.audioOutputDeviceId)}>
+            <Volume2 size={14} aria-hidden="true" />{m['settings.agent_done_alert_test']()}
+          </Button>
+        </div>
+        <p class="field-hint">{m['settings.agent_done_alert_hint']()}</p>
       </div>
     </div>
 
@@ -1485,6 +1522,12 @@
 
   .speed-control > span:last-child {
     text-align: right;
+  }
+
+  .agent-done-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .field-hint {

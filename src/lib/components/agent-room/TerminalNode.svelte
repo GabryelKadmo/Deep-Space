@@ -21,6 +21,7 @@
   import { voiceModelsReadyForUse } from './voice-model-status.js';
   import { terminalDictationInput } from './terminal-dictation.js';
   import { isTerminalCopyShortcut, isTerminalPasteShortcut, shouldSuppressNativeSingleClickSelection, terminalCellAtPoint, terminalSelectionRange, wordRangeAtCell, type TerminalCell } from './terminal-selection.js';
+  import { alertAgentFinished } from './agent-done-alert.js';
   import { clipboardPasteFiles, droppedHostPaths, storePastedTerminalFiles, terminalPathFor, terminalPathTokens } from './terminal-paste.js';
   import { workingDirectoryFromOsc } from './terminal-working-directory.js';
   import { createExternalLinkOpener, findTerminalPaths, findTerminalUrls, logicalLineAt } from './terminal-links.js';
@@ -744,6 +745,7 @@
           break;
         case 'idle':
           waiting = Boolean(message.idle);
+          if (waiting && message.finishedTask && provider) void alertAgentFinished(sessionLabel || provider);
           break;
         case 'exit':
           waiting = false;
