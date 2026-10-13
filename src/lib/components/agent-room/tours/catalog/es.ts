@@ -1626,6 +1626,7 @@ export const TOURS_ES: Tour[] = [
     steps: [
       { id: 'add-git-workspace', title: 'Agrega el workspace Git nativo', body: 'Agrego un único nodo Git al Canvas. Abre el mismo nodo persistente en Workbench cuando necesites más espacio.', action: { kind: 'createGit', title: 'Git' }, check: { kind: 'nodeExists', nodeType: 'git' } },
       { id: 'inspect-git-state', title: 'Inspecciona antes de cambiar', body: 'Cambios, grafo de commits, ramas, etiquetas, remotes, stashes y worktrees vienen del repositorio del workspace. Las credenciales se ocultan.' },
+      { id: 'review-blocks', title: 'Revisa bloque por bloque', body: 'El botón Git de la barra abre el mismo Git en un panel fijo en el lateral. Haz clic en un archivo en Cambios para abrir el diff completo: cada bloque tiene Revertir bloque (pide un segundo clic, porque no se puede deshacer) y Preparar bloque; en lo ya preparado, Quitar bloque del stage.' },
       { id: 'preview-git-operation', title: 'Revisa operaciones protegidas', body: 'Usa los menús de rama y commit para merge, rebase, cherry-pick, revert y eliminación. Las acciones destructivas muestran el comando exacto y rechazan revisiones desactualizadas.' },
       { id: 'coordinate-git-delivery', title: 'Mantén la entrega trazable', body: 'Usa Pisos para worktrees aislados y el Centro de revisión para el diff final. Los agentes usan git_status, git_preview y git_execute solo con una tarea Kanban activa y asignada.' },
     ],

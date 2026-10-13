@@ -40,6 +40,12 @@
   });
 
   const branchLabel = $derived(status?.branch ?? m['git.detached']());
+
+  // O diff de um arquivo abre num dialogo por cima do popover: clicar ou focar
+  // nele nao pode fechar o popover, que desmontaria o proprio dialogo.
+  function keepOpenUnderDialog(event: Event) {
+    if (document.querySelector('[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"]')) event.preventDefault();
+  }
 </script>
 
 {#if workspaceId && status?.isRepo}
@@ -55,7 +61,7 @@
         <span class="branch-indicator-sync">{status.ahead}↑ {status.behind}↓</span>
       {/if}
     </Popover.Trigger>
-    <Popover.Content class="w-auto p-0" align="end" side="bottom" sideOffset={6}>
+    <Popover.Content class="w-auto p-0" align="end" side="bottom" sideOffset={6} onInteractOutside={keepOpenUnderDialog} onFocusOutside={keepOpenUnderDialog} onEscapeKeydown={keepOpenUnderDialog}>
       <div class="branch-indicator-panel">
         <GitWorkspace workspaceId={wsId} />
       </div>

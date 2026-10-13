@@ -3,6 +3,7 @@ import { FormRequest } from '@beeblock/svelar/forms';
 import {
   executeGitOperationSchema,
   fsWriteSchema,
+  gitHunkSchema,
   gitOperationInputSchema,
   gitPathSchema,
 } from '$lib/modules/agent-room/contracts/schemas/fsSchemas.js';
@@ -34,6 +35,18 @@ class GitPathRequest extends FormRequest {
   }
   passedValidation(data: unknown) {
     return gitPathSchema.parse(data);
+  }
+}
+
+class GitHunkRequest extends FormRequest {
+  rules() {
+    return gitHunkSchema;
+  }
+  authorize(): boolean {
+    return true;
+  }
+  passedValidation(data: unknown) {
+    return gitHunkSchema.parse(data);
   }
 }
 
@@ -143,6 +156,26 @@ export class FilesystemController extends Controller {
       return this.json({ data: await gitService.fileDiff(event.params.id, path, staged) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao ler diff estruturado.');
+    }
+  }
+
+  async gitHunks(event: any) {
+    try {
+      const path = event.url.searchParams.get('path');
+      if (!path) throw new Error('Informe o caminho do arquivo.');
+      const staged = event.url.searchParams.get('staged') === 'true';
+      return this.json({ data: await gitService.hunks(event.params.id, path, staged) });
+    } catch (error) {
+      return this.errorResponse(error, 'Falha ao ler os blocos do diff.');
+    }
+  }
+
+  async gitApplyHunk(event: any) {
+    try {
+      const input = await GitHunkRequest.validate(event);
+      return this.json({ data: await gitService.applyHunk(event.params.id, input) });
+    } catch (error) {
+      return this.errorResponse(error, 'Falha ao aplicar o bloco.');
     }
   }
 

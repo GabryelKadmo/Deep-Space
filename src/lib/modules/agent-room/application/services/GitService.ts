@@ -7,6 +7,7 @@ import { workspaceRepository } from '../../infrastructure/repositories/Workspace
 import { agentEnv } from '../../infrastructure/agent-path.js';
 import { buildWorkspaceRuntimeLaunch } from '../../infrastructure/WslRuntime.js';
 import type { Workspace } from '../../domain/types.js';
+import { hunkPatch, parseGitDiff, type GitHunk } from '../../domain/git-hunks.js';
 import type { ExecuteGitOperationInput, GitOperationInput } from '../../contracts/schemas/fsSchemas.js';
 
 const execFileAsync = promisify(execFile);
@@ -31,6 +32,16 @@ export type GitStatusResult = {
   revision: string;
   changes: GitChange[];
 };
+
+export type GitFileHunks = {
+  path: string;
+  staged: boolean;
+  binary: boolean;
+  revision: string;
+  hunks: Array<Omit<GitHunk, 'raw'>>;
+};
+
+export type GitHunkAction = 'stage' | 'unstage' | 'revert';
 
 export type GitFileDiff = {
   path: string;
@@ -261,6 +272,24 @@ export class GitService {
     });
   }
 
+  /** Roda o git com `input` na entrada padrao (patches do `git apply`), tambem no WSL. */
+  private async workspaceGitWithInput(workspaceId: string, args: string[], input: string): Promise<void> {
+    const launch = this.launch(await this.workspace(workspaceId), args);
+    await new Promise<void>((resolvePromise, reject) => {
+      const child = spawn(launch.command, launch.args, { cwd: launch.cwd, env: launch.env, stdio: ['pipe', 'ignore', 'pipe'], windowsHide: true });
+      const errors: Buffer[] = [];
+      const timer = setTimeout(() => child.kill(), GIT_TIMEOUT_MS);
+      child.stderr.on('data', (chunk: Buffer) => errors.push(Buffer.from(chunk)));
+      child.on('error', (error) => { clearTimeout(timer); reject(error); });
+      child.on('close', (code) => {
+        clearTimeout(timer);
+        if (code === 0) resolvePromise();
+        else reject(new Error(Buffer.concat(errors).toString('utf8').trim() || `git exited with code ${code}`));
+      });
+      child.stdin.end(input);
+    });
+  }
+
   private confinedPath(cwd: string, path: string): string {
     const absolute = resolve(cwd, path);
     const inside = relative(cwd, absolute);
@@ -432,6 +461,45 @@ export class GitService {
     if (staged) args.push('--cached');
     if (path) args.push('--', path);
     return { diff: await this.workspaceGit(workspaceId, args) };
+  }
+
+  private async parsedFileDiff(workspaceId: string, path: string, staged: boolean) {
+    const diff = await this.workspaceGit(workspaceId, ['diff', '--no-color', '--no-ext-diff', '-U3', ...(staged ? ['--cached'] : []), '--', path]);
+    return parseGitDiff(diff);
+  }
+
+  /** Blocos do diff de um arquivo, para as acoes por bloco da visao de alteracoes. */
+  async hunks(workspaceId: string, path: string, staged = false): Promise<GitFileHunks> {
+    this.confinedPath(await this.root(workspaceId), path);
+    const [status, parsed] = await Promise.all([this.status(workspaceId), this.parsedFileDiff(workspaceId, path, staged)]);
+    return {
+      path,
+      staged,
+      binary: parsed.binary,
+      revision: status.revision,
+      hunks: parsed.hunks.map(({ raw: _raw, ...hunk }) => hunk),
+    };
+  }
+
+  /**
+   * Aplica um unico bloco: stage (para o indice), unstage (volta do indice) ou
+   * revert (descarta o bloco na arvore de trabalho). A revisao confirma que o
+   * usuario agiu sobre o diff que esta vendo.
+   */
+  async applyHunk(workspaceId: string, input: { path: string; staged: boolean; index: number; action: GitHunkAction; expectedRevision: string }) {
+    this.confinedPath(await this.root(workspaceId), input.path);
+    if (input.action === 'unstage' ? !input.staged : input.staged) throw new Error('Acao de bloco incompativel com a area do diff.');
+    const status = await this.status(workspaceId);
+    if (status.revision !== input.expectedRevision) throw new Error('As alterações mudaram desde que o diff foi aberto. Recarregue e tente de novo.');
+    const patch = hunkPatch(await this.parsedFileDiff(workspaceId, input.path, input.staged), input.index);
+    const args = input.action === 'stage'
+      ? ['apply', '--cached', '--whitespace=nowarn', '-']
+      : input.action === 'unstage'
+        ? ['apply', '--cached', '--reverse', '--whitespace=nowarn', '-']
+        : ['apply', '--reverse', '--whitespace=nowarn', '-'];
+    await this.workspaceGitWithInput(workspaceId, args, patch);
+    this.notifyChanged(workspaceId);
+    return this.hunks(workspaceId, input.path, input.staged);
   }
 
   async logGraph(workspaceId: string, limit = 25): Promise<{ graph: string }> {

@@ -227,4 +227,38 @@ describe('FilesystemService + GitService', () => {
       operation: 'stashPop', ref: 'stash@{0}', force: false, setUpstream: false,
     })).resolves.toMatchObject({ command: ['git', 'stash', 'pop', 'stash@{0}'] });
   });
+
+  it('faz stage, unstage e reverte um bloco sem tocar no outro', async () => {
+    const dir = makeGitRepo();
+    const original = Array.from({ length: 30 }, (_, line) => `line ${line + 1}`);
+    writeFileSync(join(dir, 'src', 'list.txt'), `${original.join('\n')}\n`);
+    execFileSync('git', ['add', '.'], { cwd: dir });
+    execFileSync('git', ['commit', '-m', 'lista'], { cwd: dir });
+    const edited = [...original];
+    edited[1] = 'line 2 edited';
+    edited[27] = 'line 28 edited';
+    writeFileSync(join(dir, 'src', 'list.txt'), `${edited.join('\n')}\n`);
+    const workspace = await workspaceRepository.createWorkspace({ name: 'hunks', workingDir: dir });
+
+    const working = await gitService.hunks(workspace.id, 'src/list.txt');
+    expect(working.hunks).toHaveLength(2);
+
+    const afterStage = await gitService.applyHunk(workspace.id, { path: 'src/list.txt', staged: false, index: 0, action: 'stage', expectedRevision: working.revision });
+    expect(afterStage.hunks).toHaveLength(1);
+    expect(execFileSync('git', ['diff', '--cached', '--', 'src/list.txt'], { cwd: dir, encoding: 'utf8' })).toContain('+line 2 edited');
+    expect(execFileSync('git', ['diff', '--cached', '--', 'src/list.txt'], { cwd: dir, encoding: 'utf8' })).not.toContain('line 28 edited');
+
+    const staged = await gitService.hunks(workspace.id, 'src/list.txt', true);
+    await gitService.applyHunk(workspace.id, { path: 'src/list.txt', staged: true, index: 0, action: 'unstage', expectedRevision: staged.revision });
+    expect(execFileSync('git', ['diff', '--cached', '--', 'src/list.txt'], { cwd: dir, encoding: 'utf8' })).toBe('');
+
+    const beforeRevert = await gitService.hunks(workspace.id, 'src/list.txt');
+    await expect(gitService.applyHunk(workspace.id, { path: 'src/list.txt', staged: false, index: 1, action: 'revert', expectedRevision: '0'.repeat(64) })).rejects.toThrow('mudaram');
+    await gitService.applyHunk(workspace.id, { path: 'src/list.txt', staged: false, index: 1, action: 'revert', expectedRevision: beforeRevert.revision });
+    const content = (await filesystemService.read(workspace.id, 'src/list.txt')).content;
+    expect(content).toContain('line 2 edited');
+    expect(content).toMatch(/line 28\r?\n/);
+    expect(content).not.toContain('line 28 edited');
+    await expect(gitService.applyHunk(workspace.id, { path: 'src/list.txt', staged: false, index: 0, action: 'unstage', expectedRevision: beforeRevert.revision })).rejects.toThrow('incompativel');
+  });
 });
