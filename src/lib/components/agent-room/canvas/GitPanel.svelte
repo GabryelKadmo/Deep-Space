@@ -32,7 +32,7 @@
 
 <style>
   .git-panel {
-    width: 340px;
+    width: 380px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
