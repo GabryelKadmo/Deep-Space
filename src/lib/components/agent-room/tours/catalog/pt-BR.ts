@@ -192,6 +192,11 @@ export const TOURS_PT: Tour[] = [
         title: 'Defina o padrão',
         body: 'Em Configurações > Terminal, o shell padrão vale para os terminais novos e para os Scripts.',
       },
+      {
+        id: 'drop',
+        title: 'Solte um arquivo no terminal',
+        body: 'Arraste um arquivo do Explorer ou do Finder para cima de qualquer terminal, de agente ou não: o caminho dele é digitado na linha, entre aspas quando tem espaço, e você continua escrevendo a instrução. Num terminal WSL o caminho já vem como /mnt/c/....',
+      },
     ],
   },
   {

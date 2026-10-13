@@ -1669,6 +1669,7 @@
   "attachment.error": "No se pudo agregar el adjunto.",
   "attachment.remove_error": "No se pudo eliminar el adjunto.",
   "attachment.agent_drop_target": "Suelta archivos o enlaces para agregarlos al prompt del agente",
+  "attachment.terminal_drop_target": "Suelta archivos para escribir su ruta en el terminal, o enlaces para agregarlos al prompt del agente",
   "workbench.usage_footer_label": "Uso de proveedores",
   "workbench.usage_loading": "Cargando uso…",
   "workbench.usage_unavailable": "Uso no disponible",

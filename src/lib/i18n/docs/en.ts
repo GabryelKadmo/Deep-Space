@@ -529,6 +529,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Terminal', 'shell', 'PowerShell', 'Git Bash'],
     },
     {
+      id: 'terminal-drop-path',
+      title: 'Drag a file onto the terminal and its path is typed',
+      body: 'Drop a file from Explorer or Finder onto a terminal (agent or not) and its real path goes onto the line, like in a system terminal: in quotes when it has spaces and with a trailing space to keep writing the instruction. Claude Code recognizes an image by its path. In a WSL terminal, C:\\... becomes /mnt/c/.... A file that does not come from disk (dragged from a page) becomes a copy in .deepspace/attachments and goes in by that copy\'s path. Dropping on the composer still attaches it to the prompt.',
+      tags: ['Terminal', 'drag and drop', 'path', 'images'],
+    },
+    {
       id: 'zoom-lock',
       title: 'Lock the zoom where text stays sharp',
       body: 'Away from 100%, text selection inside terminals drifts, and one accidental turn of the mouse wheel already takes the canvas off its zoom. Pick the level in the % selector at the bottom left and open the padlock next to + and choose Lock zoom: the padlock closes and gets a frame, the number takes the accent colour, − and + dim, and the wheel, pinch, double-click and shortcuts no longer change the zoom — the wheel pans the canvas instead. The lock applies to every workspace and survives restarts; choose Unlock zoom in the same menu to release it. It is separate from Lock canvas, the other entry under the same padlock, which locks dragging and selecting nodes.',
@@ -970,10 +976,11 @@ Header: Authorization = Bearer {{accessToken}}`,
   changelog: [
     {
       date: 'October 12, 2026 · 0.41.0',
-      title: 'Deep Space 0.41.0: select text in a locked canvas',
-      summary: 'Dragging inside a terminal or note selects text again while the canvas is locked',
+      title: 'Deep Space 0.41.0: drop a file on the terminal to type its path',
+      summary: 'Files dropped on a terminal become their path on the line, and a locked canvas selects text again',
       items: [
         'With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.',
+        '**Drop a file on a terminal to type its path.** Like a system terminal, a file dragged from Explorer or Finder onto any terminal (agent or not) types its real path on the line, quoted when it has spaces, so Claude Code and the other CLIs read it directly; in a WSL terminal C:\\... becomes /mnt/c/.... A file that does not come from disk becomes a copy in .deepspace/attachments and goes in by that path. Dropping on the composer still attaches to the prompt.',
       ],
     },
     {

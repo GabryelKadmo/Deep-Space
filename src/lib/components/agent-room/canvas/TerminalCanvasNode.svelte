@@ -22,6 +22,7 @@
   import {
     attachmentPromptReference,
     attachmentsFromTransfer,
+    MAX_WORKSPACE_ATTACHMENTS,
     transferHasWorkspaceAttachments,
     uploadWorkspaceAttachment,
   } from '../workspace-attachments.js';
@@ -69,7 +70,7 @@
   };
 
   let { id, data, selected } = $props<NodeProps & { data: TerminalNodeData }>();
-  let terminalNode = $state<{ focus: () => void; write: (input: string) => void } | undefined>();
+  let terminalNode = $state<{ focus: () => void; write: (input: string) => void; dropFiles: (files: File[], runtime: 'native' | 'wsl') => Promise<boolean> } | undefined>();
   let ownsCreatedSession = $state(untrack(() => !data.payload.sessionId));
   let restartGeneration = $state(0);
   let providerMetadataReady = $state(untrack(() => !data.payload.provider));
@@ -477,6 +478,36 @@
     }
   }
 
+  // Solto em cima do terminal, o arquivo vira o caminho digitado, como num
+  // terminal do sistema. Sem sessao viva, ou quando e um link, segue como
+  // anexo no composer.
+  async function handleTerminalDrop(event: DragEvent) {
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    if (!files.length || !terminalNode) return handleAttachmentDrop(event);
+    event.preventDefault();
+    event.stopPropagation();
+    attachmentDropActive = false;
+    attachmentError = '';
+    try {
+      if (await terminalNode.dropFiles(files, data.executionRuntime.kind)) return;
+    } catch {
+      attachmentError = m['attachment.error']();
+      return;
+    }
+    attachmentBusy = true;
+    try {
+      const attachments: WorkspaceAttachment[] = [];
+      for (const file of files.slice(0, MAX_WORKSPACE_ATTACHMENTS)) attachments.push(await uploadWorkspaceAttachment(data.workspaceId, file));
+      appendPromptAttachments(attachments);
+    } catch (error) {
+      attachmentError = error instanceof Error && error.message === 'attachment_too_large'
+        ? m['attachment.too_large']()
+        : m['attachment.error']();
+    } finally {
+      attachmentBusy = false;
+    }
+  }
+
   async function handleAttachmentFiles(event: Event) {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files ?? []);
@@ -799,10 +830,10 @@
     class="terminal-body nodrag"
     class:attachment-drop-active={attachmentDropActive}
     role="group"
-    aria-label={m['attachment.agent_drop_target']()}
+    aria-label={m['attachment.terminal_drop_target']()}
     ondragover={handleAttachmentDragOver}
     ondragleave={() => (attachmentDropActive = false)}
-    ondrop={handleAttachmentDrop}
+    ondrop={handleTerminalDrop}
   >
     {#if data.payload.sessionId && !forceRespawn && !ownsCreatedSession}
       <TerminalNode

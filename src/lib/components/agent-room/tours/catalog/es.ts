@@ -188,6 +188,11 @@ export const TOURS_ES: Tour[] = [
         title: 'Define el predeterminado',
         body: 'En Configuración > Terminal, el shell predeterminado vale para las terminales nuevas y para Scripts.',
       },
+      {
+        id: 'drop',
+        title: 'Suelta un archivo en el terminal',
+        body: 'Arrastra un archivo desde el Explorador o el Finder sobre cualquier terminal, de agente o no: su ruta se escribe en la línea, entre comillas cuando tiene espacios, y sigues escribiendo la instrucción. En un terminal WSL la ruta ya llega como /mnt/c/....',
+      },
     ],
   },
   {
