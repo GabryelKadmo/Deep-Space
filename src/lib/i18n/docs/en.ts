@@ -969,6 +969,14 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
+      date: 'October 12, 2026 · 0.41.0',
+      title: 'Deep Space 0.41.0: select text in a locked canvas',
+      summary: 'Dragging inside a terminal or note selects text again while the canvas is locked',
+      items: [
+        'With Lock canvas on, dragging inside a terminal (or a note, or any node) moved the whole canvas instead of selecting text. The lock still holds the nodes in place, and dragging the empty canvas still pans it, but dragging inside a node now reaches its content again.',
+      ],
+    },
+    {
       date: 'October 7, 2026 · 0.40.0',
       title: 'Deep Space 0.40.0: an interface tour and your SSH config from Servers',
       summary: 'A tour highlights each control on screen, and a button in the Servers node opens ~/.ssh/config in the system editor',
