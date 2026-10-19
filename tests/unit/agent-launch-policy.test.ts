@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyAgentLaunchPolicy } from '$lib/modules/agent-room/infrastructure/pty/agent-launch-policy.js';
+import { additionalDirArgs, applyAgentLaunchPolicy } from '$lib/modules/agent-room/infrastructure/pty/agent-launch-policy.js';
 
 const ON = { remoteControl: true, bypassPermissions: true };
 
@@ -27,5 +27,19 @@ describe('preferencias de abertura dos terminais de agente', () => {
     expect(applyAgentLaunchPolicy(undefined, ['--rc'], off)).toEqual(['--rc']);
     expect(applyAgentLaunchPolicy('opencode', ['-m', 'x'], off)).toEqual(['-m', 'x']);
     expect(applyAgentLaunchPolicy('devin', ['--permission-mode', 'ask'], off)).toEqual(['--permission-mode', 'ask']);
+  });
+});
+
+describe('pastas adicionais do workspace nos agentes', () => {
+  it('repete --add-dir por pasta no Claude e no Codex', () => {
+    expect(additionalDirArgs('claude', ['/a', '/b'])).toEqual(['--add-dir', '/a', '--add-dir', '/b']);
+    expect(additionalDirArgs('codex', ['/a'], ['--model', 'x'])).toEqual(['--add-dir', '/a']);
+  });
+
+  it('nao acrescenta nada ao Codex com acesso total, a providers sem flag verificada ou a terminais comuns', () => {
+    expect(additionalDirArgs('codex', ['/a'], ['--dangerously-bypass-approvals-and-sandbox'])).toEqual([]);
+    expect(additionalDirArgs('kimi', ['/a'])).toEqual([]);
+    expect(additionalDirArgs(undefined, ['/a'])).toEqual([]);
+    expect(additionalDirArgs('claude', [])).toEqual([]);
   });
 });

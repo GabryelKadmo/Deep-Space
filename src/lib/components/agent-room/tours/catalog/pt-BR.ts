@@ -248,6 +248,34 @@ export const TOURS_PT: Tour[] = [
     ],
   },
   {
+    id: 'multi-folder-workspace',
+    icon: 'FolderPlus',
+    title: 'Várias pastas no mesmo workspace',
+    tagline: 'Traga repositórios de outros lugares para o mesmo time, sem copiar nada.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Abra as configurações do workspace',
+        body: 'Clique no lápis ao lado do nome do workspace na barra lateral para abrir Editar workspace. A pasta principal continua sendo a que abre nos terminais dos agentes.',
+      },
+      {
+        id: 'add',
+        title: 'Adicione as outras pastas',
+        body: 'Em Repositórios adicionais, clique no botão +, escolha cada pasta e dê o alias (api, web, docs...). Salve: os agentes Claude e Codex já abrem com acesso a elas, e o AGENTS.md lista todos os caminhos para os outros providers.',
+      },
+      {
+        id: 'files',
+        title: 'Veja no Workbench',
+        body: 'Abra o Workbench: o explorador de arquivos mostra a pasta principal e cada @alias como raízes separadas. A busca e o editor funcionam em todas.',
+      },
+      {
+        id: 'git',
+        title: 'Git por repositório',
+        body: 'Abra o Git e use o seletor de Repositório no topo para alternar entre as pastas. Cada uma tem suas próprias mudanças, branches e histórico; se a pasta base não for um repositório, o Git abre no primeiro adicional.',
+      },
+    ],
+  },
+  {
     id: 'zoom-lock',
     icon: 'Lock',
     title: 'Zoom travado no ponto certo',
@@ -1993,7 +2021,7 @@ export const TOURS_PT: Tour[] = [
   },
   {
     id: 'workspace-folders',
-    icon: 'FolderTree',
+    icon: 'FolderPlus',
     title: 'Organize workspaces em pastas',
     tagline: 'Agrupe projetos por cliente, time ou ambiente na barra lateral.',
     steps: [
@@ -2194,7 +2222,7 @@ export const TOURS_PT: Tour[] = [
   },
   {
     id: 'group-icons',
-    icon: 'FolderTree',
+    icon: 'FolderPlus',
     title: 'Dê um ícone próprio pra uma pasta',
     tagline: 'Distinga seus grupos de workspace de relance.',
     steps: [

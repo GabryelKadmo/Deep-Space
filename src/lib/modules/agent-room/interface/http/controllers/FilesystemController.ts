@@ -63,6 +63,11 @@ class GitOperationExecuteRequest extends FormRequest {
 }
 
 export class FilesystemController extends Controller {
+  /** Git requests may name one of the workspace's additional repositories with ?repo=<alias>. */
+  private inRepo<T>(event: any, work: () => Promise<T>): Promise<T> {
+    return gitService.inRepository(event.url.searchParams.get('repo'), work);
+  }
+
   async list(event: any) {
     try {
       const path = event.url.searchParams.get('path');
@@ -132,7 +137,7 @@ export class FilesystemController extends Controller {
 
   async gitStatus(event: any) {
     try {
-      return this.json({ data: await gitService.status(event.params.id) });
+      return this.json({ data: await this.inRepo(event, () => gitService.status(event.params.id)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao ler status git.');
     }
@@ -142,7 +147,7 @@ export class FilesystemController extends Controller {
     try {
       const path = event.url.searchParams.get('path');
       const staged = event.url.searchParams.get('staged') === 'true';
-      return this.json({ data: await gitService.diff(event.params.id, path, staged) });
+      return this.json({ data: await this.inRepo(event, () => gitService.diff(event.params.id, path, staged)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao ler diff.');
     }
@@ -153,7 +158,7 @@ export class FilesystemController extends Controller {
       const path = event.url.searchParams.get('path');
       if (!path) throw new Error('Informe o caminho do arquivo.');
       const staged = event.url.searchParams.get('staged') === 'true';
-      return this.json({ data: await gitService.fileDiff(event.params.id, path, staged) });
+      return this.json({ data: await this.inRepo(event, () => gitService.fileDiff(event.params.id, path, staged)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao ler diff estruturado.');
     }
@@ -164,7 +169,7 @@ export class FilesystemController extends Controller {
       const path = event.url.searchParams.get('path');
       if (!path) throw new Error('Informe o caminho do arquivo.');
       const staged = event.url.searchParams.get('staged') === 'true';
-      return this.json({ data: await gitService.hunks(event.params.id, path, staged) });
+      return this.json({ data: await this.inRepo(event, () => gitService.hunks(event.params.id, path, staged)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao ler os blocos do diff.');
     }
@@ -173,7 +178,7 @@ export class FilesystemController extends Controller {
   async gitApplyHunk(event: any) {
     try {
       const input = await GitHunkRequest.validate(event);
-      return this.json({ data: await gitService.applyHunk(event.params.id, input) });
+      return this.json({ data: await this.inRepo(event, () => gitService.applyHunk(event.params.id, input)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao aplicar o bloco.');
     }
@@ -181,7 +186,7 @@ export class FilesystemController extends Controller {
 
   async gitLogGraph(event: any) {
     try {
-      return this.json({ data: await gitService.logGraph(event.params.id) });
+      return this.json({ data: await this.inRepo(event, () => gitService.logGraph(event.params.id)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao ler histórico.');
     }
@@ -190,7 +195,7 @@ export class FilesystemController extends Controller {
   async gitWorkspace(event: any) {
     try {
       const limit = Number(event.url.searchParams.get('limit') ?? 100);
-      return this.json({ data: await gitService.workspaceSnapshot(event.params.id, limit) });
+      return this.json({ data: await this.inRepo(event, () => gitService.workspaceSnapshot(event.params.id, limit)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao carregar o workspace Git.');
     }
@@ -199,7 +204,7 @@ export class FilesystemController extends Controller {
   async gitPreviewOperation(event: any) {
     try {
       const input = await GitOperationPreviewRequest.validate(event);
-      return this.json({ data: await gitService.previewOperation(event.params.id, input) });
+      return this.json({ data: await this.inRepo(event, () => gitService.previewOperation(event.params.id, input)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao preparar a operação Git.');
     }
@@ -208,7 +213,7 @@ export class FilesystemController extends Controller {
   async gitExecuteOperation(event: any) {
     try {
       const input = await GitOperationExecuteRequest.validate(event);
-      return this.json({ data: await gitService.executeOperation(event.params.id, input) });
+      return this.json({ data: await this.inRepo(event, () => gitService.executeOperation(event.params.id, input)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao executar a operação Git.');
     }
@@ -217,7 +222,7 @@ export class FilesystemController extends Controller {
   async gitStage(event: any) {
     try {
       const input = await GitPathRequest.validate(event);
-      return this.json({ data: await gitService.stage(event.params.id, input.path) });
+      return this.json({ data: await this.inRepo(event, () => gitService.stage(event.params.id, input.path)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao dar stage.');
     }
@@ -226,7 +231,7 @@ export class FilesystemController extends Controller {
   async gitUnstage(event: any) {
     try {
       const input = await GitPathRequest.validate(event);
-      return this.json({ data: await gitService.unstage(event.params.id, input.path) });
+      return this.json({ data: await this.inRepo(event, () => gitService.unstage(event.params.id, input.path)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao dar unstage.');
     }
@@ -235,7 +240,7 @@ export class FilesystemController extends Controller {
   async gitCommit(event: any) {
     try {
       const body = await event.request.json();
-      return this.json({ data: await gitService.commit(event.params.id, String(body.message ?? '')) });
+      return this.json({ data: await this.inRepo(event, () => gitService.commit(event.params.id, String(body.message ?? ''))) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao commitar.');
     }
@@ -243,7 +248,7 @@ export class FilesystemController extends Controller {
 
   async gitPull(event: any) {
     try {
-      return this.json({ data: await gitService.pull(event.params.id) });
+      return this.json({ data: await this.inRepo(event, () => gitService.pull(event.params.id)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha no pull.');
     }
@@ -251,7 +256,7 @@ export class FilesystemController extends Controller {
 
   async gitPush(event: any) {
     try {
-      return this.json({ data: await gitService.push(event.params.id) });
+      return this.json({ data: await this.inRepo(event, () => gitService.push(event.params.id)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha no push.');
     }
@@ -260,7 +265,7 @@ export class FilesystemController extends Controller {
   async gitCheckout(event: any) {
     try {
       const body = await event.request.json();
-      return this.json({ data: await gitService.checkout(event.params.id, String(body.branch ?? '')) });
+      return this.json({ data: await this.inRepo(event, () => gitService.checkout(event.params.id, String(body.branch ?? ''))) });
     } catch (error) {
       return this.errorResponse(error, 'Falha no checkout.');
     }
@@ -269,7 +274,7 @@ export class FilesystemController extends Controller {
   async gitCreateBranch(event: any) {
     try {
       const body = await event.request.json();
-      return this.json({ data: await gitService.createBranch(event.params.id, String(body.branch ?? ''), body.checkout !== false) });
+      return this.json({ data: await this.inRepo(event, () => gitService.createBranch(event.params.id, String(body.branch ?? ''), body.checkout !== false)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao criar branch.');
     }
@@ -277,7 +282,7 @@ export class FilesystemController extends Controller {
 
   async gitBranches(event: any) {
     try {
-      return this.json({ data: await gitService.listBranches(event.params.id) });
+      return this.json({ data: await this.inRepo(event, () => gitService.listBranches(event.params.id)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao listar branches.');
     }
@@ -286,7 +291,7 @@ export class FilesystemController extends Controller {
   async gitStash(event: any) {
     try {
       const body = await event.request.json().catch(() => ({}));
-      return this.json({ data: await gitService.stash(event.params.id, Boolean(body.pop)) });
+      return this.json({ data: await this.inRepo(event, () => gitService.stash(event.params.id, Boolean(body.pop))) });
     } catch (error) {
       return this.errorResponse(error, 'Falha no stash.');
     }
@@ -363,7 +368,7 @@ export class FilesystemController extends Controller {
   async gitDiscard(event: any) {
     try {
       const input = await GitPathRequest.validate(event);
-      return this.json({ data: await gitService.discard(event.params.id, input.path) });
+      return this.json({ data: await this.inRepo(event, () => gitService.discard(event.params.id, input.path)) });
     } catch (error) {
       return this.errorResponse(error, 'Falha ao descartar alterações.');
     }

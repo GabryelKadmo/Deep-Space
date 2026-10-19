@@ -62,6 +62,14 @@ function managedInstructionBlock(instructions: string): string {
   return `${WORKSPACE_INSTRUCTIONS_BEGIN}\n${instructions}\n${WORKSPACE_INSTRUCTIONS_END}`;
 }
 
+/** Tells agents where the workspace's extra folders live, since their shell opens in the main one. */
+function additionalFoldersSection(workspace: Workspace): string | null {
+  // Host paths mean nothing inside a WSL guest.
+  if (workspace.runtimeKind === 'wsl' || !workspace.repositoryRoots.length) return null;
+  const lines = workspace.repositoryRoots.map((root) => `- @${root.alias}: ${root.path}`);
+  return `## Additional workspace folders\n\nBesides the main folder (${workspace.workingDir}), this workspace includes the folders below. They are real directories outside the main one: use the absolute path, and run Git inside each folder, not from the main one.\n\n${lines.join('\n')}`;
+}
+
 function mergeInstructionFile(current: string, instructions: string | null, legacyInstructions?: string | null): string {
   const block = instructions ? managedInstructionBlock(instructions) : '';
   if (WORKSPACE_INSTRUCTIONS_PATTERN.test(current)) {
@@ -1004,17 +1012,19 @@ export class WorkspaceService {
   /** Keeps workspace instructions in a bounded block without replacing user files. */
   private writeInstructionFiles(workspace: Workspace, legacyInstructions?: string | null) {
     const instructions = workspace.instructions?.trim() || null;
+    const folders = additionalFoldersSection(workspace);
+    const agentInstructions = [instructions, folders].filter(Boolean).join('\n\n') || null;
     try {
       const agentsPath = resolve(workspace.workingDir, 'AGENTS.md');
       const currentAgents = existsSync(agentsPath) ? readFileSync(agentsPath, 'utf8') : '';
-      const nextAgents = mergeInstructionFile(currentAgents, instructions, legacyInstructions?.trim() || null);
+      const nextAgents = mergeInstructionFile(currentAgents, agentInstructions, legacyInstructions?.trim() || null);
       if (nextAgents !== currentAgents) writeFileSync(agentsPath, nextAgents);
 
       const claudePath = resolve(workspace.workingDir, 'CLAUDE.md');
       const currentClaude = existsSync(claudePath) ? readFileSync(claudePath, 'utf8') : '';
       const nextClaude = mergeInstructionFile(
         currentClaude,
-        workspace.syncAgentInstructionFiles ? instructions : null,
+        workspace.syncAgentInstructionFiles ? agentInstructions : folders,
         legacyInstructions?.trim() || null,
       );
       if (nextClaude !== currentClaude) writeFileSync(claudePath, nextClaude);

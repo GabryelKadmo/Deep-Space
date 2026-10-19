@@ -7,6 +7,7 @@ export const USE_CASE_TOUR_IDS: Record<string, string> = {
   'terminal-shell': 'terminal-shell',
   'app-shortcuts': 'interface',
   'git-changes-panel': 'manage-git-workspace',
+  'multi-folder-workspace': 'multi-folder-workspace',
   'agent-launch-defaults': 'agent-launch-defaults',
   'terminal-drop-path': 'terminal-shell',
   'agent-done-alert': 'agent-done-alert',

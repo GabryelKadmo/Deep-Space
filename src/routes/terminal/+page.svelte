@@ -1296,6 +1296,7 @@
                 <WorkbenchFileExplorer
                   workspaceId={workspace.id}
                   rootPath={workspace.workingDir}
+                  extraRoots={workspace.repositoryRoots}
                   activePath={selectedWorkspaceId === workspace.id ? filePathForItem(selectedNode) : null}
                   onOpen={(path, direction) => openWorkbenchFile(workspace.id, path, direction)}
                 />
