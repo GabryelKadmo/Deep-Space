@@ -9,7 +9,7 @@ pt-BR, English, and Spanish translations.
 
 ### Added
 
-- **Several folders in one workspace.** Edit workspace > Additional repositories now makes each folder a full part of the workspace instead of a label for the API Client. Claude and Codex agents open with `--add-dir` for every folder (Codex skips it in full-access mode, where it is redundant); the workspace `AGENTS.md`/`CLAUDE.md` lists their absolute paths for the other providers; the Workbench file explorer shows each folder as its own root and search covers them all; and the Git panel gets a Repository selector that runs status, stage, commit, pull, push and the rest inside the chosen repository (`?repo=<alias>` on the Git API), opening on the first additional repository when the base folder is not one. Paths outside the approved folders stay blocked. WSL workspaces do not use additional folders yet.
+- **Several folders in one workspace.** Edit workspace > Additional repositories now makes each folder a full part of the workspace instead of a label for the API Client. Claude and Codex agents open with `--add-dir` for every folder (Codex skips it in full-access mode, where it is redundant); the workspace `AGENTS.md`/`CLAUDE.md` lists their paths (relative to the main folder) for the other providers; the Workbench file explorer shows each folder as its own root and search covers them all; and the Git panel gets a Repository selector that runs status, stage, commit, pull, push and the rest inside the chosen repository (`?repo=<alias>` on the Git API), opening on the first additional repository when the base folder is not one. Paths outside the approved folders stay blocked. WSL workspaces do not use additional folders yet.
 
 ## 0.41.0 - 2026-10-13
 

@@ -225,7 +225,7 @@ export function handlePtyConnection(socket: WebSocket): void {
           const runtime = message.runtime ?? { kind: 'native' as const };
           const launchPolicy = await (wsGlobal.__deepspaceAgentLaunchPolicy?.() ?? Promise.resolve({ remoteControl: true, bypassPermissions: true }));
           const messageArgs = applyAgentLaunchPolicy(message.provider, Array.isArray(message.args) ? message.args.map(String) : [], launchPolicy);
-          const extraDirs = message.provider && typeof message.workspaceId === 'string'
+          const extraDirs = message.provider && runtime.kind !== 'wsl' && typeof message.workspaceId === 'string'
             ? await (wsGlobal.__deepspaceAdditionalDirs?.(message.workspaceId) ?? Promise.resolve([]))
             : [];
           const extraDirArgs = additionalDirArgs(message.provider, extraDirs, messageArgs);

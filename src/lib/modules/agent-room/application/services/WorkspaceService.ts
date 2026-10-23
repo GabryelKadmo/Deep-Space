@@ -1,6 +1,6 @@
 import { constants as fsConstants, existsSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { access, readFile } from 'node:fs/promises';
-import { posix, resolve } from 'node:path';
+import { isAbsolute, posix, relative, resolve } from 'node:path';
 import type { CanvasNodePayload, Workspace, WorkspaceRepositoryRoot } from '../../domain/types.js';
 import { findFreeCanvasPosition } from '../../domain/canvas-placement.js';
 import { executionRuntimeKey } from '../../domain/runtime.js';
@@ -66,8 +66,13 @@ function managedInstructionBlock(instructions: string): string {
 function additionalFoldersSection(workspace: Workspace): string | null {
   // Host paths mean nothing inside a WSL guest.
   if (workspace.runtimeKind === 'wsl' || !workspace.repositoryRoots.length) return null;
-  const lines = workspace.repositoryRoots.map((root) => `- @${root.alias}: ${root.path}`);
-  return `## Additional workspace folders\n\nBesides the main folder (${workspace.workingDir}), this workspace includes the folders below. They are real directories outside the main one: use the absolute path, and run Git inside each folder, not from the main one.\n\n${lines.join('\n')}`;
+  // AGENTS.md is often committed, so paths stay relative to the main folder
+  // instead of exposing the owner's home directory; another drive has no relative form.
+  const lines = workspace.repositoryRoots.map((root) => {
+    const path = relative(workspace.workingDir, root.path);
+    return `- @${root.alias}: ${path && !isAbsolute(path) ? path.replaceAll('\\', '/') : root.path}`;
+  });
+  return `## Additional workspace folders\n\nBesides the main folder, this workspace includes the folders below. They are real directories outside the main one (paths are relative to it): resolve them from the main folder, and run Git inside each folder, not from the main one.\n\n${lines.join('\n')}`;
 }
 
 function mergeInstructionFile(current: string, instructions: string | null, legacyInstructions?: string | null): string {
@@ -1024,7 +1029,7 @@ export class WorkspaceService {
       const currentClaude = existsSync(claudePath) ? readFileSync(claudePath, 'utf8') : '';
       const nextClaude = mergeInstructionFile(
         currentClaude,
-        workspace.syncAgentInstructionFiles ? agentInstructions : folders,
+        workspace.syncAgentInstructionFiles ? agentInstructions : null,
         legacyInstructions?.trim() || null,
       );
       if (nextClaude !== currentClaude) writeFileSync(claudePath, nextClaude);
