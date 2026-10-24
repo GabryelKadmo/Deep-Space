@@ -1014,6 +1014,8 @@ Header: Authorization = Bearer {{accessToken}}`,
       summary: 'Adicione ao workspace repositórios de qualquer lugar do disco; agentes, explorador de arquivos e Git enxergam todos',
       items: [
         'Várias pastas no mesmo workspace. Editar workspace > Repositórios adicionais agora faz cada pasta fazer parte de verdade do workspace, em vez de ser só um rótulo para o Cliente de API: os agentes Claude e Codex abrem com --add-dir para cada pasta, o AGENTS.md/CLAUDE.md do workspace lista os caminhos (relativos à pasta principal) para os outros providers, o explorador do Workbench mostra cada pasta como uma raiz própria (e a busca cobre todas), e o painel Git ganha um seletor de Repositório que roda status, stage, commit, pull, push e o resto dentro do repositório escolhido, abrindo no primeiro adicional quando a pasta base não é um repositório. Caminhos fora das pastas aprovadas continuam bloqueados, e workspaces WSL ainda não usam pastas adicionais.',
+        'A página Skills & MCPs perdeu o layout: as listas ocupavam a janela inteira enquanto o cabeçalho ficava numa coluna estreita, e o conteúdo aparecia através do cabeçalho ao rolar. Cabeçalho, abas e listas agora dividem a mesma coluna, e o cabeçalho tem fundo sólido.',
+        'Electron, Vite, DOMPurify e undici foram para versões de correção que resolvem alertas de segurança publicados recentemente.',
       ],
     },
     {

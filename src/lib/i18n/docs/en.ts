@@ -1010,6 +1010,8 @@ Header: Authorization = Bearer {{accessToken}}`,
       summary: 'Add repositories from anywhere on the disk to a workspace; agents, the file explorer and Git all see them',
       items: [
         'Several folders in one workspace. Edit workspace > Additional repositories now makes each folder a full part of the workspace instead of a label for the API Client: Claude and Codex agents open with --add-dir for every folder, the workspace AGENTS.md/CLAUDE.md lists their paths (relative to the main folder) for the other providers, the Workbench explorer shows each folder as its own root (and search covers them all), and the Git panel gets a Repository selector that runs status, stage, commit, pull, push and the rest inside the chosen repository, opening on the first additional one when the base folder is not a repository. Paths outside the approved folders stay blocked, and WSL workspaces do not use additional folders yet.',
+        'The Skills & MCPs page lost its layout: the lists spanned the whole window while the header stayed in a narrow column, and the content showed through the header when scrolling. Header, tabs and lists now share one column, and the header keeps a solid background.',
+        'Electron, Vite, DOMPurify and undici move to patch releases that fix newly published security advisories.',
       ],
     },
     {
