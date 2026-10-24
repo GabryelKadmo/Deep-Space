@@ -5,11 +5,16 @@ oldest. Public GitHub Release notes are generated directly from the matching
 version section in this file. In-app and website changelogs provide equivalent
 pt-BR, English, and Spanish translations.
 
-## 0.42.0 - 2026-10-19
+## 0.42.0 - 2026-10-23
 
 ### Added
 
 - **Several folders in one workspace.** Edit workspace > Additional repositories now makes each folder a full part of the workspace instead of a label for the API Client. Claude and Codex agents open with `--add-dir` for every folder (Codex skips it in full-access mode, where it is redundant); the workspace `AGENTS.md`/`CLAUDE.md` lists their paths (relative to the main folder) for the other providers; the Workbench file explorer shows each folder as its own root and search covers them all; and the Git panel gets a Repository selector that runs status, stage, commit, pull, push and the rest inside the chosen repository (`?repo=<alias>` on the Git API), opening on the first additional repository when the base folder is not one. Paths outside the approved folders stay blocked. WSL workspaces do not use additional folders yet.
+
+### Fixed
+
+- The Skills & MCPs page lost its layout: the lists spanned the whole window while the header stayed in a narrow column, and the content showed through the header when scrolling. Header, tabs and lists now share one column, and the header keeps a solid background.
+- Electron, Vite, DOMPurify and undici move to patch releases that fix newly published security advisories.
 
 ## 0.41.0 - 2026-10-13
 

@@ -1005,11 +1005,13 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
-      date: '19 de octubre de 2026 · 0.42.0',
+      date: '23 de octubre de 2026 · 0.42.0',
       title: 'Deep Space 0.42.0: varias carpetas en el mismo workspace',
       summary: 'Añade al workspace repositorios de cualquier lugar del disco; agentes, explorador de archivos y Git los ven todos',
       items: [
         'Varias carpetas en el mismo workspace. Editar workspace > Repositorios adicionales ahora hace que cada carpeta forme parte real del workspace, en lugar de ser solo una etiqueta para el Cliente de API: los agentes Claude y Codex abren con --add-dir para cada carpeta, el AGENTS.md/CLAUDE.md del workspace lista sus rutas (relativas a la carpeta principal) para los demás providers, el explorador del Workbench muestra cada carpeta como una raíz propia (y la búsqueda abarca todas), y el panel Git obtiene un selector de Repositorio que ejecuta status, stage, commit, pull, push y el resto dentro del repositorio elegido, abriendo en el primero adicional cuando la carpeta base no es un repositorio. Las rutas fuera de las carpetas aprobadas siguen bloqueadas, y los workspaces WSL aún no usan carpetas adicionales.',
+        'La página Skills & MCPs perdió su diseño: las listas ocupaban toda la ventana mientras el encabezado quedaba en una columna estrecha, y el contenido se veía a través del encabezado al desplazarse. Encabezado, pestañas y listas ahora comparten la misma columna, y el encabezado tiene fondo sólido.',
+        'Electron, Vite, DOMPurify y undici pasan a versiones de corrección que resuelven alertas de seguridad publicadas recientemente.',
       ],
     },
     {

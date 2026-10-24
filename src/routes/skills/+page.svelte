@@ -498,8 +498,10 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  .skills-page > * {
-    width: min(760px, 100%);
+  /* :global because Tabs.Root renders bits-ui's own element, which a scoped
+     selector never matches: the tab panels then spanned the whole window. */
+  .skills-page > :global(*) {
+    width: min(880px, 100%);
   }
 
   .page-header {
@@ -510,7 +512,12 @@
     align-items: center;
     gap: 12px;
     padding: 10px 0 14px;
-    background: linear-gradient(180deg, var(--app-canvas) 78%, transparent);
+    background: color-mix(in srgb, var(--app-canvas) 92%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  .header-titles {
+    min-width: 0;
   }
 
   .header-titles h1 {
