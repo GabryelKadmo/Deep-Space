@@ -244,6 +244,34 @@ export const TOURS_ES: Tour[] = [
     ],
   },
   {
+    id: 'multi-folder-workspace',
+    icon: 'FolderPlus',
+    title: 'Varias carpetas en el mismo workspace',
+    tagline: 'Trae repositorios de otros lugares al mismo equipo, sin copiar nada.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Abre los ajustes del workspace',
+        body: 'Haz clic en el lápiz junto al nombre del workspace en la barra lateral para abrir Editar workspace. La carpeta principal sigue siendo la que abren los terminales de los agentes.',
+      },
+      {
+        id: 'add',
+        title: 'Añade las otras carpetas',
+        body: 'En Repositorios adicionales, haz clic en el botón +, elige cada carpeta y ponle el alias (api, web, docs...). Guarda: los agentes Claude y Codex ya abren con acceso a ellas, y AGENTS.md lista todas las rutas para los demás providers.',
+      },
+      {
+        id: 'files',
+        title: 'Velas en el Workbench',
+        body: 'Abre el Workbench: el explorador de archivos muestra la carpeta principal y cada @alias como raíces separadas. La búsqueda y el editor funcionan en todas.',
+      },
+      {
+        id: 'git',
+        title: 'Git por repositorio',
+        body: 'Abre Git y usa el selector de Repositorio de arriba para alternar entre las carpetas. Cada una tiene sus propios cambios, ramas e historial; si la carpeta base no es un repositorio, Git abre en el primero adicional.',
+      },
+    ],
+  },
+  {
     id: 'zoom-lock',
     icon: 'Lock',
     title: 'Zoom bloqueado en su punto',
@@ -1989,7 +2017,7 @@ export const TOURS_ES: Tour[] = [
   },
   {
     id: 'workspace-folders',
-    icon: 'FolderTree',
+    icon: 'FolderPlus',
     title: 'Organiza workspaces en carpetas',
     tagline: 'Agrupa proyectos por cliente, equipo o entorno en la barra lateral.',
     steps: [
@@ -2190,7 +2218,7 @@ export const TOURS_ES: Tour[] = [
   },
   {
     id: 'group-icons',
-    icon: 'FolderTree',
+    icon: 'FolderPlus',
     title: 'Dale un icono propio a una carpeta',
     tagline: 'Distingue tus grupos de workspace de un vistazo.',
     steps: [

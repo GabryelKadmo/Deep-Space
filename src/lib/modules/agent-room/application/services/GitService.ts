@@ -1,4 +1,5 @@
 import { execFile, spawn } from 'node:child_process';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { createHash } from 'node:crypto';
 import { open, readFile, stat } from 'node:fs/promises';
 import { extname, isAbsolute, relative, resolve } from 'node:path';
@@ -11,6 +12,8 @@ import { hunkPatch, parseGitDiff, type GitHunk } from '../../domain/git-hunks.js
 import type { ExecuteGitOperationInput, GitOperationInput } from '../../contracts/schemas/fsSchemas.js';
 
 const execFileAsync = promisify(execFile);
+/** Alias of the additional repository a request targets; empty means the main one. */
+const repositoryScope = new AsyncLocalStorage<string>();
 const GIT_TIMEOUT_MS = 15_000;
 const MAX_DIFF_BYTES = 1_000_000;
 
@@ -176,10 +179,26 @@ export class GitService {
     broadcast?.({ type: 'gitReviewChanged', workspaceId });
   }
 
+  /**
+   * Runs `work` against one of the workspace's additional repositories. Every
+   * Git call made inside it resolves its directory from that alias, so the
+   * single-repository methods below stay unchanged.
+   */
+  inRepository<T>(alias: string | null | undefined, work: () => Promise<T>): Promise<T> {
+    const normalized = alias?.trim().toLowerCase();
+    return normalized ? repositoryScope.run(normalized, work) : work();
+  }
+
   private async workspace(workspaceId: string): Promise<Workspace> {
     const workspace = await workspaceRepository.getWorkspace(workspaceId);
     if (!workspace) throw new Error('Workspace não encontrado.');
-    return workspace;
+    const alias = repositoryScope.getStore();
+    if (!alias) return workspace;
+    const repository = workspace.repositoryRoots.find((root) => root.alias === alias);
+    if (!repository) throw new Error(`O repositório @${alias} não está registrado neste workspace.`);
+    // A WSL guest cannot see a host folder, and the Windows Git must never touch a Linux checkout.
+    if (workspace.runtimeKind === 'wsl') throw new Error('Repositórios adicionais ainda não são suportados em workspaces WSL.');
+    return { ...workspace, workingDir: repository.path };
   }
 
   private async root(workspaceId: string): Promise<string> {
@@ -314,6 +333,9 @@ export class GitService {
   }
 
   async status(workspaceId: string): Promise<GitStatusResult> {
+    // statusWith reports any failure as "not a repository"; an unknown or
+    // unsupported repository alias must stay a distinct, visible error.
+    await this.workspace(workspaceId);
     return this.statusWith((args) => this.workspaceGit(workspaceId, args));
   }
 

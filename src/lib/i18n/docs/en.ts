@@ -541,6 +541,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Git', 'diff', 'revert', 'stage'],
     },
     {
+      id: 'multi-folder-workspace',
+      title: 'Work on several folders and repositories in one workspace',
+      body: 'Create the workspace on a base folder (it can be empty) and bring in the repositories that live elsewhere on the disk without cloning or copying anything: click the pencil next to the workspace name, open Edit workspace > Additional repositories, add each folder and give it a short alias such as api or web. From then on Claude and Codex agents open with those folders already authorized (--add-dir), the AGENTS.md/CLAUDE.md of the workspace lists their paths (relative to the main folder) for every other provider, the Workbench file explorer shows each folder as its own root next to the main one (search covers all of them), and the Git panel gets a Repository selector so you can stage, commit, pull and push each repository on its own; when the base folder is not a Git repository the panel opens on the first additional one. Paths outside the main folder and the approved ones stay blocked. Additional folders are not available in WSL workspaces yet.',
+      tags: ['folders','repositories','multi-root','Git','Workbench'],
+    },
+    {
       id: 'agent-launch-defaults',
       title: 'Decide whether agents ask for approval',
       body: 'In Settings > Terminal, Skip approvals in agent terminals (on by default) opens each CLI in the mode where it runs commands and edits files without asking: --dangerously-skip-permissions in Claude, Codex\'s bypass, --yolo in Copilot and the equivalent in the others. Turn it off so agents ask for your approval. Remote Control in Claude terminals (also on) opens Claude with --rc, so you can continue the conversation from your phone. Both apply to terminals opened or reopened after you save, including existing ones.',
@@ -998,6 +1004,16 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: 'October 23, 2026 · 0.42.0',
+      title: 'Deep Space 0.42.0: several folders in one workspace',
+      summary: 'Add repositories from anywhere on the disk to a workspace; agents, the file explorer and Git all see them',
+      items: [
+        'Several folders in one workspace. Edit workspace > Additional repositories now makes each folder a full part of the workspace instead of a label for the API Client: Claude and Codex agents open with --add-dir for every folder, the workspace AGENTS.md/CLAUDE.md lists their paths (relative to the main folder) for the other providers, the Workbench explorer shows each folder as its own root (and search covers them all), and the Git panel gets a Repository selector that runs status, stage, commit, pull, push and the rest inside the chosen repository, opening on the first additional one when the base folder is not a repository. Paths outside the approved folders stay blocked, and WSL workspaces do not use additional folders yet.',
+        'The Skills & MCPs page lost its layout: the lists spanned the whole window while the header stayed in a narrow column, and the content showed through the header when scrolling. Header, tabs and lists now share one column, and the header keeps a solid background.',
+        'Electron, Vite, DOMPurify and undici move to patch releases that fix newly published security advisories.',
+      ],
+    },
     {
       date: 'October 13, 2026 · 0.41.0',
       title: 'Deep Space 0.41.0: a Git panel with block-level review',

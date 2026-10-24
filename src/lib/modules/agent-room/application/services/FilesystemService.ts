@@ -31,17 +31,30 @@ const execFileAsync = promisify(execFile);
  */
 export class FilesystemService {
   private async root(workspaceId: string): Promise<string> {
+    return (await this.roots(workspaceId))[0].path;
+  }
+
+  /** The main working directory first, then every additional folder the owner approved. */
+  private async roots(workspaceId: string): Promise<Array<{ alias: string | null; path: string }>> {
     const workspace = await workspaceRepository.getWorkspace(workspaceId);
     if (!workspace) throw new Error('Workspace nao encontrado.');
-    return resolve(workspace.workingDir);
+    return [
+      { alias: null, path: resolve(workspace.workingDir) },
+      ...workspace.repositoryRoots.map((root) => ({ alias: root.alias, path: resolve(root.path) })),
+    ];
   }
 
   private async resolveSafe(workspaceId: string, path?: string | null): Promise<string> {
-    const root = await this.root(workspaceId);
+    const roots = await this.roots(workspaceId);
     const input = (path ?? '').trim();
-    // Caminho absoluto e aceito desde que dentro do root; relativo resolve contra o root.
-    const resolved = input.startsWith(sep) || /^[A-Za-z]:[\\/]/.test(input) ? resolve(input) : resolve(root, input);
-    if (resolved !== root && !resolved.startsWith(root + sep)) {
+    const aliased = input.match(/^@([a-z0-9][a-z0-9_-]*)(?:[\\/](.*))?$/i);
+    const aliasRoot = aliased ? roots.find((root) => root.alias === aliased[1].toLowerCase()) : undefined;
+    if (aliased && !aliasRoot) throw new Error('Pasta adicional nao registrada neste workspace.');
+    // Caminho absoluto e aceito desde que dentro de alguma raiz aprovada; relativo resolve contra a pasta principal.
+    const resolved = aliasRoot
+      ? resolve(aliasRoot.path, aliased![2] ?? '.')
+      : input.startsWith(sep) || /^[A-Za-z]:[\\/]/.test(input) ? resolve(input) : resolve(roots[0].path, input);
+    if (!roots.some((root) => resolved === root.path || resolved.startsWith(root.path + sep))) {
       throw new Error('Caminho fora do diretorio do workspace.');
     }
     return resolved;
@@ -159,10 +172,24 @@ export class FilesystemService {
     query: string,
     options: { byContent?: boolean; limit?: number } = {}
   ): Promise<Array<{ path: string; line?: number; preview?: string }>> {
-    const root = await this.root(workspaceId);
     const needle = query.trim().toLowerCase();
     if (!needle) return [];
     const limit = options.limit ?? 50;
+    const results: Array<{ path: string; line?: number; preview?: string }> = [];
+    for (const root of await this.roots(workspaceId)) {
+      if (results.length >= limit) break;
+      results.push(...await this.searchRoot(root.path, query, needle, { ...options, limit: limit - results.length }));
+    }
+    return results;
+  }
+
+  private async searchRoot(
+    root: string,
+    query: string,
+    needle: string,
+    options: { byContent?: boolean; limit: number },
+  ): Promise<Array<{ path: string; line?: number; preview?: string }>> {
+    const limit = options.limit;
     const ripgrepResults = await this.searchWithRipgrep(root, query, {
       byContent: options.byContent ?? false,
       limit,

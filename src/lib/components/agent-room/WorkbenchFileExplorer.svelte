@@ -24,21 +24,26 @@
     size: number;
   };
 
-  type FileRow = FsEntry & { depth: number };
+  type FileRow = FsEntry & { depth: number; isRoot?: boolean };
 
   let {
     workspaceId,
     rootPath,
+    extraRoots = [],
     activePath = null,
     onOpen,
   }: {
     workspaceId: string;
     rootPath: string;
+    /** Additional workspace folders; with any present, every folder becomes a collapsible root. */
+    extraRoots?: Array<{ alias: string; path: string }>;
     activePath?: string | null;
     onOpen: (path: string, direction: WorkbenchSplitDirection | null) => void;
   } = $props();
 
   let childrenByPath = $state<Record<string, FsEntry[]>>({});
+  const multiRoot = $derived(extraRoots.length > 0);
+  // The main folder starts open so the tree never opens as a column of closed roots.
   let expandedPaths = $state<string[]>([]);
   let loadingPaths = $state<string[]>([]);
   let errorMessage = $state('');
@@ -52,9 +57,21 @@
         if (entry.type === 'directory' && expandedPaths.includes(entry.path)) visit(entry.path, depth + 1);
       }
     };
-    visit(rootPath, 0);
+    if (!multiRoot) {
+      visit(rootPath, 0);
+      return result;
+    }
+    const roots = [
+      { name: rootPath.split(/[\\/]/).filter(Boolean).at(-1) ?? rootPath, path: rootPath },
+      ...extraRoots.map((root) => ({ name: `@${root.alias}`, path: root.path })),
+    ];
+    for (const root of roots) {
+      result.push({ name: root.name, path: root.path, type: 'directory', size: 0, depth: 0, isRoot: true });
+      if (expandedPaths.includes(root.path)) visit(root.path, 1);
+    }
     return result;
   });
+  const fileCount = $derived(rows.filter((row) => !row.isRoot).length);
 
   async function loadDirectory(path: string, force = false): Promise<void> {
     if (!force && childrenByPath[path]) return;
@@ -86,15 +103,18 @@
 
   async function refresh(): Promise<void> {
     childrenByPath = {};
-    expandedPaths = [];
+    expandedPaths = [rootPath];
     await loadDirectory(rootPath, true);
   }
 
   function collapseAll(): void {
-    expandedPaths = [];
+    // Roots stay open so collapsing never hides the folders themselves.
+    const rootPaths = new Set([rootPath, ...extraRoots.map((root) => root.path)]);
+    expandedPaths = multiRoot ? expandedPaths.filter((path) => rootPaths.has(path)) : [];
   }
 
   onMount(() => {
+    expandedPaths = [rootPath];
     void loadDirectory(rootPath);
   });
 </script>
@@ -114,7 +134,7 @@
       <Files size={12} strokeWidth={1.7} aria-hidden="true" />
       <span>{m['workbench_files.title']()}</span>
     </button>
-    <span class="ml-auto tabular-nums">{rows.length}</span>
+    <span class="ml-auto tabular-nums">{fileCount}</span>
     <Tooltip.Root>
       <Tooltip.Trigger>
         {#snippet child({ props })}
@@ -140,13 +160,13 @@
   {#if sectionExpanded}
     {#if errorMessage}
       <p class="px-3 py-2 text-ui-xs leading-4 text-[var(--app-danger)]">{errorMessage}</p>
-    {:else if loadingPaths.includes(rootPath) && !childrenByPath[rootPath]}
+    {:else if !multiRoot && loadingPaths.includes(rootPath) && !childrenByPath[rootPath]}
       <div class="space-y-1 px-2 py-1" role="status" aria-label={m['workbench_files.loading']()}>
         {#each [0, 1, 2, 3] as row (row)}
           <div class="h-6 animate-pulse rounded-[4px] bg-[var(--app-surface-raised)]" style:width={`${88 - row * 7}%`}></div>
         {/each}
       </div>
-    {:else if childrenByPath[rootPath]?.length === 0}
+    {:else if !multiRoot && childrenByPath[rootPath]?.length === 0}
       <p class="px-3 py-2 text-ui-xs text-[var(--app-text-muted)]">{m['workbench_files.empty']()}</p>
     {:else}
       <div role="tree" aria-label={m['workbench_files.aria']()}>
@@ -158,6 +178,7 @@
           aria-level={entry.depth + 1}
           aria-expanded={entry.type === 'directory' ? expanded : undefined}
           aria-selected={entry.type === 'file' ? activePath === entry.path : undefined}
+          data-root={entry.isRoot ? 'true' : undefined}
           style:padding-left={`${6 + entry.depth * 12}px`}
         >
           <button
@@ -172,7 +193,7 @@
               <span class="w-3 shrink-0"></span>
               <File size={13} class={`shrink-0 ${activePath === entry.path ? 'text-[var(--app-accent)]' : 'text-[var(--app-text-muted)]'}`} />
             {/if}
-            <span class="min-w-0 flex-1 truncate">{entry.name}</span>
+            <span class={`min-w-0 flex-1 truncate ${entry.isRoot ? 'font-semibold text-[var(--app-text)]' : ''}`}>{entry.name}</span>
             {#if entry.type === 'directory' && loadingPaths.includes(entry.path)}
               <RefreshCw size={11} class="mr-1 shrink-0 animate-spin text-[var(--app-text-muted)]" />
             {/if}

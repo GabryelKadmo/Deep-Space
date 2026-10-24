@@ -16,7 +16,7 @@ import {
 } from '../../infrastructure/codex-mcp-config.js';
 import { autonomyPolicyService } from './AutonomyPolicyService.js';
 import { settingsService } from './SettingsService.js';
-import { applyAgentLaunchPolicy } from '../../infrastructure/pty/agent-launch-policy.js';
+import { additionalDirArgs, applyAgentLaunchPolicy } from '../../infrastructure/pty/agent-launch-policy.js';
 
 type AgentNodePayload = {
   sessionId?: string;
@@ -141,6 +141,9 @@ export class AgentSessionService {
         })
       : {};
     const launchArgs = applyAgentLaunchPolicy(payload.provider, payload.args ?? [], await settingsService.agentLaunchPolicy());
+    const extraDirArgs = runtime.kind === 'wsl'
+      ? []
+      : additionalDirArgs(payload.provider, workspace.repositoryRoots.map((root) => root.path), launchArgs);
     const mcpArgs = payload.provider === 'codex'
       ? codexMcpOverrideArgs(codexMcpLaunchForRuntime(runtime))
       : [];
@@ -160,6 +163,7 @@ export class AgentSessionService {
       command: payload.command,
       args: [
         ...launchArgs,
+        ...extraDirArgs,
         ...mcpArgs,
         ...codexTrustArgs,
         ...(!resumableAgentSessionId ? (payload.initialRoleArgs ?? []) : []),

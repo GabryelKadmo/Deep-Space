@@ -9,6 +9,7 @@
   import * as AlertDialog from '$lib/components/ui/alert-dialog';
   import * as Dialog from '$lib/components/ui/dialog';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+  import * as Select from '$lib/components/ui/select';
   import * as Tabs from '$lib/components/ui/tabs';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
@@ -27,6 +28,12 @@
     workspaceId: string;
     compact?: boolean;
   } = $props();
+
+  // Additional workspace folders, each its own Git repository; '' is the main folder.
+  let repositories = $state<Array<{ alias: string; path: string }>>([]);
+  let repo = $state('');
+  const gitUrl = (endpoint: string) =>
+    `/api/agent-room/workspaces/${workspaceId}/git/${endpoint}${repo ? `?repo=${encodeURIComponent(repo)}` : ''}`;
 
   let snapshot = $state<GitWorkspaceSnapshot | null>(null);
   let loading = $state(true);
@@ -72,7 +79,7 @@
 
   async function refresh(): Promise<void> {
     try {
-      snapshot = await api<GitWorkspaceSnapshot>(`/api/agent-room/workspaces/${workspaceId}/git/workspace`);
+      snapshot = await api<GitWorkspaceSnapshot>(gitUrl('workspace'));
       errorMessage = '';
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : m['git.error_load']();
@@ -85,7 +92,7 @@
     if (busy) return;
     busy = true;
     try {
-      await api(`/api/agent-room/workspaces/${workspaceId}/git/${endpoint}`, {
+      await api(gitUrl(endpoint), {
         method: 'POST', headers: headers(), body: JSON.stringify(body),
       });
       await refresh();
@@ -101,7 +108,7 @@
     if (busy) return;
     busy = true;
     try {
-      const preview = await api<GitOperationPreview>(`/api/agent-room/workspaces/${workspaceId}/git/preview`, {
+      const preview = await api<GitOperationPreview>(gitUrl('preview'), {
         method: 'POST', headers: headers(), body: JSON.stringify(input),
       });
       if (preview.confirmationRequired) {
@@ -118,7 +125,7 @@
   }
 
   async function execute(input: GitOperationInput, preview: GitOperationPreview, confirmed: boolean): Promise<void> {
-    const result = await api<{ snapshot: GitWorkspaceSnapshot }>(`/api/agent-room/workspaces/${workspaceId}/git/execute`, {
+    const result = await api<{ snapshot: GitWorkspaceSnapshot }>(gitUrl('execute'), {
       method: 'POST',
       headers: headers(),
       body: JSON.stringify({ ...input, expectedRevision: preview.revision, confirmed }),
@@ -177,8 +184,35 @@
     void goto(`/terminal?workspace=${encodeURIComponent(workspaceId)}&node=${encodeURIComponent(workbenchReviewCenterItemId(workspaceId))}`);
   }
 
-  onMount(() => {
+  async function loadRepositories(): Promise<void> {
+    try {
+      const workspace = await api<{ repositoryRoots?: Array<{ alias: string; path: string }> }>(`/api/agent-room/workspaces/${workspaceId}`);
+      repositories = workspace.repositoryRoots ?? [];
+      // A folder removed in the workspace dialog must not leave the panel pointing at it.
+      if (repo && !repositories.some((root) => root.alias === repo)) selectRepository('');
+    } catch {
+      repositories = [];
+    }
+  }
+
+  function selectRepository(alias: string): void {
+    if (alias === repo) return;
+    repo = alias;
+    snapshot = null;
+    openChange = null;
+    errorMessage = '';
+    loading = true;
     void refresh();
+  }
+
+  onMount(() => {
+    void (async () => {
+      await loadRepositories();
+      await refresh();
+      // A base folder that only holds the repositories is not one itself:
+      // open on the first real repository instead of an empty "not a repo" state.
+      if (!repo && snapshot && !snapshot.status.isRepo && repositories.length) selectRepository(repositories[0].alias);
+    })();
     refreshTimer = setInterval(() => void refresh(), 10_000);
     return () => refreshTimer && clearInterval(refreshTimer);
   });
@@ -198,6 +232,23 @@
     <Button variant="ghost" size="icon-sm" aria-label={m['git.pull']()} onclick={() => void prepare({ operation: 'pull', force: false, setUpstream: false })}><ArrowDownToLine /></Button>
     <Button variant="ghost" size="icon-sm" aria-label={m['git.push']()} onclick={() => void prepare({ operation: 'push', force: false, setUpstream: false })}><ArrowUpFromLine /></Button>
   </header>
+
+  {#if repositories.length}
+    <div class="flex min-h-9 items-center gap-2 border-b border-[var(--app-border)] bg-[var(--app-surface-muted)] px-2.5" data-testid="git-repository-picker">
+      <span class="text-ui-xs font-semibold uppercase text-[var(--app-text-muted)]">{m['git.repository']()}</span>
+      <Select.Root type="single" value={repo} onValueChange={(value: string) => selectRepository(value)}>
+        <Select.Trigger class="h-7 min-w-0 flex-1 text-ui-xs" data-slot="select-trigger" aria-label={m['git.repository']()}>
+          {repo ? `@${repo}` : m['git.repository_main']()}
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Item value="">{m['git.repository_main']()}</Select.Item>
+          {#each repositories as root (root.alias)}
+            <Select.Item value={root.alias}>@{root.alias}</Select.Item>
+          {/each}
+        </Select.Content>
+      </Select.Root>
+    </div>
+  {/if}
 
   {#if errorMessage}
     <button class="border-b border-[var(--app-danger)]/30 bg-[var(--app-danger)]/10 px-3 py-2 text-left text-ui-xs text-[var(--app-danger)]" onclick={() => (errorMessage = '')}>{errorMessage}</button>
@@ -281,7 +332,7 @@
   {/if}
 </div>
 
-<GitDiffDialog {workspaceId} change={openChange} onClose={() => (openChange = null)} onChanged={refresh} />
+<GitDiffDialog {workspaceId} {repo} change={openChange} onClose={() => (openChange = null)} onChanged={refresh} />
 
 <Dialog.Root bind:open={branchDialogOpen}>
   <Dialog.Content class="sm:max-w-sm"><Dialog.Header><Dialog.Title>{m['git.new_branch']()}</Dialog.Title><Dialog.Description>{m['git.new_branch_hint']()}</Dialog.Description></Dialog.Header><Input bind:value={branchName} placeholder="feature/name" onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && void createBranch()} /><Dialog.Footer><Button variant="outline" onclick={() => (branchDialogOpen = false)}>{m['settings.cancel']()}</Button><Button disabled={!branchName.trim() || busy} onclick={() => void createBranch()}>{m['git.create_branch']()}</Button></Dialog.Footer></Dialog.Content>

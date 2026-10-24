@@ -28,7 +28,7 @@ import { agentSessionTracker, agentSessionTrackerForRuntime, type AgentSessionTr
 import type { WorkspaceExecutionRuntime } from '../../domain/types.ts';
 import { executionRuntimeKey } from '../../domain/runtime.ts';
 import { consoleShellInvocation } from '../../domain/console-commands.ts';
-import { applyAgentLaunchPolicy, type AgentLaunchPolicy } from './agent-launch-policy.ts';
+import { additionalDirArgs, applyAgentLaunchPolicy, type AgentLaunchPolicy } from './agent-launch-policy.ts';
 import { preflightWslLaunch, WslLaunchError, type WslTrackingContext } from '../WslRuntime.ts';
 import {
   codexMcpLaunchForRuntime,
@@ -59,6 +59,7 @@ const wsGlobal = globalThis as unknown as {
   __deepspaceResolveProviderProfileEnv?: (profileId: string, providerId: string, options?: { runtimeHome?: string }) => Promise<Record<string, string>>;
   __deepspaceCanStartWorkspaceSession?: (workspaceId: string) => Promise<boolean>;
   __deepspaceAgentLaunchPolicy?: () => Promise<AgentLaunchPolicy>;
+  __deepspaceAdditionalDirs?: (workspaceId: string) => Promise<string[]>;
 };
 const allSockets = (wsGlobal.__deepspaceWsClients ??= new Set<WebSocket>());
 wsGlobal.__deepspaceBroadcast = (payload) => {
@@ -224,6 +225,10 @@ export function handlePtyConnection(socket: WebSocket): void {
           const runtime = message.runtime ?? { kind: 'native' as const };
           const launchPolicy = await (wsGlobal.__deepspaceAgentLaunchPolicy?.() ?? Promise.resolve({ remoteControl: true, bypassPermissions: true }));
           const messageArgs = applyAgentLaunchPolicy(message.provider, Array.isArray(message.args) ? message.args.map(String) : [], launchPolicy);
+          const extraDirs = message.provider && runtime.kind !== 'wsl' && typeof message.workspaceId === 'string'
+            ? await (wsGlobal.__deepspaceAdditionalDirs?.(message.workspaceId) ?? Promise.resolve([]))
+            : [];
+          const extraDirArgs = additionalDirArgs(message.provider, extraDirs, messageArgs);
           const providerArgs = message.provider === 'codex'
             ? codexMcpOverrideArgs(codexMcpLaunchForRuntime(runtime))
             : [];
@@ -259,6 +264,7 @@ export function handlePtyConnection(socket: WebSocket): void {
             command: message.command.trim(),
             args: [
               ...messageArgs,
+              ...extraDirArgs,
               ...providerArgs,
               ...codexTrustArgs,
               ...freshSessionArgs,

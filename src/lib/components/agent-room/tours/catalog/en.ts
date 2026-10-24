@@ -244,6 +244,34 @@ export const TOURS_EN: Tour[] = [
     ],
   },
   {
+    id: 'multi-folder-workspace',
+    icon: 'FolderPlus',
+    title: 'Several folders in one workspace',
+    tagline: 'Bring repositories from other places into the same team, with no copies.',
+    steps: [
+      {
+        id: 'open',
+        title: 'Open the workspace settings',
+        body: 'Click the pencil next to the workspace name in the sidebar to open Edit workspace. The main folder stays the one where the agents\' terminals open.',
+      },
+      {
+        id: 'add',
+        title: 'Add the other folders',
+        body: 'In Additional repositories, click the + button, pick each folder and name its alias (api, web, docs...). Save: Claude and Codex agents already open with access to them, and AGENTS.md lists every path for the other providers.',
+      },
+      {
+        id: 'files',
+        title: 'See them in the Workbench',
+        body: 'Open the Workbench: the file explorer shows the main folder and each @alias as separate roots. Search and the editor work in all of them.',
+      },
+      {
+        id: 'git',
+        title: 'Git per repository',
+        body: 'Open Git and use the Repository selector at the top to switch between folders. Each one has its own changes, branches and history; if the base folder is not a repository, Git opens on the first additional one.',
+      },
+    ],
+  },
+  {
     id: 'zoom-lock',
     icon: 'Lock',
     title: 'Zoom locked at the right level',
@@ -1989,7 +2017,7 @@ export const TOURS_EN: Tour[] = [
   },
   {
     id: 'workspace-folders',
-    icon: 'FolderTree',
+    icon: 'FolderPlus',
     title: 'Organize workspaces into folders',
     tagline: 'Group projects by client, team, or environment in the sidebar.',
     steps: [
@@ -2190,7 +2218,7 @@ export const TOURS_EN: Tour[] = [
   },
   {
     id: 'group-icons',
-    icon: 'FolderTree',
+    icon: 'FolderPlus',
     title: 'Give a folder its own icon',
     tagline: 'Tell your workspace groups apart at a glance.',
     steps: [

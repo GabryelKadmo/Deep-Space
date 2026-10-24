@@ -24,10 +24,17 @@ const globalRef = globalThis as unknown as {
   __deepspaceResolveProviderProfileEnv?: (profileId: string, providerId: string, options?: { runtimeHome?: string }) => Promise<Record<string, string>>;
   __deepspaceCanStartWorkspaceSession?: (workspaceId: string) => Promise<boolean>;
   __deepspaceAgentLaunchPolicy?: () => Promise<AgentLaunchPolicy>;
+  __deepspaceAdditionalDirs?: (workspaceId: string) => Promise<string[]>;
 };
 globalRef.__deepspaceResolveProviderProfileEnv = (profileId, providerId, options) =>
   providerProfileService.resolveEnv(profileId, providerId, options);
 globalRef.__deepspaceAgentLaunchPolicy = () => settingsService.agentLaunchPolicy();
+globalRef.__deepspaceAdditionalDirs = async (workspaceId) => {
+  const workspace = await workspaceRepository.getWorkspace(workspaceId);
+  // WSL guests cannot reach host paths, so only native workspaces get the flag.
+  if (!workspace || workspace.runtimeKind === 'wsl') return [];
+  return workspace.repositoryRoots.map((root) => root.path);
+};
 globalRef.__deepspaceCanStartWorkspaceSession = async (workspaceId) => {
   const workspace = await workspaceRepository.getWorkspace(workspaceId);
   return Boolean(workspace && !workspace.suspendedAt);
