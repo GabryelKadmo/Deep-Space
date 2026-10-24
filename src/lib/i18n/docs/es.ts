@@ -541,6 +541,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Git', 'diff', 'revertir', 'stage'],
     },
     {
+      id: 'multi-folder-workspace',
+      title: 'Trabaja en varias carpetas y repositorios en el mismo workspace',
+      body: 'Crea el workspace sobre una carpeta base (puede estar vacía) y trae los repositorios que viven en otros lugares del disco sin clonar ni copiar nada: haz clic en el lápiz junto al nombre del workspace, abre Editar workspace > Repositorios adicionales, añade cada carpeta y ponle un alias corto como api o web. Desde ahí los agentes Claude y Codex abren con esas carpetas ya autorizadas (--add-dir), el AGENTS.md/CLAUDE.md del workspace lista sus rutas (relativas a la carpeta principal) para los demás providers, el explorador de archivos del Workbench muestra cada carpeta como una raíz propia junto a la principal (la búsqueda abarca todas) y el panel Git obtiene un selector de Repositorio para preparar, confirmar, hacer pull y push de cada repositorio por separado; cuando la carpeta base no es un repositorio Git, el panel abre en el primero adicional. Las rutas fuera de la carpeta principal y de las aprobadas siguen bloqueadas. Las carpetas adicionales aún no funcionan en workspaces WSL.',
+      tags: ['carpetas','repositorios','multi-root','Git','Workbench'],
+    },
+    {
       id: 'agent-launch-defaults',
       title: 'Decide si los agentes piden aprobación',
       body: 'En Configuración > Terminal, Omitir aprobaciones en los terminales de agente (activado por defecto) abre cada CLI en el modo en que ejecuta comandos y edita archivos sin pedir confirmación: --dangerously-skip-permissions en Claude, el bypass de Codex, --yolo en Copilot y el equivalente en los demás. Desactívalo para que los agentes pidan tu aprobación. Remote Control en los terminales de Claude (también activado) abre Claude con --rc, para continuar la conversación desde el móvil. Ambas opciones aplican a los terminales abiertos o reabiertos después de guardar, incluidos los existentes.',
@@ -998,6 +1004,14 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '19 de octubre de 2026 · 0.42.0',
+      title: 'Deep Space 0.42.0: varias carpetas en el mismo workspace',
+      summary: 'Añade al workspace repositorios de cualquier lugar del disco; agentes, explorador de archivos y Git los ven todos',
+      items: [
+        'Varias carpetas en el mismo workspace. Editar workspace > Repositorios adicionales ahora hace que cada carpeta forme parte real del workspace, en lugar de ser solo una etiqueta para el Cliente de API: los agentes Claude y Codex abren con --add-dir para cada carpeta, el AGENTS.md/CLAUDE.md del workspace lista sus rutas (relativas a la carpeta principal) para los demás providers, el explorador del Workbench muestra cada carpeta como una raíz propia (y la búsqueda abarca todas), y el panel Git obtiene un selector de Repositorio que ejecuta status, stage, commit, pull, push y el resto dentro del repositorio elegido, abriendo en el primero adicional cuando la carpeta base no es un repositorio. Las rutas fuera de las carpetas aprobadas siguen bloqueadas, y los workspaces WSL aún no usan carpetas adicionales.',
+      ],
+    },
     {
       date: '13 de octubre de 2026 · 0.41.0',
       title: 'Deep Space 0.41.0: panel Git con revisión por bloque',

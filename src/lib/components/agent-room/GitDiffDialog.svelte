@@ -9,13 +9,16 @@
 
   type Props = {
     workspaceId: string;
+    /** Alias of an additional repository; empty targets the main folder. */
+    repo?: string;
     change: GitChange | null;
     onClose: () => void;
     /** Avisa a lista de alteracoes para recarregar depois de uma acao. */
     onChanged: () => void | Promise<void>;
   };
 
-  let { workspaceId, change, onClose, onChanged }: Props = $props();
+  let { workspaceId, repo = '', change, onClose, onChanged }: Props = $props();
+  const repoQuery = (separator: '?' | '&') => (repo ? `${separator}repo=${encodeURIComponent(repo)}` : '');
 
   let detail = $state<GitFileHunks | null>(null);
   let loading = $state(false);
@@ -48,7 +51,7 @@
     try {
       detail = untracked
         ? null
-        : await api<GitFileHunks>(`/api/agent-room/workspaces/${workspaceId}/git/hunks?path=${encodeURIComponent(target.path)}&staged=${target.staged}`);
+        : await api<GitFileHunks>(`/api/agent-room/workspaces/${workspaceId}/git/hunks?path=${encodeURIComponent(target.path)}&staged=${target.staged}${repoQuery('&')}`);
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : m['git.error_load']();
     } finally {
@@ -67,7 +70,7 @@
     errorMessage = '';
     armedRevert = null;
     try {
-      detail = await api<GitFileHunks>(`/api/agent-room/workspaces/${workspaceId}/git/hunk`, {
+      detail = await api<GitFileHunks>(`/api/agent-room/workspaces/${workspaceId}/git/hunk${repoQuery('?')}`, {
         method: 'POST',
         headers: headers(),
         body: JSON.stringify({ path: change.path, staged: change.staged, index, action, expectedRevision: detail.revision }),
@@ -87,7 +90,7 @@
     busy = true;
     errorMessage = '';
     try {
-      await api(`/api/agent-room/workspaces/${workspaceId}/git/${endpoint}`, {
+      await api(`/api/agent-room/workspaces/${workspaceId}/git/${endpoint}${repoQuery('?')}`, {
         method: 'POST',
         headers: headers(),
         body: JSON.stringify({ path: change.path }),

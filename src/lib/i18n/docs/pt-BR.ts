@@ -545,6 +545,12 @@ Header: Authorization = Bearer {{accessToken}}`,
       tags: ['Git', 'diff', 'reverter', 'stage'],
     },
     {
+      id: 'multi-folder-workspace',
+      title: 'Trabalhe em várias pastas e repositórios no mesmo workspace',
+      body: 'Crie o workspace numa pasta base (pode ser vazia) e traga os repositórios que moram em outros lugares do disco sem clonar nem copiar nada: clique no lápis ao lado do nome do workspace, abra Editar workspace > Repositórios adicionais, adicione cada pasta e dê um alias curto como api ou web. A partir daí os agentes Claude e Codex abrem com essas pastas já autorizadas (--add-dir), o AGENTS.md/CLAUDE.md do workspace lista os caminhos (relativos à pasta principal) para os outros providers, o explorador de arquivos do Workbench mostra cada pasta como uma raiz própria ao lado da principal (a busca cobre todas) e o painel Git ganha um seletor de Repositório para preparar, commitar, puxar e enviar cada repositório separadamente; quando a pasta base não é um repositório Git, o painel abre no primeiro adicional. Caminhos fora da pasta principal e das aprovadas continuam bloqueados. Pastas adicionais ainda não funcionam em workspaces WSL.',
+      tags: ['pastas','repositórios','multi-root','Git','Workbench'],
+    },
+    {
       id: 'agent-launch-defaults',
       title: 'Decida se os agentes pedem aprovação',
       body: 'Em Configurações > Terminal, Pular aprovações nos terminais de agente (ligado por padrão) abre cada CLI no modo em que ela executa comandos e edita arquivos sem pedir confirmação: --dangerously-skip-permissions no Claude, o bypass do Codex, --yolo no Copilot e o equivalente dos outros. Desligue para os agentes pedirem a sua aprovação. Remote Control nos terminais do Claude (também ligado) abre o Claude com --rc, para continuar a conversa pelo celular. As duas opções valem para os terminais abertos ou reabertos depois de salvar, inclusive os que já existiam.',
@@ -1002,6 +1008,14 @@ Header: Authorization = Bearer {{accessToken}}`,
     },
   ],
   changelog: [
+    {
+      date: '19 de outubro de 2026 · 0.42.0',
+      title: 'Deep Space 0.42.0: várias pastas no mesmo workspace',
+      summary: 'Adicione ao workspace repositórios de qualquer lugar do disco; agentes, explorador de arquivos e Git enxergam todos',
+      items: [
+        'Várias pastas no mesmo workspace. Editar workspace > Repositórios adicionais agora faz cada pasta fazer parte de verdade do workspace, em vez de ser só um rótulo para o Cliente de API: os agentes Claude e Codex abrem com --add-dir para cada pasta, o AGENTS.md/CLAUDE.md do workspace lista os caminhos (relativos à pasta principal) para os outros providers, o explorador do Workbench mostra cada pasta como uma raiz própria (e a busca cobre todas), e o painel Git ganha um seletor de Repositório que roda status, stage, commit, pull, push e o resto dentro do repositório escolhido, abrindo no primeiro adicional quando a pasta base não é um repositório. Caminhos fora das pastas aprovadas continuam bloqueados, e workspaces WSL ainda não usam pastas adicionais.',
+      ],
+    },
     {
       date: '13 de outubro de 2026 · 0.41.0',
       title: 'Deep Space 0.41.0: painel Git com revisão por bloco',

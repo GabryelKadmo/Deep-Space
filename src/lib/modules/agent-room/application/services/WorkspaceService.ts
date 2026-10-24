@@ -1,6 +1,6 @@
 import { constants as fsConstants, existsSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { access, readFile } from 'node:fs/promises';
-import { posix, resolve } from 'node:path';
+import { isAbsolute, posix, relative, resolve } from 'node:path';
 import type { CanvasNodePayload, Workspace, WorkspaceRepositoryRoot } from '../../domain/types.js';
 import { findFreeCanvasPosition } from '../../domain/canvas-placement.js';
 import { executionRuntimeKey } from '../../domain/runtime.js';
@@ -60,6 +60,19 @@ const WORKSPACE_INSTRUCTIONS_PATTERN = /<!-- deepspace:workspace-instructions:be
 
 function managedInstructionBlock(instructions: string): string {
   return `${WORKSPACE_INSTRUCTIONS_BEGIN}\n${instructions}\n${WORKSPACE_INSTRUCTIONS_END}`;
+}
+
+/** Tells agents where the workspace's extra folders live, since their shell opens in the main one. */
+function additionalFoldersSection(workspace: Workspace): string | null {
+  // Host paths mean nothing inside a WSL guest.
+  if (workspace.runtimeKind === 'wsl' || !workspace.repositoryRoots.length) return null;
+  // AGENTS.md is often committed, so paths stay relative to the main folder
+  // instead of exposing the owner's home directory; another drive has no relative form.
+  const lines = workspace.repositoryRoots.map((root) => {
+    const path = relative(workspace.workingDir, root.path);
+    return `- @${root.alias}: ${path && !isAbsolute(path) ? path.replaceAll('\\', '/') : root.path}`;
+  });
+  return `## Additional workspace folders\n\nBesides the main folder, this workspace includes the folders below. They are real directories outside the main one (paths are relative to it): resolve them from the main folder, and run Git inside each folder, not from the main one.\n\n${lines.join('\n')}`;
 }
 
 function mergeInstructionFile(current: string, instructions: string | null, legacyInstructions?: string | null): string {
@@ -1004,17 +1017,19 @@ export class WorkspaceService {
   /** Keeps workspace instructions in a bounded block without replacing user files. */
   private writeInstructionFiles(workspace: Workspace, legacyInstructions?: string | null) {
     const instructions = workspace.instructions?.trim() || null;
+    const folders = additionalFoldersSection(workspace);
+    const agentInstructions = [instructions, folders].filter(Boolean).join('\n\n') || null;
     try {
       const agentsPath = resolve(workspace.workingDir, 'AGENTS.md');
       const currentAgents = existsSync(agentsPath) ? readFileSync(agentsPath, 'utf8') : '';
-      const nextAgents = mergeInstructionFile(currentAgents, instructions, legacyInstructions?.trim() || null);
+      const nextAgents = mergeInstructionFile(currentAgents, agentInstructions, legacyInstructions?.trim() || null);
       if (nextAgents !== currentAgents) writeFileSync(agentsPath, nextAgents);
 
       const claudePath = resolve(workspace.workingDir, 'CLAUDE.md');
       const currentClaude = existsSync(claudePath) ? readFileSync(claudePath, 'utf8') : '';
       const nextClaude = mergeInstructionFile(
         currentClaude,
-        workspace.syncAgentInstructionFiles ? instructions : null,
+        workspace.syncAgentInstructionFiles ? agentInstructions : null,
         legacyInstructions?.trim() || null,
       );
       if (nextClaude !== currentClaude) writeFileSync(claudePath, nextClaude);
