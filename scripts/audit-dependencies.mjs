@@ -33,6 +33,11 @@ const ALLOWED = [
     reason: 'zod memory exhaustion from the issues a huge failing array accumulates. No zod 3 release is patched; the fix is zod 4, which needs the @beeblock/svelar 0.8 migration across every schema. Inputs stay bounded meanwhile: the app server only listens on loopback with a 32 MB body limit, and the relay rejects frames over 256 KB before parsing.',
     reviewBy: '2026-11-06',
   },
+  {
+    url: 'https://github.com/advisories/GHSA-xcx6-jx8p-x3h5',
+    reason: 'MSAL Node authorization code flow parameter disclosure. The fix is msal-node 7.1, but even the latest @azure/identity requires ^6; it only arrives through @usebruno/requests for Azure Key Vault secrets, while Deep Space imports only its cookie helpers and never runs an Azure sign-in.',
+    reviewBy: '2026-11-06',
+  },
 ];
 
 let report;
