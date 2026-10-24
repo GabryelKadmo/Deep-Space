@@ -1005,7 +1005,7 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
-      date: '19 de octubre de 2026 · 0.42.0',
+      date: '23 de octubre de 2026 · 0.42.0',
       title: 'Deep Space 0.42.0: varias carpetas en el mismo workspace',
       summary: 'Añade al workspace repositorios de cualquier lugar del disco; agentes, explorador de archivos y Git los ven todos',
       items: [

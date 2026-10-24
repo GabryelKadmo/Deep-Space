@@ -1005,7 +1005,7 @@ Header: Authorization = Bearer {{accessToken}}`,
   ],
   changelog: [
     {
-      date: 'October 19, 2026 · 0.42.0',
+      date: 'October 23, 2026 · 0.42.0',
       title: 'Deep Space 0.42.0: several folders in one workspace',
       summary: 'Add repositories from anywhere on the disk to a workspace; agents, the file explorer and Git all see them',
       items: [
